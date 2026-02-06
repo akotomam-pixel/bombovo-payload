@@ -1,0 +1,20 @@
+// SIMPLE VERSION OF HOMEPAGE FOR TESTING
+// If the main page doesn't work, rename this file to page.tsx (and rename current page.tsx to page-full.tsx)
+// This will help identify which component is causing issues
+
+export default function Home() {
+  return (
+    <div style={{ padding: '50px', textAlign: 'center' }}>
+      <h1 style={{ fontSize: '60px', color: '#080708' }}>Bombovo</h1>
+      <p style={{ fontSize: '24px', marginTop: '20px', color: '#3772FF' }}>
+        Website is loading successfully!
+      </p>
+      <p style={{ marginTop: '20px' }}>
+        If you see this, Next.js is working. The issue might be with one of the components.
+      </p>
+    </div>
+  )
+}
+
+
+
