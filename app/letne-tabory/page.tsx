@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
@@ -9,7 +9,7 @@ import CampFilter from '@/components/CampFilter'
 import CampCard from '@/components/CampCard'
 import { camps } from '@/lib/campsData'
 
-export default function LetneTaborePage() {
+function CampsContent() {
   const searchParams = useSearchParams()
   const [selectedAge, setSelectedAge] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
@@ -141,6 +141,23 @@ export default function LetneTaborePage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function LetneTaborePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col bg-white">
+        <TopBar />
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <p className="text-2xl text-gray-500">Načítavam...</p>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <CampsContent />
+    </Suspense>
   )
 }
 
