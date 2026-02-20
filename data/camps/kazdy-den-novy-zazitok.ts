@@ -80,7 +80,7 @@ export const kazdyDenNovyZazitokData: CampDetailData = {
       lokalita: 'Tábor sa nachádza v Horskom hoteli Lomy v Lomskej doline pri obci Horná Ves (okres Prievidza), v srdci pohoria Vtáčnik.',
       doprava: 'Individuálna',
       ubytovanie: [
-        'Hotelové izby pre 4-5 detí, väčšinou s vlastnou kúpeľňou',
+        'Hotelové izby pre 4-5 detí s vlastným sociálnym zariadením',
         'Drevené chatky pre 7 detí s vlastným sociálnym zariadením',
       ],
       zaPriplatok: [

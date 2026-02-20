@@ -91,20 +91,19 @@ export default function AdaptacneKurzyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* FIX 2: Use align-items-start to align photo with text */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 lg:items-start">
-            
-            {/* Mobile: Image first */}
-            <div className="lg:hidden">
-              <div className="w-full rounded-2xl overflow-hidden" style={{ aspectRatio: '4/3' }}>
-                <img 
-                  src="/images/adaptacne1.JPG"
-                  alt="Adaptačný kurz"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+
+            {/* Image — single element — above text on mobile (order-1), right column on desktop (lg:order-2) */}
+            <div className="order-1 lg:order-2 w-full rounded-2xl overflow-hidden lg:min-h-[600px]" style={{ aspectRatio: '4/3' }}>
+              <img
+                src="/images/adaptacne1.JPG"
+                alt="Adaptačný kurz"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
 
-            {/* Section 2A: Text Content */}
-            <div className="space-y-6">
+            {/* Section 2A: Text Content — order-2 on mobile, left column on desktop (lg:order-1) */}
+            <div className="space-y-6 order-2 lg:order-1">
               <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark">
                 O čom je náš adaptačný kurz?
               </h2>
@@ -141,16 +140,6 @@ export default function AdaptacneKurzyPage() {
               </div>
             </div>
 
-            {/* Section 2B: Image - Desktop only - Extended vertically */}
-            <div className="hidden lg:block">
-              <div className="w-full h-full min-h-[600px] rounded-2xl overflow-hidden">
-                <img 
-                  src="/images/adaptacne1.JPG"
-                  alt="Adaptačný kurz"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -164,27 +153,15 @@ export default function AdaptacneKurzyPage() {
       <section className="py-12 md:py-16 bg-bombovo-gray">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            
-            {/* Mobile: Image first */}
-            <div className="lg:hidden">
-              <div className="w-full rounded-2xl overflow-hidden h-[500px]">
-                <img 
-                  src="/images/adaptacne2.JPG"
-                  alt="Program adaptačného kurzu"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
 
-            {/* Section 3A: Image - Desktop only */}
-            <div className="hidden lg:flex items-stretch">
-              <div className="w-full rounded-2xl overflow-hidden">
-                <img 
-                  src="/images/adaptacne2.JPG"
-                  alt="Program adaptačného kurzu"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            {/* Image — single element — above text on mobile, left column on desktop */}
+            <div className="w-full rounded-2xl overflow-hidden h-[500px]">
+              <img
+                src="/images/adaptacne2.JPG"
+                alt="Program adaptačného kurzu"
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
 
             {/* Section 3B: Program Content */}

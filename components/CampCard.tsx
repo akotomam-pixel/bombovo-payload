@@ -65,7 +65,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
       {/* Content */}
       <div className="p-6 space-y-4">
         {/* Camp Name */}
-        <h3 className="text-2xl font-bold text-bombovo-dark leading-tight">{name}</h3>
+        <h3 className="text-2xl font-bold text-bombovo-dark leading-tight text-center">{name}</h3>
 
         {/* Icon Information Row */}
         <div className="flex items-center gap-4 text-gray-600">

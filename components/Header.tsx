@@ -74,15 +74,15 @@ export default function Header() {
               {/* Logo and navigation links */}
               <div className="flex items-center gap-8 flex-wrap justify-center lg:justify-start">
                 {/* Logo */}
-                <Link href="/">
+                <Link href="/" className="lg:-ml-8">
                   <div 
-                    className="w-[70px] h-[70px] overflow-hidden flex items-center justify-center"
+                    className="w-[101px] h-[101px] overflow-hidden flex items-center justify-center"
                   >
                     <Image
                       src="/images/hat1.jpg"
                       alt="Bombovo Logo"
-                      width={70}
-                      height={70}
+                      width={101}
+                      height={101}
                       className="object-cover w-full h-full"
                     />
                   </div>
@@ -93,7 +93,7 @@ export default function Header() {
                   {/* Letné tábory - Yellow underline */}
                   <Link 
                     href="/letne-tabory" 
-                    className="relative inline-flex flex-col items-center text-bombovo-dark font-medium group"
+                    className="relative inline-flex flex-col items-center text-bombovo-dark font-medium text-[1.2rem] group"
                   >
                     <span>Letné tábory</span>
                     <svg 
@@ -120,7 +120,7 @@ export default function Header() {
                   >
                     <button 
                       onClick={togglePreSkolyDropdown}
-                      className="relative inline-flex flex-col items-center text-bombovo-dark font-medium group cursor-pointer bg-transparent border-none"
+                      className="relative inline-flex flex-col items-center text-bombovo-dark font-medium text-[1.2rem] group cursor-pointer bg-transparent border-none"
                     >
                       <span className="flex items-center gap-1">
                         Pre školy
@@ -233,7 +233,7 @@ export default function Header() {
                   {/* Naša Misia - Blue underline */}
                   <Link 
                     href="/nasa-misia" 
-                    className="relative inline-flex flex-col items-center text-bombovo-dark font-medium group"
+                    className="relative inline-flex flex-col items-center text-bombovo-dark font-medium text-[1.2rem] group"
                   >
                     <span>Naša Misia</span>
                     <svg 
@@ -258,15 +258,43 @@ export default function Header() {
               <nav className="flex items-center gap-4 flex-wrap justify-center">
                 <Link 
                   href="/faq" 
-                  className="text-bombovo-dark font-normal text-base"
+                  className="relative inline-flex flex-col items-center text-bombovo-dark font-normal text-base group"
                 >
-                  Otázky
+                  <span>Otázky</span>
+                  <svg 
+                    className="absolute -bottom-1 left-0 w-full" 
+                    height="8" 
+                    viewBox="0 0 80 8" 
+                    preserveAspectRatio="none"
+                  >
+                    <path 
+                      d="M 0,4 Q 20,2 40,4 T 80,4" 
+                      stroke="#080708" 
+                      strokeWidth="1.5" 
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </Link>
                 <Link 
                   href="/pripravujeme" 
-                  className="text-bombovo-dark font-normal text-base"
+                  className="relative inline-flex flex-col items-center text-bombovo-dark font-normal text-base group"
                 >
-                  Pridaj sa do tímu
+                  <span>Pridaj sa do tímu</span>
+                  <svg 
+                    className="absolute -bottom-1 left-0 w-full" 
+                    height="8" 
+                    viewBox="0 0 150 8" 
+                    preserveAspectRatio="none"
+                  >
+                    <path 
+                      d="M 0,5 Q 37.5,3 75,5 T 150,5" 
+                      stroke="#080708" 
+                      strokeWidth="1.5" 
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </Link>
                 <Link 
                   href="/kontakt" 

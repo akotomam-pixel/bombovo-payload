@@ -329,9 +329,9 @@ export default function StrediskoDetailPage() {
                     loop 
                     muted 
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                   >
-                    <source src="/images/Skoly%20v%20Prirode/skolavprirode2.mov" type="video/mp4" />
+                    <source src="/images/Videos/skolavprirode2.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </div>

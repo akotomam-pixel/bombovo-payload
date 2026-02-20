@@ -78,10 +78,44 @@ export default function SkolyVPrirodePage() {
       <div className="bg-bombovo-gray">
         <section className="pt-7 pb-16 md:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Desktop Layout */}
-            <div className="hidden lg:flex lg:flex-row gap-8 lg:gap-12">
-              {/* Left Side (40%) */}
-              <div className="lg:w-[40%] flex flex-col justify-center space-y-6">
+            {/* Unified layout — video loads once, text split for correct mobile ordering */}
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+
+              {/* MOBILE ONLY: Headline (shown above video on mobile) */}
+              <h1 className="lg:hidden text-3xl font-bold text-bombovo-dark">
+                Školy v prírode
+                <br />
+                <span className="relative inline-block">
+                  <span className="text-bombovo-red font-bold">
+                    Ktoré učiteľky milujú
+                  </span>
+                  <svg
+                    className="absolute left-0 -bottom-2 w-full"
+                    viewBox="0 0 200 12"
+                    preserveAspectRatio="none"
+                    style={{ height: '12px' }}
+                  >
+                    <path
+                      d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+                      stroke="#FDCA40"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M 0 9 Q 30 4, 60 7 T 120 7 T 180 9"
+                      stroke="#FDCA40"
+                      strokeWidth="2.5"
+                      fill="none"
+                      strokeLinecap="round"
+                      opacity="0.7"
+                    />
+                  </svg>
+                </span>
+              </h1>
+
+              {/* DESKTOP ONLY: Left column — headline + body + button */}
+              <div className="hidden lg:flex lg:w-[40%] flex-col justify-center space-y-6">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark">
                   Školy v prírode
                   <br />
@@ -128,102 +162,45 @@ export default function SkolyVPrirodePage() {
                 </div>
               </div>
 
-              {/* Right Side (60%) - Video */}
-              <div className="lg:w-[60%] flex items-center justify-center">
+              {/* Video — single element, shown on both mobile and desktop */}
+              <div className="w-full lg:w-[60%] flex items-center justify-center">
                 <div className="w-full relative">
-                  <div 
+                  <div
                     className="w-full rounded-2xl overflow-hidden shadow-lg bg-black"
                     style={{ aspectRatio: '16 / 9' }}
                   >
-                    <video 
+                    <video
                       className="w-full h-full object-cover"
-                      autoPlay 
-                      loop 
-                      muted 
+                      autoPlay
+                      loop
+                      muted
                       playsInline
-                      preload="auto"
+                      preload="metadata"
                     >
-                      <source src="/images/Skoly%20v%20Prirode/skolyvprirode1.mp4" type="video/mp4" />
+                      <source src="/images/Videos/skolyvprirode1.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Mobile Layout - Proper Order */}
-            <div className="lg:hidden space-y-6">
-              {/* 1. Headline */}
-              <h1 className="text-3xl font-bold text-bombovo-dark">
-                Školy v prírode
-                <br />
-                <span className="relative inline-block">
-                  <span className="text-bombovo-red font-bold">
-                    Ktoré učiteľky milujú
-                  </span>
-                  <svg
-                    className="absolute left-0 -bottom-2 w-full"
-                    viewBox="0 0 200 12"
-                    preserveAspectRatio="none"
-                    style={{ height: '12px' }}
-                  >
-                    <path
-                      d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
-                      stroke="#FDCA40"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 0 9 Q 30 4, 60 7 T 120 7 T 180 9"
-                      stroke="#FDCA40"
-                      strokeWidth="2.5"
-                      fill="none"
-                      strokeLinecap="round"
-                      opacity="0.7"
-                    />
-                  </svg>
-                </span>
-              </h1>
-
-              {/* 2. Video */}
-              <div className="w-full">
-                <div 
-                  className="w-full rounded-2xl overflow-hidden shadow-lg bg-black"
-                  style={{ aspectRatio: '16 / 9' }}
-                >
-                  <video 
-                    className="w-full h-full object-cover"
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline
-                    preload="auto"
-                  >
-                    <source src="/images/Skoly%20v%20Prirode/skolyvprirode1.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-
-              {/* 3. Text */}
-              <div className="space-y-4">
+              {/* MOBILE ONLY: Body text + button (shown below video on mobile) */}
+              <div className="lg:hidden space-y-4">
                 <p className="text-base text-bombovo-dark leading-relaxed">
                   U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť deťom funguje všetko plynule.
                 </p>
                 <p className="text-base text-bombovo-dark leading-relaxed font-semibold">
                   Škola v prírode s Bombovom je týždeň, ktorý skutočne stojí za to.
                 </p>
+                <div>
+                  <a href="#strediska">
+                    <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
+                      Pozri strediská
+                    </button>
+                  </a>
+                </div>
               </div>
 
-              {/* 4. Button */}
-              <div>
-                <a href="#strediska">
-                  <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
-                    Pozri strediská
-                  </button>
-                </a>
-              </div>
             </div>
         </div>
       </section>

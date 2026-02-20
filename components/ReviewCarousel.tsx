@@ -142,6 +142,7 @@ export default function ReviewCarousel() {
                     alt="Review Photo 1"
                     className="object-cover"
                     style={{ width: '200px', height: '260px' }}
+                    loading="lazy"
                   />
                   <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                     Letné Tábory 2025
@@ -165,6 +166,7 @@ export default function ReviewCarousel() {
                     alt="Review Photo 2"
                     className="object-cover"
                     style={{ width: '200px', height: '260px' }}
+                    loading="lazy"
                   />
                   <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                     Letné Tábory 2025
@@ -188,6 +190,7 @@ export default function ReviewCarousel() {
                     alt="Review Photo 3"
                     className="object-cover"
                     style={{ width: '200px', height: '260px' }}
+                    loading="lazy"
                   />
                   <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                     Letné Tábory 2025

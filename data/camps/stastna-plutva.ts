@@ -78,7 +78,7 @@ export const stastnaPlutvaData: CampDetailData = {
       lokalita: 'Tábor sa nachádza v Hoteli Martinské Hole v rekreačnej oblasti Martinky pri meste Martin, v srdci Lúčanskej Malej Fatry.',
       doprava: 'Individuálna',
       ubytovanie: [
-        'Hotelové izby pre 4-5 detí, väčšinou s vlastnou kúpeľňou',
+        'Hotelové izby pre 4-5 detí s vlastným sociálnym zariadením',
         'Drevené chatky pre 7 detí s vlastným sociálnym zariadením',
       ],
       zaPriplatok: [

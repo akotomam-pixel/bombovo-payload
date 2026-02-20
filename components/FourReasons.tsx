@@ -42,7 +42,7 @@ export default function FourReasons() {
     <section className="py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Headline */}
-        <h2 
+        <h2
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-4"
         >
           4 Dôvody Prečo ísť do Bombova
@@ -58,27 +58,30 @@ export default function FourReasons() {
               key={reason.number}
               className="relative"
             >
-              {/* DESKTOP LAYOUT - with numbers and alternating sides */}
-              <div className={`hidden md:flex items-center gap-8 ${
-                index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-              }`}>
-                {/* Content Side */}
-                <div className="flex-1 w-full">
-                  <div 
-                    className="bg-white rounded-3xl p-8 shadow-lg"
-                  >
-                    <h3 className="text-2xl md:text-3xl font-bold text-bombovo-dark mb-4">
+              {/*
+                Unified layout — single image element per reason.
+                Mobile (flex-col, no order): HTML order = text → image (stacked).
+                Desktop (flex-row, md:order classes active):
+                  even index → text (order-1) | number (order-2) | image (order-3)
+                  odd index  → image (order-1) | number (order-2) | text (order-3)
+              */}
+              <div className="flex flex-col md:flex-row md:items-center md:gap-8">
+
+                {/* Text */}
+                <div className={`flex-1 w-full ${index % 2 === 0 ? 'md:order-1' : 'md:order-3'}`}>
+                  <div className="bg-white rounded-3xl p-6 md:p-8 shadow-lg">
+                    <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-bombovo-dark mb-3 md:mb-4">
                       {reason.title}
                     </h3>
-                    <p className="text-bombovo-dark leading-relaxed whitespace-pre-line">
+                    <p className="text-sm md:text-base text-bombovo-dark leading-relaxed whitespace-pre-line">
                       {reason.content}
                     </p>
                   </div>
                 </div>
 
-                {/* Number Circle - DESKTOP ONLY */}
-                <div className="relative z-10 flex-shrink-0">
-                  <div 
+                {/* Number Circle — desktop only, always in the middle */}
+                <div className="hidden md:flex md:order-2 relative z-10 flex-shrink-0 items-center justify-center">
+                  <div
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-bombovo-blue flex items-center justify-center shadow-xl border-4 border-bombovo-dark"
                   >
                     <span className="text-white font-bold text-3xl md:text-4xl">
@@ -87,51 +90,25 @@ export default function FourReasons() {
                   </div>
                 </div>
 
-                {/* Image Side */}
-                <div className="flex-1 w-full">
-                  <div 
-                    className="relative rounded-3xl h-64 overflow-hidden shadow-lg"
-                  >
-                    <img 
+                {/* Image — single element, loads once */}
+                <div className={`flex-1 w-full ${index % 2 === 0 ? 'md:order-3' : 'md:order-1'}`}>
+                  <div className="relative rounded-3xl h-56 md:h-64 overflow-hidden shadow-lg">
+                    <img
                       src={reasonImages[reason.number]}
                       alt={`Reason ${reason.number}`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* MOBILE LAYOUT - Simple text then photo, no numbers */}
-              <div className="md:hidden space-y-6">
-                {/* Text Content */}
-                <div className="bg-white rounded-3xl p-6 shadow-lg">
-                  <h3 className="text-xl font-bold text-bombovo-dark mb-3">
-                    {reason.title}
-                  </h3>
-                  <p className="text-bombovo-dark leading-relaxed whitespace-pre-line text-sm">
-                    {reason.content}
-                  </p>
-                </div>
-
-                {/* Photo */}
-                <div 
-                  className="relative rounded-3xl h-56 overflow-hidden shadow-lg"
-                >
-                  <img 
-                    src={reasonImages[reason.number]}
-                    alt={`Reason ${reason.number}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
               </div>
             </div>
           ))}
         </div>
 
         {/* CTA Button */}
-        <div 
-          className="text-center mt-16"
-        >
+        <div className="text-center mt-16">
           <Link href="/letne-tabory">
             <button
               className="px-8 py-4 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200"
@@ -144,6 +121,3 @@ export default function FourReasons() {
     </section>
   )
 }
-
-
-

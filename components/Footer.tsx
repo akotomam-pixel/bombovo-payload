@@ -24,7 +24,7 @@ export default function Footer() {
   return (
     <footer className="bg-bombovo-dark text-white">
       {/* SECTION A: Four Vertical Columns */}
-      <div className="w-full mx-auto px-8 lg:px-16 py-12 md:py-16">
+      <div className="max-w-7xl mx-auto px-8 lg:px-16 py-12 md:py-16">
         <div className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-12">
           
           {/* COLUMN 1: CK Bombovo + Social Media + Page Links */}
@@ -94,6 +94,11 @@ export default function Footer() {
               <li>
                 <Link href="/pre-firmy" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
                   Pre Firmy
+                </Link>
+              </li>
+              <li>
+                <Link href="/test-tabor" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
+                  Test Page
                 </Link>
               </li>
             </ul>
@@ -308,7 +313,7 @@ export default function Footer() {
 
       {/* SECTION B: Newsletter Signup */}
       <div className="bg-bombovo-dark border-t border-gray-800">
-        <div className="w-full px-8 lg:px-16 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-8 lg:px-16 py-12 md:py-16">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
             Prihláste sa na náš newsletter. A zistajte špeciálne ceny!
           </h2>
@@ -353,7 +358,7 @@ export default function Footer() {
 
       {/* SECTION C: Partner Logos */}
       <div className="bg-bombovo-dark border-t border-gray-800">
-        <div className="w-full px-8 lg:px-16 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-8 lg:px-16 py-12 md:py-16">
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
               Ďakujeme našim partnerom
@@ -376,7 +381,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="bg-bombovo-dark border-t border-gray-800">
-        <div className="w-full px-8 lg:px-16 py-6">
+        <div className="max-w-7xl mx-auto px-8 lg:px-16 py-6">
           <p className="text-gray-400 text-xs md:text-sm text-center">
             © 2026 Bombovo. Všetky práva vyhradené.
           </p>

@@ -57,6 +57,15 @@ export default function RegistrationPage() {
     tshirtSize: "",
     discountCode: "",
 
+    // Druhé dieťa
+    hasSecondChild: false,
+    childName2: "",
+    birthDate2: "",
+    hasIntolerance2: "nie",
+    intoleranceDetails2: "",
+    roomWith2: "",
+    tshirtSize2: "",
+
     // Checkboxy
     employerContribution: false,
     insurance: false,
@@ -421,6 +430,152 @@ export default function RegistrationPage() {
                 </select>
               </div>
 
+              {/* Pridať druhé dieťa - Available for all camps */}
+              <div className="mb-8">
+                  <label className="flex items-center gap-3 cursor-pointer p-4 border-2 border-dashed border-bombovo-red rounded-xl hover:bg-bombovo-gray transition-colors">
+                    <input
+                      type="checkbox"
+                      name="hasSecondChild"
+                      checked={formData.hasSecondChild}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 text-bombovo-red focus:ring-bombovo-red rounded"
+                    />
+                    <span className="text-bombovo-red font-semibold text-lg flex items-center gap-2">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Pridať 2. dieťa (súrodenec)
+                    </span>
+                  </label>
+
+                  {/* Second Child Information - Shows when checked */}
+                  {formData.hasSecondChild && (
+                    <div className="mt-6 p-6 bg-bombovo-gray rounded-xl space-y-6">
+                      <h3 className="text-xl font-bold text-bombovo-dark mb-4">
+                        Informácie 2. Dieťaťa
+                      </h3>
+
+                      {/* Meno a Dátum */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-bombovo-dark font-semibold mb-2">
+                            Meno a Priezvisko Dieťaťa *
+                          </label>
+                          <input
+                            type="text"
+                            name="childName2"
+                            value={formData.childName2}
+                            onChange={handleInputChange}
+                            required={formData.hasSecondChild}
+                            className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-bombovo-dark font-semibold mb-2">
+                            Dátum Narodenia *
+                          </label>
+                          <input
+                            type="date"
+                            name="birthDate2"
+                            value={formData.birthDate2}
+                            onChange={handleInputChange}
+                            required={formData.hasSecondChild}
+                            className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Intolerancie */}
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-3">
+                          Intolerancie v stravovaní *
+                        </label>
+                        <div className="space-y-3">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasIntolerance2"
+                              value="ano"
+                              checked={formData.hasIntolerance2 === "ano"}
+                              onChange={handleInputChange}
+                              className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
+                            />
+                            <span className="text-bombovo-dark">
+                              Áno, má intoleranciu / špeciálnu stravu
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="hasIntolerance2"
+                              value="nie"
+                              checked={formData.hasIntolerance2 === "nie"}
+                              onChange={handleInputChange}
+                              className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
+                            />
+                            <span className="text-bombovo-dark">
+                              Nie, nemá žiadnu intoleranciu
+                            </span>
+                          </label>
+                        </div>
+
+                        {formData.hasIntolerance2 === "ano" && (
+                          <div className="mt-4">
+                            <label className="block text-bombovo-dark font-semibold mb-2">
+                              Prosím špecifikujte špeciálnu stravu dieťaťa
+                            </label>
+                            <textarea
+                              name="intoleranceDetails2"
+                              value={formData.intoleranceDetails2}
+                              onChange={handleInputChange}
+                              rows={3}
+                              className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Ubytovať s */}
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Ubytovať s (nepovinné)
+                        </label>
+                        <input
+                          type="text"
+                          name="roomWith2"
+                          value={formData.roomWith2}
+                          onChange={handleInputChange}
+                          placeholder="Meno kamaráta/kamarátky"
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        />
+                      </div>
+
+                      {/* Veľkosť trička */}
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Vyberte veľkosť trička Bombovo *
+                        </label>
+                        <select
+                          name="tshirtSize2"
+                          value={formData.tshirtSize2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        >
+                          <option value="">Zvoľte veľkosť</option>
+                          <option value="122">122 (7-8 rokov)</option>
+                          <option value="136">136 (9-11 rokov)</option>
+                          <option value="146">146 (12-14 rokov)</option>
+                          <option value="S">S</option>
+                          <option value="M">M</option>
+                          <option value="L">L</option>
+                          <option value="XL">XL</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+              </div>
+
               {/* Zľavový kupón */}
               <div className="mb-8">
                 <label className="block text-bombovo-dark font-semibold mb-2">
@@ -552,20 +707,7 @@ export default function RegistrationPage() {
                       className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
                     />
                     <span className="text-bombovo-dark">
-                      Zaplatím zálohu a tábor zaplatím neskôr
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="dve-casti"
-                      checked={formData.paymentMethod === "dve-casti"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
-                    />
-                    <span className="text-bombovo-dark">
-                      Zaplatím tábor na dve časti
+                      Zaplatím zálohu 50 eur a zostatok doplatím najneskôr 2 týždne pred nástupom
                     </span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
@@ -578,7 +720,7 @@ export default function RegistrationPage() {
                       className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
                     />
                     <span className="text-bombovo-dark">
-                      Zaplatím tábor naraz
+                      Zaplatím celú sumu tábora
                     </span>
                   </label>
                 </div>

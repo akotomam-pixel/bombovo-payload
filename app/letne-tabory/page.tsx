@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import WaveDivider from '@/components/WaveDivider'
 import CampFilter from '@/components/CampFilter'
 import CampCard from '@/components/CampCard'
 import { camps } from '@/lib/campsData'
@@ -62,9 +63,59 @@ function CampsContent() {
       <TopBar />
       <Header />
 
-      <main className="flex-grow">
+      {/* Hero Section - Desktop only (lg+) */}
+      <section className="hidden lg:block bg-bombovo-gray pt-10 pb-0">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-end">
+
+            {/* Left spacer — ~20% empty grey */}
+            <div className="w-[20%] flex-shrink-0" />
+
+            {/* Center — text, sits above camp cards */}
+            <div className="flex flex-col items-center justify-center pb-8" style={{ width: '40%', marginLeft: '50px' }}>
+              <h1
+                className="font-amatic text-bombovo-dark leading-tight"
+                style={{ fontSize: '56px' }}
+              >
+                Tábory Bombovo
+              </h1>
+              <span
+                className="font-amatic text-bombovo-red leading-none"
+                style={{ fontSize: '96px', lineHeight: '1' }}
+              >
+                2026
+              </span>
+            </div>
+
+            {/* Right — girl photo blends into grey, no border/shadow/corners */}
+            <div className="flex-1 flex items-end justify-end">
+              <img
+                src="/images/Girl.png"
+                alt="Šťastné dieťa na tábore Bombovo"
+                style={{
+                  width: '380px',
+                  height: 'auto',
+                  display: 'block',
+                  borderRadius: 0,
+                  boxShadow: 'none',
+                  border: 'none',
+                  mixBlendMode: 'multiply',
+                }}
+              />
+            </div>
+
+          </div>
+        </div>
+        {/* Blue wave sits INSIDE grey section — exactly at the grey→white break */}
+        <div className="hidden lg:block">
+          <WaveDivider color="blue" variant={2} />
+        </div>
+      </section>
+
+      <main className="flex-grow bg-white">
         {/* Main Content - Filter + Camps */}
         <section className="py-12">
+          <div className="max-w-7xl mx-auto">
           <div className="flex gap-0">
             {/* Left Side - Filter Panel (20%) */}
             <div className="hidden lg:block w-full lg:w-[20%] flex-shrink-0 pl-6">
@@ -135,6 +186,7 @@ function CampsContent() {
                 </div>
               )}
             </div>
+          </div>
           </div>
         </section>
       </main>
