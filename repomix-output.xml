@@ -277,6 +277,7 @@ scripts/
   migrate-svp.ts
 .eslintrc.json
 .gitignore
+.npmrc
 LETNE-TABORY-SUMMARY.md
 MOBILE-CORRECTIONS-SUMMARY.md
 MOBILE-NAVIGATION-CHANGES.md
@@ -10313,929 +10314,6 @@ export const Users: CollectionConfig = {
 }
 </file>
 
-<file path="lib/payload.ts">
-/**
- * Cached Payload instance.
- *
- * `getPayload({ config })` is expensive — it opens a DB connection, loads all
- * collections/globals, and validates the schema.  Calling it once per request
- * in dev mode causes the ~1–2 s lag you feel on every page navigation.
- *
- * This module caches the instance in the Node.js module scope so the
- * initialisation only happens once per server process (or once per hot-reload
- * in dev).  Every server component should import `getPayloadClient` from here
- * instead of calling `getPayload({ config })` directly.
- */
-
-import { getPayload } from 'payload'
-import config from '@payload-config'
-import type { Payload } from 'payload'
-
-let cached: Payload | null = null
-
-export async function getPayloadClient(): Promise<Payload> {
-  if (cached) return cached
-  cached = await getPayload({ config })
-  return cached
-}
-</file>
-
-<file path="scripts/migrate-camps.ts">
-/**
- * Migration script — creates all 17 Bombovo camps via Payload REST API.
- *
- * Prerequisites:
- *   1. Dev server must be running: npm run dev
- *   2. .env.local must contain:
- *        PAYLOAD_ADMIN_EMAIL=...
- *        PAYLOAD_ADMIN_PASSWORD=...
- *
- * Run from the project root:
- *   npx tsx scripts/migrate-camps.ts
- *
- * Idempotent — any camp whose slug already exists in Payload is skipped.
- */
-
-import { config as loadDotenv } from 'dotenv'
-import path from 'path'
-
-// Pure data imports — no Payload/Next.js involved
-import { festAnimatorFestData }               from '../data/camps/fest-animator-fest'
-import { olympKempData }                       from '../data/camps/olymp-kemp'
-import { tanecnaPlanetaData }                  from '../data/camps/tanecna-planeta'
-import { babinecData }                         from '../data/camps/babinec'
-import { tajomstvoBasketbalovehoPoharaData }   from '../data/camps/tajomstvo-basketbaloveho-pohara'
-import { trhlinaData }                         from '../data/camps/trhlina'
-import { readyPlayerOneData }                  from '../data/camps/ready-player-one'
-import { vDracejNoreData }                     from '../data/camps/v-dracej-nore'
-import { anglickeLetoData }                    from '../data/camps/anglicke-leto'
-import { neverfortData }                       from '../data/camps/neverfort'
-import { chlapinecData }                       from '../data/camps/chlapinec'
-import { artlantidaData }                      from '../data/camps/artlantida'
-import { stastnaPlutvaData }                   from '../data/camps/stastna-plutva'
-import { kazdyDenNovyZazitokData }             from '../data/camps/kazdy-den-novy-zazitok'
-import { zBoduNulaDoBoduStoData }              from '../data/camps/z-bodu-nula-do-bodu-sto'
-import { woodkempData }                        from '../data/camps/woodkemp'
-import { expectoData }                         from '../data/camps/expecto'
-import type { CampDetailData }                 from '../data/camps/types'
-
-loadDotenv({ path: path.resolve(process.cwd(), '.env.local') })
-loadDotenv({ path: path.resolve(process.cwd(), '.env') })
-
-const BASE_URL       = process.env.PAYLOAD_URL            ?? 'http://localhost:3000'
-const ADMIN_EMAIL    = process.env.PAYLOAD_ADMIN_EMAIL    ?? ''
-const ADMIN_PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD ?? ''
-
-// ── Camp roster — order here = display order (1-indexed) ────────────────────
-
-interface CampEntry {
-  slug:      string
-  order:     number
-  campTypes: string[]
-  data:      CampDetailData
-}
-
-const CAMPS: CampEntry[] = [
-  { order: 1,  slug: 'fest-animator-fest',              campTypes: ['Tínedžerský', 'Akčný'],        data: festAnimatorFestData },
-  { order: 2,  slug: 'olymp-kemp',                      campTypes: ['Náučný', 'Dobrodružný'],        data: olympKempData },
-  { order: 3,  slug: 'tanecna-planeta',                  campTypes: ['Športový', 'Umelecký'],         data: tanecnaPlanetaData },
-  { order: 4,  slug: 'babinec',                          campTypes: ['Unikátny', 'Oddychový'],        data: babinecData },
-  { order: 5,  slug: 'tajomstvo-basketbaloveho-pohara',  campTypes: ['Športový', 'Akčný'],            data: tajomstvoBasketbalovehoPoharaData },
-  { order: 6,  slug: 'trhlina',                          campTypes: ['Akčný', 'Dobrodružný'],         data: trhlinaData },
-  { order: 7,  slug: 'ready-player-one',                 campTypes: ['Akčný', 'Unikátny'],            data: readyPlayerOneData },
-  { order: 8,  slug: 'v-dracej-nore',                    campTypes: ['Fantasy', 'Dobrodružný'],       data: vDracejNoreData },
-  { order: 9,  slug: 'anglicke-leto',                    campTypes: ['Oddychový', 'Náučný'],          data: anglickeLetoData },
-  { order: 10, slug: 'neverfort',                        campTypes: ['Akčný', 'Fantasy'],             data: neverfortData },
-  { order: 11, slug: 'chlapinec',                        campTypes: ['Akčný', 'Náučný'],              data: chlapinecData },
-  { order: 12, slug: 'artlantida',                       campTypes: ['Umelecký', 'Oddychový'],        data: artlantidaData },
-  { order: 13, slug: 'stastna-plutva',                   campTypes: ['Oddychový'],                    data: stastnaPlutvaData },
-  { order: 14, slug: 'kazdy-den-novy-zazitok',           campTypes: ['Dobrodružný', 'Umelecký'],      data: kazdyDenNovyZazitokData },
-  { order: 15, slug: 'z-bodu-nula-do-bodu-sto',         campTypes: ['Oddychový', 'Unikátny'],        data: zBoduNulaDoBoduStoData },
-  { order: 16, slug: 'woodkemp',                         campTypes: ['Akčný', 'Náučný'],              data: woodkempData },
-  { order: 17, slug: 'expecto',                          campTypes: ['Dobrodružný', 'Fantasy'],       data: expectoData },
-]
-
-// ── REST helpers ─────────────────────────────────────────────────────────────
-
-async function login(): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/users/login`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
-  })
-  if (!res.ok) throw new Error(`Login failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { token?: string }
-  if (!data.token) throw new Error('Login response did not include a token.')
-  return data.token
-}
-
-async function slugExists(token: string, slug: string): Promise<boolean> {
-  const url = `${BASE_URL}/api/camps?where[slug][equals]=${encodeURIComponent(slug)}&limit=1`
-  const res = await fetch(url, { headers: { Authorization: `JWT ${token}` } })
-  if (!res.ok) throw new Error(`Existence check failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { totalDocs?: number }
-  return (data.totalDocs ?? 0) > 0
-}
-
-async function createCamp(token: string, body: Record<string, unknown>): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/camps`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
-    body:    JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`Create failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { doc?: { id?: string } }
-  return data.doc?.id ?? '(unknown)'
-}
-
-// ── Document builder ─────────────────────────────────────────────────────────
-
-function buildDoc(entry: CampEntry): Record<string, unknown> {
-  const d = entry.data
-  return {
-    // Basic
-    name:      d.name,
-    slug:      entry.slug,
-    order:     entry.order,
-    campTypes: entry.campTypes,
-
-    // Hero
-    headline:          d.headline,
-    headlineHighlight: d.headlineHighlight,
-    bulletPoints:      d.bulletPoints.map((text) => ({ text })),
-    location:          d.location,
-    age:               d.age,
-    price:             d.price,
-
-    // Section 2
-    section2_headline:    d.section2.headline,
-    section2_description: d.section2.description.map((p) => ({ paragraph: p })),
-    ratings: {
-      kreativita:       d.section2.ratings.kreativita,
-      mystika:          d.section2.ratings.mystika,
-      sebarozvoj:       d.section2.ratings.sebarozvoj,
-      pohyb:            d.section2.ratings.pohyb,
-      kritickeMyslenie: d.section2.ratings.kritickeMyslenie,
-    },
-
-    // Section 3
-    section3_headline: d.section3.headline,
-    section3_text:     d.section3.text.map((p) => ({ paragraph: p })),
-    reviews:           d.section3.reviews.map((r) => ({ text: r.text, author: r.author })),
-
-    // Section 4 — accordion
-    vTomtoTaboreZazites: d.section4.details.vTomtoTaboreZazites.map((i) => ({ item: i })),
-    vCene:               d.section4.details.vCene.map((i) => ({ item: i })),
-    lokalita:            d.section4.details.lokalita,
-    doprava:             d.section4.details.doprava,
-    ubytovanie:          d.section4.details.ubytovanie.map((i) => ({ item: i })),
-    zaPriplatok:         d.section4.details.zaPriplatok.map((i) => ({ item: i })),
-
-    // Section 4b — stredisko
-    hasStredisko:         d.section4.hasStredisko ?? false,
-    strediskoName:        d.section4.strediskoName,
-    strediskoDescription: d.section4.strediskoDescription,
-    mapLat:               d.section4.mapCoordinates?.lat,
-    mapLng:               d.section4.mapCoordinates?.lng,
-
-    // Section 5 — dates
-    dates: d.section5.dates.map((date) => ({
-      start:           date.start,
-      end:             date.end,
-      days:            date.days,
-      originalPrice:   date.originalPrice,
-      discountedPrice: date.discountedPrice,
-      registrationId:  String(date.registrationId ?? ''),
-    })),
-  }
-}
-
-// ── Main ─────────────────────────────────────────────────────────────────────
-
-async function main() {
-  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-    console.error(
-      '❌  Missing credentials.\n' +
-      '    Set PAYLOAD_ADMIN_EMAIL and PAYLOAD_ADMIN_PASSWORD in .env.local',
-    )
-    process.exit(1)
-  }
-
-  console.log(`Connecting to Payload at ${BASE_URL}…`)
-  const token = await login()
-  console.log('✅  Authenticated.\n')
-
-  let created = 0
-  let skipped = 0
-
-  for (const entry of CAMPS) {
-    process.stdout.write(`[${entry.order}/17] ${entry.data.name} (${entry.slug})… `)
-
-    if (await slugExists(token, entry.slug)) {
-      console.log('⚠️  already exists — skipped.')
-      skipped++
-      continue
-    }
-
-    const id = await createCamp(token, buildDoc(entry))
-    console.log(`✅  created (ID: ${id})`)
-    created++
-  }
-
-  console.log(`\nDone. Created: ${created}  Skipped: ${skipped}  Total: ${CAMPS.length}`)
-}
-
-main().catch((err: unknown) => {
-  console.error('\n❌  Migration failed:', err instanceof Error ? err.message : err)
-  process.exit(1)
-})
-</file>
-
-<file path="scripts/migrate-svp.ts">
-/**
- * Migration script — creates all 7 Školy v Prírode strediská and fills
- * the SkolyVPrirode Global via Payload REST API.
- *
- * Prerequisites:
- *   1. Dev server must be running: npm run dev
- *   2. .env.local must contain:
- *        PAYLOAD_ADMIN_EMAIL=...
- *        PAYLOAD_ADMIN_PASSWORD=...
- *
- * Run from the project root:
- *   npx tsx scripts/migrate-svp.ts
- *
- * Idempotent — any stredisko whose slug already exists in Payload is skipped.
- * The Global is always overwritten (PATCH is idempotent by design).
- *
- * NOTE: Payload REST uses POST /api/globals/:slug to update globals.
- */
-
-import { config as loadDotenv } from 'dotenv'
-import path from 'path'
-
-// Pure data imports — no Payload/Next.js involved
-import { stredEuropyKrahule }   from '../data/strediska/stred-europy-krahule'
-import { penzionRohacan }       from '../data/strediska/penzion-rohacan'
-import { penzionSabina }        from '../data/strediska/penzion-sabina'
-import { hotelZuna }            from '../data/strediska/hotel-zuna'
-import { hotelMartinskeHole }   from '../data/strediska/hotel-martinske-hole'
-import { horskyHotelMinciar }   from '../data/strediska/horsky-hotel-minciar'
-import { horskyHotelLomy }      from '../data/strediska/horsky-hotel-lomy'
-import type { StrediskoData }   from '../data/strediska/types'
-
-loadDotenv({ path: path.resolve(process.cwd(), '.env.local') })
-loadDotenv({ path: path.resolve(process.cwd(), '.env') })
-
-const BASE_URL       = process.env.PAYLOAD_URL            ?? 'http://localhost:3000'
-const ADMIN_EMAIL    = process.env.PAYLOAD_ADMIN_EMAIL    ?? ''
-const ADMIN_PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD ?? ''
-
-// ── Stredisko roster ─────────────────────────────────────────────────────────
-
-const STREDISKA: StrediskoData[] = [
-  stredEuropyKrahule,
-  penzionRohacan,
-  penzionSabina,
-  hotelZuna,
-  hotelMartinskeHole,
-  horskyHotelMinciar,
-  horskyHotelLomy,
-]
-
-// ── Shared accordion content (same for all strediská) ────────────────────────
-
-const DEFAULT_ZLAVA = [
-  '30 € / dieťa zľava zo základnej ceny pobytu – platí len pre rezervácie jarných ŠvP s podpisom zmluvy do termínu 31.10.2025 – táto zľava nie je kombinovateľná s inými zľavami',
-  '20 € / dieťa zľava z ceny animačného programu pre školy, ktoré boli s našou CK v škole v prírode aspoň raz od r. 2020 – táto zľava nie je kombinovateľná s inými zľavami, platí len v prípade ak ste si neuplatnili zľavu do 31.10.2025',
-]
-
-const DEFAULT_DOPLNKOVE_SLUZBY = [
-  'Zdravotník z CK Bombovo aj s lekárničkou 550 €/pobyt (klasický 5-dňový pobyt)',
-  'pobytový deň navyše 40 €/dieťa',
-  'pobyt dospelej osoby navyše – 150€/pobyt',
-  'pobyt pedagogického dieťaťa s animačným programom – 150 €/pobyt',
-  'komplexné cestovné poistenie ECP (cena 4,50 € / dieťa / pobyt)',
-  'obed navyše 8€ / osoba',
-]
-
-const DEFAULT_V_ZAKLADNEJ_CENE = [
-  '4x ubytovanie, 4x plná penzia, strava 5x denne, pitný režim',
-  'Cena pevného lôžka je rovnaká ako cena prístelky',
-  'Príplatok k základnej cene školy v prírode pre 2.stupeň ZŠ je 8 € / pobyt',
-]
-
-const DEFAULT_V_CENE_ZAHRNUTE = [
-  'Na 10 detí 1 dospelý pobyt zdarma',
-  'Pobytový poplatok',
-]
-
-const DEFAULT_V_CENE_ANIMACNEHO_PROGRAMU = [
-  '55 € / dieťa – animácia 7 hod denne okrem dňa odchodu (28 hodín spolu/pobyt)',
-  'celodenná animácia 65 € / dieťa',
-  'ZŠ na 15 detí 1 animátor',
-  'MŠ na 10 detí 1 animátor',
-  'animačný a športový materiál',
-  'zábavné hry a kvízy, kamoš tanec',
-  'darčeky pre každého účastníka ŠvP',
-]
-
-const DEFAULT_BOMBOVY_BALICEK = [
-  'cena 30 €/dieťa',
-  'možný len v prípade školy v prírode s animačným programom',
-  'odmena 100 € na každých 10 platiacich detí',
-  'autobusová doprava Kremnica + vstup do Štôlne Andrej',
-  'výlet sa vždy organizuje v stredu, ak nie je dohodnuté inak',
-]
-
-// ── REST helpers ─────────────────────────────────────────────────────────────
-
-async function login(): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/users/login`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
-  })
-  if (!res.ok) throw new Error(`Login failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { token?: string }
-  if (!data.token) throw new Error('Login response did not include a token.')
-  return data.token
-}
-
-async function slugExists(token: string, slug: string): Promise<boolean> {
-  const url = `${BASE_URL}/api/strediska?where[slug][equals]=${encodeURIComponent(slug)}&limit=1`
-  const res = await fetch(url, { headers: { Authorization: `JWT ${token}` } })
-  if (!res.ok) throw new Error(`Existence check failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { totalDocs?: number }
-  return (data.totalDocs ?? 0) > 0
-}
-
-async function createStredisko(token: string, body: Record<string, unknown>): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/strediska`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
-    body:    JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`Create stredisko failed (${res.status}): ${await res.text()}`)
-  const data = await res.json() as { doc?: { id?: string } }
-  return data.doc?.id ?? '(unknown)'
-}
-
-async function updateGlobal(token: string, body: Record<string, unknown>): Promise<void> {
-  // Payload REST uses POST (not PATCH) to update a global
-  const res = await fetch(`${BASE_URL}/api/globals/skoly-v-prirode`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
-    body:    JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`Update global failed (${res.status}): ${await res.text()}`)
-}
-
-// ── Document builder ─────────────────────────────────────────────────────────
-
-const items = (arr: string[]) => arr.map((item) => ({ item }))
-
-function buildStrediskoDoc(s: StrediskoData): Record<string, unknown> {
-  return {
-    name:  s.name,
-    slug:  s.id,
-    price: s.basePrice,
-
-    bulletPoints: s.iconBullets.map((text) => ({ text })),
-
-    // Section 2 in Payload ↔ section3 in hardcoded data (naming quirk)
-    section2Headline: s.section3.headline,
-    section2Body:     s.section3.bodyText,
-
-    // Accordion groups from hardcoded data
-    ubytovanie:         items(s.detaily.ubytovanie),
-    vybavenieStrediska: items(s.detaily.vybavenieStrediska),
-    zaujimavostiVOkoli: items(s.detaily.zaujimavostiVOkoli),
-
-    // Shared accordion defaults
-    zlava:                   items(DEFAULT_ZLAVA),
-    doplnkoveSluzby:         items(DEFAULT_DOPLNKOVE_SLUZBY),
-    vZakladnejCene:          items(DEFAULT_V_ZAKLADNEJ_CENE),
-    vCeneZahrnute:           items(DEFAULT_V_CENE_ZAHRNUTE),
-    vCeneAnimacnehoProgramu: items(DEFAULT_V_CENE_ANIMACNEHO_PROGRAMU),
-    bombovyBalicek:          items(DEFAULT_BOMBOVY_BALICEK),
-
-    // Dates
-    dates: s.dates.map((d) => ({
-      startDate: d.startDate,
-      endDate:   d.endDate,
-      days:      d.days,
-      price:     d.price,
-      available: d.available,
-    })),
-  }
-}
-
-// ── Global content ────────────────────────────────────────────────────────────
-
-function buildGlobalDoc(): Record<string, unknown> {
-  return {
-    headline:          'Školy v prírode',
-    headlineHighlight: 'Ktoré učiteľky milujú',
-    bodyText:
-      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť deťom funguje všetko plynule.',
-
-    reviews: [
-      {
-        content: 'Spokojnosť so všetkým, výborný program, ktorý bavil deti aj nás učiteľky, dobrá spolupráca, ochota, ústretovosť.',
-        author:  'ZŠ Odborárska, Bratislava',
-      },
-      {
-        content: 'Práca animátorov bola na vysokej úrovni, vyzdvihujeme empatiu voči našim deťom, nadmieru boli nápomocní pri každej aktivite aj bežných činnostiach.',
-        author:  'MŠ SNP, Ivanka pri Dunaji',
-      },
-      {
-        content: 'ŠvP sme si užili, animátori boli ochotní pomáhať nám aj mimo svojich animačných aktivít, čo nám uľahčovalo našu prácu. Hry pre deti boli neobvyklé, originálne a zábavné no super.',
-        author:  'ZŠ Topoľová, Nitra',
-      },
-    ],
-
-    section3Headline:
-      'Overené strediská, ktoré spĺňajú všetky hygienické normy',
-    section3Body:
-      'V CK Bombovo spolupracujeme iba so strediskami, ktoré spĺňajú stanovené požiadavky na komfort, hygienu, vybavenie a sú dlhodobo overené školami a učiteľmi z celého Slovenska.\n\nNaši animátori komunikujú s vedením strediska a s kuchyňou a ak niečo nefunguje rieši to náš tím a nie učitelia. U nás je ubytovanie a strava istota, nie lotéria!',
-
-    section3Block2Headline:
-      'Profesionálny a zaškolený animačný tím',
-    section3Block2Body:
-      'V Bombove nenájdete žiadnych amatérov animátorov. Našich animátorov každoročne preškolujeme aby sme zariadili že váš turnus bude mať naozaj hladký priebeh. Program má pevný rytmus a náš tím presne vie ako reagovať v každej situácii.\n\nNaše školy v prírode nie sú o neustálom dozore, ale o tom, že učiteľ má svoj profesionálny tím, na ktorý sa môže vždy spoľahnúť.',
-
-    section3Block3Headline:
-      'Unikátny program, ktorý nikde inde nenájdete',
-    section3Block3Body:
-      'Najväčšou úľavou pre učiteľa je keď zistí, že na škole v prírode nemusí nič zachraňovať. Naše aktivity držia deti od prvého dňa pokope a každá časť dňa na seba prirodzene nadväzuje.\n\nNejde teda o sled náhodných hier ale o mystický príbeh, pomocou ktorého sa deti učia spolupracovať, dôverovať si a preberať zodpovednosť bez toho aby sa cítili byť pod tlakom.',
-
-    strediskaHeadline: 'Naše strediská na rok 2026',
-  }
-}
-
-// ── Main ─────────────────────────────────────────────────────────────────────
-
-async function main() {
-  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-    console.error(
-      '❌  Missing credentials.\n' +
-      '    Set PAYLOAD_ADMIN_EMAIL and PAYLOAD_ADMIN_PASSWORD in .env.local',
-    )
-    process.exit(1)
-  }
-
-  console.log(`Connecting to Payload at ${BASE_URL}…`)
-  const token = await login()
-  console.log('✅  Authenticated.\n')
-
-  // ── 1. Migrate Strediska ─────────────────────────────────────────────────
-  console.log('── Strediská ────────────────────────────────────────')
-  let created = 0
-  let skipped = 0
-  const total = STREDISKA.length
-
-  for (let i = 0; i < STREDISKA.length; i++) {
-    const s = STREDISKA[i]
-    process.stdout.write(`[${i + 1}/${total}] ${s.name} (${s.id})… `)
-
-    if (await slugExists(token, s.id)) {
-      console.log('⚠️  already exists — skipped.')
-      skipped++
-      continue
-    }
-
-    const id = await createStredisko(token, buildStrediskoDoc(s))
-    console.log(`✅  created (ID: ${id})`)
-    created++
-  }
-
-  console.log(`\nStrediská done. Created: ${created}  Skipped: ${skipped}  Total: ${total}`)
-
-  // ── 2. Update Global ──────────────────────────────────────────────────────
-  console.log('\n── SkolyVPrirode Global ─────────────────────────────')
-  process.stdout.write('Updating global skoly-v-prirode… ')
-  await updateGlobal(token, buildGlobalDoc())
-  console.log('✅  done.')
-
-  console.log('\nMigration complete.')
-}
-
-main().catch((err: unknown) => {
-  console.error('\n❌  Migration failed:', err instanceof Error ? err.message : err)
-  process.exit(1)
-})
-</file>
-
-<file path="payload-types.ts">
-/* tslint:disable */
-/* eslint-disable */
-/**
- * This file was automatically generated by Payload.
- * DO NOT MODIFY IT BY HAND. Instead, modify your source Payload config,
- * and re-run `payload generate:types` to regenerate this file.
- */
-
-/**
- * Supported timezones in IANA format.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "supportedTimezones".
- */
-export type SupportedTimezones =
-  | 'Pacific/Midway'
-  | 'Pacific/Niue'
-  | 'Pacific/Honolulu'
-  | 'Pacific/Rarotonga'
-  | 'America/Anchorage'
-  | 'Pacific/Gambier'
-  | 'America/Los_Angeles'
-  | 'America/Tijuana'
-  | 'America/Denver'
-  | 'America/Phoenix'
-  | 'America/Chicago'
-  | 'America/Guatemala'
-  | 'America/New_York'
-  | 'America/Bogota'
-  | 'America/Caracas'
-  | 'America/Santiago'
-  | 'America/Buenos_Aires'
-  | 'America/Sao_Paulo'
-  | 'Atlantic/South_Georgia'
-  | 'Atlantic/Azores'
-  | 'Atlantic/Cape_Verde'
-  | 'Europe/London'
-  | 'Europe/Berlin'
-  | 'Africa/Lagos'
-  | 'Europe/Athens'
-  | 'Africa/Cairo'
-  | 'Europe/Moscow'
-  | 'Asia/Riyadh'
-  | 'Asia/Dubai'
-  | 'Asia/Baku'
-  | 'Asia/Karachi'
-  | 'Asia/Tashkent'
-  | 'Asia/Calcutta'
-  | 'Asia/Dhaka'
-  | 'Asia/Almaty'
-  | 'Asia/Jakarta'
-  | 'Asia/Bangkok'
-  | 'Asia/Shanghai'
-  | 'Asia/Singapore'
-  | 'Asia/Tokyo'
-  | 'Asia/Seoul'
-  | 'Australia/Brisbane'
-  | 'Australia/Sydney'
-  | 'Pacific/Guam'
-  | 'Pacific/Noumea'
-  | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
-
-export interface Config {
-  auth: {
-    users: UserAuthOperations;
-  };
-  blocks: {};
-  collections: {
-    users: User;
-    media: Media;
-    'payload-kv': PayloadKv;
-    'payload-locked-documents': PayloadLockedDocument;
-    'payload-preferences': PayloadPreference;
-    'payload-migrations': PayloadMigration;
-  };
-  collectionsJoins: {};
-  collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
-  };
-  db: {
-    defaultIDType: string;
-  };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
-  user: User;
-  jobs: {
-    tasks: unknown;
-    workflows: unknown;
-  };
-}
-export interface UserAuthOperations {
-  forgotPassword: {
-    email: string;
-    password: string;
-  };
-  login: {
-    email: string;
-    password: string;
-  };
-  registerFirstUser: {
-    email: string;
-    password: string;
-  };
-  unlock: {
-    email: string;
-    password: string;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv".
- */
-export interface PayloadKv {
-  id: string;
-  key: string;
-  data:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-locked-documents".
- */
-export interface PayloadLockedDocument {
-  id: string;
-  document?:
-    | ({
-        relationTo: 'users';
-        value: string | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null);
-  globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-preferences".
- */
-export interface PayloadPreference {
-  id: string;
-  user: {
-    relationTo: 'users';
-    value: string | User;
-  };
-  key?: string | null;
-  value?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-migrations".
- */
-export interface PayloadMigration {
-  id: string;
-  name?: string | null;
-  batch?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
-export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv_select".
- */
-export interface PayloadKvSelect<T extends boolean = true> {
-  key?: T;
-  data?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-locked-documents_select".
- */
-export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
-  document?: T;
-  globalSlug?: T;
-  user?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-preferences_select".
- */
-export interface PayloadPreferencesSelect<T extends boolean = true> {
-  user?: T;
-  key?: T;
-  value?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-migrations_select".
- */
-export interface PayloadMigrationsSelect<T extends boolean = true> {
-  name?: T;
-  batch?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "auth".
- */
-export interface Auth {
-  [k: string]: unknown;
-}
-
-
-declare module 'payload' {
-  export interface GeneratedTypes extends Config {}
-}
-</file>
-
-<file path="payload.config.ts">
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
-
-import { Users } from './collections/Users'
-import { Media } from './collections/Media'
-import { Camps } from './collections/Camps'
-import { Strediska } from './collections/Strediska'
-import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
-
-export default buildConfig({
-  admin: {
-    user: Users.slug,
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-  },
-  collections: [Users, Media, Camps, Strediska],
-  globals: [SkolyVPrirode],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-    },
-  }),
-  plugins: [
-    uploadthingStorage({
-      collections: {
-        media: true,
-      },
-      options: {
-        token: process.env.UPLOADTHING_TOKEN || '',
-        acl: 'public-read',
-      },
-    }),
-  ],
-})
-</file>
-
-<file path="app/layout.tsx">
-import type { Metadata } from 'next'
-import { The_Girl_Next_Door } from 'next/font/google'
-import React from 'react'
-
-const theGirlNextDoor = The_Girl_Next_Door({
-  weight: ['400'],
-  subsets: ['latin'],
-  variable: '--font-amatic',
-  display: 'swap',
-})
-
-export const metadata: Metadata = {
-  title: 'Bombovo - Letné tábory pre deti',
-  description: 'Najlepšie letné tábory a školy v prírode pre deti vo veku 6-17 rokov na Slovensku',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="sk" className={theGirlNextDoor.variable}>
-      <body>{children}</body>
-    </html>
-  )
-}
-</file>
-
 <file path="components/CampFilter.tsx">
 'use client'
 
@@ -13115,244 +12193,30 @@ export interface StrediskoData {
 }
 </file>
 
-<file path="lib/campsData.ts">
-import { olympKempData } from '@/data/camps/olymp-kemp'
-import { festAnimatorFestData } from '@/data/camps/fest-animator-fest'
-import { tanecnaPlanetaData } from '@/data/camps/tanecna-planeta'
-import { babinecData } from '@/data/camps/babinec'
-import { tajomstvoBasketbalovehoPoharaData } from '@/data/camps/tajomstvo-basketbaloveho-pohara'
-import { trhlinaData } from '@/data/camps/trhlina'
-import { readyPlayerOneData } from '@/data/camps/ready-player-one'
-import { vDracejNoreData } from '@/data/camps/v-dracej-nore'
-import { anglickeLetoData } from '@/data/camps/anglicke-leto'
-import { neverfortData } from '@/data/camps/neverfort'
-import { chlapinecData } from '@/data/camps/chlapinec'
-import { artlantidaData } from '@/data/camps/artlantida'
-import { stastnaPlutvaData } from '@/data/camps/stastna-plutva'
-import { kazdyDenNovyZazitokData } from '@/data/camps/kazdy-den-novy-zazitok'
-import { zBoduNulaDoBoduStoData } from '@/data/camps/z-bodu-nula-do-bodu-sto'
-import { woodkempData } from '@/data/camps/woodkemp'
-import { expectoData } from '@/data/camps/expecto'
+<file path="lib/payload.ts">
+/**
+ * Cached Payload instance.
+ *
+ * `getPayload({ config })` is expensive — it opens a DB connection, loads all
+ * collections/globals, and validates the schema.  Calling it once per request
+ * in dev mode causes the ~1–2 s lag you feel on every page navigation.
+ *
+ * This module caches the instance in the Node.js module scope so the
+ * initialisation only happens once per server process (or once per hot-reload
+ * in dev).  Every server component should import `getPayloadClient` from here
+ * instead of calling `getPayload({ config })` directly.
+ */
 
-// Handles both hyphen and em-dash: "8-14 rokov" or "10 – 16 rokov"
-function parseAge(ageStr: string): { short: string; range: [number, number] } {
-  const match = ageStr.match(/(\d+)\s*[-–]\s*(\d+)/)
-  if (match) {
-    return {
-      short: `${match[1]}-${match[2]} r.`,
-      range: [parseInt(match[1]), parseInt(match[2])],
-    }
-  }
-  return { short: ageStr, range: [0, 99] }
-}
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import type { Payload } from 'payload'
 
-export interface Camp {
-  id: string
-  name: string
-  age: string
-  ageRange: [number, number]
-  types: string[]
-  displayTypes: string[]
-  price: string
-  dates: string[]
-  description: string
-  image: string
-}
+let cached: Payload | null = null
 
-export const camps: Camp[] = [
-  {
-    id: 'olymp-kemp',
-    name: 'Olymp Kemp',
-    ...parseAgeFields(olympKempData.age),
-    types: ['Náučný', 'Dobrodružný'],
-    displayTypes: ['Náučný', 'Dobrodružný'],
-    price: olympKempData.price,
-    dates: ['1-jul', '2-jul', '1-aug', '2-aug'],
-    description: olympKempData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/olympcamp.JPG',
-  },
-  {
-    id: 'fest-animator-fest',
-    name: 'Fest Animator Fest',
-    ...parseAgeFields(festAnimatorFestData.age),
-    types: ['Tínedžerský', 'Akčný'],
-    displayTypes: ['Tínedžerský', 'Akčný'],
-    price: festAnimatorFestData.price,
-    dates: ['1-jul', '2-jul', '1-aug', '2-aug'],
-    description: festAnimatorFestData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/fest.JPG',
-  },
-  {
-    id: 'tanecna-planeta',
-    name: 'Tanečná Planéta',
-    ...parseAgeFields(tanecnaPlanetaData.age),
-    types: ['Tanečný', 'Umelecký'],
-    displayTypes: ['Športový', 'Umelecký'],
-    price: tanecnaPlanetaData.price,
-    dates: ['1-jul', '1-aug'],
-    description: tanecnaPlanetaData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/tanecnaplaneta.JPG',
-  },
-  {
-    id: 'babinec',
-    name: 'Babinec',
-    ...parseAgeFields(babinecData.age),
-    types: ['Unikátny', 'Oddychový', 'Umelecký'],
-    displayTypes: ['Unikátny', 'Oddychový'],
-    price: babinecData.price,
-    dates: ['1-jul', '2-jul'],
-    description: babinecData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/babinec.JPG',
-  },
-  {
-    id: 'tajomstvo-basketbaloveho-pohara',
-    name: 'Tajomstvo Basketbalového Pohára',
-    ...parseAgeFields(tajomstvoBasketbalovehoPoharaData.age),
-    types: ['Basketbal', 'Akčný'],
-    displayTypes: ['Športový', 'Akčný'],
-    price: tajomstvoBasketbalovehoPoharaData.price,
-    dates: ['1-aug'],
-    description: tajomstvoBasketbalovehoPoharaData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/tajomstvopohara.JPG',
-  },
-  {
-    id: 'trhlina',
-    name: 'Trhlina',
-    ...parseAgeFields(trhlinaData.age),
-    types: ['Akčný', 'Dobrodružný'],
-    displayTypes: ['Akčný', 'Dobrodružný'],
-    price: trhlinaData.price,
-    dates: ['1-aug'],
-    description: trhlinaData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/trhlina.JPG',
-  },
-  {
-    id: 'ready-player-one',
-    name: 'Ready Player One',
-    ...parseAgeFields(readyPlayerOneData.age),
-    types: ['Akčný', 'Unikátny', 'Športový'],
-    displayTypes: ['Akčný', 'Unikátny'],
-    price: readyPlayerOneData.price,
-    dates: ['2-jul', '2-aug'],
-    description: readyPlayerOneData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/readypleayer.JPG',
-  },
-  {
-    id: 'v-dracej-nore',
-    name: 'V Dracej Nore',
-    ...parseAgeFields(vDracejNoreData.age),
-    types: ['Fantasy', 'Dobrodružný'],
-    displayTypes: ['Fantasy', 'Dobrodružný'],
-    price: vDracejNoreData.price,
-    dates: ['1-aug'],
-    description: vDracejNoreData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/V-dracej-nore.JPG',
-  },
-  {
-    id: 'anglicke-leto',
-    name: 'Summer Advanture',
-    ...parseAgeFields(anglickeLetoData.age),
-    types: ['Oddychový', 'Náučný'],
-    displayTypes: ['Oddychový', 'Náučný'],
-    price: anglickeLetoData.price,
-    dates: ['1-jul'],
-    description: anglickeLetoData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/summeradvatnure.JPG',
-  },
-  {
-    id: 'neverfort',
-    name: 'Neverfort',
-    ...parseAgeFields(neverfortData.age),
-    types: ['Akčný', 'Fantasy'],
-    displayTypes: ['Akčný', 'Fantasy'],
-    price: neverfortData.price,
-    dates: ['1-aug'],
-    description: neverfortData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/neverfot.JPG',
-  },
-  {
-    id: 'chlapinec',
-    name: 'Chlapinec',
-    ...parseAgeFields(chlapinecData.age),
-    types: ['Akčný', 'Náučný'],
-    displayTypes: ['Akčný', 'Náučný'],
-    price: chlapinecData.price,
-    dates: ['1-jul', '2-jul'],
-    description: chlapinecData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/chlapinec.JPG',
-  },
-  {
-    id: 'artlantida',
-    name: 'Artlantída',
-    ...parseAgeFields(artlantidaData.age),
-    types: ['Umelecký', 'Oddychový'],
-    displayTypes: ['Umelecký', 'Oddychový'],
-    price: artlantidaData.price,
-    dates: ['1-jul', '2-jul'],
-    description: artlantidaData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/Art.JPG',
-  },
-  {
-    id: 'stastna-plutva',
-    name: 'Šťastná Plutva',
-    ...parseAgeFields(stastnaPlutvaData.age),
-    types: ['Oddychový'],
-    displayTypes: ['Oddychový'],
-    price: stastnaPlutvaData.price,
-    dates: ['1-aug'],
-    description: stastnaPlutvaData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/plutva.JPG',
-  },
-  {
-    id: 'kazdy-den-novy-zazitok',
-    name: 'Každý Deň Nový Zážitok',
-    ...parseAgeFields(kazdyDenNovyZazitokData.age),
-    types: ['Dobrodružný', 'Umelecký'],
-    displayTypes: ['Dobrodružný', 'Umelecký'],
-    price: kazdyDenNovyZazitokData.price,
-    dates: ['2-jul', '1-aug'],
-    description: kazdyDenNovyZazitokData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/kazdydennovyzazitok.JPG',
-  },
-  {
-    id: 'z-bodu-nula-do-bodu-sto',
-    name: 'Z Bombova Do Bombova',
-    ...parseAgeFields(zBoduNulaDoBoduStoData.age),
-    types: ['Oddychový', 'Unikátny'],
-    displayTypes: ['Oddychový', 'Unikátny'],
-    price: zBoduNulaDoBoduStoData.price,
-    dates: ['1-jul', '1-aug'],
-    description: zBoduNulaDoBoduStoData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/zbombova-do-bombova.JPG',
-  },
-  {
-    id: 'woodkemp',
-    name: 'WoodKemp',
-    ...parseAgeFields(woodkempData.age),
-    types: ['Akčný', 'Náučný'],
-    displayTypes: ['Akčný', 'Náučný'],
-    price: woodkempData.price,
-    dates: ['2-jul', '1-aug'],
-    description: woodkempData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/woodcamp.JPG',
-  },
-  {
-    id: 'expecto',
-    name: 'Expecto',
-    ...parseAgeFields(expectoData.age),
-    types: ['Dobrodružný', 'Fantasy'],
-    displayTypes: ['Dobrodružný', 'Fantasy'],
-    price: expectoData.price,
-    dates: ['1-jul'],
-    description: expectoData.bulletPoints[0],
-    image: '/images/Letne%20Tabory/expcto.JPG',
-  },
-]
-
-// Helper used inline above — must be defined before the array
-function parseAgeFields(ageStr: string): { age: string; ageRange: [number, number] } {
-  const parsed = parseAge(ageStr)
-  return { age: parsed.short, ageRange: parsed.range }
+export async function getPayloadClient(): Promise<Payload> {
+  if (cached) return cached
+  cached = await getPayload({ config })
+  return cached
 }
 </file>
 
@@ -13411,6 +12275,493 @@ export function getRegistrationById(id: number): RegistrationData | null {
 }
 </file>
 
+<file path="scripts/migrate-camps.ts">
+/**
+ * Migration script — creates all 17 Bombovo camps via Payload REST API.
+ *
+ * Prerequisites:
+ *   1. Dev server must be running: npm run dev
+ *   2. .env.local must contain:
+ *        PAYLOAD_ADMIN_EMAIL=...
+ *        PAYLOAD_ADMIN_PASSWORD=...
+ *
+ * Run from the project root:
+ *   npx tsx scripts/migrate-camps.ts
+ *
+ * Idempotent — any camp whose slug already exists in Payload is skipped.
+ */
+
+import { config as loadDotenv } from 'dotenv'
+import path from 'path'
+
+// Pure data imports — no Payload/Next.js involved
+import { festAnimatorFestData }               from '../data/camps/fest-animator-fest'
+import { olympKempData }                       from '../data/camps/olymp-kemp'
+import { tanecnaPlanetaData }                  from '../data/camps/tanecna-planeta'
+import { babinecData }                         from '../data/camps/babinec'
+import { tajomstvoBasketbalovehoPoharaData }   from '../data/camps/tajomstvo-basketbaloveho-pohara'
+import { trhlinaData }                         from '../data/camps/trhlina'
+import { readyPlayerOneData }                  from '../data/camps/ready-player-one'
+import { vDracejNoreData }                     from '../data/camps/v-dracej-nore'
+import { anglickeLetoData }                    from '../data/camps/anglicke-leto'
+import { neverfortData }                       from '../data/camps/neverfort'
+import { chlapinecData }                       from '../data/camps/chlapinec'
+import { artlantidaData }                      from '../data/camps/artlantida'
+import { stastnaPlutvaData }                   from '../data/camps/stastna-plutva'
+import { kazdyDenNovyZazitokData }             from '../data/camps/kazdy-den-novy-zazitok'
+import { zBoduNulaDoBoduStoData }              from '../data/camps/z-bodu-nula-do-bodu-sto'
+import { woodkempData }                        from '../data/camps/woodkemp'
+import { expectoData }                         from '../data/camps/expecto'
+import type { CampDetailData }                 from '../data/camps/types'
+
+loadDotenv({ path: path.resolve(process.cwd(), '.env.local') })
+loadDotenv({ path: path.resolve(process.cwd(), '.env') })
+
+const BASE_URL       = process.env.PAYLOAD_URL            ?? 'http://localhost:3000'
+const ADMIN_EMAIL    = process.env.PAYLOAD_ADMIN_EMAIL    ?? ''
+const ADMIN_PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD ?? ''
+
+// ── Camp roster — order here = display order (1-indexed) ────────────────────
+
+interface CampEntry {
+  slug:      string
+  order:     number
+  campTypes: string[]
+  data:      CampDetailData
+}
+
+const CAMPS: CampEntry[] = [
+  { order: 1,  slug: 'fest-animator-fest',              campTypes: ['Tínedžerský', 'Akčný'],        data: festAnimatorFestData },
+  { order: 2,  slug: 'olymp-kemp',                      campTypes: ['Náučný', 'Dobrodružný'],        data: olympKempData },
+  { order: 3,  slug: 'tanecna-planeta',                  campTypes: ['Športový', 'Umelecký'],         data: tanecnaPlanetaData },
+  { order: 4,  slug: 'babinec',                          campTypes: ['Unikátny', 'Oddychový'],        data: babinecData },
+  { order: 5,  slug: 'tajomstvo-basketbaloveho-pohara',  campTypes: ['Športový', 'Akčný'],            data: tajomstvoBasketbalovehoPoharaData },
+  { order: 6,  slug: 'trhlina',                          campTypes: ['Akčný', 'Dobrodružný'],         data: trhlinaData },
+  { order: 7,  slug: 'ready-player-one',                 campTypes: ['Akčný', 'Unikátny'],            data: readyPlayerOneData },
+  { order: 8,  slug: 'v-dracej-nore',                    campTypes: ['Fantasy', 'Dobrodružný'],       data: vDracejNoreData },
+  { order: 9,  slug: 'anglicke-leto',                    campTypes: ['Oddychový', 'Náučný'],          data: anglickeLetoData },
+  { order: 10, slug: 'neverfort',                        campTypes: ['Akčný', 'Fantasy'],             data: neverfortData },
+  { order: 11, slug: 'chlapinec',                        campTypes: ['Akčný', 'Náučný'],              data: chlapinecData },
+  { order: 12, slug: 'artlantida',                       campTypes: ['Umelecký', 'Oddychový'],        data: artlantidaData },
+  { order: 13, slug: 'stastna-plutva',                   campTypes: ['Oddychový'],                    data: stastnaPlutvaData },
+  { order: 14, slug: 'kazdy-den-novy-zazitok',           campTypes: ['Dobrodružný', 'Umelecký'],      data: kazdyDenNovyZazitokData },
+  { order: 15, slug: 'z-bodu-nula-do-bodu-sto',         campTypes: ['Oddychový', 'Unikátny'],        data: zBoduNulaDoBoduStoData },
+  { order: 16, slug: 'woodkemp',                         campTypes: ['Akčný', 'Náučný'],              data: woodkempData },
+  { order: 17, slug: 'expecto',                          campTypes: ['Dobrodružný', 'Fantasy'],       data: expectoData },
+]
+
+// ── REST helpers ─────────────────────────────────────────────────────────────
+
+async function login(): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/users/login`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
+  })
+  if (!res.ok) throw new Error(`Login failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { token?: string }
+  if (!data.token) throw new Error('Login response did not include a token.')
+  return data.token
+}
+
+async function slugExists(token: string, slug: string): Promise<boolean> {
+  const url = `${BASE_URL}/api/camps?where[slug][equals]=${encodeURIComponent(slug)}&limit=1`
+  const res = await fetch(url, { headers: { Authorization: `JWT ${token}` } })
+  if (!res.ok) throw new Error(`Existence check failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { totalDocs?: number }
+  return (data.totalDocs ?? 0) > 0
+}
+
+async function createCamp(token: string, body: Record<string, unknown>): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/camps`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
+    body:    JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`Create failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { doc?: { id?: string } }
+  return data.doc?.id ?? '(unknown)'
+}
+
+// ── Document builder ─────────────────────────────────────────────────────────
+
+function buildDoc(entry: CampEntry): Record<string, unknown> {
+  const d = entry.data
+  return {
+    // Basic
+    name:      d.name,
+    slug:      entry.slug,
+    order:     entry.order,
+    campTypes: entry.campTypes,
+
+    // Hero
+    headline:          d.headline,
+    headlineHighlight: d.headlineHighlight,
+    bulletPoints:      d.bulletPoints.map((text) => ({ text })),
+    location:          d.location,
+    age:               d.age,
+    price:             d.price,
+
+    // Section 2
+    section2_headline:    d.section2.headline,
+    section2_description: d.section2.description.map((p) => ({ paragraph: p })),
+    ratings: {
+      kreativita:       d.section2.ratings.kreativita,
+      mystika:          d.section2.ratings.mystika,
+      sebarozvoj:       d.section2.ratings.sebarozvoj,
+      pohyb:            d.section2.ratings.pohyb,
+      kritickeMyslenie: d.section2.ratings.kritickeMyslenie,
+    },
+
+    // Section 3
+    section3_headline: d.section3.headline,
+    section3_text:     d.section3.text.map((p) => ({ paragraph: p })),
+    reviews:           d.section3.reviews.map((r) => ({ text: r.text, author: r.author })),
+
+    // Section 4 — accordion
+    vTomtoTaboreZazites: d.section4.details.vTomtoTaboreZazites.map((i) => ({ item: i })),
+    vCene:               d.section4.details.vCene.map((i) => ({ item: i })),
+    lokalita:            d.section4.details.lokalita,
+    doprava:             d.section4.details.doprava,
+    ubytovanie:          d.section4.details.ubytovanie.map((i) => ({ item: i })),
+    zaPriplatok:         d.section4.details.zaPriplatok.map((i) => ({ item: i })),
+
+    // Section 4b — stredisko
+    hasStredisko:         d.section4.hasStredisko ?? false,
+    strediskoName:        d.section4.strediskoName,
+    strediskoDescription: d.section4.strediskoDescription,
+    mapLat:               d.section4.mapCoordinates?.lat,
+    mapLng:               d.section4.mapCoordinates?.lng,
+
+    // Section 5 — dates
+    dates: d.section5.dates.map((date) => ({
+      start:           date.start,
+      end:             date.end,
+      days:            date.days,
+      originalPrice:   date.originalPrice,
+      discountedPrice: date.discountedPrice,
+      registrationId:  String(date.registrationId ?? ''),
+    })),
+  }
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    console.error(
+      '❌  Missing credentials.\n' +
+      '    Set PAYLOAD_ADMIN_EMAIL and PAYLOAD_ADMIN_PASSWORD in .env.local',
+    )
+    process.exit(1)
+  }
+
+  console.log(`Connecting to Payload at ${BASE_URL}…`)
+  const token = await login()
+  console.log('✅  Authenticated.\n')
+
+  let created = 0
+  let skipped = 0
+
+  for (const entry of CAMPS) {
+    process.stdout.write(`[${entry.order}/17] ${entry.data.name} (${entry.slug})… `)
+
+    if (await slugExists(token, entry.slug)) {
+      console.log('⚠️  already exists — skipped.')
+      skipped++
+      continue
+    }
+
+    const id = await createCamp(token, buildDoc(entry))
+    console.log(`✅  created (ID: ${id})`)
+    created++
+  }
+
+  console.log(`\nDone. Created: ${created}  Skipped: ${skipped}  Total: ${CAMPS.length}`)
+}
+
+main().catch((err: unknown) => {
+  console.error('\n❌  Migration failed:', err instanceof Error ? err.message : err)
+  process.exit(1)
+})
+</file>
+
+<file path="scripts/migrate-svp.ts">
+/**
+ * Migration script — creates all 7 Školy v Prírode strediská and fills
+ * the SkolyVPrirode Global via Payload REST API.
+ *
+ * Prerequisites:
+ *   1. Dev server must be running: npm run dev
+ *   2. .env.local must contain:
+ *        PAYLOAD_ADMIN_EMAIL=...
+ *        PAYLOAD_ADMIN_PASSWORD=...
+ *
+ * Run from the project root:
+ *   npx tsx scripts/migrate-svp.ts
+ *
+ * Idempotent — any stredisko whose slug already exists in Payload is skipped.
+ * The Global is always overwritten (PATCH is idempotent by design).
+ *
+ * NOTE: Payload REST uses POST /api/globals/:slug to update globals.
+ */
+
+import { config as loadDotenv } from 'dotenv'
+import path from 'path'
+
+// Pure data imports — no Payload/Next.js involved
+import { stredEuropyKrahule }   from '../data/strediska/stred-europy-krahule'
+import { penzionRohacan }       from '../data/strediska/penzion-rohacan'
+import { penzionSabina }        from '../data/strediska/penzion-sabina'
+import { hotelZuna }            from '../data/strediska/hotel-zuna'
+import { hotelMartinskeHole }   from '../data/strediska/hotel-martinske-hole'
+import { horskyHotelMinciar }   from '../data/strediska/horsky-hotel-minciar'
+import { horskyHotelLomy }      from '../data/strediska/horsky-hotel-lomy'
+import type { StrediskoData }   from '../data/strediska/types'
+
+loadDotenv({ path: path.resolve(process.cwd(), '.env.local') })
+loadDotenv({ path: path.resolve(process.cwd(), '.env') })
+
+const BASE_URL       = process.env.PAYLOAD_URL            ?? 'http://localhost:3000'
+const ADMIN_EMAIL    = process.env.PAYLOAD_ADMIN_EMAIL    ?? ''
+const ADMIN_PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD ?? ''
+
+// ── Stredisko roster ─────────────────────────────────────────────────────────
+
+const STREDISKA: StrediskoData[] = [
+  stredEuropyKrahule,
+  penzionRohacan,
+  penzionSabina,
+  hotelZuna,
+  hotelMartinskeHole,
+  horskyHotelMinciar,
+  horskyHotelLomy,
+]
+
+// ── Shared accordion content (same for all strediská) ────────────────────────
+
+const DEFAULT_ZLAVA = [
+  '30 € / dieťa zľava zo základnej ceny pobytu – platí len pre rezervácie jarných ŠvP s podpisom zmluvy do termínu 31.10.2025 – táto zľava nie je kombinovateľná s inými zľavami',
+  '20 € / dieťa zľava z ceny animačného programu pre školy, ktoré boli s našou CK v škole v prírode aspoň raz od r. 2020 – táto zľava nie je kombinovateľná s inými zľavami, platí len v prípade ak ste si neuplatnili zľavu do 31.10.2025',
+]
+
+const DEFAULT_DOPLNKOVE_SLUZBY = [
+  'Zdravotník z CK Bombovo aj s lekárničkou 550 €/pobyt (klasický 5-dňový pobyt)',
+  'pobytový deň navyše 40 €/dieťa',
+  'pobyt dospelej osoby navyše – 150€/pobyt',
+  'pobyt pedagogického dieťaťa s animačným programom – 150 €/pobyt',
+  'komplexné cestovné poistenie ECP (cena 4,50 € / dieťa / pobyt)',
+  'obed navyše 8€ / osoba',
+]
+
+const DEFAULT_V_ZAKLADNEJ_CENE = [
+  '4x ubytovanie, 4x plná penzia, strava 5x denne, pitný režim',
+  'Cena pevného lôžka je rovnaká ako cena prístelky',
+  'Príplatok k základnej cene školy v prírode pre 2.stupeň ZŠ je 8 € / pobyt',
+]
+
+const DEFAULT_V_CENE_ZAHRNUTE = [
+  'Na 10 detí 1 dospelý pobyt zdarma',
+  'Pobytový poplatok',
+]
+
+const DEFAULT_V_CENE_ANIMACNEHO_PROGRAMU = [
+  '55 € / dieťa – animácia 7 hod denne okrem dňa odchodu (28 hodín spolu/pobyt)',
+  'celodenná animácia 65 € / dieťa',
+  'ZŠ na 15 detí 1 animátor',
+  'MŠ na 10 detí 1 animátor',
+  'animačný a športový materiál',
+  'zábavné hry a kvízy, kamoš tanec',
+  'darčeky pre každého účastníka ŠvP',
+]
+
+const DEFAULT_BOMBOVY_BALICEK = [
+  'cena 30 €/dieťa',
+  'možný len v prípade školy v prírode s animačným programom',
+  'odmena 100 € na každých 10 platiacich detí',
+  'autobusová doprava Kremnica + vstup do Štôlne Andrej',
+  'výlet sa vždy organizuje v stredu, ak nie je dohodnuté inak',
+]
+
+// ── REST helpers ─────────────────────────────────────────────────────────────
+
+async function login(): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/users/login`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD }),
+  })
+  if (!res.ok) throw new Error(`Login failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { token?: string }
+  if (!data.token) throw new Error('Login response did not include a token.')
+  return data.token
+}
+
+async function slugExists(token: string, slug: string): Promise<boolean> {
+  const url = `${BASE_URL}/api/strediska?where[slug][equals]=${encodeURIComponent(slug)}&limit=1`
+  const res = await fetch(url, { headers: { Authorization: `JWT ${token}` } })
+  if (!res.ok) throw new Error(`Existence check failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { totalDocs?: number }
+  return (data.totalDocs ?? 0) > 0
+}
+
+async function createStredisko(token: string, body: Record<string, unknown>): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/strediska`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
+    body:    JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`Create stredisko failed (${res.status}): ${await res.text()}`)
+  const data = await res.json() as { doc?: { id?: string } }
+  return data.doc?.id ?? '(unknown)'
+}
+
+async function updateGlobal(token: string, body: Record<string, unknown>): Promise<void> {
+  // Payload REST uses POST (not PATCH) to update a global
+  const res = await fetch(`${BASE_URL}/api/globals/skoly-v-prirode`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `JWT ${token}` },
+    body:    JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`Update global failed (${res.status}): ${await res.text()}`)
+}
+
+// ── Document builder ─────────────────────────────────────────────────────────
+
+const items = (arr: string[]) => arr.map((item) => ({ item }))
+
+function buildStrediskoDoc(s: StrediskoData): Record<string, unknown> {
+  return {
+    name:  s.name,
+    slug:  s.id,
+    price: s.basePrice,
+
+    bulletPoints: s.iconBullets.map((text) => ({ text })),
+
+    // Section 2 in Payload ↔ section3 in hardcoded data (naming quirk)
+    section2Headline: s.section3.headline,
+    section2Body:     s.section3.bodyText,
+
+    // Accordion groups from hardcoded data
+    ubytovanie:         items(s.detaily.ubytovanie),
+    vybavenieStrediska: items(s.detaily.vybavenieStrediska),
+    zaujimavostiVOkoli: items(s.detaily.zaujimavostiVOkoli),
+
+    // Shared accordion defaults
+    zlava:                   items(DEFAULT_ZLAVA),
+    doplnkoveSluzby:         items(DEFAULT_DOPLNKOVE_SLUZBY),
+    vZakladnejCene:          items(DEFAULT_V_ZAKLADNEJ_CENE),
+    vCeneZahrnute:           items(DEFAULT_V_CENE_ZAHRNUTE),
+    vCeneAnimacnehoProgramu: items(DEFAULT_V_CENE_ANIMACNEHO_PROGRAMU),
+    bombovyBalicek:          items(DEFAULT_BOMBOVY_BALICEK),
+
+    // Dates
+    dates: s.dates.map((d) => ({
+      startDate: d.startDate,
+      endDate:   d.endDate,
+      days:      d.days,
+      price:     d.price,
+      available: d.available,
+    })),
+  }
+}
+
+// ── Global content ────────────────────────────────────────────────────────────
+
+function buildGlobalDoc(): Record<string, unknown> {
+  return {
+    headline:          'Školy v prírode',
+    headlineHighlight: 'Ktoré učiteľky milujú',
+    bodyText:
+      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť deťom funguje všetko plynule.',
+
+    reviews: [
+      {
+        content: 'Spokojnosť so všetkým, výborný program, ktorý bavil deti aj nás učiteľky, dobrá spolupráca, ochota, ústretovosť.',
+        author:  'ZŠ Odborárska, Bratislava',
+      },
+      {
+        content: 'Práca animátorov bola na vysokej úrovni, vyzdvihujeme empatiu voči našim deťom, nadmieru boli nápomocní pri každej aktivite aj bežných činnostiach.',
+        author:  'MŠ SNP, Ivanka pri Dunaji',
+      },
+      {
+        content: 'ŠvP sme si užili, animátori boli ochotní pomáhať nám aj mimo svojich animačných aktivít, čo nám uľahčovalo našu prácu. Hry pre deti boli neobvyklé, originálne a zábavné no super.',
+        author:  'ZŠ Topoľová, Nitra',
+      },
+    ],
+
+    section3Headline:
+      'Overené strediská, ktoré spĺňajú všetky hygienické normy',
+    section3Body:
+      'V CK Bombovo spolupracujeme iba so strediskami, ktoré spĺňajú stanovené požiadavky na komfort, hygienu, vybavenie a sú dlhodobo overené školami a učiteľmi z celého Slovenska.\n\nNaši animátori komunikujú s vedením strediska a s kuchyňou a ak niečo nefunguje rieši to náš tím a nie učitelia. U nás je ubytovanie a strava istota, nie lotéria!',
+
+    section3Block2Headline:
+      'Profesionálny a zaškolený animačný tím',
+    section3Block2Body:
+      'V Bombove nenájdete žiadnych amatérov animátorov. Našich animátorov každoročne preškolujeme aby sme zariadili že váš turnus bude mať naozaj hladký priebeh. Program má pevný rytmus a náš tím presne vie ako reagovať v každej situácii.\n\nNaše školy v prírode nie sú o neustálom dozore, ale o tom, že učiteľ má svoj profesionálny tím, na ktorý sa môže vždy spoľahnúť.',
+
+    section3Block3Headline:
+      'Unikátny program, ktorý nikde inde nenájdete',
+    section3Block3Body:
+      'Najväčšou úľavou pre učiteľa je keď zistí, že na škole v prírode nemusí nič zachraňovať. Naše aktivity držia deti od prvého dňa pokope a každá časť dňa na seba prirodzene nadväzuje.\n\nNejde teda o sled náhodných hier ale o mystický príbeh, pomocou ktorého sa deti učia spolupracovať, dôverovať si a preberať zodpovednosť bez toho aby sa cítili byť pod tlakom.',
+
+    strediskaHeadline: 'Naše strediská na rok 2026',
+  }
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    console.error(
+      '❌  Missing credentials.\n' +
+      '    Set PAYLOAD_ADMIN_EMAIL and PAYLOAD_ADMIN_PASSWORD in .env.local',
+    )
+    process.exit(1)
+  }
+
+  console.log(`Connecting to Payload at ${BASE_URL}…`)
+  const token = await login()
+  console.log('✅  Authenticated.\n')
+
+  // ── 1. Migrate Strediska ─────────────────────────────────────────────────
+  console.log('── Strediská ────────────────────────────────────────')
+  let created = 0
+  let skipped = 0
+  const total = STREDISKA.length
+
+  for (let i = 0; i < STREDISKA.length; i++) {
+    const s = STREDISKA[i]
+    process.stdout.write(`[${i + 1}/${total}] ${s.name} (${s.id})… `)
+
+    if (await slugExists(token, s.id)) {
+      console.log('⚠️  already exists — skipped.')
+      skipped++
+      continue
+    }
+
+    const id = await createStredisko(token, buildStrediskoDoc(s))
+    console.log(`✅  created (ID: ${id})`)
+    created++
+  }
+
+  console.log(`\nStrediská done. Created: ${created}  Skipped: ${skipped}  Total: ${total}`)
+
+  // ── 2. Update Global ──────────────────────────────────────────────────────
+  console.log('\n── SkolyVPrirode Global ─────────────────────────────')
+  process.stdout.write('Updating global skoly-v-prirode… ')
+  await updateGlobal(token, buildGlobalDoc())
+  console.log('✅  done.')
+
+  console.log('\nMigration complete.')
+}
+
+main().catch((err: unknown) => {
+  console.error('\n❌  Migration failed:', err instanceof Error ? err.message : err)
+  process.exit(1)
+})
+</file>
+
 <file path=".eslintrc.json">
 {
   "extends": "next/core-web-vitals"
@@ -13453,6 +12804,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+</file>
+
+<file path=".npmrc">
+legacy-peer-deps=true
 </file>
 
 <file path="LETNE-TABORY-SUMMARY.md">
@@ -14215,60 +13570,383 @@ If you encounter any issues:
 **Ready for testing and deployment**
 </file>
 
-<file path="next.config.js">
-const { withPayload } = require("@payloadcms/next/withPayload");
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+<file path="payload-types.ts">
+/* tslint:disable */
+/* eslint-disable */
+/**
+ * This file was automatically generated by Payload.
+ * DO NOT MODIFY IT BY HAND. Instead, modify your source Payload config,
+ * and re-run `payload generate:types` to regenerate this file.
+ */
+
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
+export interface Config {
+  auth: {
+    users: UserAuthOperations;
+  };
+  blocks: {};
+  collections: {
+    users: User;
+    media: Media;
+    'payload-kv': PayloadKv;
+    'payload-locked-documents': PayloadLockedDocument;
+    'payload-preferences': PayloadPreference;
+    'payload-migrations': PayloadMigration;
+  };
+  collectionsJoins: {};
+  collectionsSelect: {
+    users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
+  };
+  db: {
+    defaultIDType: string;
+  };
+  fallbackLocale: null;
+  globals: {};
+  globalsSelect: {};
+  locale: null;
+  user: User;
+  jobs: {
+    tasks: unknown;
+    workflows: unknown;
+  };
+}
+export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents".
+ */
+export interface PayloadLockedDocument {
+  id: string;
+  document?:
+    | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null);
+  globalSlug?: string | null;
+  user: {
+    relationTo: 'users';
+    value: string | User;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences".
+ */
+export interface PayloadPreference {
+  id: string;
+  user: {
+    relationTo: 'users';
+    value: string | User;
+  };
+  key?: string | null;
+  value?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations".
+ */
+export interface PayloadMigration {
+  id: string;
+  name?: string | null;
+  batch?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents_select".
+ */
+export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
+  document?: T;
+  globalSlug?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences_select".
+ */
+export interface PayloadPreferencesSelect<T extends boolean = true> {
+  user?: T;
+  key?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations_select".
+ */
+export interface PayloadMigrationsSelect<T extends boolean = true> {
+  name?: T;
+  batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auth".
+ */
+export interface Auth {
+  [k: string]: unknown;
 }
 
-module.exports = withPayload(nextConfig)
+
+declare module 'payload' {
+  export interface GeneratedTypes extends Config {}
+}
 </file>
 
-<file path="package.json">
-{
-  "name": "bombovo-web",
-  "version": "1.6.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "migrate:camps": "tsx scripts/migrate-camps.ts",
-    "migrate:svp": "tsx scripts/migrate-svp.ts"
+<file path="payload.config.ts">
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
+import path from 'path'
+import { buildConfig } from 'payload'
+import { fileURLToPath } from 'url'
+
+import { Users } from './collections/Users'
+import { Media } from './collections/Media'
+import { Camps } from './collections/Camps'
+import { Strediska } from './collections/Strediska'
+import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
   },
-  "dependencies": {
-    "@payloadcms/db-postgres": "^3.77.0",
-    "@payloadcms/next": "^3.77.0",
-    "@payloadcms/richtext-lexical": "^3.77.0",
-    "@payloadcms/storage-uploadthing": "^3.77.0",
-    "framer-motion": "^11.11.17",
-    "graphql": "^16.12.0",
-    "lightgallery": "^2.9.0",
-    "next": "^15.5.9",
-    "payload": "^3.77.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.3.0"
+  collections: [Users, Media, Camps, Strediska],
+  globals: [SkolyVPrirode],
+  editor: lexicalEditor(),
+  secret: process.env.PAYLOAD_SECRET || '',
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  "devDependencies": {
-    "@types/node": "^22.10.1",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "autoprefixer": "^10.4.20",
-    "dotenv": "^17.3.1",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.18",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.15",
-    "tsx": "^4.21.0",
-    "typescript": "^5.6.3"
-  }
-}
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI || '',
+    },
+  }),
+  plugins: [
+    uploadthingStorage({
+      collections: {
+        media: true,
+      },
+      options: {
+        token: process.env.UPLOADTHING_TOKEN || '',
+        acl: 'public-read',
+      },
+    }),
+  ],
+})
 </file>
 
 <file path="postcss.config.js">
@@ -15915,49 +15593,33 @@ This will show any compilation errors more clearly.
 **Most common fix:** Delete `node_modules`, run `npm install`, then `npm run dev`
 </file>
 
-<file path="tsconfig.json">
-{
-  "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@payload-config": [
-        "./payload.config.ts"
-      ]
-    },
-    "target": "ES2017"
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+<file path="app/layout.tsx">
+import type { Metadata } from 'next'
+import { The_Girl_Next_Door } from 'next/font/google'
+import React from 'react'
+
+const theGirlNextDoor = The_Girl_Next_Door({
+  weight: ['400'],
+  subsets: ['latin'],
+  variable: '--font-amatic',
+  display: 'swap',
+})
+
+export const metadata: Metadata = {
+  title: 'Bombovo - Letné tábory pre deti',
+  description: 'Najlepšie letné tábory a školy v prírode pre deti vo veku 6-17 rokov na Slovensku',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="sk" className={theGirlNextDoor.variable}>
+      <body>{children}</body>
+    </html>
+  )
 }
 </file>
 
@@ -18588,117 +18250,6 @@ export const neverfortData: CampDetailData = {
 }
 </file>
 
-<file path="data/camps/olymp-kemp.ts">
-import { CampDetailData } from './types'
-
-export const olympKempData: CampDetailData = {
-  id: 'olymp-kemp',
-  name: 'Olymp kemp',
-  headline: 'Tábor gréckych hrdinov –',
-  headlineHighlight: 'Olymp kemp',
-  location: 'Horský hotel Lomy',
-  age: 'Pre deti vo veku 8-14 rokov',
-  price: '359€',
-  bulletPoints: [
-    'Tábor inšpirovaný gréckou mytológiou, ktorý dieťa vtiahne do deja pomocou dobrodružného príbehu. Každý deň spoznáš jedného z gréckych bohov a zahráš si netradičné športové hry. Tak sa priprav na poriadne akčné dobrodružstvo na ktoré nezabudneš!',
-  ],
-  
-  section2: {
-    ratings: {
-      kreativita: 3,
-      mystika: 10,
-      sebarozvoj: 6,
-      pohyb: 10,
-      kritickeMyslenie: 7,
-    },
-    headline: 'O čom je Tábor Olymp Kemp?',
-    description: [
-      'Tábor gréckych hrdinov spája aktívny pohyb, šport a fascinujúci svet gréckej mytológie do jedného veľkého dobrodružstva. Deti sa tu nehrajú len hry stávajú sa hrdinami vlastného príbehu. Prostredníctvom športových výziev, tímových úloh a príbehov antických bohov a hrdinov sa prirodzene hýbu, premýšľajú a spolupracujú.',
-      'Deti trávia čas aktívne, vonku a v kolektíve, nie pri obrazovkách, a zároveň zažívajú učenie cez zážitok, ktorý má jasný zmysel a emóciu. Na Olymp kempe zažiješ aktivity ako IIiada popri ktorej si vyrobíš vlastný meč, Paridov súd na ktorom si zostrojíš svoj vlastný obranný štít a Turnaj Olympských bohov na ktorom si zmeriaš sily v celodennom turnaji na ktorom nesmie chýbať futbal.',
-    ],
-    buttonText: 'Pozri Dostupné Termíny',
-  },
-  
-  section3: {
-    headline: 'Ako Olymp Camp prežíva dieťa?',
-    text: [
-      'Počas týždňa vznikajú nové priateľstvá a silné spoločné spomienky. Dieťa zároveň objavuje svoje silné stránky, učí sa veriť si a odchádza domov s pocitom hrdosti, že dokázalo viac, než si na začiatku myslelo.',
-    ],
-    reviews: [
-      {
-        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
-        author: 'Mamička Dieťaťa',
-      },
-      {
-        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
-        author: 'Mamička Dieťaťa',
-      },
-      {
-        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
-        author: 'Mamička Dieťaťa',
-      },
-    ],
-  },
-  
-  section4: {
-    details: {
-      vTomtoTaboreZazites: [
-        'Aresov deň – Boh vojny – kde si zahráš Iliadu/vybíjaná trochu inak/ a vyrobíš si vlastný meč',
-        'Aténin deň – Bohyňa stratégie – zúčastníš sa Paridovho súdu /volejbal trochu inak/ a zostrojíš si vlastný obranný štít',
-        'Hermov deň – Boh cestovateľstva a posolstva – budeš súčasťou božích poslov /cezpolný beh opäť inak/',
-        'Poseidonov deň – Boh oceánov a morí – zažiješ Potopu Atén s netradičným vodným pólom a spravíš si malý oceán vo fľaši',
-        'Turnaj Olympských bohov – zmeriaš si sily v celodennom turnaji a zahráš si aj futbal',
-        'Výlet do Bounce parku v Banskej Bystrici',
-        'Pohodičku pri bazéne, diskotéky, opekačku',
-        'Všetko, čo vytvoríme si môžete so sebou zobrať domov ako inšpiráciu alebo darček',
-        'V prípade nepriaznivých okolností môže nastať zmena programu',
-      ],
-      vCene: [
-        'Program podľa ponuky',
-        'Odborná a zdravotná starostlivosť',
-        '6 x ubytovanie',
-        '6 x plná penzia 5 x denne, pitný režim',
-        'Foto z tábora na facebooku',
-        'Poistenie voči úpadku CK, DPH',
-        'Táborové tričko',
-        'Výlet',
-        'Vstup do Bazéna',
-      ],
-      lokalita: 'Tábor sa nachádza v Horskom hoteli Lomy v Lomskej doline pri obci Horná Ves (okres Prievidza), v srdci pohoria Vtáčnik.',
-      doprava: 'Individuálna',
-      ubytovanie: [
-        'Hotelové izby pre 4-5 detí s vlastným sociálnym zariadením',
-        'Drevené chatky pre 7 detí s vlastným sociálnym zariadením',
-      ],
-      zaPriplatok: [
-        'Komplexné cestovné poistenie ECP 4,50 €/pobyt (storno, prerušenie cesty, úraz, zodpovednosť za škodu)',
-        'Dieťa si môže na tábore zakúpiť reklamné predmety Bombovo',
-      ],
-    },
-    hasStredisko: true,
-    strediskoName: 'Horský hotel Lomy',
-    strediskoDescription: 'Horský hotel Lomy je obklopený nádhernou prírodou. Ponúka deťom skutočnú zábavu pod otvoreným nebom a každé dieťa si Lomy zamiluje hneď po prvom dni.',
-    mapCoordinates: {
-      lat: 48.5806195783322,
-      lng: 18.567247,
-    },
-  },
-  
-  section5: {
-    dates: [
-      {
-        registrationId: 6,
-        start: '02.08.2026',
-        end: '08.08.2026',
-        days: 7,
-        originalPrice: '379.00 €',
-        discountedPrice: '359.00 €',
-      },
-    ],
-  },
-}
-</file>
-
 <file path="data/camps/ready-player-one.ts">
 import { CampDetailData } from './types'
 
@@ -19622,6 +19173,463 @@ export const zBoduNulaDoBoduStoData: CampDetailData = {
     ],
   },
 }
+</file>
+
+<file path="lib/campsData.ts">
+import { olympKempData } from '@/data/camps/olymp-kemp'
+import { festAnimatorFestData } from '@/data/camps/fest-animator-fest'
+import { tanecnaPlanetaData } from '@/data/camps/tanecna-planeta'
+import { babinecData } from '@/data/camps/babinec'
+import { tajomstvoBasketbalovehoPoharaData } from '@/data/camps/tajomstvo-basketbaloveho-pohara'
+import { trhlinaData } from '@/data/camps/trhlina'
+import { readyPlayerOneData } from '@/data/camps/ready-player-one'
+import { vDracejNoreData } from '@/data/camps/v-dracej-nore'
+import { anglickeLetoData } from '@/data/camps/anglicke-leto'
+import { neverfortData } from '@/data/camps/neverfort'
+import { chlapinecData } from '@/data/camps/chlapinec'
+import { artlantidaData } from '@/data/camps/artlantida'
+import { stastnaPlutvaData } from '@/data/camps/stastna-plutva'
+import { kazdyDenNovyZazitokData } from '@/data/camps/kazdy-den-novy-zazitok'
+import { zBoduNulaDoBoduStoData } from '@/data/camps/z-bodu-nula-do-bodu-sto'
+import { woodkempData } from '@/data/camps/woodkemp'
+import { expectoData } from '@/data/camps/expecto'
+
+// Handles both hyphen and em-dash: "8-14 rokov" or "10 – 16 rokov"
+function parseAge(ageStr: string): { short: string; range: [number, number] } {
+  const match = ageStr.match(/(\d+)\s*[-–]\s*(\d+)/)
+  if (match) {
+    return {
+      short: `${match[1]}-${match[2]} r.`,
+      range: [parseInt(match[1]), parseInt(match[2])],
+    }
+  }
+  return { short: ageStr, range: [0, 99] }
+}
+
+export interface Camp {
+  id: string
+  name: string
+  age: string
+  ageRange: [number, number]
+  types: string[]
+  displayTypes: string[]
+  price: string
+  dates: string[]
+  description: string
+  image: string
+}
+
+export const camps: Camp[] = [
+  {
+    id: 'olymp-kemp',
+    name: 'Olymp Kemp',
+    ...parseAgeFields(olympKempData.age),
+    types: ['Náučný', 'Dobrodružný'],
+    displayTypes: ['Náučný', 'Dobrodružný'],
+    price: olympKempData.price,
+    dates: ['1-jul', '2-jul', '1-aug', '2-aug'],
+    description: olympKempData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/olympcamp.JPG',
+  },
+  {
+    id: 'fest-animator-fest',
+    name: 'Fest Animator Fest',
+    ...parseAgeFields(festAnimatorFestData.age),
+    types: ['Tínedžerský', 'Akčný'],
+    displayTypes: ['Tínedžerský', 'Akčný'],
+    price: festAnimatorFestData.price,
+    dates: ['1-jul', '2-jul', '1-aug', '2-aug'],
+    description: festAnimatorFestData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/fest.JPG',
+  },
+  {
+    id: 'tanecna-planeta',
+    name: 'Tanečná Planéta',
+    ...parseAgeFields(tanecnaPlanetaData.age),
+    types: ['Tanečný', 'Umelecký'],
+    displayTypes: ['Športový', 'Umelecký'],
+    price: tanecnaPlanetaData.price,
+    dates: ['1-jul', '1-aug'],
+    description: tanecnaPlanetaData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/tanecnaplaneta.JPG',
+  },
+  {
+    id: 'babinec',
+    name: 'Babinec',
+    ...parseAgeFields(babinecData.age),
+    types: ['Unikátny', 'Oddychový', 'Umelecký'],
+    displayTypes: ['Unikátny', 'Oddychový'],
+    price: babinecData.price,
+    dates: ['1-jul', '2-jul'],
+    description: babinecData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/babinec.JPG',
+  },
+  {
+    id: 'tajomstvo-basketbaloveho-pohara',
+    name: 'Tajomstvo Basketbalového Pohára',
+    ...parseAgeFields(tajomstvoBasketbalovehoPoharaData.age),
+    types: ['Basketbal', 'Akčný'],
+    displayTypes: ['Športový', 'Akčný'],
+    price: tajomstvoBasketbalovehoPoharaData.price,
+    dates: ['1-aug'],
+    description: tajomstvoBasketbalovehoPoharaData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/tajomstvopohara.JPG',
+  },
+  {
+    id: 'trhlina',
+    name: 'Trhlina',
+    ...parseAgeFields(trhlinaData.age),
+    types: ['Akčný', 'Dobrodružný'],
+    displayTypes: ['Akčný', 'Dobrodružný'],
+    price: trhlinaData.price,
+    dates: ['1-aug'],
+    description: trhlinaData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/trhlina.JPG',
+  },
+  {
+    id: 'ready-player-one',
+    name: 'Ready Player One',
+    ...parseAgeFields(readyPlayerOneData.age),
+    types: ['Akčný', 'Unikátny', 'Športový'],
+    displayTypes: ['Akčný', 'Unikátny'],
+    price: readyPlayerOneData.price,
+    dates: ['2-jul', '2-aug'],
+    description: readyPlayerOneData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/readypleayer.JPG',
+  },
+  {
+    id: 'v-dracej-nore',
+    name: 'V Dracej Nore',
+    ...parseAgeFields(vDracejNoreData.age),
+    types: ['Fantasy', 'Dobrodružný'],
+    displayTypes: ['Fantasy', 'Dobrodružný'],
+    price: vDracejNoreData.price,
+    dates: ['1-aug'],
+    description: vDracejNoreData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/V-dracej-nore.JPG',
+  },
+  {
+    id: 'anglicke-leto',
+    name: 'Summer Advanture',
+    ...parseAgeFields(anglickeLetoData.age),
+    types: ['Oddychový', 'Náučný'],
+    displayTypes: ['Oddychový', 'Náučný'],
+    price: anglickeLetoData.price,
+    dates: ['1-jul'],
+    description: anglickeLetoData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/summeradvatnure.JPG',
+  },
+  {
+    id: 'neverfort',
+    name: 'Neverfort',
+    ...parseAgeFields(neverfortData.age),
+    types: ['Akčný', 'Fantasy'],
+    displayTypes: ['Akčný', 'Fantasy'],
+    price: neverfortData.price,
+    dates: ['1-aug'],
+    description: neverfortData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/neverfot.JPG',
+  },
+  {
+    id: 'chlapinec',
+    name: 'Chlapinec',
+    ...parseAgeFields(chlapinecData.age),
+    types: ['Akčný', 'Náučný'],
+    displayTypes: ['Akčný', 'Náučný'],
+    price: chlapinecData.price,
+    dates: ['1-jul', '2-jul'],
+    description: chlapinecData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/chlapinec.JPG',
+  },
+  {
+    id: 'artlantida',
+    name: 'Artlantída',
+    ...parseAgeFields(artlantidaData.age),
+    types: ['Umelecký', 'Oddychový'],
+    displayTypes: ['Umelecký', 'Oddychový'],
+    price: artlantidaData.price,
+    dates: ['1-jul', '2-jul'],
+    description: artlantidaData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/Art.JPG',
+  },
+  {
+    id: 'stastna-plutva',
+    name: 'Šťastná Plutva',
+    ...parseAgeFields(stastnaPlutvaData.age),
+    types: ['Oddychový'],
+    displayTypes: ['Oddychový'],
+    price: stastnaPlutvaData.price,
+    dates: ['1-aug'],
+    description: stastnaPlutvaData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/plutva.JPG',
+  },
+  {
+    id: 'kazdy-den-novy-zazitok',
+    name: 'Každý Deň Nový Zážitok',
+    ...parseAgeFields(kazdyDenNovyZazitokData.age),
+    types: ['Dobrodružný', 'Umelecký'],
+    displayTypes: ['Dobrodružný', 'Umelecký'],
+    price: kazdyDenNovyZazitokData.price,
+    dates: ['2-jul', '1-aug'],
+    description: kazdyDenNovyZazitokData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/kazdydennovyzazitok.JPG',
+  },
+  {
+    id: 'z-bodu-nula-do-bodu-sto',
+    name: 'Z Bombova Do Bombova',
+    ...parseAgeFields(zBoduNulaDoBoduStoData.age),
+    types: ['Oddychový', 'Unikátny'],
+    displayTypes: ['Oddychový', 'Unikátny'],
+    price: zBoduNulaDoBoduStoData.price,
+    dates: ['1-jul', '1-aug'],
+    description: zBoduNulaDoBoduStoData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/zbombova-do-bombova.JPG',
+  },
+  {
+    id: 'woodkemp',
+    name: 'WoodKemp',
+    ...parseAgeFields(woodkempData.age),
+    types: ['Akčný', 'Náučný'],
+    displayTypes: ['Akčný', 'Náučný'],
+    price: woodkempData.price,
+    dates: ['2-jul', '1-aug'],
+    description: woodkempData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/woodcamp.JPG',
+  },
+  {
+    id: 'expecto',
+    name: 'Expecto',
+    ...parseAgeFields(expectoData.age),
+    types: ['Dobrodružný', 'Fantasy'],
+    displayTypes: ['Dobrodružný', 'Fantasy'],
+    price: expectoData.price,
+    dates: ['1-jul'],
+    description: expectoData.bulletPoints[0],
+    image: '/images/Letne%20Tabory/expcto.JPG',
+  },
+]
+
+// Helper used inline above — must be defined before the array
+function parseAgeFields(ageStr: string): { age: string; ageRange: [number, number] } {
+  const parsed = parseAge(ageStr)
+  return { age: parsed.short, ageRange: parsed.range }
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "bombovo-web",
+  "version": "1.6.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "migrate:camps": "tsx scripts/migrate-camps.ts",
+    "migrate:svp": "tsx scripts/migrate-svp.ts"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "^3.77.0",
+    "@payloadcms/next": "^3.77.0",
+    "@payloadcms/richtext-lexical": "^3.77.0",
+    "@payloadcms/storage-uploadthing": "^3.77.0",
+    "framer-motion": "^11.11.17",
+    "graphql": "^16.12.0",
+    "lightgallery": "^2.9.0",
+    "next": "^15.5.9",
+    "payload": "^3.77.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^17.3.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.18",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.3"
+  }
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@payload-config": [
+        "./payload.config.ts"
+      ]
+    },
+    "target": "ES2017"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+</file>
+
+<file path="data/camps/olymp-kemp.ts">
+import { CampDetailData } from './types'
+
+export const olympKempData: CampDetailData = {
+  id: 'olymp-kemp',
+  name: 'Olymp kemp',
+  headline: 'Tábor gréckych hrdinov –',
+  headlineHighlight: 'Olymp kemp',
+  location: 'Horský hotel Lomy',
+  age: 'Pre deti vo veku 8-14 rokov',
+  price: '359€',
+  bulletPoints: [
+    'Tábor inšpirovaný gréckou mytológiou, ktorý dieťa vtiahne do deja pomocou dobrodružného príbehu. Každý deň spoznáš jedného z gréckych bohov a zahráš si netradičné športové hry. Tak sa priprav na poriadne akčné dobrodružstvo na ktoré nezabudneš!',
+  ],
+  
+  section2: {
+    ratings: {
+      kreativita: 3,
+      mystika: 10,
+      sebarozvoj: 6,
+      pohyb: 10,
+      kritickeMyslenie: 7,
+    },
+    headline: 'O čom je Tábor Olymp Kemp?',
+    description: [
+      'Tábor gréckych hrdinov spája aktívny pohyb, šport a fascinujúci svet gréckej mytológie do jedného veľkého dobrodružstva. Deti sa tu nehrajú len hry stávajú sa hrdinami vlastného príbehu. Prostredníctvom športových výziev, tímových úloh a príbehov antických bohov a hrdinov sa prirodzene hýbu, premýšľajú a spolupracujú.',
+      'Deti trávia čas aktívne, vonku a v kolektíve, nie pri obrazovkách, a zároveň zažívajú učenie cez zážitok, ktorý má jasný zmysel a emóciu. Na Olymp kempe zažiješ aktivity ako IIiada popri ktorej si vyrobíš vlastný meč, Paridov súd na ktorom si zostrojíš svoj vlastný obranný štít a Turnaj Olympských bohov na ktorom si zmeriaš sily v celodennom turnaji na ktorom nesmie chýbať futbal.',
+    ],
+    buttonText: 'Pozri Dostupné Termíny',
+  },
+  
+  section3: {
+    headline: 'Ako Olymp Camp prežíva dieťa?',
+    text: [
+      'Počas týždňa vznikajú nové priateľstvá a silné spoločné spomienky. Dieťa zároveň objavuje svoje silné stránky, učí sa veriť si a odchádza domov s pocitom hrdosti, že dokázalo viac, než si na začiatku myslelo.',
+    ],
+    reviews: [
+      {
+        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
+        author: 'Mamička Dieťaťa',
+      },
+      {
+        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
+        author: 'Mamička Dieťaťa',
+      },
+      {
+        text: '[THE REVIEW WILL BE PLACED HERE. I WILL WRITE THIS LONGER JUST TO SEE HOW BIGGER IT WOULD LOOK ON THE DESIGN WHEN THE REVIEW WOULD BE LONGER SO PUT EXACTLY THIS TEXT INSIDE OF THERE]',
+        author: 'Mamička Dieťaťa',
+      },
+    ],
+  },
+  
+  section4: {
+    details: {
+      vTomtoTaboreZazites: [
+        'Aresov deň – Boh vojny – kde si zahráš Iliadu/vybíjaná trochu inak/ a vyrobíš si vlastný meč',
+        'Aténin deň – Bohyňa stratégie – zúčastníš sa Paridovho súdu /volejbal trochu inak/ a zostrojíš si vlastný obranný štít',
+        'Hermov deň – Boh cestovateľstva a posolstva – budeš súčasťou božích poslov /cezpolný beh opäť inak/',
+        'Poseidonov deň – Boh oceánov a morí – zažiješ Potopu Atén s netradičným vodným pólom a spravíš si malý oceán vo fľaši',
+        'Turnaj Olympských bohov – zmeriaš si sily v celodennom turnaji a zahráš si aj futbal',
+        'Výlet do Bounce parku v Banskej Bystrici',
+        'Pohodičku pri bazéne, diskotéky, opekačku',
+        'Všetko, čo vytvoríme si môžete so sebou zobrať domov ako inšpiráciu alebo darček',
+        'V prípade nepriaznivých okolností môže nastať zmena programu',
+      ],
+      vCene: [
+        'Program podľa ponuky',
+        'Odborná a zdravotná starostlivosť',
+        '6 x ubytovanie',
+        '6 x plná penzia 5 x denne, pitný režim',
+        'Foto z tábora na facebooku',
+        'Poistenie voči úpadku CK, DPH',
+        'Táborové tričko',
+        'Výlet',
+        'Vstup do Bazéna',
+      ],
+      lokalita: 'Tábor sa nachádza v Horskom hoteli Lomy v Lomskej doline pri obci Horná Ves (okres Prievidza), v srdci pohoria Vtáčnik.',
+      doprava: 'Individuálna',
+      ubytovanie: [
+        'Hotelové izby pre 4-5 detí s vlastným sociálnym zariadením',
+        'Drevené chatky pre 7 detí s vlastným sociálnym zariadením',
+      ],
+      zaPriplatok: [
+        'Komplexné cestovné poistenie ECP 4,50 €/pobyt (storno, prerušenie cesty, úraz, zodpovednosť za škodu)',
+        'Dieťa si môže na tábore zakúpiť reklamné predmety Bombovo',
+      ],
+    },
+    hasStredisko: true,
+    strediskoName: 'Horský hotel Lomy',
+    strediskoDescription: 'Horský hotel Lomy je obklopený nádhernou prírodou. Ponúka deťom skutočnú zábavu pod otvoreným nebom a každé dieťa si Lomy zamiluje hneď po prvom dni.',
+    mapCoordinates: {
+      lat: 48.5806195783322,
+      lng: 18.567247,
+    },
+  },
+  
+  section5: {
+    dates: [
+      {
+        registrationId: 6,
+        start: '02.08.2026',
+        end: '08.08.2026',
+        days: 7,
+        originalPrice: '379.00 €',
+        discountedPrice: '359.00 €',
+      },
+    ],
+  },
+}
+</file>
+
+<file path="next.config.js">
+const { withPayload } = require("@payloadcms/next/withPayload");
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+}
+
+module.exports = withPayload(nextConfig)
 </file>
 
 </files>
