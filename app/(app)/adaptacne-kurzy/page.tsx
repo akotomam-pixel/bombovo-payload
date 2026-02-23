@@ -110,7 +110,7 @@ export default function AdaptacneKurzyPage() {
               
               <div className="space-y-4 text-base text-bombovo-dark leading-relaxed">
                 <p>
-                  Naše Adaptačné kurzy sú navrhnuté tak, aby žiakom pomohli plynule sa začleniť do nového kolektívu a zabezpečili, že ich začiatok bude úspešný a plný pozitívnych zážitkov. Hlavným cieľom kurzu je, umožniť žiakom, aby sa lepšie adaptovali v novom prostredí, spoznali svojich spolužiakov a vybudovali si dobré vzťahy medzi sebou a triednym učiteľom.
+                  Naše Adaptačné kurzy sú navrhnuté tak, aby žiakom pomohli plynule sa začleniť do nového kolektívu a zabezpečili, že ich začiatok bude úspešný a plný pozitívnych zážitkov. Hlavným cieľom kurzu je umožniť žiakom, aby sa lepšie adaptovali v novom prostredí, spoznali svojich spolužiakov a vybudovali si dobré vzťahy medzi sebou a triednym učiteľom.
                 </p>
 
                 <div className="space-y-3 pt-2">
@@ -191,7 +191,7 @@ export default function AdaptacneKurzyPage() {
                 <div>
                   <h3 className="text-lg font-bold text-bombovo-dark mb-2">3. Blok: Komunikácia a tímová spolupráca</h3>
                   <p className="text-base text-bombovo-dark leading-relaxed">
-                    Záver kurzu učí triedu fungovať ako jeden tím. Deti sa pomocou rôznych aktivít učia navzájom komunikovať, rešpektovať rozdielne názory a hľadať spoločné riešenia. Dôraz sa kladie hlavne na spoluprácu a aktivity sú postavené tak, aby si každý v tíme našiel svoje miesto. Žiaci si postupne uvedomia že trieda musí fungovať ako celok a to pomôže nastaviť zdravé fungovanie kolektívu aj po návrate do školy.
+                    Záver kurzu učí triedu fungovať ako jeden tím. Deti sa pomocou rôznych aktivít učia navzájom komunikovať, rešpektovať rozdielne názory a hľadať spoločné riešenia. Dôraz sa kladie hlavne na spoluprácu a aktivity sú postavené tak, aby si každý v tíme našiel svoje miesto. Žiaci si postupne uvedomia, že trieda musí fungovať ako celok a to pomôže nastaviť zdravé fungovanie kolektívu aj po návrate do školy.
                   </p>
                 </div>
               </div>
@@ -222,6 +222,7 @@ export default function AdaptacneKurzyPage() {
                     <p className="text-base text-bombovo-dark leading-relaxed">
                       Minimálna dĺžka kurzu je 3 dni/2 noci. Kurz vieme pripraviť až do dĺžky 5 dní. Kurz je najlepšie absolvovať, ako trieda samostatne.
                     </p>
+                    <p className="text-base font-bold text-bombovo-dark mt-3">Cena: 55 €/os/noc</p>
                   </div>
 
                   {/* Price Includes */}

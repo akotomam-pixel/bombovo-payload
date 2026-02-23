@@ -74,10 +74,10 @@ export default function ProgramSkolyVPrirodePage() {
                     Naša škola v prírode nie je len zmenou prostredia ani „oddychom od vyučovania". Je to premyslený a príbehový program, ktorý pracuje s triednym kolektívom ako celkom a cielene rozvíja vlastnosti a zručnosti, ktoré sú pre fungovanie triedy kľúčové… spoluprácu, komunikáciu, dôveru, kreativitu a zdravé sebavedomie.
                   </p>
                   <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                    Program je postavený tak, aby deti učil nenápadne a prirodzene… prostredníctvom hry, spoločného príbehu a vlastného zážitku. Každý deň má k sebe priradenú vlastnosť ktorú si deti pomocou aktivít rozvíjajú. Na konci každého dňa žiaci nájdu jednu stranu zo strateného denníka a odhalia tak časti príbehu, ktoré im začnú do seba zapadať.
+                    Program je postavený tak, aby deti učil nenápadne a prirodzene… prostredníctvom hry, spoločného príbehu a vlastného zážitku. Každý deň má k sebe priradenú vlastnosť, ktorú si deti pomocou aktivít rozvíjajú. Na konci každého dňa žiaci nájdu jednu stranu zo strateného denníka a odhalia tak časti príbehu, ktoré im začnú do seba zapadať.
                   </p>
                   <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                    Počas celého týždňa budú deti proti sebe súťažiť v tímoch. Pripravili sme si aj nový unikátny bodovací systém ktorý ešte viac prehlbuje zážitok z tejto školy v prírode.
+                    Počas celého týždňa budú deti proti sebe súťažiť v tímoch. Pripravili sme si aj nový unikátny bodovací systém, ktorý ešte viac prehlbuje zážitok z tejto školy v prírode.
                   </p>
                 </div>
                 {/* Image */}
@@ -136,7 +136,7 @@ export default function ProgramSkolyVPrirodePage() {
                       1. Deň - Tímovosť
                     </h3>
                     <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                      Deti rozdelíme do tímov v ktorých budú spolupracovať celý týždeň. V tento deň sa budú hrať hry, ktoré sú zamerané na koordináciu a prácu celého tímu. Určite nebudú chýbať ani zoznamovacie hry a diskotéka ktoré dodajú deťom sebavedomie už od prvého dňa.
+                      Deti rozdelíme do tímov, v ktorých budú spolupracovať celý týždeň. V tento deň sa budú hrať hry, ktoré sú zamerané na koordináciu a prácu celého tímu. Určite nebudú chýbať ani zoznamovacie hry a diskotéka, ktoré dodajú deťom sebavedomie už od prvého dňa.
                     </p>
                   </div>
 
@@ -146,7 +146,7 @@ export default function ProgramSkolyVPrirodePage() {
                       2. Deň - Hravosť
                     </h3>
                     <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                      Tento deň obsahuje veľa hier pri ktorých sa deti vybláznia a zabavia. Aktivity posilnia ich prirodzenú chuť do hry, cieľom celého dňa je aby si deti užili bezstarostný čas plný smiechu a zábavy, ktorý zakončíme hudobno vedomostným kvízom.
+                      Tento deň obsahuje veľa hier, pri ktorých sa deti vybláznia a zabavia. Aktivity posilnia ich prirodzenú chuť do hry. Cieľom celého dňa je, aby si deti užili bezstarostný čas plný smiechu a zábavy, ktorý zakončíme hudobno-vedomostným kvízom.
                     </p>
                   </div>
 
@@ -156,7 +156,7 @@ export default function ProgramSkolyVPrirodePage() {
                       3. Deň - Kreativita
                     </h3>
                     <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                      Tento deň deťom pomôže kreatívne sa prejaviť a ukázať im, že každé dieťa má v sebe kus fantázie ktorú vie prakticky využiť. Deti si vyrobia rakety ktoré potom spolu vyšleme do vzduchu a na záver večera si v tímoch pripravia krátku scénku.
+                      Tento deň deťom pomôže kreatívne sa prejaviť a ukázať im, že každé dieťa má v sebe kus fantázie, ktorú vie prakticky využiť. Deti si vyrobia rakety, ktoré potom spolu vyšleme do vzduchu a na záver večera si v tímoch pripravia krátku scénku.
                     </p>
                   </div>
 

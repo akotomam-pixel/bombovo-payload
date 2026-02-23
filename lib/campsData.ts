@@ -221,7 +221,7 @@ export const camps: Camp[] = [
   },
   {
     id: 'expecto',
-    name: 'Expecto',
+    name: 'Expecto Patronum!',
     ...parseAgeFields(expectoData.age),
     types: ['Dobrodružný', 'Fantasy'],
     displayTypes: ['Dobrodružný', 'Fantasy'],

@@ -32,7 +32,7 @@ export const tanecnaPlanetaData: CampDetailData = {
   section3: {
     headline: 'Ako Tanečnú Planétu prežíva dieťa?',
     text: [
-      'Z pohľadu dieťaťa je tanečná programovka ako vstup na vlastnú tanečnú planétu. Ocitá sa v novom svete plnom výziev, smiechu a kamarátstiev. Skúša nové veci, vystupuje zo svojej komfortnej zóny a zažíva pocit úspechu a hrdosti na seba samé.',
+      'Z pohľadu dieťaťa je tanečná programovka ako vstup na vlastnú tanečnú planétu. Ocitá sa v novom svete plnom výziev, smiechu a kamarátstva. Skúša nové veci, vystupuje zo svojej komfortnej zóny a zažíva pocit úspechu a hrdosti na seba samého.',
       'Vyvrcholením je veľký tanečný galavečer, kde sa fantázia premieňa na skutočný zážitok. Dieťa odchádza domov s pocitom, že dokázalo niečo výnimočné.',
     ],
     reviews: [

@@ -184,7 +184,7 @@ function buildGlobalDoc(): Record<string, unknown> {
     headline:          'Školy v prírode',
     headlineHighlight: 'Ktoré učiteľky milujú',
     bodyText:
-      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť deťom funguje všetko plynule.',
+      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť detí funguje všetko plynule.',
 
     reviews: [
       {

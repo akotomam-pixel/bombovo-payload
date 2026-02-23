@@ -24,7 +24,7 @@ export const artlantidaData: CampDetailData = {
     headline: 'O čom je tábor Artlantída?',
     description: [
       'Nie každý tábor musí byť o výkone, súťažení a hlučnom programe. Náš tábor je miestom, kde deti môžu spomaliť, nadýchnuť sa a znovu objaviť samy seba. Vytvárame prostredie, v ktorom má priestor kreativita, fantázia a tvorivosť, a kde deti nie sú tlačené do porovnávania či dokazovania. U nás sa učia vyjadrovať svoje myšlienky a pocity prirodzene… slovom, obrazom aj pohybom a zároveň si rozvíjajú kritické myslenie a vlastný názor.',
-      'Na Artlantíde si vyskúšaš rožne maľby od ilustrácie až po moderné umenie, zažijeŠ workshop s pravými drotármi, kde si niečo pekné vytvoríš na pamiatku. Vyrobíš si drevený rámik, upletieš náramok a vytvoríš si vlastnú batikovanú tašku. Tábor vyvrcholí veľkolepou vernisážou na ktorej si každé dieťa vystaví svoje diela ktoré počas týždňa vytvorilo.',
+      'Na Artlantíde si vyskúšaš rôzne maľby od ilustrácie až po moderné umenie, zažiješ workshop s pravými drotármi, kde si niečo pekné vytvoríš na pamiatku. Vyrobíš si drevený rámik, upletieš náramok a vytvoríš si vlastnú batikovanú tašku. Tábor vyvrcholí veľkolepou vernisážou, na ktorej si každé dieťa vystaví svoje diela, ktoré počas týždňa vytvorilo.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },

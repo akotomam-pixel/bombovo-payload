@@ -24,7 +24,7 @@ export const neverfortData: CampDetailData = {
     headline: 'O čom je tábor Neverfort?',
     description: [
       'Tento tábor prenesie deti do fantastického sveta plného kúziel, záhad a dobrodružstva, kde sa nestávajú len pozorovateľmi, ale priamou súčasťou príbehu. Počas týždňa rozvíjajú svoju kreativitu a fantáziu, učia sa spolupracovať v tíme a spoločne riešia výzvy, ktoré pred nimi stoja.',
-      'Vyskúšaš si ako hrať veľkolepý šport Metlobal a spoznáš tvory ktoré sa schovávajú mimo nášho sveta. Budeš odhaľovať tajomstvá a súťažiť v magických disciplínach. Na tábore nebude chýbať ani výroba vlastných kúzelníckych predmetov, elixírov a ochranných amuletov. Uprostred týždňa sa vydáš na výlet na tajomný Bojnický zámok a na záver ťa čaká Lov na Monštrum kde rozhodneš o osude dvoch svetov.',
+      'Vyskúšaš si hrať veľkolepý šport Metlobal a spoznáš tvory, ktoré sa schovávajú mimo nášho sveta. Budeš odhaľovať tajomstvá a súťažiť v magických disciplínach. Na tábore nebude chýbať ani výroba vlastných kúzelníckych predmetov, elixírov a ochranných amuletov. Uprostred týždňa sa vydáš na výlet na tajomný Bojnický zámok a na záver ťa čaká Lov na Monštrum, kde rozhodneš o osude dvoch svetov.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },

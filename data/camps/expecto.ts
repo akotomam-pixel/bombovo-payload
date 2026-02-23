@@ -2,15 +2,15 @@ import { CampDetailData } from './types'
 
 export const expectoData: CampDetailData = {
   id: 'expecto',
-  name: 'Expecto',
+  name: 'Expecto Patronum!',
   headline: 'Fantastický tábor kúziel –',
-  headlineHighlight: 'Expecto',
+  headlineHighlight: 'Expecto Patronum!',
   location: 'Horský hotel Lomy',
   age: 'Pre deti vo veku 10-16 rokov',
   price: '349 €',
   
   bulletPoints: [
-    'Ponor sa do fantastického sveta mágie a zaži tak príbeh čarodejníka na vlastnej koži. Staň sa majstrom v čarodejníckych dueloch, spoznávaj magické tvory a odhaľuj rôzne tajomstvá. Vstúp s nami do sveta kúziel a buď súčasťou dobrodružstva ktoré len tak nezažiješ!',
+    'Ponor sa do fantastického sveta mágie a zaži tak príbeh čarodejníka na vlastnej koži. Staň sa majstrom v čarodejníckych dueloch, spoznávaj magické tvory a odhaľuj rôzne tajomstvá. Vstúp s nami do sveta kúziel a buď súčasťou dobrodružstva, ktoré len tak nezažiješ!',
   ],
   
   section2: {
@@ -21,7 +21,7 @@ export const expectoData: CampDetailData = {
       pohyb: 6,
       kritickeMyslenie: 6,
     },
-    headline: 'O čom je tábor Expecto?',
+    headline: 'O čom je tábor Expecto Patronum!?',
     description: [
       'Fantastický tábor kúziel vtiahne deti do sveta mágie, fantázie a dobrodružstva inšpirovaného čarodejníckymi príbehmi. Deti sa nestávajú len pozorovateľmi deja, ale jeho aktívnymi tvorcami. Počas týždňa si vyrábajú vlastné čarovné prútiky, miešajú lektvary, riešia magické výzvy a objavujú zákutia fantastického sveta, v ktorom má každý svoju rolu.',
       'Program prirodzene rozvíja fantáziu, kreativitu a schopnosť spolupracovať. Na základe dotazníku budeš rozdelený do fakulty v čarodejníckej škole. Vyrobíš si lampióny, čarovné prútiky namiešaš si svoj vlastný lektvar a zahráš si Metlobalový meziškolský turnaj. Na tábore nebude chýbať ani netradičný výlet plavba na pltiach po Váhu.',
@@ -30,7 +30,7 @@ export const expectoData: CampDetailData = {
   },
   
   section3: {
-    headline: 'Ako Expecto prežíva dieťa?',
+    headline: 'Ako Expecto Patronum! prežíva dieťa?',
     text: [
       'Z pohľadu dieťaťa je tábor veľkým magickým dobrodružstvom. Má pocit, že patrí do sveta, kde je dôležité, odvážne a potrebné. Vžíva sa do role čarodejníka či čarodejnice, objavuje kúzla, mieša lektvary a spolu s kamarátmi prekonáva nástrahy fantastickej krajiny.',
       'Zažíva napätie, radosť z úspechu aj silu tímu, ktorý drží pokope. Odchádza s pocitom, že bolo súčasťou príbehu, v ktorom malo svoje miesto.',

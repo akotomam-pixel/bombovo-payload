@@ -27,12 +27,12 @@ const HARDCODED_SECTION3: [Section3Block, Section3Block, Section3Block] = [
   },
   {
     headline: 'Profesionálny a zaškolený animačný tím',
-    body: 'V Bombove nenájdete žiadnych amatérov animátorov. Našich animátorov každoročne preškolujeme aby sme zariadili že váš turnus bude mať naozaj hladký priebeh. Program má pevný rytmus a náš tím presne vie ako reagovať v každej situácii.\n\nNaše školy v prírode nie sú o neustálom dozore, ale o tom, že učiteľ má svoj profesionálny tím, na ktorý sa môže vždy spoľahnúť.',
+    body: 'V Bombove nenájdete žiadnych amatérskych animátorov. Našich animátorov každoročne preškoľujeme, aby sme zariadili, že váš turnus bude mať naozaj hladký priebeh. Program má pevný rytmus a náš tím presne vie ako reagovať v každej situácii.\n\nNaše školy v prírode nie sú o neustálom dozore, ale o tom, že učiteľ má svoj profesionálny tím, na ktorý sa môže vždy spoľahnúť.',
     photo: '/images/Skoly%20v%20Prirode/secion3.2.JPG',
   },
   {
     headline: 'Unikátny program, ktorý nikde inde nenájdete',
-    body: 'Najväčšou úľavou pre učiteľa je keď zistí, že na škole v prírode nemusí nič zachraňovať. Naše aktivity držia deti od prvého dňa pokope a každá časť dňa na seba prirodzene nadväzuje.\n\nNejde teda o sled náhodných hier ale o mystický príbeh, pomocou ktorého sa deti učia spolupracovať, dôverovať si a preberať zodpovednosť bez toho aby sa cítili byť pod tlakom.',
+    body: 'Najväčšou úľavou pre učiteľa je keď zistí, že na škole v prírode nemusí nič zachraňovať. Naše aktivity držia deti od prvého dňa pokope a každá časť dňa na seba prirodzene nadväzuje.\n\nNejde teda o sled náhodných hier, ale o mystický príbeh, pomocou ktorého sa deti učia spolupracovať, dôverovať si a preberať zodpovednosť bez toho, aby sa cítili byť pod tlakom. Naše školy v prírode tak nekončia príchodom do školy, ale zanechajú v deťoch cenné skúsenosti a spoločné zážitky, ktoré v nich zostanú navždy.',
     photo: '/images/Skoly%20v%20Prirode/secion3.3.JPG',
   },
 ]
@@ -60,7 +60,7 @@ export default async function SkolyVPrirodePage() {
     headline: 'Školy v prírode',
     headlineHighlight: 'Ktoré učiteľky milujú',
     bodyText:
-      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť deťom funguje všetko plynule.',
+      'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť detí funguje všetko plynule.',
     reviews: HARDCODED_REVIEWS,
     section3: HARDCODED_SECTION3,
     strediskaHeadline: 'Naše strediská na rok 2026',

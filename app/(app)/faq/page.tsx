@@ -25,7 +25,7 @@ const faqs = [
   {
     id: 4,
     question: 'Dá sa strava prispôsobiť potrebám môjho dieťaťa?',
-    answer: 'Samozrejme. Či už ide o celiakiu, intoleranciu laktózy, vegetariánsku alebo vegánsku stravu, náš skúsený kuchársky tím vie pripraviť plnohodnotné jedlá pre každé dieťa. Stačí nám to uviesť do prihlášky a postaráme sa o to, aby vaše dieťa jedlo rovnako dobre ako všetci ostatní.',
+    answer: 'Samozrejme. Či už ide o celiakiu, intoleranciu laktózy, vegetariánsku stravu, náš skúsený kuchársky tím vie pripraviť plnohodnotné jedlá pre každé dieťa. Stačí nám to uviesť do prihlášky a postaráme sa o to, aby vaše dieťa jedlo rovnako dobre ako všetci ostatní.',
   },
   {
     id: 5,
@@ -50,22 +50,22 @@ const faqs = [
   {
     id: 9,
     question: 'Ako prebieha platba za tábor?',
-    answer: 'Túto informáciu doplníme neskôr.',
+    answer: 'Pri zahlásení detí na tábor sa do 7 dní platí záloha 50 eur a potom na doplatok máte čas. Najneskôr 14 dní pred nástupom na tábor musí byť uhradená plná suma za tábor. Ale samozrejme ak zavoláte našim dievčatám do kancelárie tak vedia platby prispôsobiť Vašim možnostiam a požiadavkám.',
   },
   {
     id: 10,
     question: 'Ako je to s vrátením peňazí, keď dieťa ochorie?',
-    answer: 'Ak vaše dieťa ochorie pred začiatkom tábora, vrátime vám plnú sumu bez akýchkoľvek otázok. Nie je fér brať vám peniaze za niečo, čoho sa vaše dieťa nemôže zúčastniť z dôvodu choroby. Pre nás je dôležité, aby ste mali istotu a pokoj.',
+    answer: 'Ak vaše dieťa ochorie pred začiatkom tábora, vrátime vám plnú sumu bez akýchkoľvek otázok. Nie je fér brať vám peniaze za niečo, čoho sa vaše dieťa nemôže zúčastniť z dôvodu choroby. Pre nás je dôležité, aby ste mali istotu a pokoj. Doporučujeme poistenie pri prihlásení dieťaťa si priplatiť a potom poisťovňa Vám vráti 80% ceny tábora a my Vám doplatíme zvyšok. A neškodujete.',
   },
   {
     id: 11,
     question: 'Môžem si uplatniť rekreačný poukaz?',
-    answer: 'Áno. Stačí, keď nám ho pošlete do kancelárie alebo prinesiete osobne.',
+    answer: 'Po absolvovaní tábora obdržíte faktúru za tábor a túto odovzdáte k uplatneniu rekreačného poukazu svojmu zamestnávateľovi.',
   },
   {
     id: 12,
     question: 'Kde nájdem fotky z tábora?',
-    answer: 'Túto informáciu doplníme neskôr.',
+    answer: 'Fotky sa snažíme pridávať najskôr ako je to možné na náš facebook',
   },
   {
     id: 13,

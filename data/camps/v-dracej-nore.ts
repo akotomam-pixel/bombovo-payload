@@ -10,7 +10,7 @@ export const vDracejNoreData: CampDetailData = {
   price: '349 €',
   
   bulletPoints: [
-    'Dobrodružný fantasy tábor inšpirovaný hrou D&D na ktorom fantázia nepozná hranice a z detí stávajú hrdinovia. Každé dieťa si vytvorí svoju vlastnú postavu, za ktorú bude hrať celý týždeň. Príbeh vtiahne dieťa ktoré sa v ňom rozhoduje podľa seba a prežije tak veľkolepé dobrodružstvo na ktoré nikdy nezabudne!',
+    'Dobrodružný fantasy tábor inšpirovaný hrou D&D, na ktorom fantázia nepozná hranice a z detí sa stávajú hrdinovia. Každé dieťa si vytvorí svoju vlastnú postavu, za ktorú bude hrať celý týždeň. Príbeh vtiahne dieťa, ktoré sa v ňom rozhoduje podľa seba a prežije tak veľkolepé dobrodružstvo, na ktoré nikdy nezabudne!',
   ],
   
   section2: {
@@ -24,7 +24,7 @@ export const vDracejNoreData: CampDetailData = {
     headline: 'O čom je tábor V Dračej nore?',
     description: [
       'Tento tábor je ideálny pre deti plné fantázie a dobrodružnej duše, ktoré milujú fantasy knihy, príbehové hry a svety plné kúziel, drakov a hrdinov. Je to miesto, kde sa môžu úplne ponoriť do príbehu a zažiť pocit, že sú jeho dôležitou súčasťou. Dieťa tu nenaráža na hranice reality tak, ako ich pozná z bežného dňa a namiesto toho má priestor snívať, tvoriť a konať. Tábor podporuje predstavivosť, odvahu a radosť z objavovania.',
-      'Na tábore zažiješ výlet na tajomný Bojnický zámok, zmeníš sa na dobrodruha a zúčastníš sa veľkej dobrodružnej výpravy. Vyblázniš sa na diskotéke a zažiješ opekačku pod hviezdnou oblohou. Všetky veci ktoré si počas týždňa vyrobíš si môžeš so sebou zobraŤ ako suvenír takže na tábor budeš spomínať aj po jeho skončení.',
+      'Na tábore zažiješ výlet na tajomný Bojnický zámok, zmeníš sa na dobrodruha a zúčastníš sa veľkej dobrodružnej výpravy. Vyblázniš sa na diskotéke a zažiješ opekačku pod hviezdnou oblohou. Všetky veci, ktoré si počas týždňa vyrobíš, si môžeš so sebou zobrať ako suvenír, takže na tábor budeš spomínať aj po jeho skončení.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },
@@ -33,7 +33,7 @@ export const vDracejNoreData: CampDetailData = {
     headline: 'Ako tábor v dračej nore prežíva dieťa?',
     text: [
       'Z pohľadu dieťaťa je tábor splneným snom. Na celý týždeň sa stáva tým, čím by chcelo byť bez akýchkoľvek obmedzení. Môže byť neporaziteľným rytierom, mocným kúzelníkom, alebo presným lukostrelcom či odvážnym hrdinom magickej krajiny.',
-      'Zažíva pocit sily, odvahy a výnimočnosti. Objavuje, aké je to mať „mágui pod kontrolou", čeliť výzvam a víťaziť spolu s partiou. Odchádza s pocitom, že prežilo veľké dobrodružstvo, na ktoré bude ešte dlho spomínať.',
+      'Zažíva pocit sily, odvahy a výnimočnosti. Objavuje, aké je to mať „mágiu pod kontrolou", čeliť výzvam a víťaziť spolu s partiou. Odchádza s pocitom, že prežilo veľké dobrodružstvo, na ktoré bude ešte dlho spomínať.',
     ],
     reviews: [
       {

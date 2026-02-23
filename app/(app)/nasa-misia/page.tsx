@@ -94,10 +94,10 @@ export default function NasaMisiaPage() {
               {/* Text */}
               <div className="flex flex-col justify-center space-y-6 order-1 lg:order-none">
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  Už viac ako 20 rokov v Bombove máme od začiatku jednu misiu: <span className="font-bold">robiť deťom šťastnými každý deň, ktorý u nás strávia.</span> Výsledkom je, že namiesto toho, aby sme si plnili peňaženky, sme malá rodinná agentúra, ku ktorej sa až 86% detí vracia každý rok.
+                  Už viac ako 20 rokov v Bombove máme od začiatku jednu misiu: <span className="font-bold">robiť deťom šťastnými každý deň, ktorý u nás strávia.</span> Výsledkom je, že namiesto toho, aby sme si plnili peňaženky, sme malá rodinná cestovná kancelária, ku ktorej sa až 86% detí vracia každý rok.
                 </p>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  Originálny program vytvára <span className="font-bold">nezabudnuteľné zážitky</span>, pre ktoré sa deti prosia rodičov, aby sa mohli vrátiť späť.
+                  Originálny program vytvára <span className="font-bold">nezabudnuteľné zážitky</span>, pre ktoré deti prosia rodičov, aby sa mohli vrátiť späť.
                 </p>
                 
                 {/* Review - DESKTOP ONLY */}
@@ -207,7 +207,7 @@ export default function NasaMisiaPage() {
           </h2>
 
           <p className="text-base md:text-lg text-bombovo-dark text-center mb-12 leading-relaxed max-w-4xl mx-auto">
-            Aj keď toto pravidlo nie je pre väčšinu cestovných kancelárií populárne, u nás uprednostňujeme šťastie dieťaťa pred tým, aby sme sa stali najväčšia cestovná agentúra na Slovensku.
+            Aj keď toto pravidlo nie je pre väčšinu cestovných kancelárií populárne, u nás uprednostňujeme šťastie dieťaťa pred tým, aby sme sa stali najväčšia cestovná kancelária na Slovensku.
           </p>
 
           {/* Three Points */}
@@ -224,7 +224,7 @@ export default function NasaMisiaPage() {
                   Nemáme žiadne skryté poplatky.
                 </h3>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  Čo vidíte, to zaplatíte. Žiadne prekvapenia pri fakturácii. vidíte, to zaplatíte. Žiadne prekvapenia pri fakturácii. U nás sa vaše deti nebudú nudiť - všetky výlety a aktivity sú v cene.
+                  Čo vidíte, to zaplatíte. Žiadne prekvapenia pri fakturácii. U nás sa vaše deti nebudú nudiť - všetky výlety a aktivity sú v cene.
                 </p>
               </div>
             </div>

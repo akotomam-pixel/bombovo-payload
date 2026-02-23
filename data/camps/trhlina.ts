@@ -23,7 +23,7 @@ export const trhlinaData: CampDetailData = {
     },
     headline: 'O čom je Tábor Trhlina?',
     description: [
-      'Trhlina nie je tábor, ktorý len „vyplní čas". Je to zážitok, ktorý dieťa vtiahne a ešte dlho po návrate z neho zostane. Celý program stojí na silnom príbehu, ktorý dáva zmysel každej aktivite. Deti nemajú pocit, že sa len hrajú – majú pocit, že sú súčasťou niečoho väčšieho, tajomného a dôležitého. Počas týždňa sa prirodzene hýbu, tvoria, premýšľajú a spolupracujú v tíme. Učia sa odvahe, samostatnosti a dôvere v seba aj ostatných.',
+      'Trhlina nie je tábor, ktorý len „vyplní čas". Je to zážitok, ktorý dieťa vtiahne, a ešte dlho po návrate z neho zostane v spomienkach. Celý program stojí na silnom príbehu, ktorý dáva zmysel každej aktivite. Deti nemajú pocit, že sa len hrajú – majú pocit, že sú súčasťou niečoho väčšieho, tajomného a dôležitého. Počas týždňa sa prirodzene hýbu, tvoria, premýšľajú a spolupracujú v tíme. Učia sa odvahe, samostatnosti a dôvere v seba aj ostatných.',
       'Každý deň prežiješ jednu kapitolu z príbehu a na konci týždňa jeho veľké vyvrcholenie. Vyrobíš si Batoh lovca duchov, strašidelného spoločníka a mydlový lektvar. Na jeden deň sa z teba stane dobrodruh a budeš hľadať poklad. Na tábore nebudú chýbať ani detektívne hry ako Lovci duchov a Tajomstvo temného lesa a samozrejme zažiješ aj akčný výlet do Bounce parku v Banskej Bystrici.',
     ],
     buttonText: 'Pozri Dostupné Termíny',

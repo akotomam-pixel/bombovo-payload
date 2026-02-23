@@ -10,7 +10,7 @@ export const festAnimatorFestData: CampDetailData = {
   price: '359 €',
   
   bulletPoints: [
-    'Máš 13 rokov a myslíš si, že tábory už nie sú pre teba? Na Feste na rozdiel od ostatných teenage táborov žiadne hry pre malé deti nezažiješ. Diskotéky, splav, športové hry kreatívne aktivity a to najhlavnejšie uvoľnená rodinná atmosféra počas celého týždňa.',
+    'Máš 13 rokov a myslíš si, že tábory už nie sú pre teba? Na Feste, na rozdiel od ostatných teenage táborov, žiadne hry pre malé deti nezažiješ. Diskotéky, splav, športové hry, kreatívne aktivity a to najhlavnejšie uvoľnená rodinná atmosféra počas celého týždňa.',
   ],
   
   section2: {
@@ -23,7 +23,7 @@ export const festAnimatorFestData: CampDetailData = {
     },
     headline: 'Fest – tábor, kde vzniká komunita',
     description: [
-      'Fest nie je len tábor. Je to myšlienka, komunita a priestor, ktorý budujeme už viac ako15 rokov. Každý rok rastie spolu s deťmi, ktoré do nej patria. Je určený najmä starším deťom a tínedžerom, pre ktorých už klasické tábory často prestávajú byť lákavé. Fest však dokazuje, že letné tábory majú zmysel aj po trinástke ak dávajú slobodu, rešpekt a priestor byť sám sebou.',
+      'Fest nie je len tábor. Je to myšlienka, komunita a priestor, ktorý budujeme už viac ako 15 rokov. Každý rok rastie spolu s deťmi, ktoré do nej patria. Je určený najmä starším deťom a tínedžerom, pre ktorých už klasické tábory často prestávajú byť lákavé. Fest však dokazuje, že letné tábory majú zmysel aj po trinástke ak dávajú slobodu, rešpekt a priestor byť sám sebou.',
       'Program je ideálnym mixom pohybu, oddychu, kreativity a spoločných zážitkov. Deti zažijú športové aj nešportové aktivity, tvorivé dielne, hry zamerané na spoluprácu a silné kolektívne momenty. Každá aktivita je navrhnutá tak, aby sa do nej vedel zapojiť každý, bez tlaku na výkon a bez pocitu, že „niekam nepatrí".',
     ],
     buttonText: 'Pozri Dostupné Termíny',

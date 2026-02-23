@@ -165,7 +165,7 @@ export default function PreFirmyPage() {
               </h3>
               <div className="space-y-4">
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  Sme cestovná kancelária Bombovo ktorá sa špecializuje na tábory, školy v prírode a akcie pre deti už viac ako 20 rokov. Spolupracujeme s najväčšími firmami na Slovensku, aby sme im poskytli benefit, ktorý skutočne funguje.
+                  Sme cestovná kancelária Bombovo, ktorá sa špecializuje na tábory, školy v prírode a akcie pre deti už viac ako 20 rokov. Spolupracujeme s najväčšími firmami na Slovensku, aby sme im poskytli benefit, ktorý skutočne funguje.
                 </p>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
                   Každý rok organizujeme letné tábory pre prosperujúce spoločnosti, ktoré chcú posilniť lojalitu svojich zamestnancov a riešiť najväčší letný stres pracujúcich rodičov. Naša skúsenosť, profesionálny tím a overené výsledky robia z nás partnera, ktorému môžete dôverovať.
@@ -232,12 +232,12 @@ export default function PreFirmyPage() {
                 Najlepšie Firmy Na Slovensku Už S Nami Spolupracujú Viac Ako 20 Rokov
               </h3>
               <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                Zabezpečili sme letné tábory pre viac ako 2,000 detí zamestnancov najväčších spoločností:
+                  Zabezpečili sme letné tábory pre viac ako 3,000 detí zamestnancov najväčších spoločností:
               </p>
               <ul className="space-y-2 text-base md:text-lg text-bombovo-dark leading-relaxed">
                 <li>• BILLA s.r.o. s nami spolupracuje posledné 2 roky</li>
-                <li>• Profix Group s nami spolupracuje [X rokov]</li>
-                <li>• Spoločnosť O2 s nami spolupracuje už [X rokov]</li>
+                <li>• Profix Group s nami spolupracuje už 10 rokov</li>
+                <li>• Spoločnosť O2 s nami spolupracuje už 8 rokov</li>
                 <li>• Robili sme tábory pre firmy ako Volvo a Foxconn</li>
               </ul>
             </div>

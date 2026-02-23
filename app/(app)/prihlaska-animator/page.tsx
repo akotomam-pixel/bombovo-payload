@@ -299,9 +299,9 @@ export default function PrihlaskaAnimatorPage() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-bombovo-dark mb-6">
             <span className="relative inline-block">
-              Prihláška animátora -{' '}
+              Pridaj Sa Do{' '}
               <span className="font-handwritten text-bombovo-red text-5xl md:text-6xl lg:text-7xl">
-                Školenia 2026
+                Bombovo Tímu!
               </span>
               {/* Yellow underline */}
               <svg

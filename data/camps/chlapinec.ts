@@ -10,7 +10,7 @@ export const chlapinecData: CampDetailData = {
   price: '349 €',
   
   bulletPoints: [
-    'Tábor na ktorom si chlapci osvoja dôležité zručnosti a stanú sa súčasťou pravej chlapskej partie. Od stavania príbytkov v lese až po splav Váhu na pltiach chlapinec je jediný tábor svojho druhu.',
+    'Tábor, na ktorom si chlapci osvoja dôležité zručnosti a stanú sa súčasťou pravej chlapskej partie. Od stavania príbytkov v lese až po splav Váhu na pltiach, chlapinec je jediný tábor svojho druhu.',
   ],
   
   section2: {

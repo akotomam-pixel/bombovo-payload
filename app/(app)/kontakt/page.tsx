@@ -350,7 +350,7 @@ export default function KontaktPage() {
                   </h3>
                   <div className="space-y-2">
                     <div>
-                      <p className="text-sm text-bombovo-dark/70">Pevná linka Hotela Lomy:</p>
+                      <p className="text-sm text-bombovo-dark/70">Pevná linka do kancelárie v Nitre:</p>
                       <a href="tel:+421376522523" className="text-base text-bombovo-dark hover:text-bombovo-blue">
                         +421 37 6522 523
                       </a>

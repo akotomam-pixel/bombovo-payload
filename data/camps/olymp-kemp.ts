@@ -22,8 +22,8 @@ export const olympKempData: CampDetailData = {
     },
     headline: 'O čom je Tábor Olymp Kemp?',
     description: [
-      'Tábor gréckych hrdinov spája aktívny pohyb, šport a fascinujúci svet gréckej mytológie do jedného veľkého dobrodružstva. Deti sa tu nehrajú len hry stávajú sa hrdinami vlastného príbehu. Prostredníctvom športových výziev, tímových úloh a príbehov antických bohov a hrdinov sa prirodzene hýbu, premýšľajú a spolupracujú.',
-      'Deti trávia čas aktívne, vonku a v kolektíve, nie pri obrazovkách, a zároveň zažívajú učenie cez zážitok, ktorý má jasný zmysel a emóciu. Na Olymp kempe zažiješ aktivity ako IIiada popri ktorej si vyrobíš vlastný meč, Paridov súd na ktorom si zostrojíš svoj vlastný obranný štít a Turnaj Olympských bohov na ktorom si zmeriaš sily v celodennom turnaji na ktorom nesmie chýbať futbal.',
+      'Tábor gréckych hrdinov spája aktívny pohyb, šport a fascinujúci svet gréckej mytológie do jedného veľkého dobrodružstva. Deti sa tu nehrajú len hry – stávajú sa hrdinami vlastného príbehu. Prostredníctvom športových výziev, tímových úloh a príbehov antických bohov a hrdinov sa prirodzene hýbu, premýšľajú a spolupracujú.',
+      'Deti trávia čas aktívne, vonku a v kolektíve, nie pri obrazovkách, a zároveň zažívajú učenie cez zážitok, ktorý má jasný zmysel a emóciu. Na Olymp kempe zažiješ aktivity ako Iliada, popri ktorej si vyrobíš vlastný meč, Paridov súd, na ktorom si zostrojíš svoj vlastný obranný štít, a Turnaj Olympských bohov, na ktorom si zmeriaš sily v celodennom turnaji, na ktorom nesmie chýbať futbal.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },

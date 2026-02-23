@@ -13,7 +13,7 @@ const reasons = [
   {
     number: 2,
     title: 'Žiadne Skryté Platby',
-    content: 'Väčšina cestovných kancelárií vám ponúka základnú cenu za tábor bez pridaného výletu počas týždňa, ak nechcete, aby sa vaše dieťa nudilo, musíte si za tento výlet priplatiť.\n\nV Bombove platíte za celý tábor hneď a často lacnejšie ako inde. U nás sa ani bez príplatku nikto nudiť nebude!',
+    content: 'Väčšina cestovných kancelárií vám ponúka základnú cenu za tábor bez pridaného výletu počas týždňa. Ak nechcete aby sa vaše dieťa nudilo, musíte si za tento výlet priplatiť.\n\nV Bombove platíte za celý tábor hneď a často lacnejšie ako inde. U nás sa ani bez príplatku nikto nudiť nebude!',
     color: 'from-bombovo-red to-red-300',
   },
   {

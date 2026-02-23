@@ -24,7 +24,7 @@ export const anglickeLetoData: CampDetailData = {
     headline: 'O čom je tábor Summer adventure?',
     description: [
       'Anglický kemp spája súťaž, pohyb a prirodzený rozvoj angličtiny. Deti sa zapájajú do tímových aktivít, ktoré ich motivujú spolupracovať a súťažiť, pričom angličtinu používajú priamo v praxi, hravou formou a bez tlaku. Program obsahuje originálne hry inšpirované tradíciami a kultúrou anglicky hovoriacich krajín a je vedený native speakermi, ktorí deťom prinášajú autentický jazykový zážitok.',
-      'Kemp podporuje tímovú spoluprácu, zdravú súťaživosť a učenie sa angličtiny prirodzenou a zábavnou formou. Tento tábor by sa nezaobišiel bez diskotéky, opekačky a zbierania bodov v rôznych súťažiach ktoré vyvrcholia veľkou záverečnou oslavou. Na tomto tábore nebude chýbať ani akčný výlet, na ktorom zažiješ adrenalín v Tarzánii na Hrabove.',
+      'Kemp podporuje tímovú spoluprácu, zdravú súťaživosť a učenie sa angličtiny prirodzenou a zábavnou formou. Tento tábor by sa nezaobišiel bez diskotéky, opekačky a zbierania bodov v rôznych súťažiach, ktoré vyvrcholia veľkou záverečnou oslavou. Na tomto tábore nebude chýbať ani akčný výlet, na ktorom zažiješ adrenalín v Tarzánii na Hrabove.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },
