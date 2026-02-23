@@ -109,7 +109,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
               <div className="relative">
                 <div
                   className="w-full rounded-2xl overflow-hidden cursor-pointer"
-                  style={{ aspectRatio: '16/9' }}
+                  style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
                   <img
@@ -161,8 +161,8 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
             </div>
 
             {/* Desktop Layout */}
-            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-5 gap-8">
-              <div className="lg:col-span-2 flex flex-col justify-center space-y-6">
+            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="flex flex-col justify-center space-y-6">
                 <h1 className="text-3xl md:text-4xl font-bold text-bombovo-dark">
                   {campDetails.headline}{' '}
                   <span className="relative inline-block text-bombovo-red">
@@ -219,10 +219,10 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
               </div>
 
               {/* Product Gallery */}
-              <div className="lg:col-span-3">
+              <div>
                 <div
                   className="w-full rounded-2xl overflow-hidden cursor-pointer mb-4"
-                  style={{ aspectRatio: '16/9' }}
+                  style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
                   <img
@@ -249,7 +249,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                           key={imageIndex}
                           onClick={() => setMainImage(imageIndex)}
                           className={`cursor-pointer rounded-lg overflow-hidden ${mainImage === imageIndex ? 'ring-4 ring-bombovo-yellow' : ''}`}
-                          style={{ aspectRatio: '16/9' }}
+                          style={{ aspectRatio: '4/3' }}
                         >
                           <img
                             src={galleryImages[imageIndex].thumb}

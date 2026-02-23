@@ -166,7 +166,7 @@ export default function TestTaborPage() {
               </div>
 
               <div className="relative">
-                <div className="w-full rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#90EE90', aspectRatio: '16/9' }}>
+                <div className="w-full rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#90EE90', aspectRatio: '4/3' }}>
                   <p className="text-lg font-bold text-bombovo-dark">[Photo will be placed here]</p>
                 </div>
                 <button onClick={() => setMainImage(mainImage > 0 ? mainImage - 1 : totalImages - 1)} className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-lg z-10">
@@ -254,7 +254,7 @@ export default function TestTaborPage() {
 
               {/* Photo Gallery */}
               <div className="lg:col-span-3">
-                <div className="w-full rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: '#90EE90', aspectRatio: '16/9' }}>
+                <div className="w-full rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: '#90EE90', aspectRatio: '4/3' }}>
                   <p className="text-lg font-bold text-bombovo-dark">[Photo will be placed here]</p>
                 </div>
 
@@ -266,7 +266,7 @@ export default function TestTaborPage() {
                     {Array.from({ length: 5 }).map((_, index) => {
                       const imageIndex = visibleThumbnailStart + index
                       return (
-                        <div key={imageIndex} onClick={() => setMainImage(imageIndex)} className={`cursor-pointer rounded-lg overflow-hidden ${mainImage === imageIndex ? 'ring-4 ring-bombovo-yellow' : ''}`} style={{ aspectRatio: '16/9' }}>
+                        <div key={imageIndex} onClick={() => setMainImage(imageIndex)} className={`cursor-pointer rounded-lg overflow-hidden ${mainImage === imageIndex ? 'ring-4 ring-bombovo-yellow' : ''}`} style={{ aspectRatio: '4/3' }}>
                           <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#90EE90' }}>
                             <p className="text-xs font-bold text-bombovo-dark">{imageIndex + 1}</p>
                           </div>
