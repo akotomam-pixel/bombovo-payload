@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { FiUsers, FiZap, FiStar, FiSun, FiBook, FiTrendingUp, FiGlobe } from 'react-icons/fi'
 import { GiPalette, GiSoccerBall, GiMountains, GiSwordsPower } from 'react-icons/gi'
 import { MdChildCare, MdSportsBasketball, MdDirectionsRun } from 'react-icons/md'
@@ -55,10 +56,12 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Camp Photo */}
       <div className="h-64 relative overflow-hidden">
-        <img 
+        <Image
           src={image}
           alt={name}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
 
