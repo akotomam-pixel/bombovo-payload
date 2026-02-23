@@ -17,6 +17,12 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
     location: doc.location ?? '',
     age: doc.age ?? '',
     price: doc.price ?? '',
+    heroGallery: (doc.heroGallery ?? []).map((item: any) => {
+      const url = typeof item === 'object' && item !== null
+        ? (typeof item.url === 'string' ? item.url : (typeof item.photo === 'object' ? item.photo?.url : null))
+        : null
+      return url ? { src: url, thumb: url } : null
+    }).filter(Boolean) as Array<{ src: string; thumb: string }>,
     bulletPoints: (doc.bulletPoints ?? []).map((b: { text: string }) => b.text),
 
     section2: {
@@ -95,6 +101,7 @@ export default async function CampDetailPage({
       collection: 'camps',
       where: { slug: { equals: campId } },
       limit: 1,
+      depth: 2,
     })
     if (result.docs.length > 0) {
       campDetails = mapPayloadToCampDetails(result.docs[0] as Record<string, any>)

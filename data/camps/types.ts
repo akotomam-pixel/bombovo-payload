@@ -6,6 +6,7 @@ export interface CampDetailData {
   location: string
   age: string
   price: string
+  heroGallery?: Array<{ src: string; thumb: string }>
   
   bulletPoints: string[]
   

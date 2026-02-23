@@ -22,15 +22,17 @@ interface Props {
 
 export default function CampDetailClient({ campDetails, campId }: Props) {
   const [mainImage, setMainImage] = useState(0)
-  const totalImages = 10
+  const galleryImages = campDetails.heroGallery && campDetails.heroGallery.length > 0
+    ? campDetails.heroGallery
+    : Array.from({ length: 6 }, (_, i) => ({
+        src: `https://picsum.photos/seed/${campId}${i}/1200/800`,
+        thumb: `https://picsum.photos/seed/${campId}${i}/400/267`,
+      }))
+  const totalImages = galleryImages.length
   const [visibleThumbnailStart, setVisibleThumbnailStart] = useState(0)
 
   // LightGallery — hero section
   const lgRef = useRef<any>(null)
-  const galleryImages = Array.from({ length: totalImages }, (_, i) => ({
-    src: `https://picsum.photos/seed/${campId}${i}/1200/800`,
-    thumb: `https://picsum.photos/seed/${campId}${i}/400/267`,
-  }))
 
   // LightGallery — stredisko section
   const totalStrediskoPhotos = 6
@@ -244,6 +246,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   <div className="flex-1 grid grid-cols-5 gap-2">
                     {Array.from({ length: 5 }).map((_, index) => {
                       const imageIndex = visibleThumbnailStart + index
+                      if (!galleryImages[imageIndex]) return null
                       return (
                         <div
                           key={imageIndex}
