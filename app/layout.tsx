@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { The_Girl_Next_Door } from 'next/font/google'
-import './globals.css'
+import React from 'react'
 
 const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
@@ -25,6 +25,3 @@ export default function RootLayout({
     </html>
   )
 }
-
-
-

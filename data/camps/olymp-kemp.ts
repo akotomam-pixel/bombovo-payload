@@ -7,8 +7,7 @@ export const olympKempData: CampDetailData = {
   headlineHighlight: 'Olymp kemp',
   location: 'Horský hotel Lomy',
   age: 'Pre deti vo veku 8-14 rokov',
-  price: '359 €',
-  
+  price: '359€',
   bulletPoints: [
     'Tábor inšpirovaný gréckou mytológiou, ktorý dieťa vtiahne do deja pomocou dobrodružného príbehu. Každý deň spoznáš jedného z gréckych bohov a zahráš si netradičné športové hry. Tak sa priprav na poriadne akčné dobrodružstvo na ktoré nezabudneš!',
   ],
