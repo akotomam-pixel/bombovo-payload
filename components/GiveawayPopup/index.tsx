@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import ReactDOM from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 import PopupModal from './PopupModal'
 import type { PopupContent } from './PopupModal'
 
@@ -13,6 +14,10 @@ interface Props extends PopupContent {
 }
 
 export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
+  const pathname = usePathname()
+
+  // Don't show the popup on the dedicated giveaway landing page
+  if (pathname === '/sutaz') return null
   const [visible, setVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [maxSize, setMaxSize] = useState<{ w: number; h: number } | null>(null)

@@ -97,6 +97,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/sutaz" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
+                  Súťaž
+                </Link>
+              </li>
+              <li>
                 <Link href="/test-tabor" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
                   Test Page
                 </Link>

@@ -6,6 +6,7 @@ import ReviewCarousel from '@/components/ReviewCarousel'
 import TopCampsWithSearch from '@/components/TopCampsWithSearch'
 import FourReasons from '@/components/FourReasons'
 import SkolyVPrirode from '@/components/SkolyVPrirode'
+import GiveawaySection from '@/components/GiveawaySection'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
@@ -62,15 +63,23 @@ export default function Home() {
         <SkolyVPrirode />
       </div>
       
-      {/* DIVIDER 5: Grey → White (Yellow) */}
-      <WaveDivider color="yellow" variant={2} />
-      
-      {/* Section 7: FAQ - White Background */}
+      {/* DIVIDER 5: Grey → White (Blue) */}
+      <WaveDivider color="blue" variant={2} />
+
+      {/* Section 6.1: Giveaway Form - White Background */}
       <div className="bg-white">
+        <GiveawaySection />
+      </div>
+
+      {/* DIVIDER 5.1: White → Grey (Blue) */}
+      <WaveDivider color="blue" variant={1} />
+
+      {/* Section 7: FAQ - Grey Background */}
+      <div className="bg-bombovo-gray">
         <FAQ />
       </div>
       
-      {/* DIVIDER 6: White → Dark (Red) */}
+      {/* DIVIDER 6: Grey → Dark (Red) */}
       <WaveDivider color="red" variant={3} />
       
       {/* Section 8: Footer - Dark Background */}

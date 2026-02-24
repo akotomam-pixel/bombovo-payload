@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
               subscriber_data: {
                 email: email.trim().toLowerCase(),
                 name: name.trim(),
-                tags: ['popup', campTag],
+                tags: [source || 'popup', campTag],
               },
               trigger_autoresponders: true,
               update_existing: true,

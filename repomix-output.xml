@@ -97,6 +97,9 @@ app/
       SkolyVPrirodClient.tsx
     socialne-siete/
       page.tsx
+    sutaz/
+      page.tsx
+      SutazClient.tsx
     test/
       page.tsx
     test-tabor/
@@ -145,6 +148,7 @@ components/
   FAQ.tsx
   Footer.tsx
   FourReasons.tsx
+  GiveawaySection.tsx
   Header.tsx
   HeroSection.tsx
   HomePageButtons.tsx
@@ -314,328 +318,290 @@ tsconfig.json
 <files>
 This section contains the contents of the repository's files.
 
-<file path="app/(app)/api/giveaway/route.ts">
-import { NextRequest, NextResponse } from 'next/server'
-import { getPayloadClient } from '@/lib/payload'
+<file path="app/(app)/sutaz/page.tsx">
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { camps as fallbackCamps } from '@/lib/campsData'
+import TopBar from '@/components/TopBar'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import SutazClient from './SutazClient'
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-function slugifyCamp(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[áä]/g, 'a')
-    .replace(/[čč]/g, 'c')
-    .replace(/[ďď]/g, 'd')
-    .replace(/[éě]/g, 'e')
-    .replace(/[íï]/g, 'i')
-    .replace(/[ľĺ]/g, 'l')
-    .replace(/[ňň]/g, 'n')
-    .replace(/[óô]/g, 'o')
-    .replace(/[řŕ]/g, 'r')
-    .replace(/[šš]/g, 's')
-    .replace(/[ťť]/g, 't')
-    .replace(/[úů]/g, 'u')
-    .replace(/[ýý]/g, 'y')
-    .replace(/[žž]/g, 'z')
-    .replace(/[^a-z0-9-]/g, '')
+export const metadata = {
+  title: 'Vyhraj Tábor Zadarmo | Bombovo',
+  description: 'Zapoj sa do súťaže a vyhraj tábor zadarmo pre svoje dieťa.',
 }
 
-export async function POST(req: NextRequest) {
+export default async function SutazPage() {
+  let photoUrl: string | null = null
+  let camps: { id: string; name: string }[] = fallbackCamps.map((c) => ({
+    id: c.id,
+    name: c.name,
+  }))
+
   try {
-    const body = await req.json()
-    const { email, name, selectedCamp, source } = body
+    const payload = await getPayload({ config })
 
-    // Validate
-    if (!email || !EMAIL_REGEX.test(email)) {
-      return NextResponse.json({ error: 'Neplatný email.' }, { status: 400 })
-    }
-    if (!name || name.trim().length === 0) {
-      return NextResponse.json({ error: 'Meno je povinné.' }, { status: 400 })
-    }
+    const [globalData, campsData] = await Promise.all([
+      payload.findGlobal({ slug: 'giveaway-popup' }),
+      payload.find({ collection: 'camps', limit: 100, sort: 'order' }),
+    ])
 
-    const payload = await getPayloadClient()
+    const g = globalData as any
 
-    // Save to Payload
-    const entry = await payload.create({
-      collection: 'giveaway-entries',
-      data: {
-        email: email.trim().toLowerCase(),
-        name: name.trim(),
-        selectedCamp: selectedCamp || 'Akýkoľvek Tábor',
-        source: source || 'popup',
-        syncedToEcomail: false,
-      },
-    })
-
-    // Attempt Ecomail sync — failure does NOT block response
-    try {
-      const apiKey = process.env.ECOMAIL_API_KEY
-      const listId = process.env.ECOMAIL_LIST_ID
-
-      if (apiKey && listId) {
-        const campTag = slugifyCamp(selectedCamp || 'akykolvek-tabor')
-
-        const ecomailRes = await fetch(
-          `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              key: apiKey,
-            },
-            body: JSON.stringify({
-              subscriber_data: {
-                email: email.trim().toLowerCase(),
-                name: name.trim(),
-                tags: ['giveaway', campTag],
-              },
-              trigger_autoresponders: true,
-              update_existing: true,
-            }),
-          },
-        )
-
-        if (ecomailRes.ok) {
-          // Mark as synced
-          const existing = await payload.find({
-            collection: 'giveaway-entries',
-            where: { email: { equals: email.trim().toLowerCase() } },
-            limit: 1,
-          })
-          if (existing.docs.length > 0) {
-            await payload.update({
-              collection: 'giveaway-entries',
-              id: existing.docs[0].id,
-              data: { syncedToEcomail: true },
-            })
-          }
-        } else {
-          const errText = await ecomailRes.text()
-          console.error('Ecomail sync failed:', ecomailRes.status, errText)
-        }
-      }
-    } catch (ecomailErr) {
-      console.error('Ecomail error (non-blocking):', ecomailErr)
+    if (g?.photo && typeof g.photo === 'object' && g.photo.url) {
+      photoUrl = g.photo.url
     }
 
-    return NextResponse.json({ success: true })
+    if (campsData.docs.length > 0) {
+      camps = campsData.docs.map((c: any) => ({ id: String(c.id), name: c.name }))
+    }
   } catch (err) {
-    console.error('Giveaway API error:', err)
-    return NextResponse.json({ error: 'Interná chyba servera.' }, { status: 500 })
+    console.error('SutazPage: failed to fetch Payload data', err)
   }
+
+  return (
+    <main className="min-h-screen flex flex-col">
+      <div className="bg-bombovo-gray">
+        <TopBar />
+      </div>
+      <Header />
+      <div className="flex-1">
+        <SutazClient photoUrl={photoUrl} camps={camps} />
+      </div>
+      <Footer />
+    </main>
+  )
 }
 </file>
 
-<file path="collections/globals/GiveawayPopup.ts">
-import type { GlobalConfig } from 'payload'
-
-export const GiveawayPopupGlobal: GlobalConfig = {
-  slug: 'giveaway-popup',
-  label: 'Popup: Vyhraj Tábor Zadarmo',
-  admin: {
-    group: 'Marketing',
-  },
-  access: {
-    read: () => true,
-  },
-  fields: [
-    {
-      name: 'isEnabled',
-      type: 'checkbox',
-      label: 'Popup zapnutý',
-      defaultValue: true,
-      admin: {
-        description: 'Vypni pre skrytie popupu na celom webe.',
-      },
-    },
-    {
-      name: 'delaySeconds',
-      type: 'number',
-      label: 'Oneskorenie zobrazenia (sekundy)',
-      defaultValue: 20,
-    },
-    {
-      name: 'photo',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Fotka (ľavý panel na desktopu)',
-    },
-    // Step 0
-    {
-      name: 'step0Headline',
-      type: 'text',
-      label: 'Krok 0 – Headline',
-      defaultValue: 'Chceš vyhrať tábor zadarmo?',
-    },
-    {
-      name: 'step0YesLabel',
-      type: 'text',
-      label: 'Krok 0 – Tlačidlo ÁNO',
-      defaultValue: 'Áno, chcem vyhrať!',
-    },
-    {
-      name: 'step0NoLabel',
-      type: 'text',
-      label: 'Krok 0 – Tlačidlo NIE',
-      defaultValue: 'Nie, ďakujem',
-    },
-    // Step 1
-    {
-      name: 'step1Headline',
-      type: 'text',
-      label: 'Krok 1 – Headline',
-      defaultValue: 'Zadaj Svoje Meno A Vyber Si Tábor',
-    },
-    {
-      name: 'step1NamePlaceholder',
-      type: 'text',
-      label: 'Krok 1 – Placeholder mena',
-      defaultValue: 'Tvoje meno',
-    },
-    {
-      name: 'step1CampDefaultLabel',
-      type: 'text',
-      label: 'Krok 1 – Predvolená možnosť výberu tábora',
-      defaultValue: 'Akýkoľvek Tábor',
-    },
-    {
-      name: 'step1NextLabel',
-      type: 'text',
-      label: 'Krok 1 – Tlačidlo Ďalej',
-      defaultValue: 'Ďalej',
-    },
-    // Step 2
-    {
-      name: 'step2Headline',
-      type: 'text',
-      label: 'Krok 2 – Headline',
-      defaultValue: 'Zadaj Svoj Email A Si V Hre O Tábor Zadarmo',
-    },
-    {
-      name: 'step2EmailPlaceholder',
-      type: 'text',
-      label: 'Krok 2 – Placeholder emailu',
-      defaultValue: 'tvoj@email.sk',
-    },
-    {
-      name: 'step2SubmitLabel',
-      type: 'text',
-      label: 'Krok 2 – Tlačidlo Odoslať',
-      defaultValue: 'Prihlásiť sa do súťaže',
-    },
-    // Step 3
-    {
-      name: 'step3SuccessHeadline',
-      type: 'text',
-      label: 'Krok 3 – Úspech Headline',
-      defaultValue: 'Si v hre! 🎉',
-    },
-    {
-      name: 'step3SuccessBody',
-      type: 'textarea',
-      label: 'Krok 3 – Úspech Text',
-      defaultValue:
-        'Tvoja prihláška do súťaže o tábor zadarmo bola úspešne zaznamenaná. Víťaza vyhlásime čoskoro!',
-    },
-  ],
-}
-</file>
-
-<file path="collections/GiveawayEntries.ts">
-import type { CollectionConfig } from 'payload'
-
-export const GiveawayEntries: CollectionConfig = {
-  slug: 'giveaway-entries',
-  labels: {
-    singular: 'Giveaway Entry',
-    plural: 'Giveaway Entries',
-  },
-  admin: {
-    group: 'Marketing',
-    useAsTitle: 'email',
-    defaultColumns: ['email', 'name', 'selectedCamp', 'syncedToEcomail', 'createdAt'],
-  },
-  access: {
-    create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
-  },
-  timestamps: true,
-  fields: [
-    {
-      name: 'email',
-      type: 'email',
-      label: 'Email',
-      required: true,
-    },
-    {
-      name: 'name',
-      type: 'text',
-      label: 'Meno',
-      required: true,
-    },
-    {
-      name: 'selectedCamp',
-      type: 'text',
-      label: 'Vybraný tábor',
-    },
-    {
-      name: 'source',
-      type: 'select',
-      label: 'Zdroj',
-      defaultValue: 'popup',
-      options: [
-        { label: 'Popup', value: 'popup' },
-        { label: 'Landing Page', value: 'landing-page' },
-        { label: 'Iné', value: 'other' },
-      ],
-    },
-    {
-      name: 'syncedToEcomail',
-      type: 'checkbox',
-      label: 'Synchronizované s Ecomail',
-      defaultValue: false,
-      admin: {
-        position: 'sidebar',
-        description: 'Automaticky sa aktualizuje po úspešnom odoslaní do Ecomail.',
-      },
-    },
-  ],
-}
-</file>
-
-<file path="components/GiveawayPopup/steps/StepEmail.tsx">
+<file path="app/(app)/sutaz/SutazClient.tsx">
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import { FiChevronDown } from 'react-icons/fi'
 
-interface Props {
-  headline: string
-  emailPlaceholder: string
-  submitLabel: string
+interface Camp {
+  id: string
   name: string
-  selectedCamp: string
-  onSuccess: () => void
-  onBack: () => void
 }
 
-export default function StepEmail({
-  emailPlaceholder,
-  submitLabel,
+interface Props {
+  photoUrl: string | null
+  camps: Camp[]
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function WavyUnderline() {
+  return (
+    <svg
+      className="absolute left-0 -bottom-2 w-full"
+      viewBox="0 0 200 12"
+      preserveAspectRatio="none"
+      style={{ height: '10px' }}
+    >
+      <path
+        d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+        stroke="#DF2935"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+// ── Photo panel (reused in both mobile and desktop) ───────────────────────────
+function PhotoPanel({ photoUrl, className }: { photoUrl: string | null; className?: string }) {
+  return (
+    <div className={`relative ${className ?? ''}`}>
+      {photoUrl ? (
+        <Image
+          src={photoUrl}
+          alt="Vyhraj tábor zadarmo"
+          fill
+          className="object-cover"
+          unoptimized={photoUrl.startsWith('http')}
+          priority
+        />
+      ) : (
+        <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
+          <span className="text-7xl">🎁</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Step 0 ────────────────────────────────────────────────────────────────────
+function StepYesNo({ onYes, onNo }: { onYes: () => void; onNo: () => void }) {
+  return (
+    <div className="flex flex-col items-center gap-6 w-full">
+      <h1 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight pb-3">
+        <span className="relative inline-block">
+          Chceš vyhrať tábor zadarmo?
+          <WavyUnderline />
+        </span>
+      </h1>
+      <div className="flex flex-col gap-3 w-full">
+        <button
+          onClick={onYes}
+          className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150"
+        >
+          Áno, chcem vyhrať!
+        </button>
+        <button
+          onClick={onNo}
+          className="w-full py-4 px-6 bg-white border-2 border-bombovo-dark text-bombovo-dark font-normal text-base rounded-xl hover:bg-bombovo-gray transition-all duration-150"
+        >
+          Nie, ďakujem
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Step 0 declined ───────────────────────────────────────────────────────────
+function StepDeclined() {
+  return (
+    <div className="flex flex-col items-center gap-4 w-full text-center">
+      <div className="text-5xl">👋</div>
+      <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight">
+        Žiadny problém!
+      </h2>
+      <p className="text-bombovo-dark/70 text-base max-w-sm">
+        Ak si to rozmyslíš, vždy sa môžeš vrátiť. Dúfame, že ťa uvidíme na niektorom z našich táborov!
+      </p>
+    </div>
+  )
+}
+
+// ── Step 1 ────────────────────────────────────────────────────────────────────
+function StepNameCamp({
+  camps,
+  onNext,
+}: {
+  camps: Camp[]
+  onNext: (name: string, camp: string) => void
+}) {
+  const [name, setName] = useState('')
+  const [camp, setCamp] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [error, setError] = useState('')
+
+  const campDefaultLabel = 'Akýkoľvek Tábor'
+  const selectedLabel = camp || campDefaultLabel
+
+  function handleSubmit() {
+    if (!name.trim()) {
+      setError('Prosím zadaj svoje meno.')
+      return
+    }
+    setError('')
+    onNext(name.trim(), camp || campDefaultLabel)
+  }
+
+  return (
+    <div className="flex flex-col gap-6 w-full">
+      {/* Name */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
+          <span className="relative inline-block">
+            Krok 1: Zadaj svoje meno
+            <WavyUnderline />
+          </span>
+        </h2>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Tvoje meno"
+          className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
+        />
+        {error && <p className="text-bombovo-red text-sm">{error}</p>}
+      </div>
+
+      {/* Camp */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
+          <span className="relative inline-block">
+            Krok 2: Vyber si ktorý tábor chceš vyhrať
+            <WavyUnderline />
+          </span>
+        </h2>
+        <div className="relative w-full">
+          <button
+            type="button"
+            onClick={() => setDropdownOpen((o) => !o)}
+            className="w-full px-6 py-4 rounded-xl flex items-center justify-between transition-all duration-200 border-2 bg-[#D5E3F0] border-bombovo-blue hover:brightness-95"
+          >
+            <span className="font-medium text-bombovo-dark text-base">{selectedLabel}</span>
+            <FiChevronDown
+              className={`transition-transform duration-200 flex-shrink-0 ml-4 ${
+                dropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+              <button
+                type="button"
+                onClick={() => { setCamp(''); setDropdownOpen(false) }}
+                className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
+                  camp === '' ? 'bg-[#E8EFF5] font-semibold' : ''
+                }`}
+              >
+                {campDefaultLabel}
+              </button>
+              {camps.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { setCamp(c.name); setDropdownOpen(false) }}
+                  className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
+                    camp === c.name ? 'bg-[#E8EFF5] font-semibold' : ''
+                  }`}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 mt-1"
+      >
+        Ďalej
+      </button>
+    </div>
+  )
+}
+
+// ── Step 2 ────────────────────────────────────────────────────────────────────
+function StepEmail({
   name,
   selectedCamp,
   onSuccess,
   onBack,
-}: Props) {
+}: {
+  name: string
+  selectedCamp: string
+  onSuccess: () => void
+  onBack: () => void
+}) {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit() {
     const trimmed = email.trim()
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    if (!trimmed || !EMAIL_REGEX.test(trimmed)) {
       setError('Prosím zadaj platný email.')
       return
     }
@@ -645,7 +611,7 @@ export default function StepEmail({
       const res = await fetch('/api/giveaway', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, name, selectedCamp, source: 'popup' }),
+        body: JSON.stringify({ email: trimmed, name, selectedCamp, source: 'landing-page' }),
       })
       const data = await res.json()
       if (!res.ok || data.error) {
@@ -687,7 +653,7 @@ export default function StepEmail({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder={emailPlaceholder}
+          placeholder="tvoj@email.sk"
           className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
           disabled={loading}
         />
@@ -697,7 +663,7 @@ export default function StepEmail({
           disabled={loading}
           className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 mt-1 disabled:opacity-60"
         >
-          {loading ? 'Odosielam…' : submitLabel}
+          {loading ? 'Odosielam…' : 'Prihlásiť sa do súťaže'}
         </button>
         <button
           onClick={onBack}
@@ -710,180 +676,12 @@ export default function StepEmail({
     </div>
   )
 }
-</file>
 
-<file path="components/GiveawayPopup/steps/StepNameCamp.tsx">
-'use client'
-
-import { useState } from 'react'
-import { FiChevronDown } from 'react-icons/fi'
-
-interface Camp {
-  id: string
-  name: string
-}
-
-interface Props {
-  headline: string
-  namePlaceholder: string
-  campDefaultLabel: string
-  nextLabel: string
-  camps: Camp[]
-  onNext: (name: string, camp: string) => void
-}
-
-function WavyUnderline() {
-  return (
-    <svg
-      className="absolute left-0 -bottom-2 w-full"
-      viewBox="0 0 200 12"
-      preserveAspectRatio="none"
-      style={{ height: '10px' }}
-    >
-      <path
-        d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
-        stroke="#DF2935"
-        strokeWidth="3"
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-export default function StepNameCamp({
-  namePlaceholder,
-  campDefaultLabel,
-  nextLabel,
-  camps,
-  onNext,
-}: Props) {
-  const [name, setName] = useState('')
-  const [camp, setCamp] = useState('')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [error, setError] = useState('')
-
-  function handleSubmit() {
-    if (!name.trim()) {
-      setError('Prosím zadaj svoje meno.')
-      return
-    }
-    setError('')
-    onNext(name.trim(), camp || campDefaultLabel)
-  }
-
-  const selectedLabel = camp || campDefaultLabel
-
-  return (
-    <div className="flex flex-col gap-6 w-full">
-
-      {/* Name section */}
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
-          <span className="relative inline-block">
-            Krok 1: Zadaj svoje meno
-            <WavyUnderline />
-          </span>
-        </h2>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={namePlaceholder}
-          className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
-        />
-        {error && <p className="text-bombovo-red text-sm">{error}</p>}
-      </div>
-
-      {/* Camp section */}
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
-          <span className="relative inline-block">
-            Krok 2: Vyber si ktorý tábor chceš vyhrať
-            <WavyUnderline />
-          </span>
-        </h2>
-
-        {/* Custom dropdown */}
-        <div className="relative w-full">
-          <button
-            type="button"
-            onClick={() => setDropdownOpen((o) => !o)}
-            className={`w-full px-6 py-4 rounded-xl flex items-center justify-between transition-all duration-200 border-2 ${
-              dropdownOpen
-                ? 'bg-[#D5E3F0] border-bombovo-blue'
-                : 'bg-[#E8EFF5] border-transparent hover:bg-[#D5E3F0]'
-            }`}
-          >
-            <span className="font-medium text-bombovo-dark text-base">{selectedLabel}</span>
-            <FiChevronDown
-              className={`transition-transform duration-200 flex-shrink-0 ml-4 ${
-                dropdownOpen ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-
-          {dropdownOpen && (
-            <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
-              <button
-                type="button"
-                onClick={() => { setCamp(''); setDropdownOpen(false) }}
-                className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
-                  camp === '' ? 'bg-[#E8EFF5] font-semibold' : ''
-                }`}
-              >
-                {campDefaultLabel}
-              </button>
-              {camps.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => { setCamp(c.name); setDropdownOpen(false) }}
-                  className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
-                    camp === c.name ? 'bg-[#E8EFF5] font-semibold' : ''
-                  }`}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Yellow CTA button */}
-      <button
-        onClick={handleSubmit}
-        className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 mt-1"
-      >
-        {nextLabel}
-      </button>
-    </div>
-  )
-}
-</file>
-
-<file path="components/GiveawayPopup/steps/StepSuccess.tsx">
-'use client'
-
-import { useEffect } from 'react'
-
-interface Props {
-  successHeadline: string
-  successBody: string
-  onClose: () => void
-}
-
-export default function StepSuccess({ onClose }: Props) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 10000)
-    return () => clearTimeout(timer)
-  }, [onClose])
-
+// ── Step 3 ────────────────────────────────────────────────────────────────────
+function StepSuccess() {
   return (
     <div className="flex flex-col items-center gap-4 w-full text-center">
       <div className="text-6xl">🎉</div>
-
       <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight pb-2">
         <span className="relative inline-block">
           Si v hre o tábor zadarmo!
@@ -903,317 +701,92 @@ export default function StepSuccess({ onClose }: Props) {
           </svg>
         </span>
       </h2>
-
       <p className="text-bombovo-dark/50 font-medium text-base leading-relaxed">
         Sleduj svoj email — víťaza oznámime pred letom. Veľa šťastia! 🤞
       </p>
     </div>
   )
 }
-</file>
 
-<file path="components/GiveawayPopup/steps/StepYesNo.tsx">
-'use client'
-
-interface Props {
-  headline: string
-  yesLabel: string
-  noLabel: string
-  onYes: () => void
-  onNo: () => void
+// ── Slide variants ────────────────────────────────────────────────────────────
+const variants = {
+  enter: (dir: number) => ({ x: dir * 40, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir * -40, opacity: 0 }),
 }
 
-export default function StepYesNo({ headline, yesLabel, noLabel, onYes, onNo }: Props) {
-  return (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight">
-        <span className="relative inline-block text-bombovo-dark">
-          {headline}
-          <svg
-            className="absolute left-0 -bottom-2 w-full"
-            viewBox="0 0 200 12"
-            preserveAspectRatio="none"
-            style={{ height: '10px' }}
-          >
-            <path
-              d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
-              stroke="#DF2935"
-              strokeWidth="3"
-              fill="none"
-              strokeLinecap="round"
-            />
-          </svg>
-        </span>
-      </h2>
-      <div className="flex flex-col gap-3 w-full">
-        <button
-          onClick={onYes}
-          className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150"
-        >
-          {yesLabel}
-        </button>
-        <button
-          onClick={onNo}
-          className="w-full py-4 px-6 bg-white border-2 border-bombovo-dark text-bombovo-dark font-normal text-base rounded-xl hover:bg-bombovo-gray transition-all duration-150"
-        >
-          {noLabel}
-        </button>
-      </div>
-    </div>
-  )
-}
-</file>
-
-<file path="components/GiveawayPopup/index.tsx">
-'use client'
-
-import { useEffect, useState, useCallback } from 'react'
-import ReactDOM from 'react-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import PopupModal from './PopupModal'
-import type { PopupContent } from './PopupModal'
-
-const SESSION_KEY = 'bombovo_giveaway_seen'
-
-interface Props extends PopupContent {
-  delaySeconds: number
-}
-
-export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
-  const [visible, setVisible] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [maxSize, setMaxSize] = useState<{ w: number; h: number } | null>(null)
-
-  useEffect(() => {
-    setMounted(true)
-    // Capture the screen size once on first load and lock it as the max
-    setMaxSize({
-      w: window.innerWidth - 80,
-      h: window.innerHeight - 30,
-    })
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-
-    // Already seen this session — don't show
-    if (sessionStorage.getItem(SESSION_KEY)) return
-
-    const timer = setTimeout(() => {
-      setVisible(true)
-    }, delaySeconds * 1000)
-
-    return () => clearTimeout(timer)
-  }, [mounted, delaySeconds])
-
-  const handleClose = useCallback(() => {
-    setVisible(false)
-    sessionStorage.setItem(SESSION_KEY, '1')
-  }, [])
-
-  if (!mounted) return null
-
-  return ReactDOM.createPortal(
-    <AnimatePresence>
-      {visible && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={handleClose}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-          />
-
-          {/* Modal */}
-          <motion.div
-            key="modal"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            onClick={(e) => e.stopPropagation()}
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-          >
-            <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
-              <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body,
-  )
-}
-</file>
-
-<file path="components/GiveawayPopup/PopupModal.tsx">
-'use client'
-
-import { useState } from 'react'
-import Image from 'next/image'
-import StepYesNo from './steps/StepYesNo'
-import StepNameCamp from './steps/StepNameCamp'
-import StepEmail from './steps/StepEmail'
-import StepSuccess from './steps/StepSuccess'
-
-interface Camp {
-  id: string
-  name: string
-}
-
-export interface PopupContent {
-  photoUrl: string | null
-  step0Headline: string
-  step0YesLabel: string
-  step0NoLabel: string
-  step1Headline: string
-  step1NamePlaceholder: string
-  step1CampDefaultLabel: string
-  step1NextLabel: string
-  step2Headline: string
-  step2EmailPlaceholder: string
-  step2SubmitLabel: string
-  step3SuccessHeadline: string
-  step3SuccessBody: string
-  camps: Camp[]
-}
-
-interface Props extends PopupContent {
-  onClose: () => void
-  maxSize: { w: number; h: number } | null
-}
-
-export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...content }: Props) {
+// ── Main component ────────────────────────────────────────────────────────────
+export default function SutazClient({ photoUrl, camps }: Props) {
   const [step, setStep] = useState(0)
+  const [dir, setDir] = useState(1)
+  const [declined, setDeclined] = useState(false)
   const [entryName, setEntryName] = useState('')
   const [entryCamp, setEntryCamp] = useState('')
 
-  function handleYes() { setStep(1) }
-  function handleNameCampNext(name: string, camp: string) {
-    setEntryName(name)
-    setEntryCamp(camp)
-    setStep(2)
+  function goTo(next: number, direction: number) {
+    setDir(direction)
+    setStep(next)
   }
-  function handleSuccess() { setStep(3) }
-  function handleBack() { setStep(1) }
 
-  const stepContent = (
-    <div className="w-full">
-      {step === 0 && (
-        <StepYesNo
-          headline={content.step0Headline}
-          yesLabel={content.step0YesLabel}
-          noLabel={content.step0NoLabel}
-          onYes={handleYes}
-          onNo={onClose}
-        />
-      )}
-      {step === 1 && (
-        <StepNameCamp
-          headline={content.step1Headline}
-          namePlaceholder={content.step1NamePlaceholder}
-          campDefaultLabel={content.step1CampDefaultLabel}
-          nextLabel={content.step1NextLabel}
-          camps={camps}
-          onNext={handleNameCampNext}
-        />
-      )}
-      {step === 2 && (
-        <StepEmail
-          headline={content.step2Headline}
-          emailPlaceholder={content.step2EmailPlaceholder}
-          submitLabel={content.step2SubmitLabel}
-          name={entryName}
-          selectedCamp={entryCamp}
-          onSuccess={handleSuccess}
-          onBack={handleBack}
-        />
-      )}
-      {step === 3 && (
-        <StepSuccess
-          successHeadline={content.step3SuccessHeadline}
-          successBody={content.step3SuccessBody}
-          onClose={onClose}
-        />
-      )}
-    </div>
-  )
-
-  const closeButton = (
-    <button
-      onClick={onClose}
-      aria-label="Zavrieť"
-      className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white border-2 border-bombovo-dark hover:bg-bombovo-gray transition-all text-bombovo-dark z-10"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-      </svg>
-    </button>
+  const formContent = (
+    <AnimatePresence mode="wait" initial={false} custom={dir}>
+      <motion.div
+        key={declined ? 'declined' : step}
+        custom={dir}
+        variants={variants}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
+        className="w-full"
+      >
+        {declined ? (
+          <StepDeclined />
+        ) : step === 0 ? (
+          <StepYesNo
+            onYes={() => goTo(1, 1)}
+            onNo={() => setDeclined(true)}
+          />
+        ) : step === 1 ? (
+          <StepNameCamp
+            camps={camps}
+            onNext={(name, camp) => {
+              setEntryName(name)
+              setEntryCamp(camp)
+              goTo(2, 1)
+            }}
+          />
+        ) : step === 2 ? (
+          <StepEmail
+            name={entryName}
+            selectedCamp={entryCamp}
+            onSuccess={() => goTo(3, 1)}
+            onBack={() => goTo(1, -1)}
+          />
+        ) : (
+          <StepSuccess />
+        )}
+      </motion.div>
+    </AnimatePresence>
   )
 
   return (
     <>
-      {/* ── MOBILE: full screen, 50/50 split ── */}
-      <div className="md:hidden fixed inset-0 flex flex-col overflow-hidden">
-        {/* Form — top 50% */}
-        <div className="relative h-1/2 bg-white flex flex-col justify-center items-center px-6 overflow-visible">
-          {closeButton}
-          {stepContent}
+      {/* ── MOBILE: form top 50%, photo bottom 50% ── */}
+      <div className="md:hidden flex flex-col" style={{ minHeight: 'calc(100vh - 140px)' }}>
+        <div className="flex-1 bg-bombovo-gray flex flex-col justify-center items-center px-6 py-10 overflow-visible">
+          {formContent}
         </div>
-
-        {/* Photo — bottom 50% */}
-        <div className="relative h-1/2 flex-shrink-0">
-          {photoUrl ? (
-            <Image
-              src={photoUrl}
-              alt="Vyhraj tábor zadarmo"
-              fill
-              className="object-cover"
-              unoptimized={photoUrl.startsWith('http')}
-            />
-          ) : (
-            <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
-              <span className="text-6xl">🎁</span>
-            </div>
-          )}
-        </div>
+        <PhotoPanel photoUrl={photoUrl} className="h-64 flex-shrink-0" />
       </div>
 
       {/* ── DESKTOP: side by side ── */}
-      <div
-        className="hidden md:flex shadow-2xl rounded-2xl overflow-hidden"
-        style={{
-          width: 'calc(100vw - 80px)',
-          height: 'calc(100vh - 30px)',
-          maxWidth: maxSize ? `${maxSize.w}px` : undefined,
-          maxHeight: maxSize ? `${maxSize.h}px` : undefined,
-        }}
-      >
-        {/* Left panel — photo */}
-        <div className="relative w-[48%] flex-shrink-0">
-          {photoUrl ? (
-            <Image
-              src={photoUrl}
-              alt="Vyhraj tábor zadarmo"
-              fill
-              className="object-cover"
-              unoptimized={photoUrl.startsWith('http')}
-            />
-          ) : (
-            <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
-              <span className="text-7xl">🎁</span>
-            </div>
-          )}
-        </div>
-
-        {/* Right panel — form */}
-        <div className="relative flex-1 bg-white border-2 border-bombovo-blue rounded-r-2xl flex flex-col justify-center items-center px-14 py-10 overflow-hidden">
-          {closeButton}
-          {stepContent}
+      <div className="hidden md:flex" style={{ minHeight: 'calc(100vh - 140px)' }}>
+        <PhotoPanel photoUrl={photoUrl} className="w-1/2 flex-shrink-0" />
+        <div className="flex-1 bg-bombovo-gray flex items-center justify-center px-14 py-10 overflow-hidden">
+          <div className="w-full max-w-md">
+            {formContent}
+          </div>
         </div>
       </div>
     </>
@@ -1221,118 +794,184 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
 }
 </file>
 
-<file path="scripts/assign-camp-images.ts">
-import * as dotenv from 'dotenv'
-import path from 'path'
+<file path="components/GiveawaySection.tsx">
+'use client'
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+import { useState } from 'react'
+import { FiChevronDown } from 'react-icons/fi'
+import { camps as fallbackCamps } from '@/lib/campsData'
 
-const BASE_URL = process.env.PAYLOAD_URL || 'http://localhost:3000'
-const EMAIL = process.env.PAYLOAD_ADMIN_EMAIL!
-const PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD!
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const DEFAULT_CAMP = 'Akýkoľvek Tábor'
 
-// filename → camp slug (expecto already done, included for safety)
-const MAPPINGS: Record<string, string> = {
-  'olympcamp.JPG':              'olymp-kemp',
-  'fest.JPG':                   'fest-animator-fest',
-  'tanecnaplaneta.JPG':         'tanecna-planeta',
-  'babinec.JPG':                'babinec',
-  'tajomstvopohara.JPG':        'tajomstvo-basketbaloveho-pohara',
-  'trhlina.JPG':                'trhlina',
-  'readypleayer.JPG':           'ready-player-one',
-  'V-dracej-nore.JPG':          'v-dracej-nore',
-  'summeradvatnure.JPG':        'anglicke-leto',
-  'neverfot.JPG':               'neverfort',
-  'chlapinec.JPG':              'chlapinec',
-  'Art.JPG':                    'artlantida',
-  'plutva.JPG':                 'stastna-plutva',
-  'kazdydennovyzazitok.JPG':    'kazdy-den-novy-zazitok',
-  'zbombova-do-bombova.JPG':    'z-bodu-nula-do-bodu-sto',
-  'woodcamp.JPG':               'woodkemp',
-  'expcto.JPG':                 'expecto',
-}
+export default function GiveawaySection() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [camp, setCamp] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({})
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
-async function login(): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
-  })
-  const data = await res.json() as any
-  if (!data.token) throw new Error(`Login failed: ${JSON.stringify(data)}`)
-  console.log('Logged in.')
-  return data.token
-}
+  const selectedCampLabel = camp || DEFAULT_CAMP
 
-async function getAllMedia(token: string): Promise<Record<string, string>> {
-  // Returns filename → media doc ID
-  const res = await fetch(`${BASE_URL}/api/media?limit=200&depth=0`, {
-    headers: { Authorization: `JWT ${token}` },
-  })
-  const data = await res.json() as any
-  const map: Record<string, string> = {}
-  for (const doc of data.docs ?? []) {
-    if (doc.filename) map[doc.filename] = doc.id
-  }
-  console.log(`Found ${Object.keys(map).length} media files.`)
-  return map
-}
-
-async function getCampIdBySlug(token: string, slug: string): Promise<string | null> {
-  const res = await fetch(`${BASE_URL}/api/camps?where[slug][equals]=${slug}&limit=1&depth=0`, {
-    headers: { Authorization: `JWT ${token}` },
-  })
-  const data = await res.json() as any
-  return data.docs?.[0]?.id ?? null
-}
-
-async function updateCamp(token: string, campId: string, mediaId: string, slug: string): Promise<void> {
-  const res = await fetch(`${BASE_URL}/api/camps/${campId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${token}`,
-    },
-    body: JSON.stringify({
-      cardImage: mediaId,
-      heroGallery: [{ photo: mediaId }],
-    }),
-  })
-  const data = await res.json() as any
-  if (data.errors) {
-    console.error(`  ❌ Failed to update ${slug}:`, JSON.stringify(data.errors))
-  } else {
-    console.log(`  ✅ Updated ${slug}`)
-  }
-}
-
-async function main() {
-  const token = await login()
-  const mediaMap = await getAllMedia(token)
-
-  for (const [filename, slug] of Object.entries(MAPPINGS)) {
-    const mediaId = mediaMap[filename]
-    if (!mediaId) {
-      console.warn(`  ⚠️  Media not found for filename: ${filename} (${slug}) — skipping`)
-      continue
+  async function handleSubmit() {
+    const newErrors: { name?: string; email?: string } = {}
+    if (!name.trim()) newErrors.name = 'Meno je povinné.'
+    if (!email.trim() || !EMAIL_REGEX.test(email.trim())) newErrors.email = 'Zadaj platný email.'
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
     }
-
-    const campId = await getCampIdBySlug(token, slug)
-    if (!campId) {
-      console.warn(`  ⚠️  Camp not found in Payload for slug: ${slug} — skipping`)
-      continue
+    setErrors({})
+    setLoading(true)
+    try {
+      const res = await fetch('/api/giveaway', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          name: name.trim(),
+          selectedCamp: camp || DEFAULT_CAMP,
+          source: 'homepage',
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && !data.error) {
+        setSubmitted(true)
+      } else {
+        setErrors({ email: data.error || 'Nastala chyba. Skúste to znova.' })
+      }
+    } catch {
+      setErrors({ email: 'Nastala chyba. Skúste to znova.' })
+    } finally {
+      setLoading(false)
     }
-
-    await updateCamp(token, campId, mediaId, slug)
   }
 
-  console.log('\nDone!')
-}
+  if (submitted) {
+    return (
+      <section className="bg-white py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <div className="text-5xl mb-4">🎉</div>
+          <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark mb-3">
+            Si v hre o tábor zadarmo!
+          </h2>
+          <p className="text-bombovo-dark/60 text-base">
+            Sleduj svoj email — víťaza oznámime pred letom. Veľa šťastia! 🤞
+          </p>
+        </div>
+      </section>
+    )
+  }
 
-main().catch((err: unknown) => {
-  console.error('Error:', err)
-  process.exit(1)
-})
+  return (
+    <section className="bg-white py-16 md:py-20">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* Headline */}
+        <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark mb-3 text-center">
+          <span className="relative inline-block pb-3">
+            Vyhraj tábor zadarmo!
+            <svg
+              className="absolute left-0 -bottom-1 w-full"
+              viewBox="0 0 200 12"
+              preserveAspectRatio="none"
+              style={{ height: '10px' }}
+            >
+              <path
+                d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+                stroke="#DF2935"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
+        </h2>
+
+        {/* Subtext */}
+        <p className="text-bombovo-dark/70 text-base md:text-lg text-center mb-10">
+          Vyplň svoje meno, email a vyber si tábor, ktorý by si chcel vyhrať, a si zapojený do súťaže.
+        </p>
+
+        {/* Row 1: Name + Camp side by side */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-3">
+          {/* Name */}
+          <div className="flex-1">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Meno"
+              className="w-full px-4 py-3 border-2 border-bombovo-dark rounded-xl text-bombovo-dark placeholder:text-bombovo-dark/40 focus:outline-none focus:border-bombovo-blue"
+            />
+            {errors.name && <p className="text-bombovo-red text-sm mt-1">{errors.name}</p>}
+          </div>
+
+          {/* Camp dropdown */}
+          <div className="flex-1 relative">
+            <button
+              type="button"
+              onClick={() => setDropdownOpen((o) => !o)}
+              className="w-full px-4 py-3 border-2 border-bombovo-dark rounded-xl text-bombovo-dark flex items-center justify-between focus:outline-none focus:border-bombovo-blue"
+            >
+              <span className={camp ? 'text-bombovo-dark' : 'text-bombovo-dark/40'}>
+                {selectedCampLabel}
+              </span>
+              <FiChevronDown
+                className={`transition-transform duration-200 flex-shrink-0 ml-2 ${dropdownOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            {dropdownOpen && (
+              <div className="absolute z-20 w-full mt-1 bg-white rounded-xl shadow-xl border-2 border-bombovo-dark max-h-64 overflow-y-auto">
+                <button
+                  type="button"
+                  onClick={() => { setCamp(''); setDropdownOpen(false) }}
+                  className={`w-full px-4 py-3 text-left hover:bg-bombovo-gray transition-colors text-sm ${camp === '' ? 'font-semibold' : ''}`}
+                >
+                  {DEFAULT_CAMP}
+                </button>
+                {fallbackCamps.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => { setCamp(c.name); setDropdownOpen(false) }}
+                    className={`w-full px-4 py-3 text-left hover:bg-bombovo-gray transition-colors text-sm ${camp === c.name ? 'font-semibold' : ''}`}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2: Email full width */}
+        <div className="mb-4">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            placeholder="Email"
+            className="w-full px-4 py-3 border-2 border-bombovo-dark rounded-xl text-bombovo-dark placeholder:text-bombovo-dark/40 focus:outline-none focus:border-bombovo-blue"
+            disabled={loading}
+          />
+          {errors.email && <p className="text-bombovo-red text-sm mt-1">{errors.email}</p>}
+        </div>
+
+        {/* Row 3: CTA button */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 disabled:opacity-60"
+        >
+          {loading ? 'Odosielam…' : 'Zapoj Ma Do Súťaže'}
+        </button>
+      </div>
+    </section>
+  )
+}
 </file>
 
 <file path="app/(app)/api/contact/route.ts">
@@ -1432,6 +1071,119 @@ Súhlas so spracovaním osobných údajov: Áno
       { error: 'Nastala chyba pri spracovaní formulára' },
       { status: 500 }
     )
+  }
+}
+</file>
+
+<file path="app/(app)/api/giveaway/route.ts">
+import { NextRequest, NextResponse } from 'next/server'
+import { getPayloadClient } from '@/lib/payload'
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function slugifyCamp(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[áä]/g, 'a')
+    .replace(/[čč]/g, 'c')
+    .replace(/[ďď]/g, 'd')
+    .replace(/[éě]/g, 'e')
+    .replace(/[íï]/g, 'i')
+    .replace(/[ľĺ]/g, 'l')
+    .replace(/[ňň]/g, 'n')
+    .replace(/[óô]/g, 'o')
+    .replace(/[řŕ]/g, 'r')
+    .replace(/[šš]/g, 's')
+    .replace(/[ťť]/g, 't')
+    .replace(/[úů]/g, 'u')
+    .replace(/[ýý]/g, 'y')
+    .replace(/[žž]/g, 'z')
+    .replace(/[^a-z0-9-]/g, '')
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { email, name, selectedCamp, source } = body
+
+    // Validate
+    if (!email || !EMAIL_REGEX.test(email)) {
+      return NextResponse.json({ error: 'Neplatný email.' }, { status: 400 })
+    }
+    if (!name || name.trim().length === 0) {
+      return NextResponse.json({ error: 'Meno je povinné.' }, { status: 400 })
+    }
+
+    const payload = await getPayloadClient()
+
+    // Save to Payload
+    const entry = await payload.create({
+      collection: 'giveaway-entries',
+      data: {
+        email: email.trim().toLowerCase(),
+        name: name.trim(),
+        selectedCamp: selectedCamp || 'Akýkoľvek Tábor',
+        source: source || 'popup',
+        syncedToEcomail: false,
+      },
+    })
+
+    // Attempt Ecomail sync — failure does NOT block response
+    try {
+      const apiKey = process.env.ECOMAIL_API_KEY
+      const listId = process.env.ECOMAIL_LIST_ID
+
+      if (apiKey && listId) {
+        const campTag = slugifyCamp(selectedCamp || 'akykolvek-tabor')
+
+        const ecomailRes = await fetch(
+          `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              key: apiKey,
+            },
+            body: JSON.stringify({
+              subscriber_data: {
+                email: email.trim().toLowerCase(),
+                name: name.trim(),
+                tags: ['popup', campTag],
+              },
+              trigger_autoresponders: true,
+              update_existing: true,
+            }),
+          },
+        )
+
+        if (ecomailRes.ok) {
+          // Mark as synced
+          const existing = await payload.find({
+            collection: 'giveaway-entries',
+            where: { email: { equals: email.trim().toLowerCase() } },
+            limit: 1,
+          })
+          if (existing.docs.length > 0) {
+            await payload.update({
+              collection: 'giveaway-entries',
+              id: existing.docs[0].id,
+              data: { syncedToEcomail: true },
+            })
+          }
+        } else {
+          const errText = await ecomailRes.text()
+          console.error('Ecomail sync failed:', ecomailRes.status, errText)
+        }
+      }
+    } catch (ecomailErr) {
+      console.error('Ecomail error (non-blocking):', ecomailErr)
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Giveaway API error:', err)
+    return NextResponse.json({ error: 'Interná chyba servera.' }, { status: 500 })
   }
 }
 </file>
@@ -5632,95 +5384,6 @@ html {
 }
 </file>
 
-<file path="app/(app)/layout.tsx">
-import './globals.css'
-import { getPayload } from 'payload'
-import config from '@payload-config'
-import GiveawayPopup from '@/components/GiveawayPopup'
-import { camps as fallbackCamps } from '@/lib/campsData'
-
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  let popupProps = {
-    isEnabled: false,
-    delaySeconds: 20,
-    photoUrl: null as string | null,
-    step0Headline: 'Chceš vyhrať tábor zadarmo?',
-    step0YesLabel: 'Áno, chcem vyhrať!',
-    step0NoLabel: 'Nie, ďakujem',
-    step1Headline: 'Zadaj Svoje Meno A Vyber Si Tábor',
-    step1NamePlaceholder: 'Tvoje meno',
-    step1CampDefaultLabel: 'Akýkoľvek Tábor',
-    step1NextLabel: 'Ďalej',
-    step2Headline: 'Zadaj Svoj Email A Si V Hre O Tábor Zadarmo',
-    step2EmailPlaceholder: 'tvoj@email.sk',
-    step2SubmitLabel: 'Prihlásiť sa do súťaže',
-    step3SuccessHeadline: 'Si v hre! 🎉',
-    step3SuccessBody:
-      'Tvoja prihláška do súťaže o tábor zadarmo bola úspešne zaznamenaná. Víťaza vyhlásime čoskoro!',
-    camps: fallbackCamps.map((c) => ({ id: c.id, name: c.name })),
-  }
-
-  try {
-    const payload = await getPayload({ config })
-
-    const [globalData, campsData] = await Promise.all([
-      payload.findGlobal({ slug: 'giveaway-popup' }),
-      payload.find({ collection: 'camps', limit: 100, sort: 'order' }),
-    ])
-
-    const g = globalData as any
-    const isEnabled = g?.isEnabled ?? false
-
-    // Extract photo URL from media relation
-    let photoUrl: string | null = null
-    if (g?.photo && typeof g.photo === 'object' && g.photo.url) {
-      photoUrl = g.photo.url
-    }
-
-    // Build camps list — prefer Payload, fall back to hardcoded
-    const payloadCamps =
-      campsData.docs.length > 0
-        ? campsData.docs.map((c: any) => ({ id: String(c.id), name: c.name }))
-        : fallbackCamps.map((c) => ({ id: c.id, name: c.name }))
-
-    popupProps = {
-      isEnabled,
-      delaySeconds: g?.delaySeconds ?? 20,
-      photoUrl,
-      step0Headline: g?.step0Headline ?? popupProps.step0Headline,
-      step0YesLabel: g?.step0YesLabel ?? popupProps.step0YesLabel,
-      step0NoLabel: g?.step0NoLabel ?? popupProps.step0NoLabel,
-      step1Headline: g?.step1Headline ?? popupProps.step1Headline,
-      step1NamePlaceholder: g?.step1NamePlaceholder ?? popupProps.step1NamePlaceholder,
-      step1CampDefaultLabel: g?.step1CampDefaultLabel ?? popupProps.step1CampDefaultLabel,
-      step1NextLabel: g?.step1NextLabel ?? popupProps.step1NextLabel,
-      step2Headline: g?.step2Headline ?? popupProps.step2Headline,
-      step2EmailPlaceholder: g?.step2EmailPlaceholder ?? popupProps.step2EmailPlaceholder,
-      step2SubmitLabel: g?.step2SubmitLabel ?? popupProps.step2SubmitLabel,
-      step3SuccessHeadline: g?.step3SuccessHeadline ?? popupProps.step3SuccessHeadline,
-      step3SuccessBody: g?.step3SuccessBody ?? popupProps.step3SuccessBody,
-      camps: payloadCamps,
-    }
-  } catch (err) {
-    // Payload unavailable — keep popup disabled so pages don't break
-    console.error('GiveawayPopup: failed to fetch Payload data', err)
-  }
-
-  // TODO: remove these two lines when done testing
-  popupProps.isEnabled = true
-  popupProps.delaySeconds = 0
-
-  const { isEnabled, ...popupContent } = popupProps
-
-  return (
-    <>
-      {children}
-      {isEnabled && <GiveawayPopup {...popupContent} />}
-    </>
-  )
-}
-</file>
-
 <file path="app/(app)/page-simple.txt">
 // SIMPLE VERSION OF HOMEPAGE FOR TESTING
 // If the main page doesn't work, rename this file to page.tsx (and rename current page.tsx to page-full.tsx)
@@ -5750,6 +5413,7 @@ import ReviewCarousel from '@/components/ReviewCarousel'
 import TopCampsWithSearch from '@/components/TopCampsWithSearch'
 import FourReasons from '@/components/FourReasons'
 import SkolyVPrirode from '@/components/SkolyVPrirode'
+import GiveawaySection from '@/components/GiveawaySection'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
@@ -5806,15 +5470,23 @@ export default function Home() {
         <SkolyVPrirode />
       </div>
       
-      {/* DIVIDER 5: Grey → White (Yellow) */}
-      <WaveDivider color="yellow" variant={2} />
-      
-      {/* Section 7: FAQ - White Background */}
+      {/* DIVIDER 5: Grey → White (Blue) */}
+      <WaveDivider color="blue" variant={2} />
+
+      {/* Section 6.1: Giveaway Form - White Background */}
       <div className="bg-white">
+        <GiveawaySection />
+      </div>
+
+      {/* DIVIDER 5.1: White → Grey (Blue) */}
+      <WaveDivider color="blue" variant={1} />
+
+      {/* Section 7: FAQ - Grey Background */}
+      <div className="bg-bombovo-gray">
         <FAQ />
       </div>
       
-      {/* DIVIDER 6: White → Dark (Red) */}
+      {/* DIVIDER 6: Grey → Dark (Red) */}
       <WaveDivider color="red" variant={3} />
       
       {/* Section 8: Footer - Dark Background */}
@@ -5969,6 +5641,121 @@ const Layout = ({ children }: Args) => (
 )
 
 export default Layout
+</file>
+
+<file path="collections/globals/GiveawayPopup.ts">
+import type { GlobalConfig } from 'payload'
+
+export const GiveawayPopupGlobal: GlobalConfig = {
+  slug: 'giveaway-popup',
+  label: 'Popup: Vyhraj Tábor Zadarmo',
+  admin: {
+    group: 'Marketing',
+  },
+  access: {
+    read: () => true,
+  },
+  fields: [
+    {
+      name: 'isEnabled',
+      type: 'checkbox',
+      label: 'Popup zapnutý',
+      defaultValue: true,
+      admin: {
+        description: 'Vypni pre skrytie popupu na celom webe.',
+      },
+    },
+    {
+      name: 'delaySeconds',
+      type: 'number',
+      label: 'Oneskorenie zobrazenia (sekundy)',
+      defaultValue: 20,
+    },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka (ľavý panel na desktopu)',
+    },
+    // Step 0
+    {
+      name: 'step0Headline',
+      type: 'text',
+      label: 'Krok 0 – Headline',
+      defaultValue: 'Chceš vyhrať tábor zadarmo?',
+    },
+    {
+      name: 'step0YesLabel',
+      type: 'text',
+      label: 'Krok 0 – Tlačidlo ÁNO',
+      defaultValue: 'Áno, chcem vyhrať!',
+    },
+    {
+      name: 'step0NoLabel',
+      type: 'text',
+      label: 'Krok 0 – Tlačidlo NIE',
+      defaultValue: 'Nie, ďakujem',
+    },
+    // Step 1
+    {
+      name: 'step1Headline',
+      type: 'text',
+      label: 'Krok 1 – Headline',
+      defaultValue: 'Zadaj Svoje Meno A Vyber Si Tábor',
+    },
+    {
+      name: 'step1NamePlaceholder',
+      type: 'text',
+      label: 'Krok 1 – Placeholder mena',
+      defaultValue: 'Tvoje meno',
+    },
+    {
+      name: 'step1CampDefaultLabel',
+      type: 'text',
+      label: 'Krok 1 – Predvolená možnosť výberu tábora',
+      defaultValue: 'Akýkoľvek Tábor',
+    },
+    {
+      name: 'step1NextLabel',
+      type: 'text',
+      label: 'Krok 1 – Tlačidlo Ďalej',
+      defaultValue: 'Ďalej',
+    },
+    // Step 2
+    {
+      name: 'step2Headline',
+      type: 'text',
+      label: 'Krok 2 – Headline',
+      defaultValue: 'Zadaj Svoj Email A Si V Hre O Tábor Zadarmo',
+    },
+    {
+      name: 'step2EmailPlaceholder',
+      type: 'text',
+      label: 'Krok 2 – Placeholder emailu',
+      defaultValue: 'tvoj@email.sk',
+    },
+    {
+      name: 'step2SubmitLabel',
+      type: 'text',
+      label: 'Krok 2 – Tlačidlo Odoslať',
+      defaultValue: 'Prihlásiť sa do súťaže',
+    },
+    // Step 3
+    {
+      name: 'step3SuccessHeadline',
+      type: 'text',
+      label: 'Krok 3 – Úspech Headline',
+      defaultValue: 'Si v hre! 🎉',
+    },
+    {
+      name: 'step3SuccessBody',
+      type: 'textarea',
+      label: 'Krok 3 – Úspech Text',
+      defaultValue:
+        'Tvoja prihláška do súťaže o tábor zadarmo bola úspešne zaznamenaná. Víťaza vyhlásime čoskoro!',
+    },
+  ],
+}
 </file>
 
 <file path="collections/globals/SkolyVPrirode.ts">
@@ -6440,6 +6227,70 @@ export const Camps: CollectionConfig = {
 }
 </file>
 
+<file path="collections/GiveawayEntries.ts">
+import type { CollectionConfig } from 'payload'
+
+export const GiveawayEntries: CollectionConfig = {
+  slug: 'giveaway-entries',
+  labels: {
+    singular: 'Giveaway Entry',
+    plural: 'Giveaway Entries',
+  },
+  admin: {
+    group: 'Marketing',
+    useAsTitle: 'email',
+    defaultColumns: ['email', 'name', 'selectedCamp', 'syncedToEcomail', 'createdAt'],
+  },
+  access: {
+    create: () => true,
+    read: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
+  timestamps: true,
+  fields: [
+    {
+      name: 'email',
+      type: 'email',
+      label: 'Email',
+      required: true,
+    },
+    {
+      name: 'name',
+      type: 'text',
+      label: 'Meno',
+      required: true,
+    },
+    {
+      name: 'selectedCamp',
+      type: 'text',
+      label: 'Vybraný tábor',
+    },
+    {
+      name: 'source',
+      type: 'select',
+      label: 'Zdroj',
+      defaultValue: 'popup',
+      options: [
+        { label: 'Popup', value: 'popup' },
+        { label: 'Landing Page', value: 'landing-page' },
+        { label: 'Iné', value: 'other' },
+      ],
+    },
+    {
+      name: 'syncedToEcomail',
+      type: 'checkbox',
+      label: 'Synchronizované s Ecomail',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Automaticky sa aktualizuje po úspešnom odoslaní do Ecomail.',
+      },
+    },
+  ],
+}
+</file>
+
 <file path="collections/Strediska.ts">
 import type { CollectionConfig } from 'payload'
 
@@ -6656,6 +6507,626 @@ export const Users: CollectionConfig = {
     // Email added by default
     // Add more fields as needed
   ],
+}
+</file>
+
+<file path="components/GiveawayPopup/steps/StepEmail.tsx">
+'use client'
+
+import { useState } from 'react'
+
+interface Props {
+  headline: string
+  emailPlaceholder: string
+  submitLabel: string
+  name: string
+  selectedCamp: string
+  onSuccess: () => void
+  onBack: () => void
+}
+
+export default function StepEmail({
+  emailPlaceholder,
+  submitLabel,
+  name,
+  selectedCamp,
+  onSuccess,
+  onBack,
+}: Props) {
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit() {
+    const trimmed = email.trim()
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Prosím zadaj platný email.')
+      return
+    }
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/giveaway', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed, name, selectedCamp, source: 'popup' }),
+      })
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        setError(data.error || 'Nastala chyba. Skúste to prosím znova.')
+      } else {
+        onSuccess()
+      }
+    } catch {
+      setError('Nastala chyba. Skúste to prosím znova.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-6 w-full">
+      <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight pb-2 whitespace-nowrap">
+        <span className="relative inline-block">
+          Zadaj svoj email a si v hre!
+          <svg
+            className="absolute left-0 -bottom-2 w-full"
+            viewBox="0 0 200 12"
+            preserveAspectRatio="none"
+            style={{ height: '10px' }}
+          >
+            <path
+              d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+              stroke="#DF2935"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+      </h2>
+      <div className="flex flex-col gap-3 w-full">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          placeholder={emailPlaceholder}
+          className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
+          disabled={loading}
+        />
+        {error && <p className="text-bombovo-red text-sm">{error}</p>}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 mt-1 disabled:opacity-60"
+        >
+          {loading ? 'Odosielam…' : submitLabel}
+        </button>
+        <button
+          onClick={onBack}
+          disabled={loading}
+          className="text-sm text-bombovo-blue underline text-center hover:text-bombovo-dark transition-colors disabled:opacity-60"
+        >
+          Späť
+        </button>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/GiveawayPopup/steps/StepNameCamp.tsx">
+'use client'
+
+import { useState } from 'react'
+import { FiChevronDown } from 'react-icons/fi'
+
+interface Camp {
+  id: string
+  name: string
+}
+
+interface Props {
+  headline: string
+  namePlaceholder: string
+  campDefaultLabel: string
+  nextLabel: string
+  camps: Camp[]
+  onNext: (name: string, camp: string) => void
+}
+
+function WavyUnderline() {
+  return (
+    <svg
+      className="absolute left-0 -bottom-2 w-full"
+      viewBox="0 0 200 12"
+      preserveAspectRatio="none"
+      style={{ height: '10px' }}
+    >
+      <path
+        d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+        stroke="#DF2935"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+export default function StepNameCamp({
+  namePlaceholder,
+  campDefaultLabel,
+  nextLabel,
+  camps,
+  onNext,
+}: Props) {
+  const [name, setName] = useState('')
+  const [camp, setCamp] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [error, setError] = useState('')
+
+  function handleSubmit() {
+    if (!name.trim()) {
+      setError('Prosím zadaj svoje meno.')
+      return
+    }
+    setError('')
+    onNext(name.trim(), camp || campDefaultLabel)
+  }
+
+  const selectedLabel = camp || campDefaultLabel
+
+  return (
+    <div className="flex flex-col gap-6 w-full">
+
+      {/* Name section */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
+          <span className="relative inline-block">
+            Krok 1: Zadaj svoje meno
+            <WavyUnderline />
+          </span>
+        </h2>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={namePlaceholder}
+          className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
+        />
+        {error && <p className="text-bombovo-red text-sm">{error}</p>}
+      </div>
+
+      {/* Camp section */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl md:text-2xl font-bold text-bombovo-dark leading-tight pb-2">
+          <span className="relative inline-block">
+            Krok 2: Vyber si ktorý tábor chceš vyhrať
+            <WavyUnderline />
+          </span>
+        </h2>
+
+        {/* Custom dropdown */}
+        <div className="relative w-full">
+          <button
+            type="button"
+            onClick={() => setDropdownOpen((o) => !o)}
+            className={`w-full px-6 py-4 rounded-xl flex items-center justify-between transition-all duration-200 border-2 ${
+              dropdownOpen
+                ? 'bg-[#D5E3F0] border-bombovo-blue'
+                : 'bg-[#E8EFF5] border-transparent hover:bg-[#D5E3F0]'
+            }`}
+          >
+            <span className="font-medium text-bombovo-dark text-base">{selectedLabel}</span>
+            <FiChevronDown
+              className={`transition-transform duration-200 flex-shrink-0 ml-4 ${
+                dropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+              <button
+                type="button"
+                onClick={() => { setCamp(''); setDropdownOpen(false) }}
+                className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
+                  camp === '' ? 'bg-[#E8EFF5] font-semibold' : ''
+                }`}
+              >
+                {campDefaultLabel}
+              </button>
+              {camps.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { setCamp(c.name); setDropdownOpen(false) }}
+                  className={`w-full px-4 py-3 text-left hover:bg-[#D5E3F0] transition-colors duration-150 ${
+                    camp === c.name ? 'bg-[#E8EFF5] font-semibold' : ''
+                  }`}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Yellow CTA button */}
+      <button
+        onClick={handleSubmit}
+        className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150 mt-1"
+      >
+        {nextLabel}
+      </button>
+    </div>
+  )
+}
+</file>
+
+<file path="components/GiveawayPopup/steps/StepSuccess.tsx">
+'use client'
+
+import { useEffect } from 'react'
+
+interface Props {
+  successHeadline: string
+  successBody: string
+  onClose: () => void
+}
+
+export default function StepSuccess({ onClose }: Props) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 10000)
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  return (
+    <div className="flex flex-col items-center gap-4 w-full text-center">
+      <div className="text-6xl">🎉</div>
+
+      <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight pb-2">
+        <span className="relative inline-block">
+          Si v hre o tábor zadarmo!
+          <svg
+            className="absolute left-0 -bottom-2 w-full"
+            viewBox="0 0 200 12"
+            preserveAspectRatio="none"
+            style={{ height: '10px' }}
+          >
+            <path
+              d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+              stroke="#DF2935"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+      </h2>
+
+      <p className="text-bombovo-dark/50 font-medium text-base leading-relaxed">
+        Sleduj svoj email — víťaza oznámime pred letom. Veľa šťastia! 🤞
+      </p>
+    </div>
+  )
+}
+</file>
+
+<file path="components/GiveawayPopup/steps/StepYesNo.tsx">
+'use client'
+
+interface Props {
+  headline: string
+  yesLabel: string
+  noLabel: string
+  onYes: () => void
+  onNo: () => void
+}
+
+export default function StepYesNo({ headline, yesLabel, noLabel, onYes, onNo }: Props) {
+  return (
+    <div className="flex flex-col items-center gap-6 w-full">
+      <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight">
+        <span className="relative inline-block text-bombovo-dark">
+          {headline}
+          <svg
+            className="absolute left-0 -bottom-2 w-full"
+            viewBox="0 0 200 12"
+            preserveAspectRatio="none"
+            style={{ height: '10px' }}
+          >
+            <path
+              d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+              stroke="#DF2935"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+      </h2>
+      <div className="flex flex-col gap-3 w-full">
+        <button
+          onClick={onYes}
+          className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150"
+        >
+          {yesLabel}
+        </button>
+        <button
+          onClick={onNo}
+          className="w-full py-4 px-6 bg-white border-2 border-bombovo-dark text-bombovo-dark font-normal text-base rounded-xl hover:bg-bombovo-gray transition-all duration-150"
+        >
+          {noLabel}
+        </button>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/GiveawayPopup/index.tsx">
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import ReactDOM from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
+import PopupModal from './PopupModal'
+import type { PopupContent } from './PopupModal'
+
+const SESSION_KEY = 'bombovo_giveaway_seen'
+
+interface Props extends PopupContent {
+  delaySeconds: number
+}
+
+export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
+  const pathname = usePathname()
+
+  // Don't show the popup on the dedicated giveaway landing page
+  if (pathname === '/sutaz') return null
+  const [visible, setVisible] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [maxSize, setMaxSize] = useState<{ w: number; h: number } | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+    // Capture the screen size once on first load and lock it as the max
+    setMaxSize({
+      w: window.innerWidth - 80,
+      h: window.innerHeight - 30,
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
+    // Already seen this session — don't show
+    if (sessionStorage.getItem(SESSION_KEY)) return
+
+    const timer = setTimeout(() => {
+      setVisible(true)
+    }, delaySeconds * 1000)
+
+    return () => clearTimeout(timer)
+  }, [mounted, delaySeconds])
+
+  const handleClose = useCallback(() => {
+    setVisible(false)
+    sessionStorage.setItem(SESSION_KEY, '1')
+  }, [])
+
+  if (!mounted) return null
+
+  return ReactDOM.createPortal(
+    <AnimatePresence>
+      {visible && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleClose}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+          />
+
+          {/* Modal */}
+          <motion.div
+            key="modal"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          >
+            <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
+              <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body,
+  )
+}
+</file>
+
+<file path="components/GiveawayPopup/PopupModal.tsx">
+'use client'
+
+import { useState } from 'react'
+import Image from 'next/image'
+import StepYesNo from './steps/StepYesNo'
+import StepNameCamp from './steps/StepNameCamp'
+import StepEmail from './steps/StepEmail'
+import StepSuccess from './steps/StepSuccess'
+
+interface Camp {
+  id: string
+  name: string
+}
+
+export interface PopupContent {
+  photoUrl: string | null
+  step0Headline: string
+  step0YesLabel: string
+  step0NoLabel: string
+  step1Headline: string
+  step1NamePlaceholder: string
+  step1CampDefaultLabel: string
+  step1NextLabel: string
+  step2Headline: string
+  step2EmailPlaceholder: string
+  step2SubmitLabel: string
+  step3SuccessHeadline: string
+  step3SuccessBody: string
+  camps: Camp[]
+}
+
+interface Props extends PopupContent {
+  onClose: () => void
+  maxSize: { w: number; h: number } | null
+}
+
+export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...content }: Props) {
+  const [step, setStep] = useState(0)
+  const [entryName, setEntryName] = useState('')
+  const [entryCamp, setEntryCamp] = useState('')
+
+  function handleYes() { setStep(1) }
+  function handleNameCampNext(name: string, camp: string) {
+    setEntryName(name)
+    setEntryCamp(camp)
+    setStep(2)
+  }
+  function handleSuccess() { setStep(3) }
+  function handleBack() { setStep(1) }
+
+  const stepContent = (
+    <div className="w-full">
+      {step === 0 && (
+        <StepYesNo
+          headline={content.step0Headline}
+          yesLabel={content.step0YesLabel}
+          noLabel={content.step0NoLabel}
+          onYes={handleYes}
+          onNo={onClose}
+        />
+      )}
+      {step === 1 && (
+        <StepNameCamp
+          headline={content.step1Headline}
+          namePlaceholder={content.step1NamePlaceholder}
+          campDefaultLabel={content.step1CampDefaultLabel}
+          nextLabel={content.step1NextLabel}
+          camps={camps}
+          onNext={handleNameCampNext}
+        />
+      )}
+      {step === 2 && (
+        <StepEmail
+          headline={content.step2Headline}
+          emailPlaceholder={content.step2EmailPlaceholder}
+          submitLabel={content.step2SubmitLabel}
+          name={entryName}
+          selectedCamp={entryCamp}
+          onSuccess={handleSuccess}
+          onBack={handleBack}
+        />
+      )}
+      {step === 3 && (
+        <StepSuccess
+          successHeadline={content.step3SuccessHeadline}
+          successBody={content.step3SuccessBody}
+          onClose={onClose}
+        />
+      )}
+    </div>
+  )
+
+  const closeButton = (
+    <button
+      onClick={onClose}
+      aria-label="Zavrieť"
+      className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-white border-2 border-bombovo-dark hover:bg-bombovo-gray transition-all text-bombovo-dark z-10"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+      </svg>
+    </button>
+  )
+
+  return (
+    <>
+      {/* ── MOBILE: full screen, 50/50 split ── */}
+      <div className="md:hidden fixed inset-0 flex flex-col overflow-hidden">
+        {/* Form — top 50% */}
+        <div className="relative h-1/2 bg-white flex flex-col justify-center items-center px-6 overflow-visible">
+          {closeButton}
+          {stepContent}
+        </div>
+
+        {/* Photo — bottom 50% */}
+        <div className="relative h-1/2 flex-shrink-0">
+          {photoUrl ? (
+            <Image
+              src={photoUrl}
+              alt="Vyhraj tábor zadarmo"
+              fill
+              className="object-cover"
+              unoptimized={photoUrl.startsWith('http')}
+            />
+          ) : (
+            <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
+              <span className="text-6xl">🎁</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── DESKTOP: side by side ── */}
+      <div
+        className="hidden md:flex shadow-2xl rounded-2xl overflow-hidden"
+        style={{
+          width: 'calc(100vw - 80px)',
+          height: 'calc(100vh - 30px)',
+          maxWidth: maxSize ? `${maxSize.w}px` : undefined,
+          maxHeight: maxSize ? `${maxSize.h}px` : undefined,
+        }}
+      >
+        {/* Left panel — photo */}
+        <div className="relative w-[48%] flex-shrink-0">
+          {photoUrl ? (
+            <Image
+              src={photoUrl}
+              alt="Vyhraj tábor zadarmo"
+              fill
+              className="object-cover"
+              unoptimized={photoUrl.startsWith('http')}
+            />
+          ) : (
+            <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
+              <span className="text-7xl">🎁</span>
+            </div>
+          )}
+        </div>
+
+        {/* Right panel — form */}
+        <div className="relative flex-1 bg-white border-2 border-bombovo-blue rounded-r-2xl flex flex-col justify-center items-center px-14 py-10 overflow-hidden">
+          {closeButton}
+          {stepContent}
+        </div>
+      </div>
+    </>
+  )
 }
 </file>
 
@@ -8526,6 +8997,120 @@ export function getRegistrationById(id: number): RegistrationData | null {
   const registrations = getAllRegistrations()
   return registrations.find(r => r.registrationId === id) || null
 }
+</file>
+
+<file path="scripts/assign-camp-images.ts">
+import * as dotenv from 'dotenv'
+import path from 'path'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+
+const BASE_URL = process.env.PAYLOAD_URL || 'http://localhost:3000'
+const EMAIL = process.env.PAYLOAD_ADMIN_EMAIL!
+const PASSWORD = process.env.PAYLOAD_ADMIN_PASSWORD!
+
+// filename → camp slug (expecto already done, included for safety)
+const MAPPINGS: Record<string, string> = {
+  'olympcamp.JPG':              'olymp-kemp',
+  'fest.JPG':                   'fest-animator-fest',
+  'tanecnaplaneta.JPG':         'tanecna-planeta',
+  'babinec.JPG':                'babinec',
+  'tajomstvopohara.JPG':        'tajomstvo-basketbaloveho-pohara',
+  'trhlina.JPG':                'trhlina',
+  'readypleayer.JPG':           'ready-player-one',
+  'V-dracej-nore.JPG':          'v-dracej-nore',
+  'summeradvatnure.JPG':        'anglicke-leto',
+  'neverfot.JPG':               'neverfort',
+  'chlapinec.JPG':              'chlapinec',
+  'Art.JPG':                    'artlantida',
+  'plutva.JPG':                 'stastna-plutva',
+  'kazdydennovyzazitok.JPG':    'kazdy-den-novy-zazitok',
+  'zbombova-do-bombova.JPG':    'z-bodu-nula-do-bodu-sto',
+  'woodcamp.JPG':               'woodkemp',
+  'expcto.JPG':                 'expecto',
+}
+
+async function login(): Promise<string> {
+  const res = await fetch(`${BASE_URL}/api/users/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
+  })
+  const data = await res.json() as any
+  if (!data.token) throw new Error(`Login failed: ${JSON.stringify(data)}`)
+  console.log('Logged in.')
+  return data.token
+}
+
+async function getAllMedia(token: string): Promise<Record<string, string>> {
+  // Returns filename → media doc ID
+  const res = await fetch(`${BASE_URL}/api/media?limit=200&depth=0`, {
+    headers: { Authorization: `JWT ${token}` },
+  })
+  const data = await res.json() as any
+  const map: Record<string, string> = {}
+  for (const doc of data.docs ?? []) {
+    if (doc.filename) map[doc.filename] = doc.id
+  }
+  console.log(`Found ${Object.keys(map).length} media files.`)
+  return map
+}
+
+async function getCampIdBySlug(token: string, slug: string): Promise<string | null> {
+  const res = await fetch(`${BASE_URL}/api/camps?where[slug][equals]=${slug}&limit=1&depth=0`, {
+    headers: { Authorization: `JWT ${token}` },
+  })
+  const data = await res.json() as any
+  return data.docs?.[0]?.id ?? null
+}
+
+async function updateCamp(token: string, campId: string, mediaId: string, slug: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/camps/${campId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `JWT ${token}`,
+    },
+    body: JSON.stringify({
+      cardImage: mediaId,
+      heroGallery: [{ photo: mediaId }],
+    }),
+  })
+  const data = await res.json() as any
+  if (data.errors) {
+    console.error(`  ❌ Failed to update ${slug}:`, JSON.stringify(data.errors))
+  } else {
+    console.log(`  ✅ Updated ${slug}`)
+  }
+}
+
+async function main() {
+  const token = await login()
+  const mediaMap = await getAllMedia(token)
+
+  for (const [filename, slug] of Object.entries(MAPPINGS)) {
+    const mediaId = mediaMap[filename]
+    if (!mediaId) {
+      console.warn(`  ⚠️  Media not found for filename: ${filename} (${slug}) — skipping`)
+      continue
+    }
+
+    const campId = await getCampIdBySlug(token, slug)
+    if (!campId) {
+      console.warn(`  ⚠️  Camp not found in Payload for slug: ${slug} — skipping`)
+      continue
+    }
+
+    await updateCamp(token, campId, mediaId, slug)
+  }
+
+  console.log('\nDone!')
+}
+
+main().catch((err: unknown) => {
+  console.error('Error:', err)
+  process.exit(1)
+})
 </file>
 
 <file path="scripts/delete-media.ts">
@@ -15777,6 +16362,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/sutaz" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
+                  Súťaž
+                </Link>
+              </li>
+              <li>
                 <Link href="/test-tabor" className="text-white hover:opacity-80 hover:underline transition-all duration-200 text-sm md:text-base">
                   Test Page
                 </Link>
@@ -19028,6 +19618,91 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
 }
 </file>
 
+<file path="app/(app)/layout.tsx">
+import './globals.css'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import GiveawayPopup from '@/components/GiveawayPopup'
+import { camps as fallbackCamps } from '@/lib/campsData'
+
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  let popupProps = {
+    isEnabled: false,
+    delaySeconds: 20,
+    photoUrl: null as string | null,
+    step0Headline: 'Chceš vyhrať tábor zadarmo?',
+    step0YesLabel: 'Áno, chcem vyhrať!',
+    step0NoLabel: 'Nie, ďakujem',
+    step1Headline: 'Zadaj Svoje Meno A Vyber Si Tábor',
+    step1NamePlaceholder: 'Tvoje meno',
+    step1CampDefaultLabel: 'Akýkoľvek Tábor',
+    step1NextLabel: 'Ďalej',
+    step2Headline: 'Zadaj Svoj Email A Si V Hre O Tábor Zadarmo',
+    step2EmailPlaceholder: 'tvoj@email.sk',
+    step2SubmitLabel: 'Prihlásiť sa do súťaže',
+    step3SuccessHeadline: 'Si v hre! 🎉',
+    step3SuccessBody:
+      'Tvoja prihláška do súťaže o tábor zadarmo bola úspešne zaznamenaná. Víťaza vyhlásime čoskoro!',
+    camps: fallbackCamps.map((c) => ({ id: c.id, name: c.name })),
+  }
+
+  try {
+    const payload = await getPayload({ config })
+
+    const [globalData, campsData] = await Promise.all([
+      payload.findGlobal({ slug: 'giveaway-popup' }),
+      payload.find({ collection: 'camps', limit: 100, sort: 'order' }),
+    ])
+
+    const g = globalData as any
+    const isEnabled = g?.isEnabled ?? false
+
+    // Extract photo URL from media relation
+    let photoUrl: string | null = null
+    if (g?.photo && typeof g.photo === 'object' && g.photo.url) {
+      photoUrl = g.photo.url
+    }
+
+    // Build camps list — prefer Payload, fall back to hardcoded
+    const payloadCamps =
+      campsData.docs.length > 0
+        ? campsData.docs.map((c: any) => ({ id: String(c.id), name: c.name }))
+        : fallbackCamps.map((c) => ({ id: c.id, name: c.name }))
+
+    popupProps = {
+      isEnabled,
+      delaySeconds: g?.delaySeconds ?? 20,
+      photoUrl,
+      step0Headline: g?.step0Headline ?? popupProps.step0Headline,
+      step0YesLabel: g?.step0YesLabel ?? popupProps.step0YesLabel,
+      step0NoLabel: g?.step0NoLabel ?? popupProps.step0NoLabel,
+      step1Headline: g?.step1Headline ?? popupProps.step1Headline,
+      step1NamePlaceholder: g?.step1NamePlaceholder ?? popupProps.step1NamePlaceholder,
+      step1CampDefaultLabel: g?.step1CampDefaultLabel ?? popupProps.step1CampDefaultLabel,
+      step1NextLabel: g?.step1NextLabel ?? popupProps.step1NextLabel,
+      step2Headline: g?.step2Headline ?? popupProps.step2Headline,
+      step2EmailPlaceholder: g?.step2EmailPlaceholder ?? popupProps.step2EmailPlaceholder,
+      step2SubmitLabel: g?.step2SubmitLabel ?? popupProps.step2SubmitLabel,
+      step3SuccessHeadline: g?.step3SuccessHeadline ?? popupProps.step3SuccessHeadline,
+      step3SuccessBody: g?.step3SuccessBody ?? popupProps.step3SuccessBody,
+      camps: payloadCamps,
+    }
+  } catch (err) {
+    // Payload unavailable — keep popup disabled so pages don't break
+    console.error('GiveawayPopup: failed to fetch Payload data', err)
+  }
+
+  const { isEnabled, ...popupContent } = popupProps
+
+  return (
+    <>
+      {children}
+      {isEnabled && <GiveawayPopup {...popupContent} />}
+    </>
+  )
+}
+</file>
+
 <file path="collections/Media.ts">
 import type { CollectionConfig } from 'payload'
 
@@ -20486,60 +21161,6 @@ function parseAgeFields(ageStr: string): { age: string; ageRange: [number, numbe
 }
 </file>
 
-<file path="payload.config.ts">
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
-
-import { Users } from './collections/Users'
-import { Media } from './collections/Media'
-import { Camps } from './collections/Camps'
-import { Strediska } from './collections/Strediska'
-import { GiveawayEntries } from './collections/GiveawayEntries'
-import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
-import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
-
-export default buildConfig({
-  admin: {
-    user: Users.slug,
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-  },
-  collections: [Users, Media, Camps, Strediska, GiveawayEntries],
-  globals: [SkolyVPrirode, GiveawayPopupGlobal],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-    },
-  }),
-  plugins: [
-    uploadthingStorage({
-      collections: {
-        media: {
-          disablePayloadAccessControl: true,
-        },
-      },
-      options: {
-        token: process.env.UPLOADTHING_TOKEN || '',
-        acl: 'public-read',
-      },
-    }),
-  ],
-})
-</file>
-
 <file path="components/CampCard.tsx">
 'use client'
 
@@ -20765,6 +21386,60 @@ export const olympKempData: CampDetailData = {
     ],
   },
 }
+</file>
+
+<file path="payload.config.ts">
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
+import path from 'path'
+import { buildConfig } from 'payload'
+import { fileURLToPath } from 'url'
+
+import { Users } from './collections/Users'
+import { Media } from './collections/Media'
+import { Camps } from './collections/Camps'
+import { Strediska } from './collections/Strediska'
+import { GiveawayEntries } from './collections/GiveawayEntries'
+import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
+import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
+  },
+  collections: [Users, Media, Camps, Strediska, GiveawayEntries],
+  globals: [SkolyVPrirode, GiveawayPopupGlobal],
+  editor: lexicalEditor(),
+  secret: process.env.PAYLOAD_SECRET || '',
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  db: postgresAdapter({
+    pool: {
+      connectionString: process.env.DATABASE_URI || '',
+    },
+  }),
+  plugins: [
+    uploadthingStorage({
+      collections: {
+        media: {
+          disablePayloadAccessControl: true,
+        },
+      },
+      options: {
+        token: process.env.UPLOADTHING_TOKEN || '',
+        acl: 'public-read',
+      },
+    }),
+  ],
+})
 </file>
 
 <file path="next.config.js">
