@@ -13,10 +13,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'y554alh0y1.ufs.sh',
+        pathname: '/f/*',
       },
       {
         protocol: 'https',
         hostname: 'utfs.io',
+        pathname: '/f/*',
       },
     ],
     minimumCacheTTL: 2678400,
