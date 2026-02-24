@@ -71,10 +71,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     console.error('GiveawayPopup: failed to fetch Payload data', err)
   }
 
-  // TODO: remove these two lines when done testing
-  popupProps.isEnabled = true
-  popupProps.delaySeconds = 0
-
   const { isEnabled, ...popupContent } = popupProps
 
   return (
