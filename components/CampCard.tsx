@@ -62,6 +62,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized={image.startsWith('http')}
         />
       </div>
 

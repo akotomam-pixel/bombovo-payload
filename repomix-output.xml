@@ -7361,33 +7361,6 @@ export interface StrediskoData {
 }
 </file>
 
-<file path="lib/payload.ts">
-/**
- * Cached Payload instance.
- *
- * `getPayload({ config })` is expensive — it opens a DB connection, loads all
- * collections/globals, and validates the schema.  Calling it once per request
- * in dev mode causes the ~1–2 s lag you feel on every page navigation.
- *
- * This module caches the instance in the Node.js module scope so the
- * initialisation only happens once per server process (or once per hot-reload
- * in dev).  Every server component should import `getPayloadClient` from here
- * instead of calling `getPayload({ config })` directly.
- */
-
-import { getPayload } from 'payload'
-import config from '@payload-config'
-import type { Payload } from 'payload'
-
-let cached: Payload | null = null
-
-export async function getPayloadClient(): Promise<Payload> {
-  if (cached) return cached
-  cached = await getPayload({ config })
-  return cached
-}
-</file>
-
 <file path="lib/registrationData.ts">
 import { getCampDetails } from '@/data/camps'
 import { camps as allCamps } from './campsData'
@@ -14629,118 +14602,6 @@ export const Media: CollectionConfig = {
 }
 </file>
 
-<file path="components/CampCard.tsx">
-'use client'
-
-import Link from 'next/link'
-import { FiUsers, FiZap, FiStar, FiSun, FiBook, FiTrendingUp, FiGlobe } from 'react-icons/fi'
-import { GiPalette, GiSoccerBall, GiMountains, GiSwordsPower } from 'react-icons/gi'
-import { MdChildCare, MdSportsBasketball, MdDirectionsRun } from 'react-icons/md'
-
-interface CampCardProps {
-  id: string
-  name: string
-  age: string
-  types: string[]
-  displayTypes: string[]
-  price: string
-  index: number
-  description: string
-  image: string
-}
-
-export default function CampCard({ id, name, age, types, displayTypes, price, description, image }: CampCardProps) {
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Akčný':
-        return <FiZap className="w-5 h-5" />
-      case 'Umelecký':
-        return <GiPalette className="w-5 h-5" />
-      case 'Oddychový':
-        return <FiSun className="w-5 h-5" />
-      case 'Športový':
-        return <GiSoccerBall className="w-5 h-5" />
-      case 'Unikátny':
-        return <FiStar className="w-5 h-5" />
-      case 'Tínedžerský':
-        return <FiTrendingUp className="w-5 h-5" />
-      case 'Náučný':
-        return <FiBook className="w-5 h-5" />
-      case 'Dobrodružný':
-        return <GiMountains className="w-5 h-5" />
-      case 'Pre najmenších':
-        return <MdChildCare className="w-5 h-5" />
-      case 'Fantasy':
-        return <GiSwordsPower className="w-5 h-5" />
-      case 'Basketbal':
-        return <MdSportsBasketball className="w-5 h-5" />
-      case 'Tanečný':
-        return <MdDirectionsRun className="w-5 h-5" />
-      case 'Tvorivý':
-        return <GiPalette className="w-5 h-5" />
-      default:
-        return <FiStar className="w-5 h-5" />
-    }
-  }
-
-  return (
-    <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      {/* Camp Photo */}
-      <div className="h-64 relative overflow-hidden">
-        <img 
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Content */}
-      <div className="p-6 space-y-4">
-        {/* Camp Name */}
-        <h3 className="text-2xl font-bold text-bombovo-dark leading-tight text-center">{name}</h3>
-
-        {/* Icon Information Row */}
-        <div className="flex items-center gap-4 text-gray-600">
-          {/* Age Group */}
-          <div className="flex items-center gap-2">
-            <FiUsers className="w-5 h-5 text-bombovo-blue flex-shrink-0" />
-            <span className="text-sm font-medium whitespace-nowrap">{age}</span>
-          </div>
-
-          {/* Camp Types */}
-          <div className="flex items-center gap-3">
-            {types.slice(0, 2).map((type, idx) => (
-              <div key={idx} className="flex items-center gap-1.5 text-bombovo-blue whitespace-nowrap">
-                {getTypeIcon(type)}
-                <span className="text-sm font-medium">{displayTypes[idx]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Short Description */}
-        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
-
-        {/* Price and CTA Row */}
-        <div className="flex gap-3 mt-6">
-          {/* Price */}
-          <div className="flex-1 bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">{price}</span>
-          </div>
-
-          {/* CTA Button */}
-          <Link href={`/letne-tabory/${id}`} className="flex-1">
-            <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
-              Zistiť viac
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
-</file>
-
 <file path="components/Footer.tsx">
 'use client'
 
@@ -17050,6 +16911,20 @@ export const zBoduNulaDoBoduStoData: CampDetailData = {
 }
 </file>
 
+<file path="lib/payload.ts">
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import type { Payload } from 'payload'
+
+const globalForPayload = global as typeof global & { payload?: Payload }
+
+export async function getPayloadClient(): Promise<Payload> {
+  if (globalForPayload.payload) return globalForPayload.payload
+  globalForPayload.payload = await getPayload({ config })
+  return globalForPayload.payload
+}
+</file>
+
 <file path="scripts/migrate-svp.ts">
 /**
  * Migration script — creates all 7 Školy v Prírode strediská and fills
@@ -18073,6 +17948,121 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
       </div>
 
       <Footer />
+    </div>
+  )
+}
+</file>
+
+<file path="components/CampCard.tsx">
+'use client'
+
+import Link from 'next/link'
+import Image from 'next/image'
+import { FiUsers, FiZap, FiStar, FiSun, FiBook, FiTrendingUp, FiGlobe } from 'react-icons/fi'
+import { GiPalette, GiSoccerBall, GiMountains, GiSwordsPower } from 'react-icons/gi'
+import { MdChildCare, MdSportsBasketball, MdDirectionsRun } from 'react-icons/md'
+
+interface CampCardProps {
+  id: string
+  name: string
+  age: string
+  types: string[]
+  displayTypes: string[]
+  price: string
+  index: number
+  description: string
+  image: string
+}
+
+export default function CampCard({ id, name, age, types, displayTypes, price, description, image }: CampCardProps) {
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Akčný':
+        return <FiZap className="w-5 h-5" />
+      case 'Umelecký':
+        return <GiPalette className="w-5 h-5" />
+      case 'Oddychový':
+        return <FiSun className="w-5 h-5" />
+      case 'Športový':
+        return <GiSoccerBall className="w-5 h-5" />
+      case 'Unikátny':
+        return <FiStar className="w-5 h-5" />
+      case 'Tínedžerský':
+        return <FiTrendingUp className="w-5 h-5" />
+      case 'Náučný':
+        return <FiBook className="w-5 h-5" />
+      case 'Dobrodružný':
+        return <GiMountains className="w-5 h-5" />
+      case 'Pre najmenších':
+        return <MdChildCare className="w-5 h-5" />
+      case 'Fantasy':
+        return <GiSwordsPower className="w-5 h-5" />
+      case 'Basketbal':
+        return <MdSportsBasketball className="w-5 h-5" />
+      case 'Tanečný':
+        return <MdDirectionsRun className="w-5 h-5" />
+      case 'Tvorivý':
+        return <GiPalette className="w-5 h-5" />
+      default:
+        return <FiStar className="w-5 h-5" />
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      {/* Camp Photo */}
+      <div className="h-64 relative overflow-hidden">
+        <Image
+          src={image}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="p-6 space-y-4">
+        {/* Camp Name */}
+        <h3 className="text-2xl font-bold text-bombovo-dark leading-tight text-center">{name}</h3>
+
+        {/* Icon Information Row */}
+        <div className="flex items-center gap-4 text-gray-600">
+          {/* Age Group */}
+          <div className="flex items-center gap-2">
+            <FiUsers className="w-5 h-5 text-bombovo-blue flex-shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">{age}</span>
+          </div>
+
+          {/* Camp Types */}
+          <div className="flex items-center gap-3">
+            {types.slice(0, 2).map((type, idx) => (
+              <div key={idx} className="flex items-center gap-1.5 text-bombovo-blue whitespace-nowrap">
+                {getTypeIcon(type)}
+                <span className="text-sm font-medium">{displayTypes[idx]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Short Description */}
+        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+
+        {/* Price and CTA Row */}
+        <div className="flex gap-3 mt-6">
+          {/* Price */}
+          <div className="flex-1 bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
+            <span className="text-white text-3xl font-bold">{price}</span>
+          </div>
+
+          {/* CTA Button */}
+          <Link href={`/letne-tabory/${id}`} className="flex-1">
+            <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
+              Zistiť viac
+            </button>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
@@ -19516,25 +19506,6 @@ function parseAgeFields(ageStr: string): { age: string; ageRange: [number, numbe
 }
 </file>
 
-<file path="next.config.js">
-const { withPayload } = require("@payloadcms/next/withPayload");
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    domains: ['utfs.io'],
-  },
-}
-
-module.exports = withPayload(nextConfig)
-</file>
-
 <file path="data/camps/olymp-kemp.ts">
 import { CampDetailData } from './types'
 
@@ -19644,6 +19615,35 @@ export const olympKempData: CampDetailData = {
     ],
   },
 }
+</file>
+
+<file path="next.config.js">
+const { withPayload } = require("@payloadcms/next/withPayload");
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'y554alh0y1.ufs.sh',
+      },
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+      },
+    ],
+    minimumCacheTTL: 2678400,
+  },
+}
+
+module.exports = withPayload(nextConfig)
 </file>
 
 </files>
