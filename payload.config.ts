@@ -42,6 +42,7 @@ export default buildConfig({
         token: process.env.UPLOADTHING_TOKEN || '',
         acl: 'public-read',
       },
+      disablePayloadAccessControl: true,
     }),
   ],
 })
