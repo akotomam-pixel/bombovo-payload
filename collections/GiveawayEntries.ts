@@ -44,6 +44,7 @@ export const GiveawayEntries: CollectionConfig = {
       options: [
         { label: 'Popup', value: 'popup' },
         { label: 'Landing Page', value: 'landing-page' },
+        { label: 'Domovská stránka', value: 'homepage' },
         { label: 'Iné', value: 'other' },
       ],
     },
