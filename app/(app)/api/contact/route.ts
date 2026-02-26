@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,8 +32,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Format email content
-    const emailContent = `
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '465'),
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    })
+
+    const emailText = `
 Nová správa z kontaktného formulára - Bombovo.sk
 
 Od: ${name}
@@ -47,44 +57,30 @@ Odoslaný zo stránky: bombovo.sk/kontakt
 Súhlas so spracovaním osobných údajov: Áno
     `.trim()
 
-    // Log the submission (in production, this would send an email)
-    console.log('=== NOVÁ KONTAKTNÁ SPRÁVA ===')
-    console.log(emailContent)
-    console.log('=== KONIEC SPRÁVY ===')
-
-    // TODO: Implement actual email sending
-    // For now, we'll just log and return success
-    // You can integrate Nodemailer, SendGrid, Resend, or similar service here
-    
-    // Example with Nodemailer (requires installation):
-    /*
-    import nodemailer from 'nodemailer'
-    
-    const transporter = nodemailer.createTransporter({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
+    const emailHtml = `
+<p><strong>Nová správa z kontaktného formulára – Bombovo.sk</strong></p>
+<table cellpadding="6" cellspacing="0" style="border-collapse:collapse;">
+  <tr><td><strong>Meno:</strong></td><td>${name}</td></tr>
+  <tr><td><strong>E-mail:</strong></td><td>${email}</td></tr>
+  <tr><td><strong>Telefón:</strong></td><td>${phone}</td></tr>
+</table>
+<p><strong>Správa:</strong></p>
+<p style="white-space:pre-wrap;">${message}</p>
+<hr/>
+<p style="color:#888;font-size:12px;">Odoslaný zo stránky: bombovo.sk/kontakt<br/>Súhlas so spracovaním osobných údajov: Áno</p>
+    `.trim()
 
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'web@bombovo.sk',
+      from: '"Bombovo.sk" <info@bombovo.sk>',
       to: 'bombovo@bombovo.sk',
-      subject: `Nová správa od ${name}`,
-      text: emailContent,
       replyTo: email,
+      subject: `Nová správa od ${name}`,
+      text: emailText,
+      html: emailHtml,
     })
-    */
 
-    // For now, simulate successful email sending
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Správa bola úspešne odoslaná' 
-      },
+      { success: true, message: 'Správa bola úspešne odoslaná' },
       { status: 200 }
     )
 
