@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { The_Girl_Next_Door } from 'next/font/google'
+import Script from 'next/script'
 import React from 'react'
 
 const theGirlNextDoor = The_Girl_Next_Door({
@@ -21,6 +22,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="sk" className={theGirlNextDoor.variable}>
+      <head>
+        <Script
+          id="cookieyes"
+          type="text/javascript"
+          src="https://cdn.cookieyes.com/client_data/500b87a6adab5aa80a/script.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body>{children}</body>
     </html>
   )

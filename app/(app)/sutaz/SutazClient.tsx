@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { FiChevronDown } from 'react-icons/fi'
@@ -341,6 +341,11 @@ const variants = {
 export default function SutazClient({ photoUrl, camps }: Props) {
   const [step, setStep] = useState(0)
   const [dir, setDir] = useState(1)
+
+  // When user visits /sutaz, set a flag so the popup shows on the next page they visit
+  useEffect(() => {
+    sessionStorage.setItem('bombovo_came_from_sutaz', '1')
+  }, [])
   const [declined, setDeclined] = useState(false)
   const [entryName, setEntryName] = useState('')
   const [entryCamp, setEntryCamp] = useState('')

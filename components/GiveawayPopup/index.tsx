@@ -8,6 +8,7 @@ import PopupModal from './PopupModal'
 import type { PopupContent } from './PopupModal'
 
 const SESSION_KEY = 'bombovo_giveaway_seen'
+const SUTAZ_FLAG = 'bombovo_came_from_sutaz'
 
 interface Props extends PopupContent {
   delaySeconds: number
@@ -15,16 +16,12 @@ interface Props extends PopupContent {
 
 export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
   const pathname = usePathname()
-
-  // Don't show the popup on the dedicated giveaway landing page
-  if (pathname === '/sutaz') return null
   const [visible, setVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [maxSize, setMaxSize] = useState<{ w: number; h: number } | null>(null)
 
   useEffect(() => {
     setMounted(true)
-    // Capture the screen size once on first load and lock it as the max
     setMaxSize({
       w: window.innerWidth - 80,
       h: window.innerHeight - 30,
@@ -37,9 +34,17 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
     // Already seen this session — don't show
     if (sessionStorage.getItem(SESSION_KEY)) return
 
+    // If user came from /sutaz, show popup quickly (1 second) and clear the flag
+    const cameFromSutaz = sessionStorage.getItem(SUTAZ_FLAG)
+    const delay = cameFromSutaz ? 1000 : delaySeconds * 1000
+
+    if (cameFromSutaz) {
+      sessionStorage.removeItem(SUTAZ_FLAG)
+    }
+
     const timer = setTimeout(() => {
       setVisible(true)
-    }, delaySeconds * 1000)
+    }, delay)
 
     return () => clearTimeout(timer)
   }, [mounted, delaySeconds])
@@ -49,7 +54,9 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
     sessionStorage.setItem(SESSION_KEY, '1')
   }, [])
 
-  if (!mounted) return null
+  // Don't show the popup on the dedicated giveaway landing page
+  // (must be after all hooks)
+  if (!mounted || pathname === '/sutaz') return null
 
   return ReactDOM.createPortal(
     <AnimatePresence>
