@@ -12,6 +12,7 @@ import { Strediska } from './collections/Strediska'
 import { GiveawayEntries } from './collections/GiveawayEntries'
 import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
 import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
+import { FooterGlobal } from './collections/globals/Footer'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,7 +25,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Camps, Strediska, GiveawayEntries],
-  globals: [SkolyVPrirode, GiveawayPopupGlobal],
+  globals: [SkolyVPrirode, GiveawayPopupGlobal, FooterGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
