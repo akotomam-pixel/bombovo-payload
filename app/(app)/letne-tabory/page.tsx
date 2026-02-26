@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getPayloadClient } from '@/lib/payload'
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'
 import CampsClient from './CampsClient'
