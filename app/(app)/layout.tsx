@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import './globals.css'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -29,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     const payload = await getPayload({ config })
 
     const [globalData, campsData] = await Promise.all([
-      payload.findGlobal({ slug: 'giveaway-popup' }),
+      payload.findGlobal({ slug: 'giveaway-popup', depth: 1 }),
       payload.find({ collection: 'camps', limit: 100, sort: 'order' }),
     ])
 
