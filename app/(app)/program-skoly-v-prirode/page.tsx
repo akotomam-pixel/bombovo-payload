@@ -82,12 +82,12 @@ export default function ProgramSkolyVPrirodePage() {
                 </div>
                 {/* Image */}
                 <div className="flex justify-center">
-                  <div 
-                    className="w-full rounded-2xl bg-[#90EE90] flex items-center justify-center shadow-lg"
+                  <img
+                    src="/images/tajomstvodennika/Dennik1.jpg"
+                    alt="Program školy v prírode"
+                    className="w-full rounded-2xl object-cover shadow-lg"
                     style={{ aspectRatio: '4 / 3' }}
-                  >
-                    <p className="text-lg font-bold text-bombovo-dark">[PICTURE]</p>
-                  </div>
+                  />
                 </div>
               </div>
             </div>
@@ -187,12 +187,12 @@ export default function ProgramSkolyVPrirodePage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 {/* Image */}
                 <div className="flex justify-center">
-                  <div 
-                    className="w-full rounded-2xl bg-[#90EE90] flex items-center justify-center shadow-lg"
+                  <img
+                    src="/images/tajomstvodennika/Dennik%202.jpg"
+                    alt="Ako program funguje v praxi"
+                    className="w-full rounded-2xl object-cover shadow-lg"
                     style={{ aspectRatio: '4 / 3' }}
-                  >
-                    <p className="text-lg font-bold text-bombovo-dark">[PICTURE]</p>
-                  </div>
+                  />
                 </div>
                 {/* Text */}
                 <div className="space-y-6">
@@ -226,12 +226,12 @@ export default function ProgramSkolyVPrirodePage() {
                 </div>
                 {/* Image */}
                 <div className="flex justify-center">
-                  <div 
-                    className="w-full rounded-2xl bg-[#90EE90] flex items-center justify-center shadow-lg"
+                  <img
+                    src="/images/tajomstvodennika/Dennik%203.jpg"
+                    alt="Čím je táto škola v prírode výnimočná"
+                    className="w-full rounded-2xl object-cover shadow-lg"
                     style={{ aspectRatio: '4 / 3' }}
-                  >
-                    <p className="text-lg font-bold text-bombovo-dark">[PICTURE]</p>
-                  </div>
+                  />
                 </div>
               </div>
             </div>
@@ -241,12 +241,12 @@ export default function ProgramSkolyVPrirodePage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 {/* Image (left on desktop) */}
                 <div className="flex justify-center lg:order-first order-last">
-                  <div 
-                    className="w-full rounded-2xl bg-[#90EE90] flex items-center justify-center shadow-lg"
+                  <img
+                    src="/images/tajomstvodennika/Dennik%204.jpg"
+                    alt="Čo si trieda odnáša"
+                    className="w-full rounded-2xl object-cover shadow-lg"
                     style={{ aspectRatio: '4 / 3' }}
-                  >
-                    <p className="text-lg font-bold text-bombovo-dark">[PICTURE]</p>
-                  </div>
+                  />
                 </div>
                 {/* Text */}
                 <div className="space-y-6">
