@@ -58,48 +58,59 @@ function CampsContent({ camps }: Props) {
       <Header />
 
       {/* Hero Section - Desktop only */}
-      <section className="hidden lg:block bg-bombovo-gray pt-10 pb-0">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="flex items-end">
-            <div className="w-[20%] flex-shrink-0" />
-            <div className="flex flex-col items-center justify-center pb-8" style={{ width: '40%', marginLeft: '50px' }}>
-              <h1 className="font-amatic text-bombovo-dark leading-tight" style={{ fontSize: '56px' }}>
-                Tábory Bombovo
-              </h1>
-              <span className="font-amatic text-bombovo-red leading-none" style={{ fontSize: '96px', lineHeight: '1' }}>
-                2026
-              </span>
-            </div>
-            <div className="flex-1 flex items-end justify-end pr-16 pb-4">
-              {/* Polaroid frame */}
-              <div
+      <section
+        className="hidden lg:block bg-bombovo-gray overflow-hidden relative"
+        style={{ height: 'min(310px, calc(100vh - 130px))' }}
+      >
+        {/* Polaroid fan — 7 photos, girl in front/center */}
+        {(() => {
+          const photos = [
+            { src: '/images/Letne Tabory/babinec.JPG',          alt: 'Bombovo tábor',  rotate: -19, left: '1%',  zIndex: 1 },
+            { src: '/images/Letne Tabory/olympcamp.JPG',         alt: 'Bombovo tábor',  rotate: -12, left: '13%', zIndex: 2 },
+            { src: '/images/Letne Tabory/Art.JPG',               alt: 'Bombovo tábor',  rotate: -5,  left: '25%', zIndex: 3 },
+            { src: '/images/Girl-removedbc.png',                  alt: 'Šťastné dieťa', rotate: 0,   left: '37%', zIndex: 8, isMain: true },
+            { src: '/images/Letne Tabory/trhlina.JPG',           alt: 'Bombovo tábor',  rotate: 5,   left: '52%', zIndex: 3 },
+            { src: '/images/Letne Tabory/fest.JPG',              alt: 'Bombovo tábor',  rotate: 12,  left: '64%', zIndex: 2 },
+            { src: '/images/Letne Tabory/summeradvatnure.JPG',   alt: 'Bombovo tábor',  rotate: 19,  left: '76%', zIndex: 1 },
+          ]
+          const W = 188
+          const H = 224
+          return photos.map((p, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: p.left,
+                zIndex: p.zIndex,
+                transform: `rotate(${p.rotate}deg)`,
+                transformOrigin: 'bottom center',
+                background: '#fff',
+                padding: '10px 10px 36px 10px',
+                boxShadow: p.isMain
+                  ? '0 12px 40px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.14)'
+                  : '0 6px 24px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.10)',
+                borderRadius: '2px',
+                width: `${W + 20}px`,
+              }}
+            >
+              <img
+                src={p.src}
+                alt={p.alt}
                 style={{
-                  background: '#fff',
-                  padding: '10px 10px 40px 10px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
-                  transform: 'rotate(2deg)',
-                  display: 'inline-block',
-                  borderRadius: '2px',
+                  width: `${W}px`,
+                  height: `${H}px`,
+                  objectFit: 'cover',
+                  display: 'block',
                 }}
-              >
-                <img
-                  src="/images/Girl-removedbc.png"
-                  alt="Šťastné dieťa na tábore Bombovo"
-                  style={{
-                    width: '210px',
-                    height: '250px',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-                <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                  Letné Tábory 2026
-                </p>
-              </div>
+              />
+              <p className="text-center mt-2 font-handwritten text-bombovo-dark text-sm">
+                Letné Tábory 2025
+              </p>
             </div>
-          </div>
-        </div>
-        <div className="hidden lg:block">
+          ))
+        })()}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
           <WaveDivider color="blue" variant={2} />
         </div>
       </section>
