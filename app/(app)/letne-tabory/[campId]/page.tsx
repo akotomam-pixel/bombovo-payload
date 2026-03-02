@@ -59,6 +59,12 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
       hasStredisko: doc.hasStredisko ?? false,
       strediskoName: doc.strediskoName,
       strediskoDescription: doc.strediskoDescription,
+      strediskoGallery: (doc.strediskoGallery ?? []).map((item: any) => {
+        const url = typeof item?.photo === 'object' && item.photo !== null
+          ? item.photo.url
+          : null
+        return url ? { src: url, thumb: url } : null
+      }).filter(Boolean) as Array<{ src: string; thumb: string }>,
       mapCoordinates:
         doc.mapLat != null && doc.mapLng != null
           ? { lat: doc.mapLat, lng: doc.mapLng }

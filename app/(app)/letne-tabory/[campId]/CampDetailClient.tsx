@@ -35,12 +35,13 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
   const lgRef = useRef<any>(null)
 
   // LightGallery — stredisko section
-  const totalStrediskoPhotos = 6
   const strediskoLgRef = useRef<any>(null)
-  const strediskoImages = Array.from({ length: totalStrediskoPhotos }, (_, i) => ({
-    src: `https://picsum.photos/seed/${campId}stredisko${i}/1200/800`,
-    thumb: `https://picsum.photos/seed/${campId}stredisko${i}/400/267`,
-  }))
+  const strediskoImages = campDetails.section4.strediskoGallery && campDetails.section4.strediskoGallery.length > 0
+    ? campDetails.section4.strediskoGallery
+    : Array.from({ length: 6 }, (_, i) => ({
+        src: `https://picsum.photos/seed/${campId}stredisko${i}/1200/800`,
+        thumb: `https://picsum.photos/seed/${campId}stredisko${i}/400/267`,
+      }))
 
   const reviews = campDetails.section3.reviews.length > 0
     ? campDetails.section3.reviews

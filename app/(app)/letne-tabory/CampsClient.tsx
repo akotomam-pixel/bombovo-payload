@@ -70,20 +70,32 @@ function CampsContent({ camps }: Props) {
                 2026
               </span>
             </div>
-            <div className="flex-1 flex items-end justify-end">
-              <img
-                src="/images/Girl.png"
-                alt="Šťastné dieťa na tábore Bombovo"
+            <div className="flex-1 flex items-end justify-end pr-16 pb-4">
+              {/* Polaroid frame */}
+              <div
                 style={{
-                  width: '380px',
-                  height: 'auto',
-                  display: 'block',
-                  borderRadius: 0,
-                  boxShadow: 'none',
-                  border: 'none',
-                  mixBlendMode: 'multiply',
+                  background: '#fff',
+                  padding: '10px 10px 40px 10px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+                  transform: 'rotate(2deg)',
+                  display: 'inline-block',
+                  borderRadius: '2px',
                 }}
-              />
+              >
+                <img
+                  src="/images/Girl-removedbc.png"
+                  alt="Šťastné dieťa na tábore Bombovo"
+                  style={{
+                    width: '210px',
+                    height: '250px',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+                <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
+                  Letné Tábory 2026
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -44,6 +44,7 @@ export interface CampDetailData {
     hasStredisko?: boolean
     strediskoName?: string
     strediskoDescription?: string
+    strediskoGallery?: Array<{ src: string; thumb: string }>
     mapCoordinates?: {
       lat: number
       lng: number
