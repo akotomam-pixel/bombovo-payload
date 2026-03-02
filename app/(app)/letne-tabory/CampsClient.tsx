@@ -90,9 +90,7 @@ function CampsContent({ camps }: Props) {
                 transformOrigin: 'bottom center',
                 background: '#fff',
                 padding: '10px 10px 36px 10px',
-                boxShadow: p.isMain
-                  ? '0 14px 44px rgba(0,0,0,0.30), 0 4px 12px rgba(0,0,0,0.14)'
-                  : '0 6px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10)',
+                boxShadow: 'none',
                 borderRadius: '2px',
                 zIndex: p.zIndex,
                 position: 'relative',
