@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaFacebook, FaInstagram } from 'react-icons/fa'
@@ -9,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isPreSkolyDropdownOpen, setIsPreSkolyDropdownOpen] = useState(false)
+  const router = useRouter()
   const [isPreSkolyMobileOpen, setIsPreSkolyMobileOpen] = useState(false)
 
   // Lock body scroll when mobile menu is open
@@ -118,8 +120,8 @@ export default function Header() {
                     onMouseEnter={() => setIsPreSkolyDropdownOpen(true)}
                     onMouseLeave={() => setIsPreSkolyDropdownOpen(false)}
                   >
-                    <button 
-                      onClick={togglePreSkolyDropdown}
+                    <button
+                      onClick={() => router.push('/skoly-v-prirode')}
                       className="relative inline-flex flex-col items-center text-bombovo-dark font-medium text-[1.2rem] group cursor-pointer bg-transparent border-none"
                     >
                       <span className="flex items-center gap-1">
