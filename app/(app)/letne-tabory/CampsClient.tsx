@@ -101,7 +101,12 @@ function CampsContent({ camps }: Props) {
               <img
                 src={p.src}
                 alt={p.alt}
-                style={{ width: '168px', height: '206px', objectFit: 'cover', display: 'block' }}
+                style={{
+                  width: p.isMain ? '202px' : '168px',
+                  height: p.isMain ? '247px' : '206px',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
               />
               <p className="text-center mt-2 font-handwritten text-bombovo-dark text-sm">
                 Letné Tábory 2025
