@@ -57,65 +57,6 @@ function CampsContent({ camps }: Props) {
       <TopBar />
       <Header />
 
-      {/* Hero Section - Desktop only */}
-      <section
-        className="hidden lg:block bg-bombovo-gray overflow-hidden relative"
-        style={{ height: 'min(310px, calc(100vh - 130px))' }}
-      >
-        {/* Polaroid stack — overlapping, girl centered and on top */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-        }}>
-          {[
-            { src: '/images/Letne Tabory/babinec.JPG',        alt: 'Bombovo tábor', rotate: -18, zIndex: 1 },
-            { src: '/images/Letne Tabory/olympcamp.JPG',       alt: 'Bombovo tábor', rotate: -11, zIndex: 3 },
-            { src: '/images/Letne Tabory/Art.JPG',             alt: 'Bombovo tábor', rotate: -5,  zIndex: 5 },
-            { src: '/images/Girl-removedbc.png',                alt: 'Šťastné dieťa', rotate: 0,   zIndex: 9, isMain: true },
-            { src: '/images/Letne Tabory/trhlina.JPG',         alt: 'Bombovo tábor', rotate: 5,   zIndex: 5 },
-            { src: '/images/Letne Tabory/fest.JPG',            alt: 'Bombovo tábor', rotate: 11,  zIndex: 3 },
-            { src: '/images/Letne Tabory/summeradvatnure.JPG', alt: 'Bombovo tábor', rotate: 18,  zIndex: 1 },
-          ].map((p, i) => (
-            <div
-              key={i}
-              style={{
-                flexShrink: 0,
-                marginLeft: i === 0 ? 0 : '-55px',
-                transform: `rotate(${p.rotate}deg)`,
-                transformOrigin: 'bottom center',
-                background: '#fff',
-                padding: '10px 10px 36px 10px',
-                boxShadow: 'none',
-                borderRadius: '2px',
-                zIndex: p.zIndex,
-                position: 'relative',
-              }}
-            >
-              <img
-                src={p.src}
-                alt={p.alt}
-                style={{
-                  width: p.isMain ? '202px' : '168px',
-                  height: p.isMain ? '247px' : '206px',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
-              <p className="text-center mt-2 font-handwritten text-bombovo-dark text-sm">
-                Letné Tábory 2025
-              </p>
-            </div>
-          ))}
-        </div>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
-          <WaveDivider color="blue" variant={2} />
-        </div>
-      </section>
 
       <main className="flex-grow bg-white">
         <section className="py-12">

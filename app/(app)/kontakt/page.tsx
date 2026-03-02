@@ -445,21 +445,23 @@ export default function KontaktPage() {
           <div className="flex justify-center items-center gap-12 md:gap-16">
             {/* Partner 1 */}
             <div className="flex flex-col items-center">
-              <div 
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center shadow-lg"
-                style={{ backgroundColor: '#90EE90' }}
-              >
-                <span className="text-2xl md:text-3xl font-bold text-bombovo-dark">Partner 1</span>
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-bombovo-blue bg-white flex items-center justify-center overflow-hidden shadow-lg p-3">
+                <img
+                  src="/images/partner1.png"
+                  alt="Partner 1"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
 
             {/* Partner 2 */}
             <div className="flex flex-col items-center">
-              <div 
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center shadow-lg"
-                style={{ backgroundColor: '#90EE90' }}
-              >
-                <span className="text-2xl md:text-3xl font-bold text-bombovo-dark">Partner 2</span>
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-bombovo-blue bg-white flex items-center justify-center overflow-hidden shadow-lg p-3">
+                <img
+                  src="/images/partner2.png"
+                  alt="Partner 2"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
           </div>

@@ -67,9 +67,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
     }
   }
 
-  const reviewPhotoSrc = (index: number) =>
-    reviews[index]?.photo ??
-    `/images/Skoly%20v%20Prirode/review${index + 1}.${index === 0 ? 'jpg' : 'JPG'}`
+  const reviewPhotoSrc = (index: number) => reviews[index]?.photo ?? ''
 
   return (
     <main className="min-h-screen bg-white">

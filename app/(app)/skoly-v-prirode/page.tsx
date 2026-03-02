@@ -23,17 +23,17 @@ const HARDCODED_SECTION3: [Section3Block, Section3Block, Section3Block] = [
   {
     headline: 'Overené strediská, ktoré spĺňajú všetky hygienické normy',
     body: 'V CK Bombovo spolupracujeme iba so strediskami, ktoré spĺňajú stanovené požiadavky na komfort, hygienu, vybavenie a sú dlhodobo overené školami a učiteľmi z celého Slovenska.\n\nNaši animátori komunikujú s vedením strediska a s kuchyňou a ak niečo nefunguje rieši to náš tím a nie učitelia. U nás je ubytovanie a strava istota, nie lotéria!',
-    photo: '/images/Skoly%20v%20Prirode/secion3.1.JPG',
+    photo: '',
   },
   {
     headline: 'Profesionálny a zaškolený animačný tím',
     body: 'V Bombove nenájdete žiadnych amatérskych animátorov. Našich animátorov každoročne preškoľujeme, aby sme zariadili, že váš turnus bude mať naozaj hladký priebeh. Program má pevný rytmus a náš tím presne vie ako reagovať v každej situácii.\n\nNaše školy v prírode nie sú o neustálom dozore, ale o tom, že učiteľ má svoj profesionálny tím, na ktorý sa môže vždy spoľahnúť.',
-    photo: '/images/Skoly%20v%20Prirode/secion3.2.JPG',
+    photo: '',
   },
   {
     headline: 'Unikátny program, ktorý nikde inde nenájdete',
     body: 'Najväčšou úľavou pre učiteľa je keď zistí, že na škole v prírode nemusí nič zachraňovať. Naše aktivity držia deti od prvého dňa pokope a každá časť dňa na seba prirodzene nadväzuje.\n\nNejde teda o sled náhodných hier, ale o mystický príbeh, pomocou ktorého sa deti učia spolupracovať, dôverovať si a preberať zodpovednosť bez toho, aby sa cítili byť pod tlakom. Naše školy v prírode tak nekončia príchodom do školy, ale zanechajú v deťoch cenné skúsenosti a spoločné zážitky, ktoré v nich zostanú navždy.',
-    photo: '/images/Skoly%20v%20Prirode/secion3.3.JPG',
+    photo: '',
   },
 ]
 
@@ -94,7 +94,7 @@ export default async function SkolyVPrirodePage() {
     const payloadSection3 = blocks.map(({ headlineKey, bodyKey, photoKey }, i) => ({
       headline: global[headlineKey] ?? HARDCODED_SECTION3[i].headline,
       body:     global[bodyKey]     ?? HARDCODED_SECTION3[i].body,
-      photo:    mediaUrl(global[photoKey]) ?? HARDCODED_SECTION3[i].photo,
+      photo:    mediaUrl(global[photoKey]) ?? '',
     })) as [Section3Block, Section3Block, Section3Block]
     data.section3 = payloadSection3
 
