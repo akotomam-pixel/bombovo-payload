@@ -19,7 +19,7 @@ function docHref(doc: FooterDoc): string {
 
 const FALLBACK_S1: FooterDoc[] = [
   { name: 'Všeobecné poistné podmienky pre prípad úpadku CK', url: '/documents/Vseobecne-poistne-podmienky-pre-pripad-upadku-CK.pdf' },
-  { name: 'Všeobecné a záručné podmienky', url: '/documents/Vseobecne-a-zarucne-podmienky.pdf' },
+  { name: 'Všeobecné a záručné podmienky', url: '/documents/vseobecne-a-zarucne-podmienky-2026.pdf' },
   { name: 'Ochrana osobných údajov', url: '/documents/ochrana-osobnych-udajov.pdf' },
   { name: 'Certifikát pre prípad úpadku CK', url: '/documents/Certifikat-pre-pripad-upadku-CK.pdf' },
   { name: 'Čestné prehlásenie BOUNCE PARK', url: '/documents/cestne-prehlásenie-BOUNCE-PARK.pdf' },
