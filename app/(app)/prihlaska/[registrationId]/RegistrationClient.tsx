@@ -86,6 +86,7 @@ export default function RegistrationClient({
     e.preventDefault();
     console.log("Form submitted:", formData);
     setIsSubmitted(true);
+    if (typeof window !== 'undefined') { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'prihlaska_submitted' }); }
   };
 
   return (

@@ -29,6 +29,10 @@ export default function RootLayout({
           src="https://cdn.cookieyes.com/client_data/500b87a6adab5aa80a/script.js"
           strategy="beforeInteractive"
         />
+        {/* Pre-initialize dataLayer so events queued before GTM loads are not lost */}
+        <Script id="gtm-datalayer-init" strategy="beforeInteractive">
+          {`window.dataLayer = window.dataLayer || [];`}
+        </Script>
         {/* Google Tag Manager */}
         <Script id="gtm-head" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
