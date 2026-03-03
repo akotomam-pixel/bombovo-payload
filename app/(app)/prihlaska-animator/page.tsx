@@ -248,6 +248,7 @@ export default function PrihlaskaAnimatorPage() {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       setSubmitSuccess(true)
+      if (typeof window !== 'undefined') { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'job_application_submitted' }); }
       setFormData({
         titul: '',
         meno: '',
