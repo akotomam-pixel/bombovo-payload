@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+
+declare global {
+  interface Window {
+    ecotrack: (...args: unknown[]) => void
+  }
+}
 import Image from "next/image";
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
@@ -14,6 +20,7 @@ interface Props {
   dateEnd: string;
   originalPrice: string;
   discountedPrice: string;
+  registrationId: string;
 }
 
 export default function RegistrationClient({
@@ -23,6 +30,7 @@ export default function RegistrationClient({
   dateEnd,
   originalPrice,
   discountedPrice,
+  registrationId,
 }: Props) {
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
@@ -92,6 +100,13 @@ export default function RegistrationClient({
         window.dataLayer.push({ event: 'prihlaska_submitted' });
       }
     }, 100);
+    if (typeof window !== 'undefined' && typeof window.ecotrack === 'function') {
+      const cleanPrice = discountedPrice.replace(/[^0-9.]/g, '');
+      window.ecotrack('setUserId', formData.email);
+      window.ecotrack('addTrans', registrationId, 'Bombovo', cleanPrice, '0', '0', '', '', 'EUR');
+      window.ecotrack('addItem', registrationId, registrationId, campName, 'letny-tabor', cleanPrice, '1');
+      window.ecotrack('trackTrans');
+    }
   };
 
   return (

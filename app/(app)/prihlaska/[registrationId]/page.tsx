@@ -114,6 +114,7 @@ export default async function RegistrationPage({
       dateEnd={data.dateEnd}
       originalPrice={data.originalPrice}
       discountedPrice={data.discountedPrice}
+      registrationId={registrationId}
     />
   );
 }
