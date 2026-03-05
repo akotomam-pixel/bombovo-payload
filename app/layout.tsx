@@ -34,16 +34,12 @@ export default function RootLayout({
           {`window.dataLayer = window.dataLayer || [];`}
         </Script>
         {/* Ecomail web tracking */}
+        <Script src="//d70shl7vidtft.cloudfront.net/ecmtr-2.4.2.js" strategy="afterInteractive" />
         <Script id="ecomail-tracker" strategy="afterInteractive">
-          {`;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
-p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)};
-p[i].q=p[i].q||[];n=l.createElement(o);g=l.getElementsByTagName(o)[0];n.async=1;
-n.src='//d1fc8wv8zag5ca.cloudfront.net/2.14.0/sp.js';
-g.parentNode.insertBefore(n,g)}}(window,document,'script','','ecotrack'));
-window.ecotrack('newTracker','cf','d2dpiwfhf3tz0r.cloudfront.net',{
-  appId:'${process.env.NEXT_PUBLIC_ECOMAIL_ACCOUNT_ID}',cookieDomain:null
+          {`window.ecotrack('newTracker', 'cf', 'd2dpiwfhf3tz0r.cloudfront.net', {
+  appId: 'bombovo'
 });
-window.ecotrack('setUserIdFromLocation','ecmid');
+window.ecotrack('setUserIdFromLocation', 'ecmid');
 window.ecotrack('trackPageView');`}
         </Script>
         {/* Google Tag Manager */}
