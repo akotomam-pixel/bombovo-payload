@@ -1,123 +1,137 @@
 /**
- * One-time lookup script: list all camps (ZajezdList) from ProfisXML
- * and print each termin with its id_Termin, name, and dates.
+ * One-time lookup script: list all camps and their termins from ProfisXML
  *
  * Usage:
  *   npx tsx scripts/list-profis-terminy.ts
  *
- * This output lets you fill in "Profis Term ID" for each date in Payload admin.
+ * Output: for each camp, each termin with its id_Termin and dates.
+ * Use this to fill in "Profis Term ID" for each date in Payload admin.
  */
 
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import path from 'path'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
 const NS = 'http://xml.profis.profitour.cz'
 const API_BASE = process.env.PROFIS_API_BASE ?? 'https://xml.bombovo.sk/API/v1'
 const PROXY_URL = process.env.PROFIS_PROXY_URL ?? ''
 const PROXY_SECRET = process.env.PROFIS_PROXY_SECRET ?? ''
 
-async function soapCall(service: string, method: string, bodyXml: string): Promise<string> {
-  const endpoint = `${API_BASE}/${service}.svc`
-  const soapAction = `${NS}/${service}/${method}`
+if (!PROXY_URL) { console.error('ERROR: PROFIS_PROXY_URL not set'); process.exit(1) }
+if (!PROXY_SECRET) { console.error('ERROR: PROFIS_PROXY_SECRET not set'); process.exit(1) }
+if (!process.env.PROFIS_LOGIN) { console.error('ERROR: PROFIS_LOGIN not set'); process.exit(1) }
 
+async function soapCall(service: string, method: string, bodyXml: string): Promise<string> {
+  const endpoint = `${API_BASE}/${service}.svc/basics`
   const envelope = `<?xml version="1.0" encoding="utf-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="${NS}">
-  <soapenv:Body>
-    <ns:${method}>
-      ${bodyXml}
-    </ns:${method}>
-  </soapenv:Body>
+  <soapenv:Body><ns:${method}>${bodyXml}</ns:${method}></soapenv:Body>
 </soapenv:Envelope>`
 
   const res = await fetch(`${PROXY_URL}?target=${encodeURIComponent(endpoint)}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: soapAction,
+      SOAPAction: `${NS}/${service}/${method}`,
       'X-Proxy-Secret': PROXY_SECRET,
     },
     body: envelope,
   })
-
   const text = await res.text()
-  if (!res.ok) throw new Error(`Proxy error ${res.status}: ${text.slice(0, 300)}`)
+  if (!res.ok) throw new Error(`Proxy ${res.status}: ${text.slice(0, 200)}`)
   return text
 }
 
-function context(): string {
-  return `
-    <Context>
-      <UzivatelLogin>${process.env.PROFIS_LOGIN}</UzivatelLogin>
-      <UzivatelHeslo>${process.env.PROFIS_HESLO}</UzivatelHeslo>
-      <id_Jazyk>${process.env.PROFIS_ID_JAZYK}</id_Jazyk>
-      <id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</id_Republika>
-      <Rezim>${process.env.PROFIS_REZIM}</Rezim>
-      <VypsatNazvy>true</VypsatNazvy>
-    </Context>`
+function ctx(): string {
+  return `<ns:Context>
+    <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+    <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+    <ns:VypsatNazvy>false</ns:VypsatNazvy>
+    <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+    <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
+    <ns:Rezim>${process.env.PROFIS_REZIM}</ns:Rezim>
+  </ns:Context>`
 }
 
 function extractAll(xml: string, tag: string): string[] {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'g')
-  const results: string[] = []
-  let m: RegExpExecArray | null
-  while ((m = re.exec(xml)) !== null) results.push(m[1].trim())
-  return results
+  const re = new RegExp(`<${tag}[\\s>][\\s\\S]*?<\\/${tag}>`, 'g')
+  return xml.match(re) ?? []
 }
 
 function extractTag(xml: string, tag: string): string {
-  return new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i').exec(xml)?.[1]?.trim() ?? ''
+  return new RegExp(`<${tag}[^>]*>([^<]*)<\\/${tag}>`).exec(xml)?.[1]?.trim() ?? ''
 }
 
 async function main() {
-  console.log('Fetching ZajezdList from ProfisXML...\n')
+  console.log('Fetching all trips from ProfisXML...\n')
 
-  const xml = await soapCall(
-    'Katalog',
-    'ZajezdList',
-    `${context()}
-    <Filtr>
-      <VseNezavisleNaStavu>false</VseNezavisleNaStavu>
-    </Filtr>`,
-  )
+  // Step 1: get trip list
+  const zajezdXml = await soapCall('Katalog', 'ZajezdList', `
+    ${ctx()}
+    <ns:Criteria><ns:JenAktivni>false</ns:JenAktivni></ns:Criteria>`)
 
-  if (xml.includes('<faultcode>') || xml.includes('<s:Fault>')) {
-    const msg = xml.match(/<faultstring[^>]*>([^<]+)<\/faultstring>/)?.[1] ?? 'SOAP Fault'
-    console.error('ProfisXML error:', msg)
-    process.exit(1)
-  }
-
-  // Each <ZajezdInfo> block contains the trip and its termins
-  const zajezdBlocks = extractAll(xml, 'ZajezdInfo')
-
-  if (zajezdBlocks.length === 0) {
-    console.log('No trips found. Raw response:\n', xml.slice(0, 1000))
+  const trips = extractAll(zajezdXml, 'Zajezd')
+  if (!trips.length) {
+    console.log('No trips found.')
     process.exit(0)
   }
 
-  console.log(`Found ${zajezdBlocks.length} trips:\n`)
+  console.log(`Found ${trips.length} trips. Fetching termins for each...\n`)
 
-  for (const z of zajezdBlocks) {
+  for (const z of trips) {
+    const id_Zajezd = extractTag(z, 'ID')
     const nazev = extractTag(z, 'Nazev')
-    console.log(`=== ${nazev} ===`)
+    const id_ZajezdHotel = extractTag(z, 'ZajezdHotel')
+      ? (extractAll(z, 'ZajezdHotel')[0] ? extractTag(extractAll(z, 'ZajezdHotel')[0], 'ID') : '')
+      : ''
 
-    const terminBlocks = extractAll(z, 'TerminInfo')
-    if (terminBlocks.length === 0) {
-      console.log('  (no termins)\n')
-      continue
-    }
+    console.log(`=== ${nazev} (id_Zajezd: ${id_Zajezd}) ===`)
 
-    for (const t of terminBlocks) {
-      const id = extractTag(t, 'id_Termin')
-      const od = extractTag(t, 'DatumOd')
-      const do_ = extractTag(t, 'DatumDo')
-      const stav = extractTag(t, 'StavNazev')
-      const volnych = extractTag(t, 'VolnychMist')
-      console.log(`  id_Termin: ${id.padEnd(6)} | ${od} – ${do_} | ${stav} | volných: ${volnych}`)
+    try {
+      const detailXml = await soapCall('Katalog', 'ZajezdDetail', `
+        ${ctx()}
+        <ns:ID>${id_Zajezd}</ns:ID>`)
+
+      const termins = extractAll(detailXml, 'Termin')
+
+      if (!termins.length) {
+        console.log('  (no termins in detail, trying HledaniTerminu...)')
+
+        const hledaniXml = await soapCall('Katalog', 'HledaniTerminu', `
+          ${ctx()}
+          <ns:Termin>
+            <ns:id_Zajezd>${id_Zajezd}</ns:id_Zajezd>
+          </ns:Termin>`)
+
+        const hTermins = extractAll(hledaniXml, 'TerminInfo')
+        for (const t of hTermins) {
+          const id = extractTag(t, 'id_Termin') || extractTag(t, 'ID')
+          const od = extractTag(t, 'DatumOd')
+          const doo = extractTag(t, 'DatumDo')
+          const stav = extractTag(t, 'Stav') || extractTag(t, 'StavNazev')
+          const volnych = extractTag(t, 'VolnychMist')
+          const hotel = extractTag(t, 'id_ZajezdHotel')
+          console.log(`  id_Termin: ${String(id).padEnd(6)} | ${od} – ${doo} | stav: ${stav} | volných: ${volnych} | id_ZajezdHotel: ${hotel}`)
+        }
+        if (!hTermins.length) console.log('  (no termins found)')
+      } else {
+        for (const t of termins) {
+          const id = extractTag(t, 'id_Termin') || extractTag(t, 'ID')
+          const od = extractTag(t, 'DatumOd')
+          const doo = extractTag(t, 'DatumDo')
+          const stav = extractTag(t, 'Stav') || extractTag(t, 'StavNazev')
+          const volnych = extractTag(t, 'VolnychMist')
+          const hotely = extractAll(t, 'ZajezdHotel')
+          const hotel = hotely.length ? extractTag(hotely[0], 'ID') : id_ZajezdHotel
+          console.log(`  id_Termin: ${String(id).padEnd(6)} | ${od} – ${doo} | stav: ${stav} | volných: ${volnych} | id_ZajezdHotel: ${hotel}`)
+        }
+      }
+    } catch (e) {
+      console.log(`  ERROR fetching detail: ${e instanceof Error ? e.message : e}`)
     }
     console.log('')
   }
 }
 
-main().catch((e) => {
-  console.error('Script error:', e)
-  process.exit(1)
-})
+main().catch((e) => { console.error('Script error:', e); process.exit(1) })
