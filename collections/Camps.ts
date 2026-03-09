@@ -330,8 +330,16 @@ export const Camps: CollectionConfig = {
         {
           name: 'registrationId',
           type: 'text',
-          label: 'Registration ID',
-          admin: { description: 'Links to the registration form, e.g. "1"' },
+          label: 'Registration ID (legacy)',
+          admin: { description: 'Legacy manual ID — replaced by Profis Term ID below' },
+        },
+        {
+          name: 'profisTerminId',
+          type: 'number',
+          label: 'Profis Term ID (id_Termin)',
+          admin: {
+            description: 'The id_Termin from ProfisXML for this date. Use the lookup script to find it.',
+          },
         },
       ],
     },

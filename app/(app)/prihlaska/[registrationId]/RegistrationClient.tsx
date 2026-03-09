@@ -21,6 +21,8 @@ interface Props {
   originalPrice: string;
   discountedPrice: string;
   registrationId: string;
+  profisTerminId: number | null;
+  id_ZajezdHotel: number | null;
 }
 
 export default function RegistrationClient({
@@ -31,6 +33,8 @@ export default function RegistrationClient({
   originalPrice,
   discountedPrice,
   registrationId,
+  profisTerminId,
+  id_ZajezdHotel,
 }: Props) {
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
@@ -78,6 +82,8 @@ export default function RegistrationClient({
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -90,22 +96,119 @@ export default function RegistrationClient({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setIsSubmitted(true);
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: 'prihlaska_submitted' });
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      if (profisTerminId && id_ZajezdHotel) {
+        // ── Step 1: Calculate price to get id_SkupinaSlevaKombinace ──────────
+        const pocetOsob = formData.hasSecondChild ? 2 : 1;
+
+        const kalkulaceRes = await fetch('/api/profitour/kalkulace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_Termin: profisTerminId, id_ZajezdHotel, pocetOsob }),
+        });
+        const kalkulaceData = await kalkulaceRes.json();
+
+        if (!kalkulaceRes.ok || kalkulaceData.error) {
+          throw new Error(kalkulaceData.error ?? 'Chyba pri výpočte ceny.');
+        }
+
+        const id_SkupinaSlevaKombinace = Number(kalkulaceData.kalkulace?.id_SkupinaSlevaKombinace ?? 0);
+
+        // ── Step 2: Build travelers list ──────────────────────────────────────
+        const splitName = (fullName: string) => {
+          const parts = fullName.trim().split(/\s+/);
+          return { jmeno: parts[0] ?? '', prijmeni: parts.slice(1).join(' ') || '-' };
+        };
+        const formatDate = (iso: string) => {
+          const [y, m, d] = iso.split('-');
+          return `${d}.${m}.${y}`;
+        };
+
+        const cestujici = [
+          { ...splitName(formData.childName), datumNarozeni: formatDate(formData.birthDate) },
+          ...(formData.hasSecondChild && formData.childName2 && formData.birthDate2
+            ? [{ ...splitName(formData.childName2), datumNarozeni: formatDate(formData.birthDate2) }]
+            : []),
+        ];
+
+        // Build a notes string with the extra form fields Profis can't store
+        const extras = [
+          formData.tshirtSize ? `Tričko: ${formData.tshirtSize}` : '',
+          formData.hasSecondChild && formData.tshirtSize2 ? `Tričko 2: ${formData.tshirtSize2}` : '',
+          formData.roomWith ? `Ubytovať s: ${formData.roomWith}` : '',
+          formData.hasIntolerance === 'ano' && formData.intoleranceDetails ? `Intolerancia: ${formData.intoleranceDetails}` : '',
+          formData.employerContribution ? 'Príspevok od zamestnávateľa: áno' : '',
+          formData.insurance ? 'Poistenie ECP: áno' : '',
+          `Platba: ${formData.paymentMethod === 'zaloha' ? 'záloha 50€' : 'celá suma'}`,
+          formData.additionalInfo ? `Poznámka: ${formData.additionalInfo}` : '',
+          formData.discountCode ? `Zľavový kód: ${formData.discountCode}` : '',
+        ].filter(Boolean).join(' | ');
+
+        // ── Step 3: Create order ───────────────────────────────────────────────
+        const orderRes = await fetch('/api/profitour/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id_Termin: profisTerminId,
+            id_ZajezdHotel,
+            id_SkupinaSlevaKombinace,
+            pocetOsob,
+            jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
+            prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
+            email: formData.email,
+            telefon: formData.phone,
+            ulice: formData.street,
+            mesto: formData.city,
+            psc: formData.zip,
+            cestujici,
+            poznamka: extras,
+            url: typeof window !== 'undefined' ? window.location.href : 'https://bombovo.sk',
+          }),
+        });
+        const orderData = await orderRes.json();
+
+        if (!orderRes.ok || orderData.error) {
+          throw new Error(orderData.error ?? 'Chyba pri odosielaní objednávky.');
+        }
+
+        const { id_Objednavka, id_Klic } = orderData;
+
+        // ── Step 4: Finalize order (fire-and-forget is ok, but await anyway) ──
+        await fetch('/api/profitour/order/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_Objednavka, id_Klic }),
+        });
       }
-    }, 100);
-    if (typeof window !== 'undefined' && typeof window.ecotrack === 'function') {
-      const cleanPrice = discountedPrice.replace(/[^0-9.]/g, '');
-      window.ecotrack('setUserId', formData.email);
-      window.ecotrack('addTrans', registrationId, 'Bombovo', cleanPrice, '0', '0', '', '', 'EUR');
-      window.ecotrack('addItem', registrationId, registrationId, campName, 'letny-tabor', cleanPrice, '1');
-      window.ecotrack('trackTrans');
+      // If profisTerminId is not set yet, the form still submits but without Profis
+      // (legacy flow — useful until all camps have profisTerminId populated)
+
+      setIsSubmitted(true);
+
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'prihlaska_submitted' });
+        }
+      }, 100);
+
+      if (typeof window !== 'undefined' && typeof window.ecotrack === 'function') {
+        const cleanPrice = discountedPrice.replace(/[^0-9.]/g, '');
+        window.ecotrack('setUserId', formData.email);
+        window.ecotrack('addTrans', registrationId, 'Bombovo', cleanPrice, '0', '0', '', '', 'EUR');
+        window.ecotrack('addItem', registrationId, registrationId, campName, 'letny-tabor', cleanPrice, '1');
+        window.ecotrack('trackTrans');
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -694,12 +797,18 @@ export default function RegistrationClient({
               </div>
 
               {/* Submit */}
-              <div className="text-center">
+              <div className="text-center space-y-4">
+                {submitError && (
+                  <div className="p-4 bg-red-50 border-2 border-red-400 rounded-xl text-red-700 font-semibold text-sm">
+                    {submitError}
+                  </div>
+                )}
                 <button
                   type="submit"
-                  className="px-12 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-xl rounded-full hover:translate-y-0.5 transition-transform duration-150"
+                  disabled={isSubmitting}
+                  className="px-12 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-xl rounded-full hover:translate-y-0.5 transition-transform duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Odoslať rezerváciu
+                  {isSubmitting ? 'Odosielam...' : 'Odoslať rezerváciu'}
                 </button>
               </div>
             </form>
