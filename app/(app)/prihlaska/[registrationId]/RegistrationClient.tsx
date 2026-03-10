@@ -103,21 +103,10 @@ export default function RegistrationClient({
 
     try {
       if (profisTerminId) {
-        // ── Step 1: Calculate price to get id_SkupinaSlevaKombinace ──────────
-        const kalkulaceRes = await fetch('/api/profitour/kalkulace', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_Termin: profisTerminId }),
-        });
-        const kalkulaceData = await kalkulaceRes.json();
+        // Children's camps have fixed prices — skip Kalkulace and use default combination (0)
+        const id_SkupinaSlevaKombinace = 0;
 
-        if (!kalkulaceRes.ok || kalkulaceData.error) {
-          throw new Error(kalkulaceData.error ?? 'Chyba pri výpočte ceny.');
-        }
-
-        const id_SkupinaSlevaKombinace = Number(kalkulaceData.kalkulace?.id_SkupinaSlevaKombinace ?? 0);
-
-        // ── Step 2: Build travelers list ──────────────────────────────────────
+        // ── Build travelers list ──────────────────────────────────────────────
         const splitName = (fullName: string) => {
           const parts = fullName.trim().split(/\s+/);
           return { jmeno: parts[0] ?? '', prijmeni: parts.slice(1).join(' ') || '-' };
@@ -144,7 +133,7 @@ export default function RegistrationClient({
           formData.discountCode ? `Zľavový kód: ${formData.discountCode}` : '',
         ].filter(Boolean).join(' | ');
 
-        // ── Step 3: Create order ───────────────────────────────────────────────
+        // ── Create order ──────────────────────────────────────────────────────
         const orderRes = await fetch('/api/profitour/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
