@@ -7,13 +7,14 @@ export async function POST(req: NextRequest) {
     id_SkupinaSlevaKombinace?: number
     jmeno?: string
     prijmeni?: string
+    pohlavie?: string  // 'm' or 'z'
     email?: string
     telefon?: string
     ulice?: string
     mesto?: string
     psc?: string
     // datumNarozeni is expected as YYYY-MM-DD (HTML date input format)
-    cestujici?: Array<{ jmeno: string; prijmeni: string; datumNarozeni: string }>
+    cestujici?: Array<{ jmeno: string; prijmeni: string; datumNarozeni: string; pohlavie: string }>
     poznamka?: string
     url?: string
   }
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   // Build travelers XML using correct WCF types with i:type for polymorphism.
   // CestujiciInputBase.ID (base) → CestujiciKlientInput.Klient (own)
-  // Klient is KlientDataInput with fields in ordinal order: Jmeno, Narozeni, Prijmeni
+  // Klient is KlientDataInput with fields in ordinal order: Jmeno, Narozeni, Prijmeni, id_Pohlavi
   const cestujiciXml = input.cestujici!
     .map(
       (c) => `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
             <ns:Jmeno>${ex(c.jmeno)}</ns:Jmeno>
             <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
             <ns:Prijmeni>${ex(c.prijmeni)}</ns:Prijmeni>
+            <ns:id_Pohlavi>${ex(c.pohlavie ?? 'm')}</ns:id_Pohlavi>
           </ns:Klient>
         </ns:CestujiciInputBase>`,
     )
@@ -96,6 +98,7 @@ export async function POST(req: NextRequest) {
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>
           <ns:Telefon>${ex(input.telefon!)}</ns:Telefon>
+          <ns:id_Pohlavi>${ex(input.pohlavie ?? 'z')}</ns:id_Pohlavi>
         </ns:Objednatel>
         <ns:PoznamkaKlient>${ex(input.poznamka ?? '')}</ns:PoznamkaKlient>
         <ns:Produkt i:type="ns:VlastniProduktTerminInput">
