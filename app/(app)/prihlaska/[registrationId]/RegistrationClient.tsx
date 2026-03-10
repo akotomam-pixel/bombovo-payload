@@ -102,14 +102,12 @@ export default function RegistrationClient({
     setIsSubmitting(true);
 
     try {
-      if (profisTerminId && id_ZajezdHotel) {
+      if (profisTerminId) {
         // ── Step 1: Calculate price to get id_SkupinaSlevaKombinace ──────────
-        const pocetOsob = formData.hasSecondChild ? 2 : 1;
-
         const kalkulaceRes = await fetch('/api/profitour/kalkulace', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_Termin: profisTerminId, id_ZajezdHotel, pocetOsob }),
+          body: JSON.stringify({ id_Termin: profisTerminId }),
         });
         const kalkulaceData = await kalkulaceRes.json();
 
@@ -124,15 +122,12 @@ export default function RegistrationClient({
           const parts = fullName.trim().split(/\s+/);
           return { jmeno: parts[0] ?? '', prijmeni: parts.slice(1).join(' ') || '-' };
         };
-        const formatDate = (iso: string) => {
-          const [y, m, d] = iso.split('-');
-          return `${d}.${m}.${y}`;
-        };
 
+        // Keep birth date as YYYY-MM-DD (HTML date input format); route converts to xs:dateTime
         const cestujici = [
-          { ...splitName(formData.childName), datumNarozeni: formatDate(formData.birthDate) },
+          { ...splitName(formData.childName), datumNarozeni: formData.birthDate },
           ...(formData.hasSecondChild && formData.childName2 && formData.birthDate2
-            ? [{ ...splitName(formData.childName2), datumNarozeni: formatDate(formData.birthDate2) }]
+            ? [{ ...splitName(formData.childName2), datumNarozeni: formData.birthDate2 }]
             : []),
         ];
 
@@ -155,9 +150,7 @@ export default function RegistrationClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             id_Termin: profisTerminId,
-            id_ZajezdHotel,
             id_SkupinaSlevaKombinace,
-            pocetOsob,
             jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
             prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
             email: formData.email,

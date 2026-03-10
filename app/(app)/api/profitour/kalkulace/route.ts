@@ -2,22 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { soapCall, extractTag } from '@/lib/profis'
 
 export async function POST(req: NextRequest) {
-  let body: { id_Termin?: number; id_ZajezdHotel?: number; pocetOsob?: number }
+  let body: { id_Termin?: number }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { id_Termin, id_ZajezdHotel, pocetOsob } = body
-  if (!id_Termin || !id_ZajezdHotel || !pocetOsob) {
-    return NextResponse.json(
-      { error: 'Missing required fields: id_Termin, id_ZajezdHotel, pocetOsob' },
-      { status: 400 },
-    )
+  const { id_Termin } = body
+  if (!id_Termin) {
+    return NextResponse.json({ error: 'Missing required field: id_Termin' }, { status: 400 })
   }
 
   try {
+    // Kalkulace: Context + Data (VlastniProduktTerminInput)
+    // VlastniProduktTerminInput extends ProduktInputBase.
+    // Fields in DataContractSerializer order (base class first, then own fields):
+    //   Base ProduktInputBase: Cestujici, Pojisteni, RezervaceDopravy, RezervaceUbytovani, Skipasy, id_TypStrava
+    //   Own: id_SkupinaSlevaParametr, id_Termin
     const raw = await soapCall('Katalog', 'Kalkulace', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
@@ -27,21 +29,9 @@ export async function POST(req: NextRequest) {
         <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
         <ns:Rezim>${process.env.PROFIS_REZIM}</ns:Rezim>
       </ns:Context>
-      <ns:Termin>
+      <ns:Data>
         <ns:id_Termin>${id_Termin}</ns:id_Termin>
-        <ns:HotelList>
-          <ns:id_ZajezdHotel>${id_ZajezdHotel}</ns:id_ZajezdHotel>
-        </ns:HotelList>
-        <ns:Smery/>
-        <ns:TypStravy/>
-        <ns:TypUbytovani/>
-        <ns:Pojisteni/>
-        <ns:Skipas/>
-        <ns:NepovinneCenyList/>
-        <ns:PocetOsob>${pocetOsob}</ns:PocetOsob>
-        <ns:PocetDeti>0</ns:PocetDeti>
-        <ns:PocetDospelych>${pocetOsob}</ns:PocetDospelych>
-      </ns:Termin>`)
+      </ns:Data>`)
 
     const xml = raw._raw as string
     return NextResponse.json({

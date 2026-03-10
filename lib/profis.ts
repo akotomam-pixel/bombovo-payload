@@ -51,7 +51,7 @@ export async function soapCall(
   const proxyTarget = `${PROXY_URL}?target=${encodeURIComponent(endpoint)}`
 
   const envelope = `<?xml version="1.0" encoding="utf-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="${NS}">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="${NS}" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
   <soapenv:Body>
     <ns:${method}>
       ${bodyXml}
@@ -72,7 +72,7 @@ export async function soapCall(
   const text = await res.text()
 
   if (!res.ok) {
-    throw new Error(`Proxy error ${res.status}: ${text.slice(0, 300)}`)
+    throw new Error(`Proxy error ${res.status}: ${text.slice(0, 2000)}`)
   }
 
   // Check for SOAP Fault
