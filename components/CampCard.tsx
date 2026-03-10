@@ -18,7 +18,7 @@ interface CampCardProps {
   image: string
 }
 
-export default function CampCard({ id, name, age, types, displayTypes, price, description, image }: CampCardProps) {
+export default function CampCard({ id, name, age, types, displayTypes, price, description, image, index }: CampCardProps) {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'Akčný':
@@ -62,7 +62,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 33vw"
-          unoptimized={image.startsWith('http')}
+          priority={index < 3}
         />
       </div>
 

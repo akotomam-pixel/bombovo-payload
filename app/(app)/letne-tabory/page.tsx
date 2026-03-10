@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { getPayloadClient } from '@/lib/payload'
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'

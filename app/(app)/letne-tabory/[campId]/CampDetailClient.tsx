@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
@@ -111,14 +112,18 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
 
               <div className="relative">
                 <div
-                  className="w-full rounded-2xl overflow-hidden cursor-pointer"
+                  className="w-full rounded-2xl overflow-hidden cursor-pointer relative"
                   style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
-                  <img
+                  <Image
                     src={galleryImages[mainImage].src}
                     alt={`Foto ${mainImage + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                    priority={mainImage === 0}
+                    unoptimized={galleryImages[mainImage].src.includes('picsum')}
                   />
                 </div>
                 <button
@@ -224,14 +229,18 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
               {/* Product Gallery */}
               <div>
                 <div
-                  className="w-full rounded-2xl overflow-hidden cursor-pointer mb-4"
+                  className="w-full rounded-2xl overflow-hidden cursor-pointer mb-4 relative"
                   style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
-                  <img
+                  <Image
                     src={galleryImages[mainImage].src}
                     alt={`Foto ${mainImage + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority={mainImage === 0}
+                    unoptimized={galleryImages[mainImage].src.includes('picsum')}
                   />
                 </div>
 

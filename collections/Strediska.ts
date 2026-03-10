@@ -194,6 +194,18 @@ export const Strediska: CollectionConfig = {
           defaultValue: true,
           admin: { description: 'Uncheck to show VYPREDANÉ on this date.' },
         },
+        {
+          name: 'profisTerminId',
+          type: 'number',
+          label: 'Profis Term ID (id_Termin)',
+          admin: { description: 'id_Termin from ProfisXML. Use the lookup script to find it.' },
+        },
+        {
+          name: 'id_ZajezdHotel',
+          type: 'number',
+          label: 'Profis Hotel ID (id_ZajezdHotel)',
+          admin: { description: 'id_ZajezdHotel from ProfisXML for this stredisko.' },
+        },
       ],
     },
   ],
