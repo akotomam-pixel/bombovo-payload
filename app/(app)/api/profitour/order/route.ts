@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
     .join('')
 
   try {
+    console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace)
     // Objednat: Context + Data (ObjednavkaTerminInput)
     //
     // ObjednavkaTerminInput extends ObjednavkaInputBase.
@@ -112,6 +113,7 @@ export async function POST(req: NextRequest) {
       </ns:Data>`)
 
     const xml = raw._raw as string
+    console.log('[order] Response XML:', xml.slice(0, 800))
     const id_Objednavka = extractTag(xml, 'id_Objednavka')
     const id_Klic = extractTag(xml, 'id_Klic')
 
@@ -127,6 +129,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: 'Objednat failed: ' + message }, { status: 500 })
   }
 }

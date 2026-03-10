@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    console.log('[kalkulace] Calling Profis with id_Termin:', id_Termin)
     // Kalkulace: Context + Data (VlastniProduktTerminInput)
     // VlastniProduktTerminInput extends ProduktInputBase.
     // Fields in DataContractSerializer order (base class first, then own fields):
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
       </ns:Data>`)
 
     const xml = raw._raw as string
+    console.log('[kalkulace] Response XML:', xml.slice(0, 800))
     return NextResponse.json({
       kalkulace: {
         celkemCena: extractTag(xml, 'CelkemCena'),
@@ -45,6 +47,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/kalkulace] Error:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: 'Kalkulace failed: ' + message }, { status: 500 })
   }
 }
