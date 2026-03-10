@@ -341,6 +341,14 @@ export const Camps: CollectionConfig = {
             description: 'The id_Termin from ProfisXML for this date. Use the lookup script to find it.',
           },
         },
+        {
+          name: 'id_ZajezdHotel',
+          type: 'number',
+          label: 'Profis ZajezdHotel ID (id_ZajezdHotel)',
+          admin: {
+            description: 'The id_ZajezdHotel from ProfisXML for this camp. Set automatically by the populate script.',
+          },
+        },
       ],
     },
   ],

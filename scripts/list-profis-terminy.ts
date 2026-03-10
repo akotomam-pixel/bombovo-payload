@@ -81,12 +81,14 @@ async function main() {
 
   for (const z of trips) {
     const id_Zajezd = extractTag(z, 'ID')
-    const nazev = extractTag(z, 'Nazev')
+    // Strip nested <Hotely> block so extractTag('Nazev') gets the camp name, not the hotel name
+    const zWithoutHotely = z.replace(/<Hotely[\s\S]*?<\/Hotely>/, '')
+    const campName = extractTag(zWithoutHotely, 'Nazev') || `(id ${id_Zajezd})`
     const id_ZajezdHotel = extractTag(z, 'ZajezdHotel')
       ? (extractAll(z, 'ZajezdHotel')[0] ? extractTag(extractAll(z, 'ZajezdHotel')[0], 'ID') : '')
       : ''
 
-    console.log(`=== ${nazev} (id_Zajezd: ${id_Zajezd}) ===`)
+    console.log(`=== ${campName} (id_Zajezd: ${id_Zajezd}) ===`)
 
     try {
       const detailXml = await soapCall('Katalog', 'ZajezdDetail', `
@@ -96,25 +98,16 @@ async function main() {
       const termins = extractAll(detailXml, 'Termin')
 
       if (!termins.length) {
-        console.log('  (no termins in detail, trying HledaniTerminu...)')
-
-        const hledaniXml = await soapCall('Katalog', 'HledaniTerminu', `
-          ${ctx()}
-          <ns:Termin>
-            <ns:id_Zajezd>${id_Zajezd}</ns:id_Zajezd>
-          </ns:Termin>`)
-
-        const hTermins = extractAll(hledaniXml, 'TerminInfo')
-        for (const t of hTermins) {
-          const id = extractTag(t, 'id_Termin') || extractTag(t, 'ID')
-          const od = extractTag(t, 'DatumOd')
-          const doo = extractTag(t, 'DatumDo')
-          const stav = extractTag(t, 'Stav') || extractTag(t, 'StavNazev')
-          const volnych = extractTag(t, 'VolnychMist')
-          const hotel = extractTag(t, 'id_ZajezdHotel')
-          console.log(`  id_Termin: ${String(id).padEnd(6)} | ${od} – ${doo} | stav: ${stav} | volných: ${volnych} | id_ZajezdHotel: ${hotel}`)
+        // Check if <Termin exists anywhere in full XML (might be beyond our truncation)
+        const terminIdx = detailXml.indexOf('<Termin')
+        if (terminIdx >= 0) {
+          // Termins ARE in the XML but extractAll missed them — show context
+          console.log(`  FOUND <Termin at pos ${terminIdx}: ${detailXml.slice(terminIdx, terminIdx + 400)}`)
+        } else {
+          console.log(`  NO <Termin tag found in response at all. Total XML length: ${detailXml.length}`)
+          // Show last 400 chars to see what fields are at the end
+          console.log(`  XML end: ...${detailXml.slice(-400)}`)
         }
-        if (!hTermins.length) console.log('  (no termins found)')
       } else {
         for (const t of termins) {
           const id = extractTag(t, 'id_Termin') || extractTag(t, 'ID')
