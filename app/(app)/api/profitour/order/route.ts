@@ -7,14 +7,13 @@ export async function POST(req: NextRequest) {
     id_SkupinaSlevaKombinace?: number
     jmeno?: string
     prijmeni?: string
-    pohlavie?: string  // 'm' or 'z'
     email?: string
     telefon?: string
     ulice?: string
     mesto?: string
     psc?: string
-    // datumNarozeni is expected as YYYY-MM-DD (HTML date input format)
-    cestujici?: Array<{ jmeno: string; prijmeni: string; datumNarozeni: string; pohlavie: string }>
+    // Only datumNarozeni is sent to Profis — names go into poznamka
+    cestujici?: Array<{ datumNarozeni: string }>
     poznamka?: string
     url?: string
   }
@@ -35,30 +34,23 @@ export async function POST(req: NextRequest) {
 
   const ex = escapeXml
 
-  // Convert YYYY-MM-DD to xs:dateTime format required by WCF DataContractSerializer
   const toDateTime = (iso: string) => {
     if (!iso) return '2000-01-01T00:00:00'
-    // Handle both YYYY-MM-DD and DD.MM.YYYY formats
     if (iso.includes('.')) {
       const [d, m, y] = iso.split('.')
-      return `${y}-${m}-${d}T00:00:00`
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}T00:00:00`
     }
     return `${iso}T00:00:00`
   }
 
-  // Build travelers XML using correct WCF types with i:type for polymorphism.
-  // CestujiciInputBase.ID (base) → CestujiciKlientInput.Klient (own)
-  // Klient is KlientDataInput with fields in ordinal order: Jmeno, Narozeni, Prijmeni, id_Pohlavi
+  // CestujiciNarozeniInput: only birth date, no gender required.
+  // Base CestujiciInputBase: ID (negative per docs recommendation)
+  // Own CestujiciNarozeniInput: Narozeni
   const cestujiciXml = input.cestujici!
     .map(
-      (c) => `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
-          <ns:ID>0</ns:ID>
-          <ns:Klient i:type="ns:KlientDataInput">
-            <ns:Jmeno>${ex(c.jmeno)}</ns:Jmeno>
-            <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
-            <ns:Prijmeni>${ex(c.prijmeni)}</ns:Prijmeni>
-            <ns:id_Pohlavi>${ex(c.pohlavie ?? 'm')}</ns:id_Pohlavi>
-          </ns:Klient>
+      (c, i) => `<ns:CestujiciInputBase i:type="ns:CestujiciNarozeniInput">
+          <ns:ID>${-(i + 1)}</ns:ID>
+          <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
         </ns:CestujiciInputBase>`,
     )
     .join('')
@@ -69,15 +61,15 @@ export async function POST(req: NextRequest) {
     //
     // ObjednavkaTerminInput extends ObjednavkaInputBase.
     // DataContractSerializer field order (base class first, alphabetical within each level):
-    //   Base ObjednavkaInputBase: Objednatel, PoznamkaKlient, PoznamkaObjednavka, Produkt, URL,
-    //                             id_Agentura, id_AgenturaPobocka, id_ObjednavkaZdroj, id_Organizace
-    //   Own ObjednavkaTerminInput: NepovinneCeny, id_SkupinaSlevaKombinace
+    //   Base ObjednavkaInputBase: Objednatel (O), PoznamkaKlient (P,K), PoznamkaObjednavka (P,O),
+    //                             Produkt (P,r), URL (U), id_Agentura (i,A), id_AgenturaPobocka (i,Ag),
+    //                             id_ObjednavkaZdroj (i,O), id_Organizace (i,Or)
+    //   Own ObjednavkaTerminInput: NepovinneCeny (N), id_SkupinaSlevaKombinace (i,S)
     //
-    // Produkt is VlastniProduktTerminInput (extends ProduktInputBase):
-    //   Base ProduktInputBase: Cestujici, Pojisteni, RezervaceDopravy, RezervaceUbytovani, Skipasy, id_TypStrava
-    //   Own VlastniProduktTerminInput: id_SkupinaSlevaParametr, id_Termin
+    // Objednatel is KlientDataInput — id_Pohlavi is hardcoded "F" (parent = mother, typical).
+    // KlientDataInput field order: Adresa (A), Email (E), Jmeno (J), Prijmeni (P), Telefon (T), id_Pohlavi (i)
     //
-    // Polymorphic types use i:type (XSD instance type) per WCF DataContractSerializer convention.
+    // Produkt is VlastniProduktTerminInput — Cestujici uses CestujiciNarozeniInput (no gender needed).
     const raw = await soapCall('Objednavka', 'Objednat', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
@@ -98,7 +90,7 @@ export async function POST(req: NextRequest) {
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>
           <ns:Telefon>${ex(input.telefon!)}</ns:Telefon>
-          <ns:id_Pohlavi>${ex(input.pohlavie ?? 'z')}</ns:id_Pohlavi>
+          <ns:id_Pohlavi>F</ns:id_Pohlavi>
         </ns:Objednatel>
         <ns:PoznamkaKlient>${ex(input.poznamka ?? '')}</ns:PoznamkaKlient>
         <ns:Produkt i:type="ns:VlastniProduktTerminInput">

@@ -39,7 +39,6 @@ export default function RegistrationClient({
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
     parentName: "",
-    parentGender: "F",
     street: "",
     city: "",
     zip: "",
@@ -48,7 +47,6 @@ export default function RegistrationClient({
 
     // Informácie dieťaťa
     childName: "",
-    childGender: "M",
     birthDate: "",
 
     // Intolerancie
@@ -63,7 +61,6 @@ export default function RegistrationClient({
     // Druhé dieťa
     hasSecondChild: false,
     childName2: "",
-    childGender2: "M",
     birthDate2: "",
     hasIntolerance2: "nie",
     intoleranceDetails2: "",
@@ -106,29 +103,24 @@ export default function RegistrationClient({
 
     try {
       if (profisTerminId) {
-        // Children's camps have fixed prices — skip Kalkulace and use default combination (0)
-        const id_SkupinaSlevaKombinace = 0;
-
-        // ── Build travelers list ──────────────────────────────────────────────
-        const splitName = (fullName: string) => {
-          const parts = fullName.trim().split(/\s+/);
-          return { jmeno: parts[0] ?? '', prijmeni: parts.slice(1).join(' ') || '-' };
-        };
-
-            // Keep birth date as YYYY-MM-DD (HTML date input format); route converts to xs:dateTime
+        // ── Build travelers list (birth dates only — names go in poznamka) ──
         const cestujici = [
-          { ...splitName(formData.childName), datumNarozeni: formData.birthDate, pohlavie: formData.childGender },
-          ...(formData.hasSecondChild && formData.childName2 && formData.birthDate2
-            ? [{ ...splitName(formData.childName2), datumNarozeni: formData.birthDate2, pohlavie: formData.childGender2 }]
+          { datumNarozeni: formData.birthDate },
+          ...(formData.hasSecondChild && formData.birthDate2
+            ? [{ datumNarozeni: formData.birthDate2 }]
             : []),
         ];
 
-        // Build a notes string with the extra form fields Profis can't store
+        // ── Build notes string (child names + all extra fields Profis can't store) ──
         const extras = [
+          `Dieťa 1: ${formData.childName}`,
+          formData.hasSecondChild && formData.childName2 ? `Dieťa 2: ${formData.childName2}` : '',
           formData.tshirtSize ? `Tričko: ${formData.tshirtSize}` : '',
           formData.hasSecondChild && formData.tshirtSize2 ? `Tričko 2: ${formData.tshirtSize2}` : '',
           formData.roomWith ? `Ubytovať s: ${formData.roomWith}` : '',
           formData.hasIntolerance === 'ano' && formData.intoleranceDetails ? `Intolerancia: ${formData.intoleranceDetails}` : '',
+          formData.hasSecondChild && formData.hasIntolerance2 === 'ano' && formData.intoleranceDetails2 ? `Intolerancia 2: ${formData.intoleranceDetails2}` : '',
+          formData.hasSecondChild && formData.roomWith2 ? `Ubytovať s 2: ${formData.roomWith2}` : '',
           formData.employerContribution ? 'Príspevok od zamestnávateľa: áno' : '',
           formData.insurance ? 'Poistenie ECP: áno' : '',
           `Platba: ${formData.paymentMethod === 'zaloha' ? 'záloha 50€' : 'celá suma'}`,
@@ -136,7 +128,24 @@ export default function RegistrationClient({
           formData.discountCode ? `Zľavový kód: ${formData.discountCode}` : '',
         ].filter(Boolean).join(' | ');
 
-        // ── Create order ──────────────────────────────────────────────────────
+        // ── Step 1: Kalkulace — get id_SkupinaSlevaKombinace ─────────────────
+        const birthDates = cestujici.map(c => c.datumNarozeni);
+        const kalkulaceRes = await fetch('/api/profitour/kalkulace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id_Termin: profisTerminId,
+            id_ZajezdHotel: id_ZajezdHotel ?? undefined,
+            birthDates,
+          }),
+        });
+        const kalkulaceData = await kalkulaceRes.json();
+        if (!kalkulaceRes.ok || kalkulaceData.error) {
+          throw new Error(kalkulaceData.error ?? 'Chyba pri výpočte ceny.');
+        }
+        const id_SkupinaSlevaKombinace = kalkulaceData.kalkulace?.id_SkupinaSlevaKombinace ?? 0;
+
+        // ── Step 2: Create order ──────────────────────────────────────────────
         const orderRes = await fetch('/api/profitour/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -145,7 +154,6 @@ export default function RegistrationClient({
             id_SkupinaSlevaKombinace,
             jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
             prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
-            pohlavie: formData.parentGender,
             email: formData.email,
             telefon: formData.phone,
             ulice: formData.street,
@@ -287,33 +295,18 @@ export default function RegistrationClient({
                   Informácie Zákonného Zástupcu
                 </h2>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
-                        Meno a Priezvisko *
-                      </label>
-                      <input
-                        type="text"
-                        name="parentName"
-                        value={formData.parentName}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie *</label>
-                      <div className="flex gap-6 pt-3">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="parentGender" value="F" checked={formData.parentGender === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                          <span className="text-bombovo-dark">Žena</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="parentGender" value="M" checked={formData.parentGender === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                          <span className="text-bombovo-dark">Muž</span>
-                        </label>
-                      </div>
-                    </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Meno a Priezvisko *
+                    </label>
+                    <input
+                      type="text"
+                      name="parentName"
+                      value={formData.parentName}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    />
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -405,19 +398,6 @@ export default function RegistrationClient({
                       required
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie dieťaťa *</label>
-                    <div className="flex gap-6 pt-3">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="childGender" value="M" checked={formData.childGender === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                        <span className="text-bombovo-dark">Chlapec</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="childGender" value="F" checked={formData.childGender === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                        <span className="text-bombovo-dark">Dievča</span>
-                      </label>
-                    </div>
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -554,19 +534,6 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                         />
-                      </div>
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie dieťaťa *</label>
-                        <div className="flex gap-6 pt-3">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="childGender2" value="M" checked={formData.childGender2 === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                            <span className="text-bombovo-dark">Chlapec</span>
-                          </label>
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="childGender2" value="F" checked={formData.childGender2 === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
-                            <span className="text-bombovo-dark">Dievča</span>
-                          </label>
-                        </div>
                       </div>
                       <div>
                         <label className="block text-bombovo-dark font-semibold mb-2">
