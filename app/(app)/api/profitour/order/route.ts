@@ -5,6 +5,7 @@ export async function POST(req: NextRequest) {
   let input: {
     id_Termin?: number
     id_ZajezdHotel?: number
+    id_Ubytovani?: number
     id_SkupinaSlevaKombinace?: number
     svozTamId?: number | null
     svozZpetId?: number | null
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
     ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
             <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
-            <ns:id_Ubytovani>0</ns:id_Ubytovani>
+            <ns:id_Ubytovani>${input.id_Ubytovani ?? 0}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${input.id_ZajezdHotel}</ns:id_ZajezdHotel>
           </ns:RezervaceUbytovaniInputBase>
         </ns:RezervaceUbytovani>`

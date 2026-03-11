@@ -86,6 +86,12 @@ export async function POST(req: NextRequest) {
     const svozZpetId = extractFirstSvozId(paramsXml, 'SvozyZpet')
     console.log('[kalkulace] Svoz options - Tam:', svozTamId, 'Zpet:', svozZpetId)
 
+    // Extract id_Ubytovani from KalkulaceParametry — Profis requires the real ID, not 0
+    // The response has <Ubytovani><Ubytovani><ID>N</ID>...</Ubytovani></Ubytovani>
+    const ubytovaniBlock = extractTag(paramsXml, 'Ubytovani')
+    const id_Ubytovani = ubytovaniBlock ? Number(extractTag(ubytovaniBlock, 'ID') ?? '0') : 0
+    console.log('[kalkulace] id_Ubytovani:', id_Ubytovani)
+
     // Extract IDs of all Vychozi (default) discount parameter groups
     const skupinaBlocks = extractAll(paramsXml, 'SkupinaSlevaParametr')
     const defaultParamIds = skupinaBlocks
@@ -142,7 +148,7 @@ export async function POST(req: NextRequest) {
       ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
             <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
-            <ns:id_Ubytovani>0</ns:id_Ubytovani>
+            <ns:id_Ubytovani>${id_Ubytovani}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${id_ZajezdHotel}</ns:id_ZajezdHotel>
           </ns:RezervaceUbytovaniInputBase>
         </ns:RezervaceUbytovani>`
@@ -180,10 +186,11 @@ export async function POST(req: NextRequest) {
         id_SkupinaSlevaKombinace: rawKombinace ? Number(rawKombinace) : 0,
         mena: extractTag(xml, 'Mena'),
       },
-      // Forward transport and hotel IDs to the client so they can be passed to the order call
+      // Forward transport, hotel and accommodation IDs to the client for the order call
       svozTamId: svozTamId ? Number(svozTamId) : null,
       svozZpetId: svozZpetId ? Number(svozZpetId) : null,
       resolvedHotelId: id_ZajezdHotel ?? null,
+      id_Ubytovani,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
