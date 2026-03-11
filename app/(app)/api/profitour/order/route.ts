@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     ulice?: string
     mesto?: string
     psc?: string
-    cestujici?: Array<{ datumNarozeni: string }>
+    cestujici?: Array<{ datumNarozeni: string; jmeno?: string; prijmeni?: string; ulice?: string; psc?: string }>
     poznamka?: string
     url?: string
   }
@@ -45,8 +45,6 @@ export async function POST(req: NextRequest) {
     if (match) return { ulice: match[1].trim(), cp: match[2].trim() }
     return { ulice: street ?? '', cp: '-' }
   }
-  const { ulice: parsedUlice, cp: parsedCp } = parseStreet(input.ulice ?? '')
-
   // Normalize phone to international format (+421XXXXXXXXX for Slovak numbers)
   const normalizePhone = (phone: string): string => {
     const digits = phone.replace(/[\s\-().]/g, '')
@@ -65,16 +63,71 @@ export async function POST(req: NextRequest) {
     return `${iso}T00:00:00`
   }
 
-  // CestujiciNarozeniInput: only birth date, no gender needed.
-  // Base CestujiciInputBase: ID (negative per docs)
-  // Own CestujiciNarozeniInput: Narozeni
+  // Collect all unique PSČ values (orderer + all travelers) for a single ObecList lookup
+  const allPsc = [...new Set([
+    input.psc,
+    ...input.cestujici!.map(c => c.psc),
+  ].filter(Boolean) as string[])]
+
+  // Build PSČ → id_Obec map from a single ObecList API call
+  const pscToObec: Record<string, number> = {}
+  if (allPsc.length > 0) {
+    try {
+      const obceRaw = await soapCall('Ciselnik', 'ObecList', `
+        <ns:Context>
+          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+          <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
+        </ns:Context>
+        <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
+      const obceXml = obceRaw._raw as string
+      const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
+      for (const block of obceBlocks) {
+        const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
+        if (psc && allPsc.includes(psc)) {
+          const idStr = extractTag(block, 'ID')
+          if (idStr) pscToObec[psc] = Number(idStr)
+        }
+      }
+      console.log('[order] id_Obec map:', pscToObec)
+    } catch (e) {
+      console.warn('[order] ObecList lookup failed:', e)
+    }
+  }
+
+  // Build address XML for a given street+psc combination
+  const buildAdresaXml = (ulice: string | undefined, psc: string | undefined): string => {
+    if (!psc) return ''
+    const id_Obec = pscToObec[psc.replace(/\s/g, '')]
+    if (!id_Obec) return ''
+    const { ulice: parsedU, cp: parsedC } = parseStreet(ulice ?? '')
+    return `<ns:Adresa i:type="ns:AdresaDomaciInput">
+        <ns:CP>${ex(parsedC)}</ns:CP>
+        <ns:Ulice>${ex(parsedU)}</ns:Ulice>
+        <ns:id_Obec>${id_Obec}</ns:id_Obec>
+      </ns:Adresa>`
+  }
+
+  // CestujiciKlientInput: uses KlientDataInput to store name, birth date and address
+  // so Profis contract shows these fields in the "Cestujúci" table.
+  // WCF order: base CestujiciInputBase (ID), then own CestujiciKlientInput (Klient)
+  // KlientDataInput fields (alphabetical): Adresa, Jmeno, Narozeni, Prijmeni
   const cestujiciXml = input.cestujici!
-    .map(
-      (c, i) => `<ns:CestujiciInputBase i:type="ns:CestujiciNarozeniInput">
+    .map((c, i) => {
+      const childAdresaXml = buildAdresaXml(c.ulice, c.psc)
+      const jmeno = c.jmeno ?? ''
+      const prijmeni = c.prijmeni ?? ''
+      return `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
           <ns:ID>${-(i + 1)}</ns:ID>
-          <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
-        </ns:CestujiciInputBase>`,
-    )
+          <ns:Klient i:type="ns:KlientDataInput">
+            ${childAdresaXml}
+            <ns:Jmeno>${ex(jmeno)}</ns:Jmeno>
+            <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
+            <ns:Prijmeni>${ex(prijmeni)}</ns:Prijmeni>
+          </ns:Klient>
+        </ns:CestujiciInputBase>`
+    })
     .join('')
 
   // Build RezervaceDopravy from svoz IDs passed through from Kalkulace.
@@ -117,43 +170,8 @@ export async function POST(req: NextRequest) {
         </ns:RezervaceUbytovani>`
     : ''
 
-  // Look up id_Obec from Profis ObecList by matching the PSC the user provided.
-  // AdresaDomaciInput requires an integer city ID — PSC is unique per municipality in Slovakia.
-  let id_Obec: number | null = null
-  if (input.psc) {
-    try {
-      const pscNorm = input.psc.replace(/\s/g, '')
-      const obceRaw = await soapCall('Ciselnik', 'ObecList', `
-        <ns:Context>
-          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
-          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
-          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
-          <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
-        </ns:Context>
-        <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
-      const obceXml = obceRaw._raw as string
-      // Find the Obec whose PSC matches — each <Obec> has <ID> and <PSC>
-      const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
-      for (const block of obceBlocks) {
-        const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
-        if (psc === pscNorm) {
-          const idStr = extractTag(block, 'ID')
-          if (idStr) { id_Obec = Number(idStr); break }
-        }
-      }
-      console.log('[order] id_Obec lookup for PSC', pscNorm, '→', id_Obec)
-    } catch (e) {
-      console.warn('[order] ObecList lookup failed, skipping address:', e)
-    }
-  }
-
-  const adresaXml = id_Obec
-    ? `<ns:Adresa i:type="ns:AdresaDomaciInput">
-        <ns:CP>${ex(parsedCp)}</ns:CP>
-        <ns:Ulice>${ex(parsedUlice)}</ns:Ulice>
-        <ns:id_Obec>${id_Obec}</ns:id_Obec>
-      </ns:Adresa>`
-    : ''
+  // Build orderer address using the unified PSČ → id_Obec map
+  const adresaXml = buildAdresaXml(input.ulice, input.psc)
 
   try {
     console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace, 'svozTam:', input.svozTamId, 'svozZpet:', input.svozZpetId)

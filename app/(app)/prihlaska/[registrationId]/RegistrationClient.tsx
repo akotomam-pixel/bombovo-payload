@@ -111,11 +111,23 @@ export default function RegistrationClient({
 
     try {
       if (profisTerminId) {
-        // ── Build travelers list (birth dates only — names go in poznamka) ──
+        // ── Build travelers list with full details for Profis contract fields ──
         const cestujici = [
-          { datumNarozeni: formData.birthDate },
+          {
+            datumNarozeni: formData.birthDate,
+            jmeno: formData.childName.split(/\s+/)[0] ?? formData.childName,
+            prijmeni: formData.childName.split(/\s+/).slice(1).join(' ') || '-',
+            ulice: formData.childStreet,
+            psc: formData.childZip,
+          },
           ...(formData.hasSecondChild && formData.birthDate2
-            ? [{ datumNarozeni: formData.birthDate2 }]
+            ? [{
+                datumNarozeni: formData.birthDate2,
+                jmeno: formData.childName2.split(/\s+/)[0] ?? formData.childName2,
+                prijmeni: formData.childName2.split(/\s+/).slice(1).join(' ') || '-',
+                ulice: formData.childStreet2,
+                psc: formData.childZip2,
+              }]
             : []),
         ];
 
