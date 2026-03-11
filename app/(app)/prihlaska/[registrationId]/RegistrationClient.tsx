@@ -39,7 +39,7 @@ export default function RegistrationClient({
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
     parentName: "",
-    parentGender: "z",
+    parentGender: "F",
     street: "",
     city: "",
     zip: "",
@@ -48,7 +48,7 @@ export default function RegistrationClient({
 
     // Informácie dieťaťa
     childName: "",
-    childGender: "m",
+    childGender: "M",
     birthDate: "",
 
     // Intolerancie
@@ -63,7 +63,7 @@ export default function RegistrationClient({
     // Druhé dieťa
     hasSecondChild: false,
     childName2: "",
-    childGender2: "m",
+    childGender2: "M",
     birthDate2: "",
     hasIntolerance2: "nie",
     intoleranceDetails2: "",
@@ -305,11 +305,11 @@ export default function RegistrationClient({
                       <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie *</label>
                       <div className="flex gap-6 pt-3">
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="parentGender" value="z" checked={formData.parentGender === "z"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                          <input type="radio" name="parentGender" value="F" checked={formData.parentGender === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                           <span className="text-bombovo-dark">Žena</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="parentGender" value="m" checked={formData.parentGender === "m"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                          <input type="radio" name="parentGender" value="M" checked={formData.parentGender === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                           <span className="text-bombovo-dark">Muž</span>
                         </label>
                       </div>
@@ -410,11 +410,11 @@ export default function RegistrationClient({
                     <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie dieťaťa *</label>
                     <div className="flex gap-6 pt-3">
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="childGender" value="m" checked={formData.childGender === "m"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                        <input type="radio" name="childGender" value="M" checked={formData.childGender === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                         <span className="text-bombovo-dark">Chlapec</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="childGender" value="z" checked={formData.childGender === "z"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                        <input type="radio" name="childGender" value="F" checked={formData.childGender === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                         <span className="text-bombovo-dark">Dievča</span>
                       </label>
                     </div>
@@ -559,11 +559,11 @@ export default function RegistrationClient({
                         <label className="block text-bombovo-dark font-semibold mb-2">Pohlavie dieťaťa *</label>
                         <div className="flex gap-6 pt-3">
                           <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="childGender2" value="m" checked={formData.childGender2 === "m"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                            <input type="radio" name="childGender2" value="M" checked={formData.childGender2 === "M"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                             <span className="text-bombovo-dark">Chlapec</span>
                           </label>
                           <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="childGender2" value="z" checked={formData.childGender2 === "z"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
+                            <input type="radio" name="childGender2" value="F" checked={formData.childGender2 === "F"} onChange={handleInputChange} className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow" />
                             <span className="text-bombovo-dark">Dievča</span>
                           </label>
                         </div>
