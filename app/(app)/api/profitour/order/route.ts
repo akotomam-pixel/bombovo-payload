@@ -117,6 +117,44 @@ export async function POST(req: NextRequest) {
         </ns:RezervaceUbytovani>`
     : ''
 
+  // Look up id_Obec from Profis ObecList by matching the PSC the user provided.
+  // AdresaDomaciInput requires an integer city ID — PSC is unique per municipality in Slovakia.
+  let id_Obec: number | null = null
+  if (input.psc) {
+    try {
+      const pscNorm = input.psc.replace(/\s/g, '')
+      const obceRaw = await soapCall('Ciselnik', 'ObecList', `
+        <ns:Context>
+          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+          <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
+        </ns:Context>
+        <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
+      const obceXml = obceRaw._raw as string
+      // Find the Obec whose PSC matches — each <Obec> has <ID> and <PSC>
+      const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
+      for (const block of obceBlocks) {
+        const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
+        if (psc === pscNorm) {
+          const idStr = extractTag(block, 'ID')
+          if (idStr) { id_Obec = Number(idStr); break }
+        }
+      }
+      console.log('[order] id_Obec lookup for PSC', pscNorm, '→', id_Obec)
+    } catch (e) {
+      console.warn('[order] ObecList lookup failed, skipping address:', e)
+    }
+  }
+
+  const adresaXml = id_Obec
+    ? `<ns:Adresa i:type="ns:AdresaDomaciInput">
+        <ns:CP>${ex(parsedCp)}</ns:CP>
+        <ns:Ulice>${ex(parsedUlice)}</ns:Ulice>
+        <ns:id_Obec>${id_Obec}</ns:id_Obec>
+      </ns:Adresa>`
+    : ''
+
   try {
     console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace, 'svozTam:', input.svozTamId, 'svozZpet:', input.svozZpetId)
     // Objednat: Context + Data (ObjednavkaTerminInput)
@@ -143,6 +181,7 @@ export async function POST(req: NextRequest) {
       </ns:Context>
       <ns:Data i:type="ns:ObjednavkaTerminInput">
         <ns:Objednatel i:type="ns:KlientDataInput">
+          ${adresaXml}
           <ns:Email>${ex(input.email!)}</ns:Email>
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>

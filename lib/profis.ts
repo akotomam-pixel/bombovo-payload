@@ -39,7 +39,7 @@ function ctx(vypsatNazvy = false): string {
 // ─── Raw SOAP call via proxy ───────────────────────────────────────────────────
 
 export async function soapCall(
-  service: 'Katalog' | 'Objednavka',
+  service: 'Katalog' | 'Objednavka' | 'Ciselnik',
   method: string,
   bodyXml: string,
 ): Promise<Record<string, unknown>> {
