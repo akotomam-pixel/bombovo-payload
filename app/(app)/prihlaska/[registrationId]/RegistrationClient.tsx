@@ -47,6 +47,7 @@ export default function RegistrationClient({
 
     // Informácie dieťaťa
     childName: "",
+    childGender: "",
     birthDate: "",
 
     // Intolerancie
@@ -66,6 +67,7 @@ export default function RegistrationClient({
     // Druhé dieťa
     hasSecondChild: false,
     childName2: "",
+    childGender2: "",
     birthDate2: "",
     childStreet2: "",
     childCity2: "",
@@ -117,6 +119,7 @@ export default function RegistrationClient({
             datumNarozeni: formData.birthDate,
             jmeno: formData.childName.split(/\s+/)[0] ?? formData.childName,
             prijmeni: formData.childName.split(/\s+/).slice(1).join(' ') || '-',
+            pohlavi: formData.childGender || 'M',
             ulice: formData.childStreet,
             psc: formData.childZip,
           },
@@ -125,6 +128,7 @@ export default function RegistrationClient({
                 datumNarozeni: formData.birthDate2,
                 jmeno: formData.childName2.split(/\s+/)[0] ?? formData.childName2,
                 prijmeni: formData.childName2.split(/\s+/).slice(1).join(' ') || '-',
+                pohlavi: formData.childGender2 || 'M',
                 ulice: formData.childStreet2,
                 psc: formData.childZip2,
               }]
@@ -420,7 +424,7 @@ export default function RegistrationClient({
                 <h2 className="text-2xl font-bold text-bombovo-dark mb-6">
                   Informácie Dieťaťa
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
                       Meno a Priezvisko Dieťaťa *
@@ -433,6 +437,22 @@ export default function RegistrationClient({
                       required
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Pohlavie *
+                    </label>
+                    <select
+                      name="childGender"
+                      value={formData.childGender}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    >
+                      <option value="">Zvoľte</option>
+                      <option value="M">Chlapec</option>
+                      <option value="F">Dievča</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -604,7 +624,7 @@ export default function RegistrationClient({
                     <h3 className="text-xl font-bold text-bombovo-dark mb-4">
                       Informácie 2. Dieťaťa
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-bombovo-dark font-semibold mb-2">
                           Meno a Priezvisko Dieťaťa *
@@ -617,6 +637,22 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                         />
+                      </div>
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Pohlavie *
+                        </label>
+                        <select
+                          name="childGender2"
+                          value={formData.childGender2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        >
+                          <option value="">Zvoľte</option>
+                          <option value="M">Chlapec</option>
+                          <option value="F">Dievča</option>
+                        </select>
                       </div>
                       <div>
                         <label className="block text-bombovo-dark font-semibold mb-2">

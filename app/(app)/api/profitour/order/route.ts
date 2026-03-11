@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     ulice?: string
     mesto?: string
     psc?: string
-    cestujici?: Array<{ datumNarozeni: string; jmeno?: string; prijmeni?: string; ulice?: string; psc?: string }>
+    cestujici?: Array<{ datumNarozeni: string; jmeno?: string; prijmeni?: string; pohlavi?: string; ulice?: string; psc?: string }>
     poznamka?: string
     url?: string
   }
@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
       const childAdresaXml = buildAdresaXml(c.ulice, c.psc)
       const jmeno = c.jmeno ?? ''
       const prijmeni = c.prijmeni ?? ''
+      const pohlavi = c.pohlavi ?? 'M'
       return `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
           <ns:ID>${-(i + 1)}</ns:ID>
           <ns:Klient i:type="ns:KlientDataInput">
@@ -125,6 +126,7 @@ export async function POST(req: NextRequest) {
             <ns:Jmeno>${ex(jmeno)}</ns:Jmeno>
             <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
             <ns:Prijmeni>${ex(prijmeni)}</ns:Prijmeni>
+            <ns:id_Pohlavi>${ex(pohlavi)}</ns:id_Pohlavi>
           </ns:Klient>
         </ns:CestujiciInputBase>`
     })
