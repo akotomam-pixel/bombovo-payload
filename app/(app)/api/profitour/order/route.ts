@@ -143,10 +143,6 @@ export async function POST(req: NextRequest) {
       </ns:Context>
       <ns:Data i:type="ns:ObjednavkaTerminInput">
         <ns:Objednatel i:type="ns:KlientDataInput">
-          <ns:Adresa i:type="ns:AdresaDomaciInput">
-            <ns:CP>${ex(parsedCp)}</ns:CP>
-            <ns:Ulice>${ex(parsedUlice)}</ns:Ulice>
-          </ns:Adresa>
           <ns:Email>${ex(input.email!)}</ns:Email>
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>
