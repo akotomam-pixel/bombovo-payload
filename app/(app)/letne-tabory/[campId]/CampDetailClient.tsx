@@ -48,16 +48,6 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
     ? campDetails.section3.reviews
     : [{ text: '', author: '' }]
 
-  const [currentReview, setCurrentReview] = useState(0)
-
-  useEffect(() => {
-    if (reviews.length <= 1) return
-    const interval = setInterval(() => {
-      setCurrentReview((prev) => (prev + 1) % reviews.length)
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [reviews.length])
-
   const galleryDynamicEl = useMemo(
     () => galleryImages.map((img, i) => ({ src: img.src, thumb: img.thumb, subHtml: `<h4>Foto ${i + 1}</h4>` })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -373,26 +363,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
               {/* Review Carousel */}
-              <div className="rounded-3xl p-8 md:p-10 flex flex-col justify-center min-h-[300px] bg-bombovo-gray border-4 border-bombovo-red shadow-lg">
-                <div className="space-y-6">
-                  <p className="text-lg md:text-xl text-bombovo-dark leading-relaxed italic">
-                    &ldquo;{reviews[currentReview].text}&rdquo;
-                  </p>
-                  <p className="text-base md:text-lg text-bombovo-dark font-semibold">
-                    — {reviews[currentReview].author}
-                  </p>
-                </div>
-                <div className="flex justify-center gap-2.5 mt-8">
-                  {reviews.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentReview(index)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === currentReview ? 'bg-bombovo-dark' : 'bg-gray-300'}`}
-                      aria-label={`Go to review ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
+              <ReviewCarousel reviews={reviews} />
 
               {/* Text */}
               <div className="flex flex-col justify-center space-y-6">
@@ -675,6 +646,41 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
       </div>
 
       <Footer />
+    </div>
+  )
+}
+
+function ReviewCarousel({ reviews }: { reviews: Array<{ text: string; author: string }> }) {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    if (reviews.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % reviews.length)
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [reviews.length])
+
+  return (
+    <div className="rounded-3xl p-8 md:p-10 flex flex-col justify-center min-h-[300px] bg-bombovo-gray border-4 border-bombovo-red shadow-lg">
+      <div className="space-y-6">
+        <p className="text-lg md:text-xl text-bombovo-dark leading-relaxed italic">
+          &ldquo;{reviews[current].text}&rdquo;
+        </p>
+        <p className="text-base md:text-lg text-bombovo-dark font-semibold">
+          — {reviews[current].author}
+        </p>
+      </div>
+      <div className="flex justify-center gap-2.5 mt-8">
+        {reviews.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrent(index)}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === current ? 'bg-bombovo-dark' : 'bg-gray-300'}`}
+            aria-label={`Go to review ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   )
 }
