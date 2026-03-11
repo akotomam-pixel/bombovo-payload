@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import Image from 'next/image'
 import LightGallery from 'lightgallery/react'
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
@@ -68,6 +68,12 @@ export default function StrediskoDetailClient({
   const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section3, programText, detaily, dates } = data
 
   const totalPhotos = heroGallery.length
+
+  const galleryDynamicEl = useMemo(
+    () => heroGallery.map((img, i) => ({ src: img.src, thumb: img.thumb, subHtml: `<h4>Foto ${i + 1}</h4>` })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
 
   return (
     <main className="min-h-screen bg-white">
@@ -399,14 +405,12 @@ export default function StrediskoDetailClient({
           onInit={(detail) => { lgRef.current = detail.instance }}
           plugins={[lgThumbnail, lgZoom]}
           dynamic
-          dynamicEl={heroGallery.map((img, i) => ({
-            src: img.src,
-            thumb: img.thumb,
-            subHtml: `<h4>Foto ${i + 1}</h4>`,
-          }))}
+          dynamicEl={galleryDynamicEl}
           speed={500}
           download={false}
           swipeToClose={false}
+          closeOnTap={false}
+          mobileSettings={{ swipeToClose: false, closeOnTap: false }}
         >
           <span />
         </LightGallery>

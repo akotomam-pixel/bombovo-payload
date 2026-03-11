@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -57,6 +57,18 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
     }, 10000)
     return () => clearInterval(interval)
   }, [reviews.length])
+
+  const galleryDynamicEl = useMemo(
+    () => galleryImages.map((img, i) => ({ src: img.src, thumb: img.thumb, subHtml: `<h4>Foto ${i + 1}</h4>` })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
+
+  const strediskoDynamicEl = useMemo(
+    () => strediskoImages.map((img, i) => ({ src: img.src, thumb: img.thumb, subHtml: `<h4>Stredisko foto ${i + 1}</h4>` })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [openStredisko, setOpenStredisko] = useState(false)
@@ -634,14 +646,12 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
           onInit={(detail) => { lgRef.current = detail.instance }}
           plugins={[lgThumbnail, lgZoom]}
           dynamic
-          dynamicEl={galleryImages.map((img, i) => ({
-            src: img.src,
-            thumb: img.thumb,
-            subHtml: `<h4>Foto ${i + 1}</h4>`,
-          }))}
+          dynamicEl={galleryDynamicEl}
           speed={500}
           download={false}
           swipeToClose={false}
+          closeOnTap={false}
+          mobileSettings={{ swipeToClose: false, closeOnTap: false }}
         >
           <span />
         </LightGallery>
@@ -653,14 +663,12 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
           onInit={(detail) => { strediskoLgRef.current = detail.instance }}
           plugins={[lgThumbnail, lgZoom]}
           dynamic
-          dynamicEl={strediskoImages.map((img, i) => ({
-            src: img.src,
-            thumb: img.thumb,
-            subHtml: `<h4>Stredisko foto ${i + 1}</h4>`,
-          }))}
+          dynamicEl={strediskoDynamicEl}
           speed={500}
           download={false}
           swipeToClose={false}
+          closeOnTap={false}
+          mobileSettings={{ swipeToClose: false, closeOnTap: false }}
         >
           <span />
         </LightGallery>
