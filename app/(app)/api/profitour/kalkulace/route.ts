@@ -92,6 +92,12 @@ export async function POST(req: NextRequest) {
     const id_Ubytovani = ubytovaniBlock ? Number(extractTag(ubytovaniBlock, 'ID') ?? '0') : 0
     console.log('[kalkulace] id_Ubytovani:', id_Ubytovani)
 
+    // Extract id_TypStrava — required both inside RezervaceUbytovani and at ProduktInputBase level
+    // The response has <Stravy><ZajezdStrava><TypStrava><ID>N</ID>...
+    const typStravaBlock = extractTag(paramsXml, 'TypStrava')
+    const id_TypStrava = typStravaBlock ? Number(extractTag(typStravaBlock, 'ID') ?? '0') : 0
+    console.log('[kalkulace] id_TypStrava:', id_TypStrava)
+
     // Extract IDs of all Vychozi (default) discount parameter groups
     const skupinaBlocks = extractAll(paramsXml, 'SkupinaSlevaParametr')
     const defaultParamIds = skupinaBlocks
@@ -148,6 +154,7 @@ export async function POST(req: NextRequest) {
       ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
             <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
+            <ns:id_TypStrava>${id_TypStrava}</ns:id_TypStrava>
             <ns:id_Ubytovani>${id_Ubytovani}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${id_ZajezdHotel}</ns:id_ZajezdHotel>
           </ns:RezervaceUbytovaniInputBase>
@@ -170,6 +177,7 @@ export async function POST(req: NextRequest) {
         ${dopravyXml}
         ${ubytovaniXml}
         <ns:Skipasy/>
+        <ns:id_TypStrava>${id_TypStrava}</ns:id_TypStrava>
         ${slevaParamXml}
         <ns:id_Termin>${id_Termin}</ns:id_Termin>
       </ns:Data>`)
@@ -191,6 +199,7 @@ export async function POST(req: NextRequest) {
       svozZpetId: svozZpetId ? Number(svozZpetId) : null,
       resolvedHotelId: id_ZajezdHotel ?? null,
       id_Ubytovani,
+      id_TypStrava,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'

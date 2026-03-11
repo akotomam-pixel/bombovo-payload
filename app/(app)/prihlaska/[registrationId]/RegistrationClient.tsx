@@ -149,6 +149,7 @@ export default function RegistrationClient({
         const svozZpetId = kalkulaceData.svozZpetId ?? null;
         const resolvedHotelId = kalkulaceData.resolvedHotelId ?? id_ZajezdHotel ?? null;
         const id_Ubytovani = kalkulaceData.id_Ubytovani ?? 0;
+        const id_TypStrava = kalkulaceData.id_TypStrava ?? 0;
 
         // ── Step 2: Create order ──────────────────────────────────────────────
         const orderRes = await fetch('/api/profitour/order', {
@@ -158,6 +159,7 @@ export default function RegistrationClient({
             id_Termin: profisTerminId,
             id_ZajezdHotel: resolvedHotelId ?? undefined,
             id_Ubytovani,
+            id_TypStrava,
             id_SkupinaSlevaKombinace,
             svozTamId,
             svozZpetId,
