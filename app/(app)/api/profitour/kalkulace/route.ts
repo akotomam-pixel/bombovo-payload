@@ -109,12 +109,19 @@ export async function POST(req: NextRequest) {
       .join('')
 
     // Build RezervaceDopravy entries. Profis requires explicit Tam and Zpet entries even for
-    // camps with "vlastná doprava" (own transport, no shuttle). XSD field order:
+    // camps with "vlastná doprava" (own transport, no shuttle). Each entry must list all
+    // travelers via RezervaceDopravaCestujici (referencing their negative IDs from Cestujici).
+    // XSD field order:
     //   Base RezervaceDopravaInputBase: Poznamka (P), RezervaceDopravaCestujici (R), id_SvozMisto (i,S)
     //   Own  RezervaceDopravaKalkulaceInput: Smer (S), id_Letiste (i,L)
+    const cestujiciIds = dates.map((_, i) => -(i + 1))
+    const dopravaCestujiciXml = cestujiciIds
+      .map(id => `<ns:RezervaceDopravaCestujiciInput><ns:id_Cestujici>${id}</ns:id_Cestujici></ns:RezervaceDopravaCestujiciInput>`)
+      .join('')
+
     const buildDopravyEntry = (smer: 'Tam' | 'Zpet', svozId: string | null) =>
       `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
-          <ns:RezervaceDopravaCestujici/>
+          <ns:RezervaceDopravaCestujici>${dopravaCestujiciXml}</ns:RezervaceDopravaCestujici>
           ${svozId ? `<ns:id_SvozMisto>${svozId}</ns:id_SvozMisto>` : ''}
           <ns:Smer>${smer}</ns:Smer>
         </ns:RezervaceDopravaInputBase>`
