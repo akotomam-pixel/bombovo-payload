@@ -100,11 +100,14 @@ export async function POST(req: NextRequest) {
       : ''
 
     console.log('[kalkulace] Step 2: Kalkulace with id_Termin:', id_Termin)
+    // ProduktInputBase field order: Cestujici (C), RezervaceDopravy (R,D), RezervaceUbytovani (R,U)
+    // VlastniProduktTerminInput own fields: id_SkupinaSlevaParametr (i,S), id_Termin (i,T)
     const raw = await soapCall('Katalog', 'Kalkulace', `${ctx}
       <ns:Data>
         <ns:Cestujici>
           ${cestujiciXml}
         </ns:Cestujici>
+        <ns:RezervaceDopravy/>
         ${ubytovaniXml}
         ${slevaParamXml}
         <ns:id_Termin>${id_Termin}</ns:id_Termin>

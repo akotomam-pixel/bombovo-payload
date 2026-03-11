@@ -4,6 +4,7 @@ import { soapCall, extractTag, escapeXml } from '@/lib/profis'
 export async function POST(req: NextRequest) {
   let input: {
     id_Termin?: number
+    id_ZajezdHotel?: number
     id_SkupinaSlevaKombinace?: number
     jmeno?: string
     prijmeni?: string
@@ -12,7 +13,6 @@ export async function POST(req: NextRequest) {
     ulice?: string
     mesto?: string
     psc?: string
-    // Only datumNarozeni is sent to Profis — names go into poznamka
     cestujici?: Array<{ datumNarozeni: string }>
     poznamka?: string
     url?: string
@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
     return `${iso}T00:00:00`
   }
 
-  // CestujiciNarozeniInput: only birth date, no gender required.
-  // Base CestujiciInputBase: ID (negative per docs recommendation)
+  // CestujiciNarozeniInput: only birth date, no gender needed.
+  // Base CestujiciInputBase: ID (negative per docs)
   // Own CestujiciNarozeniInput: Narozeni
   const cestujiciXml = input.cestujici!
     .map(
@@ -55,21 +55,31 @@ export async function POST(req: NextRequest) {
     )
     .join('')
 
+  // RezervaceUbytovaniKalkulaceInput: base fields (optional, skipped), own: id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
+  const ubytovaniXml = input.id_ZajezdHotel
+    ? `<ns:RezervaceUbytovani>
+          <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+            <ns:id_Ubytovani>0</ns:id_Ubytovani>
+            <ns:id_ZajezdHotel>${input.id_ZajezdHotel}</ns:id_ZajezdHotel>
+          </ns:RezervaceUbytovaniInputBase>
+        </ns:RezervaceUbytovani>`
+    : ''
+
   try {
-    console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace)
+    console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace)
     // Objednat: Context + Data (ObjednavkaTerminInput)
     //
     // ObjednavkaTerminInput extends ObjednavkaInputBase.
     // DataContractSerializer field order (base class first, alphabetical within each level):
-    //   Base ObjednavkaInputBase: Objednatel (O), PoznamkaKlient (P,K), PoznamkaObjednavka (P,O),
-    //                             Produkt (P,r), URL (U), id_Agentura (i,A), id_AgenturaPobocka (i,Ag),
-    //                             id_ObjednavkaZdroj (i,O), id_Organizace (i,Or)
+    //   Base ObjednavkaInputBase: Objednatel (O), PoznamkaKlient (P,K), Produkt (P,r), URL (U),
+    //                             id_Agentura (i,A), id_ObjednavkaZdroj (i,O), id_Organizace (i,Or)
     //   Own ObjednavkaTerminInput: NepovinneCeny (N), id_SkupinaSlevaKombinace (i,S)
     //
-    // Objednatel is KlientDataInput — id_Pohlavi is hardcoded "F" (parent = mother, typical).
-    // KlientDataInput field order: Adresa (A), Email (E), Jmeno (J), Prijmeni (P), Telefon (T), id_Pohlavi (i)
+    // Produkt is VlastniProduktTerminInput (extends ProduktInputBase):
+    //   Base ProduktInputBase field order: Cestujici (C), RezervaceDopravy (R,D), RezervaceUbytovani (R,U)
+    //   Own VlastniProduktTerminInput: id_Termin (i,T)
     //
-    // Produkt is VlastniProduktTerminInput — Cestujici uses CestujiciNarozeniInput (no gender needed).
+    // ObjednatResult returns: ID (int) and Klic (string)
     const raw = await soapCall('Objednavka', 'Objednat', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
@@ -97,6 +107,8 @@ export async function POST(req: NextRequest) {
           <ns:Cestujici>
             ${cestujiciXml}
           </ns:Cestujici>
+          <ns:RezervaceDopravy/>
+          ${ubytovaniXml}
           <ns:id_Termin>${input.id_Termin}</ns:id_Termin>
         </ns:Produkt>
         <ns:URL>${ex(input.url ?? 'https://bombovo.sk')}</ns:URL>
@@ -109,18 +121,20 @@ export async function POST(req: NextRequest) {
 
     const xml = raw._raw as string
     console.log('[order] Response XML:', xml.slice(0, 800))
-    const id_Objednavka = extractTag(xml, 'id_Objednavka')
-    const id_Klic = extractTag(xml, 'id_Klic')
 
-    if (!id_Objednavka || !id_Klic) {
-      console.error('[profitour/order] Unexpected response:', xml.slice(0, 500))
+    // ObjednatResult fields are ID (int) and Klic (string) — confirmed from XSD schema
+    const id = extractTag(xml, 'ID')
+    const klic = extractTag(xml, 'Klic')
+
+    if (!id || !klic) {
+      console.error('[profitour/order] Unexpected response (missing ID or Klic):', xml.slice(0, 800))
       return NextResponse.json(
-        { error: 'Order created but could not extract id_Objednavka/id_Klic' },
+        { error: 'Order created but could not extract ID/Klic from response' },
         { status: 500 },
       )
     }
 
-    return NextResponse.json({ id_Objednavka: Number(id_Objednavka), id_Klic: Number(id_Klic) })
+    return NextResponse.json({ id_Objednavka: Number(id), klic })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)

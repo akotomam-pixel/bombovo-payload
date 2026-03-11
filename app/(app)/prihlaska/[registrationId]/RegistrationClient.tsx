@@ -151,6 +151,7 @@ export default function RegistrationClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             id_Termin: profisTerminId,
+            id_ZajezdHotel: id_ZajezdHotel ?? undefined,
             id_SkupinaSlevaKombinace,
             jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
             prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
@@ -170,13 +171,14 @@ export default function RegistrationClient({
           throw new Error(orderData.error ?? 'Chyba pri odosielaní objednávky.');
         }
 
-        const { id_Objednavka, id_Klic } = orderData;
+        // ObjednatResult returns ID (int as id_Objednavka) and Klic (string)
+        const { id_Objednavka, klic } = orderData;
 
-        // ── Step 4: Finalize order (fire-and-forget is ok, but await anyway) ──
+        // ── Step 3: Finalize order ────────────────────────────────────────────
         await fetch('/api/profitour/order/complete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_Objednavka, id_Klic }),
+          body: JSON.stringify({ id_Objednavka, klic }),
         });
       }
       // If profisTerminId is not set yet, the form still submits but without Profis
