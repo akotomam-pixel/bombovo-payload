@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
@@ -118,14 +117,10 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
-                  <Image
+                  <img
                     src={galleryImages[mainImage].src}
                     alt={`Foto ${mainImage + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="100vw"
-                    priority={mainImage === 0}
-                    unoptimized={galleryImages[mainImage].src.includes('picsum')}
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
                 <button
@@ -235,14 +230,10 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   style={{ aspectRatio: '4/3' }}
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
-                  <Image
+                  <img
                     src={galleryImages[mainImage].src}
                     alt={`Foto ${mainImage + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority={mainImage === 0}
-                    unoptimized={galleryImages[mainImage].src.includes('picsum')}
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
 
@@ -657,7 +648,7 @@ function ReviewCarousel({ reviews }: { reviews: Array<{ text: string; author: st
     if (reviews.length <= 1) return
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % reviews.length)
-    }, 10000)
+    }, 7000)
     return () => clearInterval(interval)
   }, [reviews.length])
 
