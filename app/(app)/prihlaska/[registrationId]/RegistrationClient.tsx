@@ -144,6 +144,10 @@ export default function RegistrationClient({
           throw new Error(kalkulaceData.error ?? 'Chyba pri výpočte ceny.');
         }
         const id_SkupinaSlevaKombinace = kalkulaceData.kalkulace?.id_SkupinaSlevaKombinace ?? 0;
+        // Transport (svoz) IDs and resolved hotel ID returned from kalkulace
+        const svozTamId = kalkulaceData.svozTamId ?? null;
+        const svozZpetId = kalkulaceData.svozZpetId ?? null;
+        const resolvedHotelId = kalkulaceData.resolvedHotelId ?? id_ZajezdHotel ?? null;
 
         // ── Step 2: Create order ──────────────────────────────────────────────
         const orderRes = await fetch('/api/profitour/order', {
@@ -151,8 +155,10 @@ export default function RegistrationClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             id_Termin: profisTerminId,
-            id_ZajezdHotel: id_ZajezdHotel ?? undefined,
+            id_ZajezdHotel: resolvedHotelId ?? undefined,
             id_SkupinaSlevaKombinace,
+            svozTamId,
+            svozZpetId,
             jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
             prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
             email: formData.email,

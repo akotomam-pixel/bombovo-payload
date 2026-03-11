@@ -6,6 +6,8 @@ export async function POST(req: NextRequest) {
     id_Termin?: number
     id_ZajezdHotel?: number
     id_SkupinaSlevaKombinace?: number
+    svozTamId?: number | null
+    svozZpetId?: number | null
     jmeno?: string
     prijmeni?: string
     email?: string
@@ -55,7 +57,34 @@ export async function POST(req: NextRequest) {
     )
     .join('')
 
-  // RezervaceUbytovaniKalkulaceInput: base fields (optional, skipped), own: id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
+  // Build RezervaceDopravy from svoz IDs passed through from Kalkulace.
+  // RezervaceDopravaKalkulaceInput field order:
+  //   Base RezervaceDopravaInputBase: Poznamka (P), RezervaceDopravaCestujici (R), id_SvozMisto (i,S)
+  //   Own  RezervaceDopravaKalkulaceInput: Smer (S), id_Letiste (i,L)
+  const dopravyItems = [
+    input.svozTamId != null
+      ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+          <ns:id_SvozMisto>${input.svozTamId}</ns:id_SvozMisto>
+          <ns:Smer>Tam</ns:Smer>
+        </ns:RezervaceDopravaInputBase>`
+      : null,
+    input.svozZpetId != null
+      ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+          <ns:id_SvozMisto>${input.svozZpetId}</ns:id_SvozMisto>
+          <ns:Smer>Zpet</ns:Smer>
+        </ns:RezervaceDopravaInputBase>`
+      : null,
+  ]
+    .filter(Boolean)
+    .join('')
+
+  const dopravyXml = dopravyItems
+    ? `<ns:RezervaceDopravy>${dopravyItems}</ns:RezervaceDopravy>`
+    : `<ns:RezervaceDopravy/>`
+
+  // RezervaceUbytovaniKalkulaceInput field order:
+  //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
+  //   Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
   const ubytovaniXml = input.id_ZajezdHotel
     ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
@@ -66,7 +95,7 @@ export async function POST(req: NextRequest) {
     : ''
 
   try {
-    console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace)
+    console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace, 'svozTam:', input.svozTamId, 'svozZpet:', input.svozZpetId)
     // Objednat: Context + Data (ObjednavkaTerminInput)
     //
     // ObjednavkaTerminInput extends ObjednavkaInputBase.
@@ -76,8 +105,8 @@ export async function POST(req: NextRequest) {
     //   Own ObjednavkaTerminInput: NepovinneCeny (N), id_SkupinaSlevaKombinace (i,S)
     //
     // Produkt is VlastniProduktTerminInput (extends ProduktInputBase):
-    //   Base ProduktInputBase field order: Cestujici (C), RezervaceDopravy (R,D), RezervaceUbytovani (R,U)
-    //   Own VlastniProduktTerminInput: id_Termin (i,T)
+    //   Base ProduktInputBase: Cestujici (C), Pojisteni (P), RezervaceDopravy (R,D), RezervaceUbytovani (R,U), Skipasy (S), id_TypStrava (i,T,S)
+    //   Own VlastniProduktTerminInput: id_SkupinaSlevaParametr (i,S), id_Termin (i,T)
     //
     // ObjednatResult returns: ID (int) and Klic (string)
     const raw = await soapCall('Objednavka', 'Objednat', `
@@ -107,7 +136,7 @@ export async function POST(req: NextRequest) {
           <ns:Cestujici>
             ${cestujiciXml}
           </ns:Cestujici>
-          <ns:RezervaceDopravy/>
+          ${dopravyXml}
           ${ubytovaniXml}
           <ns:id_Termin>${input.id_Termin}</ns:id_Termin>
         </ns:Produkt>

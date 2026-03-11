@@ -22,6 +22,15 @@ const toDateTime = (iso: string) => {
   return `${iso}T00:00:00`
 }
 
+// Extract the first SvozMisto ID from SvozyTam or SvozyZpet block in the response
+function extractFirstSvozId(xml: string, svozTag: string): string | null {
+  const svozBlock = extractTag(xml, svozTag)
+  if (!svozBlock) return null
+  const mistoBlock = extractTag(svozBlock, 'SvozMisto')
+  if (!mistoBlock) return null
+  return extractTag(mistoBlock, 'ID')
+}
+
 export async function POST(req: NextRequest) {
   let body: { id_Termin?: number; id_ZajezdHotel?: number; birthDates?: string[] }
   try {
@@ -30,7 +39,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { id_Termin, id_ZajezdHotel, birthDates } = body
+  const { id_Termin, birthDates } = body
+  let { id_ZajezdHotel } = body
+
   if (!id_Termin) {
     return NextResponse.json({ error: 'Missing required field: id_Termin' }, { status: 400 })
   }
@@ -46,8 +57,7 @@ export async function POST(req: NextRequest) {
       </ns:Context>`
 
   try {
-    // ── Step 1: KalkulaceParametry — get default discount parameter IDs ───────
-    // Field order (DataContractSerializer): Context (C) → id_Termin (i,T) → id_ZajezdHotel (i,Z)
+    // ── Step 1: KalkulaceParametry — get transport options, hotel ID, discount params ──
     console.log('[kalkulace] Step 1: KalkulaceParametry for id_Termin:', id_Termin, 'id_ZajezdHotel:', id_ZajezdHotel)
 
     const hotelArrayXml = id_ZajezdHotel
@@ -59,7 +69,22 @@ export async function POST(req: NextRequest) {
       ${hotelArrayXml}`)
 
     const paramsXml = paramsRaw._raw as string
-    console.log('[kalkulace] KalkulaceParametry response:', paramsXml.slice(0, 1000))
+    console.log('[kalkulace] KalkulaceParametry response:', paramsXml.slice(0, 3000))
+
+    // Auto-extract id_ZajezdHotel from the response if not provided by client
+    if (!id_ZajezdHotel) {
+      const hotelId = extractTag(paramsXml, 'id_ZajezdHotel')
+      if (hotelId) {
+        id_ZajezdHotel = Number(hotelId)
+        console.log('[kalkulace] Auto-extracted id_ZajezdHotel from KalkulaceParametry:', id_ZajezdHotel)
+      }
+    }
+
+    // Extract svoz (shuttle/transport) options — the API requires at least one entry
+    // when the camp has transport options configured
+    const svozTamId = extractFirstSvozId(paramsXml, 'SvozyTam')
+    const svozZpetId = extractFirstSvozId(paramsXml, 'SvozyZpet')
+    console.log('[kalkulace] Svoz options - Tam:', svozTamId, 'Zpet:', svozZpetId)
 
     // Extract IDs of all Vychozi (default) discount parameter groups
     const skupinaBlocks = extractAll(paramsXml, 'SkupinaSlevaParametr')
@@ -69,10 +94,10 @@ export async function POST(req: NextRequest) {
       .filter(Boolean) as string[]
     console.log('[kalkulace] Default param IDs:', defaultParamIds)
 
-    // ── Step 2: Kalkulace with RezervaceUbytovani + CestujiciNarozeniInput ────
-    // VlastniProduktTerminInput field order:
-    //   Base ProduktInputBase: Cestujici (C), RezervaceUbytovani (R,U)
-    //   Own VlastniProduktTerminInput: id_SkupinaSlevaParametr (i,S), id_Termin (i,T)
+    // ── Step 2: Kalkulace ─────────────────────────────────────────────────────
+    // VlastniProduktTerminInput field order (base ProduktInputBase first):
+    //   Base: Cestujici (C), Pojisteni (P), RezervaceDopravy (R,D), RezervaceUbytovani (R,U), Skipasy (S), id_TypStrava (i,T,S)
+    //   Own:  id_SkupinaSlevaParametr (i,S), id_Termin (i,T)
     const dates = birthDates?.length ? birthDates : ['2010-01-01']
     const cestujiciXml = dates
       .map(
@@ -83,9 +108,34 @@ export async function POST(req: NextRequest) {
       )
       .join('')
 
+    // Build RezervaceDopravy entries from svoz options returned by KalkulaceParametry.
+    // RezervaceDopravaKalkulaceInput field order:
+    //   Base RezervaceDopravaInputBase: Poznamka (P), RezervaceDopravaCestujici (R), id_SvozMisto (i,S)
+    //   Own  RezervaceDopravaKalkulaceInput: Smer (S), id_Letiste (i,L)
+    const dopravyItems = [
+      svozTamId
+        ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+            <ns:id_SvozMisto>${svozTamId}</ns:id_SvozMisto>
+            <ns:Smer>Tam</ns:Smer>
+          </ns:RezervaceDopravaInputBase>`
+        : null,
+      svozZpetId
+        ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+            <ns:id_SvozMisto>${svozZpetId}</ns:id_SvozMisto>
+            <ns:Smer>Zpet</ns:Smer>
+          </ns:RezervaceDopravaInputBase>`
+        : null,
+    ]
+      .filter(Boolean)
+      .join('')
+
+    const dopravyXml = dopravyItems
+      ? `<ns:RezervaceDopravy>${dopravyItems}</ns:RezervaceDopravy>`
+      : `<ns:RezervaceDopravy/>`
+
     // RezervaceUbytovaniKalkulaceInput field order:
-    //   Base (Poznamka, RezervaceUbytovaniCestujici, id_TypStrava) — all skipped as optional
-    //   Own: id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
+    //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
+    //   Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
     const ubytovaniXml = id_ZajezdHotel
       ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
@@ -99,15 +149,13 @@ export async function POST(req: NextRequest) {
       ? `<ns:id_SkupinaSlevaParametr>${defaultParamIds.map(id => `<arr:int xmlns:arr="${ARR_NS}">${id}</arr:int>`).join('')}</ns:id_SkupinaSlevaParametr>`
       : ''
 
-    console.log('[kalkulace] Step 2: Kalkulace with id_Termin:', id_Termin)
-    // ProduktInputBase field order: Cestujici (C), RezervaceDopravy (R,D), RezervaceUbytovani (R,U)
-    // VlastniProduktTerminInput own fields: id_SkupinaSlevaParametr (i,S), id_Termin (i,T)
+    console.log('[kalkulace] Step 2: Kalkulace with id_Termin:', id_Termin, 'id_ZajezdHotel:', id_ZajezdHotel)
     const raw = await soapCall('Katalog', 'Kalkulace', `${ctx}
       <ns:Data>
         <ns:Cestujici>
           ${cestujiciXml}
         </ns:Cestujici>
-        <ns:RezervaceDopravy/>
+        ${dopravyXml}
         ${ubytovaniXml}
         ${slevaParamXml}
         <ns:id_Termin>${id_Termin}</ns:id_Termin>
@@ -125,6 +173,10 @@ export async function POST(req: NextRequest) {
         id_SkupinaSlevaKombinace: rawKombinace ? Number(rawKombinace) : 0,
         mena: extractTag(xml, 'Mena'),
       },
+      // Forward transport and hotel IDs to the client so they can be passed to the order call
+      svozTamId: svozTamId ? Number(svozTamId) : null,
+      svozZpetId: svozZpetId ? Number(svozZpetId) : null,
+      resolvedHotelId: id_ZajezdHotel ?? null,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
