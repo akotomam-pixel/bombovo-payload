@@ -58,10 +58,18 @@ export default function RegistrationClient({
     tshirtSize: "",
     discountCode: "",
 
+    // Adresa dieťaťa 1
+    childStreet: "",
+    childCity: "",
+    childZip: "",
+
     // Druhé dieťa
     hasSecondChild: false,
     childName2: "",
     birthDate2: "",
+    childStreet2: "",
+    childCity2: "",
+    childZip2: "",
     hasIntolerance2: "nie",
     intoleranceDetails2: "",
     roomWith2: "",
@@ -114,7 +122,9 @@ export default function RegistrationClient({
         // ── Build notes string (child names + all extra fields Profis can't store) ──
         const extras = [
           `Dieťa 1: ${formData.childName}`,
+          formData.childStreet ? `Adresa dieťaťa 1: ${formData.childStreet}, ${formData.childCity} ${formData.childZip}` : '',
           formData.hasSecondChild && formData.childName2 ? `Dieťa 2: ${formData.childName2}` : '',
+          formData.hasSecondChild && formData.childStreet2 ? `Adresa dieťaťa 2: ${formData.childStreet2}, ${formData.childCity2} ${formData.childZip2}` : '',
           formData.tshirtSize ? `Tričko: ${formData.tshirtSize}` : '',
           formData.hasSecondChild && formData.tshirtSize2 ? `Tričko 2: ${formData.tshirtSize2}` : '',
           formData.roomWith ? `Ubytovať s: ${formData.roomWith}` : '',
@@ -397,7 +407,7 @@ export default function RegistrationClient({
                 <h2 className="text-2xl font-bold text-bombovo-dark mb-6">
                   Informácie Dieťaťa
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
                       Meno a Priezvisko Dieťaťa *
@@ -421,6 +431,49 @@ export default function RegistrationClient({
                       value={formData.birthDate}
                       onChange={handleInputChange}
                       required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-bombovo-dark font-semibold mb-2">
+                    Ulica a číslo domu dieťaťa *
+                  </label>
+                  <input
+                    type="text"
+                    name="childStreet"
+                    value={formData.childStreet}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="napr. Hlavná 15"
+                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Mesto *
+                    </label>
+                    <input
+                      type="text"
+                      name="childCity"
+                      value={formData.childCity}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      PSČ *
+                    </label>
+                    <input
+                      type="text"
+                      name="childZip"
+                      value={formData.childZip}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="napr. 81101"
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                     />
                   </div>
@@ -512,21 +565,26 @@ export default function RegistrationClient({
 
               {/* Pridať druhé dieťa */}
               <div className="mb-8">
-                <label className="flex items-center gap-3 cursor-pointer p-4 border-2 border-dashed border-bombovo-red rounded-xl hover:bg-bombovo-gray transition-colors">
-                  <input
-                    type="checkbox"
-                    name="hasSecondChild"
-                    checked={formData.hasSecondChild}
-                    onChange={handleInputChange}
-                    className="w-5 h-5 text-bombovo-red focus:ring-bombovo-red rounded"
-                  />
-                  <span className="text-bombovo-red font-semibold text-lg flex items-center gap-2">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Pridať 2. dieťa (súrodenec)
-                  </span>
-                </label>
+                <div className="border-2 border-dashed border-bombovo-yellow rounded-xl overflow-hidden">
+                  <div className="bg-bombovo-yellow px-4 py-2 text-center">
+                    <span className="text-bombovo-dark font-semibold text-sm">Voliteľné</span>
+                  </div>
+                  <label className="flex items-center gap-3 cursor-pointer p-4 hover:bg-yellow-50 transition-colors">
+                    <input
+                      type="checkbox"
+                      name="hasSecondChild"
+                      checked={formData.hasSecondChild}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
+                    />
+                    <span className="text-bombovo-dark font-semibold text-lg flex items-center gap-2">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Pridať 2. dieťa (súrodenec)
+                    </span>
+                  </label>
+                </div>
 
                 {formData.hasSecondChild && (
                   <div className="mt-6 p-6 bg-bombovo-gray rounded-xl space-y-6">
@@ -557,6 +615,49 @@ export default function RegistrationClient({
                           value={formData.birthDate2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-bombovo-dark font-semibold mb-2">
+                        Ulica a číslo domu dieťaťa *
+                      </label>
+                      <input
+                        type="text"
+                        name="childStreet2"
+                        value={formData.childStreet2}
+                        onChange={handleInputChange}
+                        required={formData.hasSecondChild}
+                        placeholder="napr. Hlavná 15"
+                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Mesto *
+                        </label>
+                        <input
+                          type="text"
+                          name="childCity2"
+                          value={formData.childCity2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          PSČ *
+                        </label>
+                        <input
+                          type="text"
+                          name="childZip2"
+                          value={formData.childZip2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          placeholder="napr. 81101"
                           className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                         />
                       </div>
