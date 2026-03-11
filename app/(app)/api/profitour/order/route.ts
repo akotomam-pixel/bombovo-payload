@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
   //   Own  RezervaceDopravaKalkulaceInput: Smer (S), id_Letiste (i,L)
   const buildDopravyEntry = (smer: 'Tam' | 'Zpet', svozId: number | null | undefined) =>
     `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+        <ns:RezervaceDopravaCestujici/>
         ${svozId != null ? `<ns:id_SvozMisto>${svozId}</ns:id_SvozMisto>` : ''}
         <ns:Smer>${smer}</ns:Smer>
       </ns:RezervaceDopravaInputBase>`
