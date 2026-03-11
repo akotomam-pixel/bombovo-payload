@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
             <ns:Jmeno>${ex(jmeno)}</ns:Jmeno>
             <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
             <ns:Prijmeni>${ex(prijmeni)}</ns:Prijmeni>
-            <ns:id_Pohlavi i:nil="true"/>
+            <ns:id_Pohlavi>M</ns:id_Pohlavi>
           </ns:Klient>
         </ns:CestujiciInputBase>`
     })
