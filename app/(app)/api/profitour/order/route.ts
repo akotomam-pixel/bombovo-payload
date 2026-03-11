@@ -38,6 +38,15 @@ export async function POST(req: NextRequest) {
 
   const ex = escapeXml
 
+  // Parse "Street 15" or "Street 15/A" into { ulice, cp }
+  // AdresaInputBase requires CP (house number) as a separate field before Ulice
+  const parseStreet = (street: string): { ulice: string; cp: string } => {
+    const match = (street ?? '').trim().match(/^(.+?)\s+(\d[\w/\-]*)$/)
+    if (match) return { ulice: match[1].trim(), cp: match[2].trim() }
+    return { ulice: street ?? '', cp: '-' }
+  }
+  const { ulice: parsedUlice, cp: parsedCp } = parseStreet(input.ulice ?? '')
+
   // Normalize phone to international format (+421XXXXXXXXX for Slovak numbers)
   const normalizePhone = (phone: string): string => {
     const digits = phone.replace(/[\s\-().]/g, '')
@@ -135,7 +144,8 @@ export async function POST(req: NextRequest) {
       <ns:Data i:type="ns:ObjednavkaTerminInput">
         <ns:Objednatel i:type="ns:KlientDataInput">
           <ns:Adresa i:type="ns:AdresaZahranicniInput">
-            <ns:Ulice>${ex(input.ulice ?? '')}</ns:Ulice>
+            <ns:CP>${ex(parsedCp)}</ns:CP>
+            <ns:Ulice>${ex(parsedUlice)}</ns:Ulice>
             <ns:Obec>${ex(input.mesto ?? '')}</ns:Obec>
             <ns:PSC>${ex(input.psc ?? '')}</ns:PSC>
           </ns:Adresa>
