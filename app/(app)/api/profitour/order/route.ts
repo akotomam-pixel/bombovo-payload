@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
             <ns:Ulice>${ex(parsedUlice)}</ns:Ulice>
             <ns:Obec>${ex(input.mesto ?? '')}</ns:Obec>
             <ns:PSC>${ex(input.psc ?? '')}</ns:PSC>
+            <ns:Stat>SK</ns:Stat>
           </ns:Adresa>
           <ns:Email>${ex(input.email!)}</ns:Email>
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
