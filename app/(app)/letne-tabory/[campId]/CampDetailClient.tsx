@@ -493,7 +493,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                           {campDetails.section4.strediskoDescription}
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          {strediskoImages.map((img, index) => (
+                          {strediskoImages.slice(0, 6).map((img, index) => (
                             <div
                               key={index}
                               className="cursor-pointer rounded-lg overflow-hidden"
