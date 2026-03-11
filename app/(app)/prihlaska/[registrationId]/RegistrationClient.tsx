@@ -205,6 +205,7 @@ export default function RegistrationClient({
       // (legacy flow — useful until all camps have profisTerminId populated)
 
       setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       setTimeout(() => {
         if (typeof window !== 'undefined') {
@@ -286,7 +287,7 @@ export default function RegistrationClient({
         {/* Form Container */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {isSubmitted ? (
-            <div className="bg-white rounded-3xl border-4 border-bombovo-blue p-6 md:p-8">
+            <div className="bg-white rounded-3xl border-4 border-bombovo-blue p-6 md:p-8 my-12">
               <div className="text-center py-16 space-y-6">
                 <h2 className="text-3xl md:text-4xl font-bold text-bombovo-dark mb-6">
                   Ďakujeme za vašu rezerváciu a nevieme sa dočkať!
