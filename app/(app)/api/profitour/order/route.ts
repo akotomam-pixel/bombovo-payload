@@ -82,9 +82,14 @@ export async function POST(req: NextRequest) {
   // RezervaceUbytovaniKalkulaceInput field order:
   //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
   //   Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
+  const ubytovaniCestujiciXml = input.cestujici!
+    .map((_, i) => `<ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput>`)
+    .join('')
+
   const ubytovaniXml = input.id_ZajezdHotel
     ? `<ns:RezervaceUbytovani>
           <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+            <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
             <ns:id_Ubytovani>0</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${input.id_ZajezdHotel}</ns:id_ZajezdHotel>
           </ns:RezervaceUbytovaniInputBase>
@@ -133,8 +138,10 @@ export async function POST(req: NextRequest) {
           <ns:Cestujici>
             ${cestujiciXml}
           </ns:Cestujici>
+          <ns:Pojisteni/>
           ${dopravyXml}
           ${ubytovaniXml}
+          <ns:Skipasy/>
           <ns:id_Termin>${input.id_Termin}</ns:id_Termin>
         </ns:Produkt>
         <ns:URL>${ex(input.url ?? 'https://bombovo.sk')}</ns:URL>
