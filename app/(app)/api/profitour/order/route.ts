@@ -38,6 +38,15 @@ export async function POST(req: NextRequest) {
 
   const ex = escapeXml
 
+  // Normalize phone to international format (+421XXXXXXXXX for Slovak numbers)
+  const normalizePhone = (phone: string): string => {
+    const digits = phone.replace(/[\s\-().]/g, '')
+    if (digits.startsWith('+')) return digits
+    if (digits.startsWith('00')) return '+' + digits.slice(2)
+    if (digits.startsWith('0')) return '+421' + digits.slice(1)
+    return digits
+  }
+
   const toDateTime = (iso: string) => {
     if (!iso) return '2000-01-01T00:00:00'
     if (iso.includes('.')) {
@@ -133,7 +142,7 @@ export async function POST(req: NextRequest) {
           <ns:Email>${ex(input.email!)}</ns:Email>
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>
-          <ns:Telefon>${ex(input.telefon!)}</ns:Telefon>
+          <ns:Telefon>${ex(normalizePhone(input.telefon!))}</ns:Telefon>
           <ns:id_Pohlavi>F</ns:id_Pohlavi>
         </ns:Objednatel>
         <ns:PoznamkaKlient>${ex(input.poznamka ?? '')}</ns:PoznamkaKlient>
