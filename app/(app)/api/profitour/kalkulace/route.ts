@@ -108,30 +108,20 @@ export async function POST(req: NextRequest) {
       )
       .join('')
 
-    // Build RezervaceDopravy entries from svoz options returned by KalkulaceParametry.
-    // RezervaceDopravaKalkulaceInput field order:
+    // Build RezervaceDopravy entries. Profis requires explicit Tam and Zpet entries even for
+    // camps with "vlastná doprava" (own transport, no shuttle). XSD field order:
     //   Base RezervaceDopravaInputBase: Poznamka (P), RezervaceDopravaCestujici (R), id_SvozMisto (i,S)
     //   Own  RezervaceDopravaKalkulaceInput: Smer (S), id_Letiste (i,L)
-    const dopravyItems = [
-      svozTamId
-        ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
-            <ns:id_SvozMisto>${svozTamId}</ns:id_SvozMisto>
-            <ns:Smer>Tam</ns:Smer>
-          </ns:RezervaceDopravaInputBase>`
-        : null,
-      svozZpetId
-        ? `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
-            <ns:id_SvozMisto>${svozZpetId}</ns:id_SvozMisto>
-            <ns:Smer>Zpet</ns:Smer>
-          </ns:RezervaceDopravaInputBase>`
-        : null,
-    ]
-      .filter(Boolean)
-      .join('')
+    const buildDopravyEntry = (smer: 'Tam' | 'Zpet', svozId: string | null) =>
+      `<ns:RezervaceDopravaInputBase i:type="ns:RezervaceDopravaKalkulaceInput">
+          ${svozId ? `<ns:id_SvozMisto>${svozId}</ns:id_SvozMisto>` : ''}
+          <ns:Smer>${smer}</ns:Smer>
+        </ns:RezervaceDopravaInputBase>`
 
-    const dopravyXml = dopravyItems
-      ? `<ns:RezervaceDopravy>${dopravyItems}</ns:RezervaceDopravy>`
-      : `<ns:RezervaceDopravy/>`
+    const dopravyXml = `<ns:RezervaceDopravy>
+        ${buildDopravyEntry('Tam', svozTamId)}
+        ${buildDopravyEntry('Zpet', svozZpetId)}
+      </ns:RezervaceDopravy>`
 
     // RezervaceUbytovaniKalkulaceInput field order:
     //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
