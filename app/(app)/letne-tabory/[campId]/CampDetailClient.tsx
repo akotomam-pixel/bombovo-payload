@@ -641,6 +641,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
           }))}
           speed={500}
           download={false}
+          swipeToClose={false}
         >
           <span />
         </LightGallery>
@@ -659,6 +660,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
           }))}
           speed={500}
           download={false}
+          swipeToClose={false}
         >
           <span />
         </LightGallery>

@@ -406,6 +406,7 @@ export default function StrediskoDetailClient({
           }))}
           speed={500}
           download={false}
+          swipeToClose={false}
         >
           <span />
         </LightGallery>
