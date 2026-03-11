@@ -153,6 +153,8 @@ export async function POST(req: NextRequest) {
       : ''
 
     console.log('[kalkulace] Step 2: Kalkulace with id_Termin:', id_Termin, 'id_ZajezdHotel:', id_ZajezdHotel)
+    console.log('[kalkulace] ubytovaniXml:', ubytovaniXml.slice(0, 500))
+    console.log('[kalkulace] dopravyXml:', dopravyXml.slice(0, 500))
     const raw = await soapCall('Katalog', 'Kalkulace', `${ctx}
       <ns:Data>
         <ns:Cestujici>
