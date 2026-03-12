@@ -12,6 +12,15 @@ export const HomepageGlobal: GlobalConfig = {
   fields: [
     // ─── Section 1: Hero ──────────────────────────────────────────────────────
     {
+      name: 'heroVideo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Hero Video',
+      admin: {
+        description: 'Video hrá ako pozadie — autoplay, loop, muted. (momentálne hardcoded)',
+      },
+    },
+    {
       name: 'subHeadline',
       type: 'text',
       label: 'Sub-nadpis (napr. BOMBOVO:)',
