@@ -5,18 +5,30 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
-import { camps as allCamps } from '@/lib/campsData'
 
-// Select the 3 featured camps: Tanečná Planéta, Olymp Kemp, V Dračej Nore
-const featuredCampIds = ['tanecna-planeta', 'olymp-kemp', 'v-dracej-nore']
-const camps = allCamps.filter(camp => featuredCampIds.includes(camp.id))
+interface Camp {
+  id: string
+  name: string
+  slug: string
+  cardImage?: { url: string } | null
+  section2_description?: Array<{ paragraph: string }> | null
+}
 
-export default function TopCampsWithSearch() {
+interface FeaturedCampItem {
+  camp?: Camp | null
+}
+
+interface TopCampsWithSearchProps {
+  headline: string
+  featuredCamps: FeaturedCampItem[]
+}
+
+export default function TopCampsWithSearch({ headline, featuredCamps }: TopCampsWithSearchProps) {
   const router = useRouter()
   const [ageOpen, setAgeOpen] = useState(false)
   const [dateOpen, setDateOpen] = useState(false)
   const [typeOpen, setTypeOpen] = useState(false)
-  
+
   const [selectedAge, setSelectedAge] = useState('all')
   const [selectedDate, setSelectedDate] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
@@ -35,78 +47,63 @@ export default function TopCampsWithSearch() {
     if (selectedAge !== 'all') params.append('age', selectedAge)
     if (selectedDate !== 'all') params.append('date', selectedDate)
     if (selectedType !== 'all') params.append('type', selectedType)
-    
     router.push(`/letne-tabory?${params.toString()}`)
   }
 
-  const getAgeLabel = () => {
-    if (selectedAge === 'all') return 'Vek dieťaťa'
-    return selectedAge
-  }
-
+  const getAgeLabel = () => selectedAge === 'all' ? 'Vek dieťaťa' : selectedAge
   const getDateLabel = () => {
     if (selectedDate === 'all') return 'Všetky termíny'
-    const option = dateOptions.find(opt => opt.value === selectedDate)
-    return option?.label || 'Všetky termíny'
+    return dateOptions.find(opt => opt.value === selectedDate)?.label || 'Všetky termíny'
   }
+  const getTypeLabel = () => selectedType === 'all' ? 'Všetky typy' : selectedType
 
-  const getTypeLabel = () => {
-    if (selectedType === 'all') return 'Všetky typy'
-    return selectedType
-  }
+  // Only show items where camp relationship is populated
+  const camps = featuredCamps
+    .map(item => item.camp)
+    .filter((c): c is Camp => !!c && typeof c === 'object' && 'name' in c)
 
   return (
     <section className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Headline */}
-        <h2 
-          className="text-2xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-4 leading-tight"
-        >
-          Naše Najpredávanejšie
-          <br />
-          Tábory V Roku 2026
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-4 leading-tight">
+          {headline}
         </h2>
 
         {/* Camp Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-          {camps.map((camp, index) => (
-            <div
-              key={camp.id}
-              className="bg-white rounded-3xl shadow-lg overflow-hidden"
-            >
-              {/* Camp Image - 4:3 aspect ratio to match original photos */}
-              <div className="w-full aspect-[4/3] relative overflow-hidden">
-                <img 
-                  src={camp.image} 
-                  alt={camp.name}
-                  className="w-full h-full object-cover"
-                />
+        {camps.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            {camps.map((camp) => (
+              <div key={camp.id} className="bg-white rounded-3xl shadow-lg overflow-hidden">
+                <div className="w-full aspect-[4/3] relative overflow-hidden">
+                  {camp.cardImage?.url && (
+                    <img
+                      src={camp.cardImage.url}
+                      alt={camp.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-bombovo-dark mb-3">{camp.name}</h3>
+                  {camp.section2_description?.[0]?.paragraph && (
+                    <p className="text-bombovo-dark leading-relaxed mb-4 line-clamp-3">
+                      {camp.section2_description[0].paragraph}
+                    </p>
+                  )}
+                  <Link href={`/letne-tabory/${camp.slug}`}>
+                    <button className="w-full py-4 px-8 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
+                      Zistiť viac
+                    </button>
+                  </Link>
+                </div>
               </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-2xl font-bold text-bombovo-dark mb-3">
-                  {camp.name}
-                </h3>
-                <p className="text-bombovo-dark leading-relaxed mb-4 line-clamp-3">
-                  {camp.description}
-                </p>
-                <Link href={`/letne-tabory/${camp.id}`}>
-                  <button
-                    className="w-full py-4 px-8 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200"
-                  >
-                    Zistiť viac
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Transition Subheadline */}
-        <h3 
-          className="text-2xl md:text-3xl font-amatic text-bombovo-dark text-center mt-16 mb-8"
-        >
+        <h3 className="text-2xl md:text-3xl font-amatic text-bombovo-dark text-center mt-16 mb-8">
           <span className="relative inline-block">
             Nevieš Si Vybrať? Vyskúšaj Náš Hľadáčik Táboru!
             <svg
@@ -115,39 +112,21 @@ export default function TopCampsWithSearch() {
               preserveAspectRatio="none"
               style={{ height: '12px' }}
             >
-              <path
-                d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
-                stroke="#3772FF"
-                strokeWidth="3"
-                fill="none"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 0 9 Q 30 4, 60 7 T 120 7 T 180 9"
-                stroke="#3772FF"
-                strokeWidth="2.5"
-                fill="none"
-                strokeLinecap="round"
-                opacity="0.7"
-              />
+              <path d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8" stroke="#3772FF" strokeWidth="3" fill="none" strokeLinecap="round" />
+              <path d="M 0 9 Q 30 4, 60 7 T 120 7 T 180 9" stroke="#3772FF" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.7" />
             </svg>
           </span>
         </h3>
 
         {/* Search Bar */}
         <div className="max-w-6xl mx-auto mt-8">
-          <div 
-            className="bg-white rounded-3xl shadow-2xl p-4 md:p-6"
-          >
+          <div className="bg-white rounded-3xl shadow-2xl p-4 md:p-6">
             <div className="flex flex-col lg:flex-row gap-4 items-stretch">
+
               {/* Age Dropdown */}
               <div className="relative flex-1">
                 <button
-                  onClick={() => {
-                    setAgeOpen(!ageOpen)
-                    setDateOpen(false)
-                    setTypeOpen(false)
-                  }}
+                  onClick={() => { setAgeOpen(!ageOpen); setDateOpen(false); setTypeOpen(false) }}
                   className="w-full h-16 px-6 bg-bombovo-gray rounded-2xl flex items-center justify-between hover:bg-opacity-80 transition-all duration-300 border-2 border-transparent hover:border-bombovo-blue"
                 >
                   <span className="text-bombovo-dark font-medium">{getAgeLabel()}</span>
@@ -162,14 +141,7 @@ export default function TopCampsWithSearch() {
                     onWheel={(e) => e.stopPropagation()}
                   >
                     {ageOptions.map((age) => (
-                      <button
-                        key={age}
-                        onClick={() => {
-                          setSelectedAge(age)
-                          setAgeOpen(false)
-                        }}
-                        className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200"
-                      >
+                      <button key={age} onClick={() => { setSelectedAge(age); setAgeOpen(false) }} className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200">
                         {age}
                       </button>
                     ))}
@@ -180,11 +152,7 @@ export default function TopCampsWithSearch() {
               {/* Date Dropdown */}
               <div className="relative flex-1">
                 <button
-                  onClick={() => {
-                    setDateOpen(!dateOpen)
-                    setAgeOpen(false)
-                    setTypeOpen(false)
-                  }}
+                  onClick={() => { setDateOpen(!dateOpen); setAgeOpen(false); setTypeOpen(false) }}
                   className="w-full h-16 px-6 bg-bombovo-gray rounded-2xl flex items-center justify-between hover:bg-opacity-80 transition-all duration-300 border-2 border-transparent hover:border-bombovo-blue"
                 >
                   <span className="text-bombovo-dark font-medium">{getDateLabel()}</span>
@@ -198,14 +166,7 @@ export default function TopCampsWithSearch() {
                     transition={{ duration: 0.2 }}
                   >
                     {dateOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => {
-                          setSelectedDate(option.value)
-                          setDateOpen(false)
-                        }}
-                        className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200"
-                      >
+                      <button key={option.value} onClick={() => { setSelectedDate(option.value); setDateOpen(false) }} className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200">
                         {option.label}
                       </button>
                     ))}
@@ -216,11 +177,7 @@ export default function TopCampsWithSearch() {
               {/* Type Dropdown */}
               <div className="relative flex-1">
                 <button
-                  onClick={() => {
-                    setTypeOpen(!typeOpen)
-                    setAgeOpen(false)
-                    setDateOpen(false)
-                  }}
+                  onClick={() => { setTypeOpen(!typeOpen); setAgeOpen(false); setDateOpen(false) }}
                   className="w-full h-16 px-6 bg-bombovo-gray rounded-2xl flex items-center justify-between hover:bg-opacity-80 transition-all duration-300 border-2 border-transparent hover:border-bombovo-blue"
                 >
                   <span className="text-bombovo-dark font-medium">{getTypeLabel()}</span>
@@ -235,14 +192,7 @@ export default function TopCampsWithSearch() {
                     onWheel={(e) => e.stopPropagation()}
                   >
                     {typeOptions.map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          setSelectedType(type)
-                          setTypeOpen(false)
-                        }}
-                        className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200"
-                      >
+                      <button key={type} onClick={() => { setSelectedType(type); setTypeOpen(false) }} className="w-full px-6 py-3 text-left hover:bg-bombovo-blue hover:text-white transition-colors duration-200">
                         {type}
                       </button>
                     ))}
@@ -257,6 +207,7 @@ export default function TopCampsWithSearch() {
               >
                 Hľadať
               </button>
+
             </div>
           </div>
         </div>
@@ -264,4 +215,3 @@ export default function TopCampsWithSearch() {
     </section>
   )
 }
-

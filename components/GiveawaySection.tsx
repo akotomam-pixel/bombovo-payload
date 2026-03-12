@@ -2,12 +2,22 @@
 
 import { useState } from 'react'
 import { FiChevronDown } from 'react-icons/fi'
-import { camps as fallbackCamps } from '@/lib/campsData'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const DEFAULT_CAMP = 'Akýkoľvek Tábor'
 
-export default function GiveawaySection() {
+interface CampItem {
+  camp?: { name: string } | null
+  isVisible?: boolean
+}
+
+interface GiveawaySectionProps {
+  headline: string
+  subHeadline: string
+  giveawayCamps: CampItem[]
+}
+
+export default function GiveawaySection({ headline, subHeadline, giveawayCamps }: GiveawaySectionProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [camp, setCamp] = useState('')
@@ -17,6 +27,11 @@ export default function GiveawaySection() {
   const [submitted, setSubmitted] = useState(false)
 
   const selectedCampLabel = camp || DEFAULT_CAMP
+
+  // Filter visible camps from Payload
+  const visibleCamps = giveawayCamps
+    .filter(item => item.isVisible !== false && item.camp?.name)
+    .map(item => item.camp!)
 
   async function handleSubmit() {
     const newErrors: { name?: string; email?: string } = {}
@@ -74,7 +89,7 @@ export default function GiveawaySection() {
         {/* Headline */}
         <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark mb-3 text-center">
           <span className="relative inline-block pb-3">
-            Vyhraj tábor zadarmo!
+            {headline}
             <svg
               className="absolute left-0 -bottom-1 w-full"
               viewBox="0 0 200 12"
@@ -94,10 +109,10 @@ export default function GiveawaySection() {
 
         {/* Subtext */}
         <p className="text-bombovo-dark/70 text-base md:text-lg text-center mb-10">
-          Vyplň svoje meno, email a vyber si tábor, ktorý by si chcel vyhrať, a si zapojený do súťaže.
+          {subHeadline}
         </p>
 
-        {/* Row 1: Name + Camp side by side */}
+        {/* Row 1: Name + Camp */}
         <div className="flex flex-col sm:flex-row gap-3 mb-3">
           {/* Name */}
           <div className="flex-1">
@@ -121,9 +136,7 @@ export default function GiveawaySection() {
               <span className={camp ? 'text-bombovo-dark' : 'text-bombovo-dark/40'}>
                 {selectedCampLabel}
               </span>
-              <FiChevronDown
-                className={`transition-transform duration-200 flex-shrink-0 ml-2 ${dropdownOpen ? 'rotate-180' : ''}`}
-              />
+              <FiChevronDown className={`transition-transform duration-200 flex-shrink-0 ml-2 ${dropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {dropdownOpen && (
               <div className="absolute z-20 w-full mt-1 bg-white rounded-xl shadow-xl border-2 border-bombovo-dark max-h-64 overflow-y-auto">
@@ -134,9 +147,9 @@ export default function GiveawaySection() {
                 >
                   {DEFAULT_CAMP}
                 </button>
-                {fallbackCamps.map((c) => (
+                {visibleCamps.map((c, i) => (
                   <button
-                    key={c.id}
+                    key={i}
                     type="button"
                     onClick={() => { setCamp(c.name); setDropdownOpen(false) }}
                     className={`w-full px-4 py-3 text-left hover:bg-bombovo-gray transition-colors text-sm ${camp === c.name ? 'font-semibold' : ''}`}
@@ -149,7 +162,7 @@ export default function GiveawaySection() {
           </div>
         </div>
 
-        {/* Row 2: Email full width */}
+        {/* Row 2: Email */}
         <div className="mb-4">
           <input
             type="email"
@@ -163,7 +176,7 @@ export default function GiveawaySection() {
           {errors.email && <p className="text-bombovo-red text-sm mt-1">{errors.email}</p>}
         </div>
 
-        {/* Row 3: CTA button */}
+        {/* Row 3: CTA */}
         <button
           onClick={handleSubmit}
           disabled={loading}

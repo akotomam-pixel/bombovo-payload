@@ -1,38 +1,37 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Link from 'next/link'
 
-const strediska = [
-  {
-    id: 'stred-europy-krahule',
-    name: 'Stred Európy Krahule',
-    price: 'od 165.00 €',
-    image: '/images/Skoly%20v%20Prirode/krahule.png',
-  },
-  {
-    id: 'penzion-rohacan',
-    name: 'Penzión Roháčan',
-    price: 'od 185.00 €',
-    image: '/images/Skoly%20v%20Prirode/penzionrohac.png',
-  },
-  {
-    id: 'penzion-sabina',
-    name: 'Penzión Sabina',
-    price: 'od 200.00 €',
-    image: '/images/Skoly%20v%20Prirode/penzionsabina.png',
-  },
-]
+interface Stredisko {
+  id: string
+  name: string
+  slug: string
+  price?: string
+  cardImage?: { url: string } | null
+}
 
-export default function SkolyVPrirode() {
+interface FeaturedSkolaItem {
+  skola?: Stredisko | null
+}
+
+interface SkolyVPrirodeProps {
+  headline: string
+  featuredSkoly: FeaturedSkolaItem[]
+}
+
+export default function SkolyVPrirode({ headline, featuredSkoly }: SkolyVPrirodeProps) {
+  const strediska = featuredSkoly
+    .map(item => item.skola)
+    .filter((s): s is Stredisko => !!s && typeof s === 'object' && 'name' in s)
+
+  if (strediska.length === 0) return null
+
   return (
     <section className="pt-20 pb-16 md:pt-28 md:pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Headline */}
-        <h2 
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12"
-        >
-          Pozri Si Naše Školy V Prírode
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
+          {headline}
         </h2>
 
         {/* Strediska Cards */}
@@ -44,41 +43,28 @@ export default function SkolyVPrirode() {
             >
               {/* Image */}
               <div className="h-64 relative overflow-hidden">
-                <img 
-                  src={stredisko.image}
-                  alt={stredisko.name}
-                  className="w-full h-full object-cover"
-                />
+                {stredisko.cardImage?.url && (
+                  <img
+                    src={stredisko.cardImage.url}
+                    alt={stredisko.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-bombovo-dark mb-4">
-                  {stredisko.name}
-                </h3>
-                <div className="relative inline-block mb-6">
-                  <p className="text-bombovo-red text-xl font-semibold">
-                    {stredisko.price}
-                  </p>
-                  <svg
-                    className="absolute left-0 -bottom-1 w-full"
-                    viewBox="0 0 200 8"
-                    preserveAspectRatio="none"
-                    style={{ height: '8px' }}
-                  >
-                    <path
-                      d="M 0 6 Q 25 2, 50 5 T 100 5 T 150 5 T 200 6"
-                      stroke="#3772FF"
-                      strokeWidth="2.5"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <Link href={`/skoly-v-prirode/${stredisko.id}`}>
-                  <button
-                    className="w-full py-4 px-8 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200"
-                  >
+                <h3 className="text-2xl font-bold text-bombovo-dark mb-4">{stredisko.name}</h3>
+                {stredisko.price && (
+                  <div className="relative inline-block mb-6">
+                    <p className="text-bombovo-red text-xl font-semibold">{stredisko.price}</p>
+                    <svg className="absolute left-0 -bottom-1 w-full" viewBox="0 0 200 8" preserveAspectRatio="none" style={{ height: '8px' }}>
+                      <path d="M 0 6 Q 25 2, 50 5 T 100 5 T 150 5 T 200 6" stroke="#3772FF" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                )}
+                <Link href={`/skoly-v-prirode/${stredisko.slug}`}>
+                  <button className="w-full py-4 px-8 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
                     Zistiť viac
                   </button>
                 </Link>
@@ -90,6 +76,3 @@ export default function SkolyVPrirode() {
     </section>
   )
 }
-
-
-

@@ -11,84 +11,120 @@ import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
 
-export default function Home() {
+async function getHomepage() {
+  try {
+    const base = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000'
+    const res = await fetch(`${base}/api/globals/homepage?depth=2`, {
+      next: { revalidate: 60 },
+    })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
+export default async function Home() {
+  const hp = await getHomepage()
+
   return (
     <main className="min-h-screen">
-      {/* Section 0: Top Bar - Grey Background */}
+      {/* Section 0: Top Bar */}
       <div className="bg-bombovo-gray">
         <TopBar />
       </div>
-      
-      {/* Section 1: Header - Sticky Navigation (stays on top throughout page) */}
+
+      {/* Section 1: Header */}
       <Header />
-      
-      {/* Mobile Home Page Buttons - Below header, scrolls away (mobile only) */}
+
+      {/* Mobile Home Page Buttons */}
       <HomePageButtons />
-      
-      {/* Section 2: Hero Section - Grey Background */}
+
+      {/* Section 2: Hero */}
       <div className="bg-bombovo-gray">
-        <HeroSection />
+        <HeroSection
+          subHeadline={hp?.subHeadline ?? 'BOMBOVO:'}
+          headline={hp?.headline ?? 'Miesto kam sa vaše dieťa bude chcieť vrátiť'}
+          stats={hp?.stats ?? []}
+        />
       </div>
-      
-      {/* DIVIDER 1: Grey → White (Yellow) */}
+
+      {/* DIVIDER 1 */}
       <WaveDivider color="yellow" variant={1} />
-      
-      {/* Section 3: Review Carousel - White Background */}
+
+      {/* Section 3: Review Carousel */}
       <div className="bg-white">
-        <ReviewCarousel />
+        <ReviewCarousel
+          reviews={hp?.reviews ?? []}
+          displaySeconds={hp?.reviewDisplaySeconds ?? 5}
+        />
       </div>
-      
-      {/* DIVIDER 2: White → Grey (Red) */}
+
+      {/* DIVIDER 2 */}
       <WaveDivider color="red" variant={2} />
-      
-      {/* Section 4: Top Camps With Search - Grey Background */}
-      {/* Combined section: Best camps headline + 3 camp cards + transition text + search bar */}
+
+      {/* Section 4: Top Camps */}
       <div className="bg-bombovo-gray">
-        <TopCampsWithSearch />
+        <TopCampsWithSearch
+          headline={hp?.featuredCampsHeadline ?? 'Naše Najpredávanejšie Tábory V Roku 2026'}
+          featuredCamps={hp?.featuredCamps ?? []}
+        />
       </div>
-      
-      {/* DIVIDER 3: Grey → White (Yellow) */}
+
+      {/* DIVIDER 3 */}
       <WaveDivider color="yellow" variant={3} />
-      
-      {/* Section 5: Four Reasons - White Background */}
+
+      {/* Section 5: Four Reasons */}
       <div className="bg-white">
-        <FourReasons />
+        <FourReasons
+          headline={hp?.reasonsHeadline ?? '4 Dôvody Prečo ísť do Bombova'}
+          reasons={hp?.reasons ?? []}
+        />
       </div>
-      
-      {/* DIVIDER 4: White → Grey (Red) */}
+
+      {/* DIVIDER 4 */}
       <WaveDivider color="red" variant={1} />
-      
-      {/* Section 6: Školy v Prírode - Grey Background */}
+
+      {/* Section 6: Školy v Prírode */}
       <div className="bg-bombovo-gray">
-        <SkolyVPrirode />
+        <SkolyVPrirode
+          headline={hp?.skolyHeadline ?? 'Pozri Si Naše Školy V Prírode'}
+          featuredSkoly={hp?.featuredSkoly ?? []}
+        />
       </div>
-      
-      {/* DIVIDER 5: Grey → White (Blue) */}
+
+      {/* DIVIDER 5 */}
       <WaveDivider color="blue" variant={2} />
 
-      {/* Section 6.1: Giveaway Form - White Background */}
+      {/* Section 6.1: Giveaway */}
       <div className="bg-white">
-        <GiveawaySection />
+        <GiveawaySection
+          headline={hp?.giveawayHeadline ?? 'Vyhraj tábor zadarmo!'}
+          subHeadline={hp?.giveawaySubHeadline ?? 'Vyplň svoje meno, email a vyber si tábor, ktorý by si chcel vyhrať, a si zapojený do súťaže.'}
+          giveawayCamps={hp?.giveawayCamps ?? []}
+        />
       </div>
 
-      {/* DIVIDER 5.1: White → Grey (Blue) */}
+      {/* DIVIDER 5.1 */}
       <WaveDivider color="blue" variant={1} />
 
-      {/* Section 7: FAQ - Grey Background */}
+      {/* Section 7: FAQ */}
       <div className="bg-bombovo-gray">
-        <FAQ />
+        <FAQ
+          headline={hp?.faqHeadline ?? 'Často Kladené Otázky'}
+          items={hp?.faqItems ?? []}
+        />
       </div>
-      
-      {/* DIVIDER 6: Grey → Dark (Red) */}
+
+      {/* DIVIDER 6 */}
       <WaveDivider color="red" variant={3} />
-      
-      {/* Section 8: Footer - Dark Background */}
+
+      {/* Section 8: Footer */}
       <div className="bg-white">
         <Footer />
       </div>
     </main>
   )
 }
-
-
-
