@@ -42,6 +42,10 @@ export default function StepEmail({
       if (!res.ok || data.error) {
         setError(data.error || 'Nastala chyba. Skúste to prosím znova.')
       } else {
+        if (typeof window !== 'undefined') {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'giveaway_lead_submitted' });
+        }
         onSuccess()
       }
     } catch {
