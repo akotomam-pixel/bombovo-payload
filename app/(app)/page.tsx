@@ -1,3 +1,5 @@
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import HomePageButtons from '@/components/HomePageButtons'
@@ -13,14 +15,8 @@ import WaveDivider from '@/components/WaveDivider'
 
 async function getHomepage() {
   try {
-    const base = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
-    const res = await fetch(`${base}/api/globals/homepage?depth=2`, {
-      next: { revalidate: 60 },
-    })
-    if (!res.ok) return null
-    return await res.json()
+    const payload = await getPayload({ config: configPromise })
+    return await payload.findGlobal({ slug: 'homepage', depth: 2 })
   } catch {
     return null
   }
