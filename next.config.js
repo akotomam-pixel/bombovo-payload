@@ -25,7 +25,12 @@ const nextConfig = {
   },
 }
 
-module.exports = withPayload(nextConfig)
+module.exports = withPayload(nextConfig, {
+  configPath: undefined,
+  bodyParser: {
+    sizeLimit: '20mb',
+  },
+})
 
 
 

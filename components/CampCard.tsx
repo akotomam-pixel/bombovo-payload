@@ -55,16 +55,16 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
   return (
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Camp Photo */}
-      <div className="h-64 relative overflow-hidden">
+      <Link href={`/letne-tabory/${id}`} className="block h-64 relative overflow-hidden">
         <Image
           src={image}
           alt={name}
           fill
-          className="object-cover"
+          className="object-cover hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={index < 3}
         />
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-6 space-y-4">
