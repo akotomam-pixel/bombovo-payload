@@ -44,6 +44,8 @@ export default function RegistrationSVPClient({
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -54,16 +56,34 @@ export default function RegistrationSVPClient({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setIsSubmitted(true);
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: 'prihlaska_submitted' });
+    setSubmitError('');
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact-svp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setSubmitError(data.error ?? 'Nastala chyba. Skúste to prosím znova.');
+        return;
       }
-    }, 100);
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'prihlaska_svp_submitted' });
+        }
+      }, 100);
+    } catch {
+      setSubmitError('Nastala chyba. Skúste to prosím znova.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -388,11 +408,17 @@ export default function RegistrationSVPClient({
 
                 {/* Submit */}
                 <div className="pt-6">
+                  {submitError && (
+                    <div className="mb-4 p-4 bg-red-50 border-2 border-bombovo-red rounded-xl">
+                      <p className="text-sm text-bombovo-red">{submitError}</p>
+                    </div>
+                  )}
                   <button
                     type="submit"
-                    className="w-full px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200"
+                    disabled={isSubmitting}
+                    className="w-full px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   >
-                    Odoslať prihlášku
+                    {isSubmitting ? 'Odosiela sa...' : 'Odoslať prihlášku'}
                   </button>
                 </div>
               </form>
