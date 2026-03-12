@@ -11,11 +11,17 @@ export async function POST(request: NextRequest) {
     const relayUrl = 'https://bombovo.sk/mail-relay-svp.php'
     const secret = process.env.MAIL_RELAY_SECRET ?? 'BombovO2025relay'
 
-    // Pass the entire form body through to the relay, just adding the secret
+    // Rename 'email' to 'emailKontakt' so the PHP relay does not set it as
+    // Reply-To header — which causes loop detection when the submitter's email
+    // matches sabina@bombovo.sk's forward destination.
+    const { email, ...restBody } = body
+    const payload = { ...restBody, emailKontakt: email, secret }
+    console.log('[contact-svp] Sending payload to relay:', JSON.stringify({ ...payload, secret: '[REDACTED]' }))
+
     const relayResponse = await fetch(relayUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...body, secret }),
+      body: JSON.stringify(payload),
     })
 
     const relayText = await relayResponse.text()
