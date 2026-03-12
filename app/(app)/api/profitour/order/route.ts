@@ -153,22 +153,18 @@ export async function POST(req: NextRequest) {
       ${buildDopravyEntry('Zpet', input.svozZpetId)}
     </ns:RezervaceDopravy>`
 
-  // RezervaceUbytovaniKalkulaceInput field order:
-  //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
-  //   Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
-  const ubytovaniCestujiciXml = input.cestujici!
-    .map((_, i) => `<ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput>`)
-    .join('')
-
+  // RezervaceUbytovaniKalkulaceInput: one entry per traveler (OsobMax=1 per camp spot).
+  // Field order: Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
+  //              Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
   const ubytovaniXml = input.id_ZajezdHotel
     ? `<ns:RezervaceUbytovani>
-          <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
-            <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
+        ${input.cestujici!.map((_, i) => `<ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+            <ns:RezervaceUbytovaniCestujici><ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput></ns:RezervaceUbytovaniCestujici>
             <ns:id_TypStrava>${input.id_TypStrava ?? 0}</ns:id_TypStrava>
             <ns:id_Ubytovani>${input.id_Ubytovani ?? 0}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${input.id_ZajezdHotel}</ns:id_ZajezdHotel>
-          </ns:RezervaceUbytovaniInputBase>
-        </ns:RezervaceUbytovani>`
+          </ns:RezervaceUbytovaniInputBase>`).join('')}
+      </ns:RezervaceUbytovani>`
     : ''
 
   // Build orderer address using the unified PSČ → id_Obec map

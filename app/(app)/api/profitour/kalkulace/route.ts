@@ -143,21 +143,17 @@ export async function POST(req: NextRequest) {
         ${buildDopravyEntry('Zpet', svozZpetId)}
       </ns:RezervaceDopravy>`
 
-    // RezervaceUbytovaniKalkulaceInput field order:
-    //   Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
-    //   Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
-    const ubytovaniCestujiciXml = cestujiciIds
-      .map(id => `<ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${id}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput>`)
-      .join('')
-
+    // RezervaceUbytovaniKalkulaceInput: one entry per traveler (OsobMax=1 per camp spot).
+    // Field order: Base: Poznamka (P), RezervaceUbytovaniCestujici (R), id_TypStrava (i,T,S)
+    //              Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
     const ubytovaniXml = id_ZajezdHotel
       ? `<ns:RezervaceUbytovani>
-          <ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
-            <ns:RezervaceUbytovaniCestujici>${ubytovaniCestujiciXml}</ns:RezervaceUbytovaniCestujici>
+          ${cestujiciIds.map(id => `<ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+            <ns:RezervaceUbytovaniCestujici><ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${id}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput></ns:RezervaceUbytovaniCestujici>
             <ns:id_TypStrava>${id_TypStrava}</ns:id_TypStrava>
             <ns:id_Ubytovani>${id_Ubytovani}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${id_ZajezdHotel}</ns:id_ZajezdHotel>
-          </ns:RezervaceUbytovaniInputBase>
+          </ns:RezervaceUbytovaniInputBase>`).join('')}
         </ns:RezervaceUbytovani>`
       : ''
 
