@@ -9,6 +9,7 @@ function esc(val: string | undefined): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+    .replace(/[^\x00-\x7F]/g, (c) => `&#${c.charCodeAt(0)};`)
 }
 
 export async function POST(request: NextRequest) {
@@ -23,6 +24,27 @@ export async function POST(request: NextRequest) {
       from: 'Bombovo <info@bombovo.sk>',
       to: ['sabina@bombovo.sk'],
       subject: 'Nova prihlaska SvP',
+      text: [
+        'Nova prihlaska Skola v prirode',
+        `Datum prichodu: ${body.datumPrichodu ?? ''}`,
+        `Datum odchodu: ${body.datumOdchodu ?? ''}`,
+        `Veduci pobytu: ${body.veduciPobytu ?? ''}`,
+        `Nazov skoly: ${body.nazovSkoly ?? ''}`,
+        `Adresa: ${body.adresa ?? ''}`,
+        `PSC: ${body.psc ?? ''}`,
+        `Mesto: ${body.mesto ?? ''}`,
+        `Telefon: ${body.telefon ?? ''}`,
+        `Email: ${body.email ?? ''}`,
+        `Stredisko: ${body.stredisko ?? ''}`,
+        `Alternativne stredisko: ${body.alternativneStredisko ?? ''}`,
+        `Vek ziakov: ${body.vekZiakov ?? ''}`,
+        `Pocet ziakov: ${body.pocetZiakov ?? ''}`,
+        `Pocet pedagogov: ${body.pocetPedagogov ?? ''}`,
+        `Zdravotnik: ${body.zdravotnik ?? ''}`,
+        `Animacny program: ${body.animacnyProgram ?? ''}`,
+        `Bombovy balicek: ${body.bombovyBalicek ?? ''}`,
+        `Poznamka: ${body.poznamka ?? ''}`,
+      ].join('\n'),
       html: `<html><body>
 <h2>Nova prihlaska Skola v prirode</h2>
 <table cellpadding="8" cellspacing="0" border="1" style="border-collapse:collapse;font-family:sans-serif;">
