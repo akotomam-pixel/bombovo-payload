@@ -26,7 +26,7 @@ export default function RegistrationSVPClient({
 }: Props) {
   const [formData, setFormData] = useState({
     datumPrichodu: initialDate,
-    vedúciPobytu: "",
+    veduciPobytu: "",
     nazovSkoly: "",
     adresa: "",
     psc: "",
@@ -174,8 +174,8 @@ export default function RegistrationSVPClient({
                     </label>
                     <input
                       type="text"
-                      name="vedúciPobytu"
-                      value={formData.vedúciPobytu}
+                      name="veduciPobytu"
+                      value={formData.veduciPobytu}
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
