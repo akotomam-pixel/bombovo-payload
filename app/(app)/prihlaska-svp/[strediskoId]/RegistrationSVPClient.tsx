@@ -26,6 +26,7 @@ export default function RegistrationSVPClient({
 }: Props) {
   const [formData, setFormData] = useState({
     datumPrichodu: initialDate,
+    datumOdchodu: "",
     veduciPobytu: "",
     nazovSkoly: "",
     adresa: "",
@@ -177,20 +178,35 @@ export default function RegistrationSVPClient({
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-6">
-                {/* Dátum príchodu */}
-                <div>
-                  <label className="block text-bombovo-dark font-semibold mb-2">
-                    Dátum príchodu *
-                  </label>
-                  <input
-                    type="text"
-                    name="datumPrichodu"
-                    value={formData.datumPrichodu}
-                    onChange={handleInputChange}
-                    className={fieldClass('datumPrichodu')}
-                    placeholder="DD.MM.RRRR"
-                  />
-                  {isFieldError('datumPrichodu') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
+                {/* Dátum príchodu + Dátum odchodu */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Dátum príchodu *
+                    </label>
+                    <input
+                      type="text"
+                      name="datumPrichodu"
+                      value={formData.datumPrichodu}
+                      onChange={handleInputChange}
+                      className={fieldClass('datumPrichodu')}
+                      placeholder="DD.MM.RRRR"
+                    />
+                    {isFieldError('datumPrichodu') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
+                  </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Dátum odchodu
+                    </label>
+                    <input
+                      type="text"
+                      name="datumOdchodu"
+                      value={formData.datumOdchodu}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      placeholder="DD.MM.RRRR"
+                    />
+                  </div>
                 </div>
 
                 {/* Meno vedúceho + Názov školy */}

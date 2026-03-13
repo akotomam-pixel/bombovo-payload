@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 <h2>Nova prihlaska Skola v prirode</h2>
 <table cellpadding="8" cellspacing="0" border="1" style="border-collapse:collapse;font-family:sans-serif;">
   <tr><td><b>Datum prichodu</b></td><td>${esc(body.datumPrichodu)}</td></tr>
+  <tr><td><b>Datum odchodu</b></td><td>${esc(body.datumOdchodu)}</td></tr>
   <tr><td><b>Veduci pobytu</b></td><td>${esc(body.veduciPobytu)}</td></tr>
   <tr><td><b>Nazov skoly</b></td><td>${esc(body.nazovSkoly)}</td></tr>
   <tr><td><b>Adresa</b></td><td>${esc(body.adresa)}</td></tr>
