@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
   <tr><td><b>Email</b></td><td>${esc(body.email)}</td></tr>
   <tr><td><b>Stredisko</b></td><td>${esc(body.stredisko)}</td></tr>
   <tr><td><b>Alternativne stredisko</b></td><td>${esc(body.alternativneStredisko)}</td></tr>
-  <tr><td><b>Animacny program</b></td><td>${esc(body.animacnyProgram)}</td></tr>
-  <tr><td><b>Bombovy balicek</b></td><td>${esc(body.bombovyBalicek)}</td></tr>
-  <tr><td><b>Pocet pedagogov</b></td><td>${esc(body.pocetPedagogov)}</td></tr>
   <tr><td><b>Vek ziakov</b></td><td>${esc(body.vekZiakov)}</td></tr>
   <tr><td><b>Pocet ziakov</b></td><td>${esc(body.pocetZiakov)}</td></tr>
+  <tr><td><b>Pocet pedagogov</b></td><td>${esc(body.pocetPedagogov)}</td></tr>
   <tr><td><b>Zdravotnik</b></td><td>${esc(body.zdravotnik)}</td></tr>
+  <tr><td><b>Animacny program</b></td><td>${esc(body.animacnyProgram)}</td></tr>
+  <tr><td><b>Bombovy balicek</b></td><td>${esc(body.bombovyBalicek)}</td></tr>
   <tr><td><b>Poznamka</b></td><td>${esc(body.poznamka)}</td></tr>
 </table>
 </body></html>`,

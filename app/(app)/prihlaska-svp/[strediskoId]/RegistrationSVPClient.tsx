@@ -35,17 +35,37 @@ export default function RegistrationSVPClient({
     email: "",
     stredisko: strediskoName,
     alternativneStredisko: "",
-    animacnyProgram: "S animačným programom",
-    bombovyBalicek: "Áno",
-    pocetPedagogov: "",
     vekZiakov: "MŠ",
     pocetZiakov: "",
+    pocetPedagogov: "",
     zdravotnik: "Vlastný zdravotník",
+    animacnyProgram: "S animačným programom",
+    bombovyBalicek: "Áno",
+    poznamka: "",
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [showErrors, setShowErrors] = useState(false);
+
+  const requiredFields: (keyof typeof formData)[] = [
+    'datumPrichodu', 'veduciPobytu', 'nazovSkoly', 'adresa', 'psc', 'mesto',
+    'telefon', 'email', 'alternativneStredisko', 'pocetZiakov', 'pocetPedagogov',
+  ];
+
+  const isFieldError = (field: keyof typeof formData) =>
+    showErrors && requiredFields.includes(field) && !formData[field];
+
+  const fieldClass = (field: keyof typeof formData) =>
+    `w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-bombovo-red ${
+      isFieldError(field) ? 'border-red-500' : 'border-bombovo-blue'
+    }`;
+
+  const selectClass = (field: keyof typeof formData) =>
+    `w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-bombovo-red ${
+      isFieldError(field) ? 'border-red-500' : 'border-bombovo-blue'
+    }`;
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -59,6 +79,13 @@ export default function RegistrationSVPClient({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
+
+    const hasErrors = requiredFields.some((f) => !formData[f]);
+    if (hasErrors) {
+      setShowErrors(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/contact-svp', {
@@ -149,7 +176,7 @@ export default function RegistrationSVPClient({
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} noValidate className="space-y-6">
                 {/* Dátum príchodu */}
                 <div>
                   <label className="block text-bombovo-dark font-semibold mb-2">
@@ -160,10 +187,10 @@ export default function RegistrationSVPClient({
                     name="datumPrichodu"
                     value={formData.datumPrichodu}
                     onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                    className={fieldClass('datumPrichodu')}
                     placeholder="DD.MM.RRRR"
                   />
+                  {isFieldError('datumPrichodu') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                 </div>
 
                 {/* Meno vedúceho + Názov školy */}
@@ -177,9 +204,9 @@ export default function RegistrationSVPClient({
                       name="veduciPobytu"
                       value={formData.veduciPobytu}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('veduciPobytu')}
                     />
+                    {isFieldError('veduciPobytu') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -190,9 +217,9 @@ export default function RegistrationSVPClient({
                       name="nazovSkoly"
                       value={formData.nazovSkoly}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('nazovSkoly')}
                     />
+                    {isFieldError('nazovSkoly') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                 </div>
 
@@ -207,9 +234,9 @@ export default function RegistrationSVPClient({
                       name="adresa"
                       value={formData.adresa}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('adresa')}
                     />
+                    {isFieldError('adresa') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -220,9 +247,9 @@ export default function RegistrationSVPClient({
                       name="psc"
                       value={formData.psc}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('psc')}
                     />
+                    {isFieldError('psc') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -233,9 +260,9 @@ export default function RegistrationSVPClient({
                       name="mesto"
                       value={formData.mesto}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('mesto')}
                     />
+                    {isFieldError('mesto') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                 </div>
 
@@ -250,9 +277,9 @@ export default function RegistrationSVPClient({
                       name="telefon"
                       value={formData.telefon}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('telefon')}
                     />
+                    {isFieldError('telefon') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
@@ -263,9 +290,9 @@ export default function RegistrationSVPClient({
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                      className={fieldClass('email')}
                     />
+                    {isFieldError('email') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
                   </div>
                 </div>
 
@@ -292,8 +319,7 @@ export default function RegistrationSVPClient({
                     name="alternativneStredisko"
                     value={formData.alternativneStredisko}
                     onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                    className={selectClass('alternativneStredisko')}
                   >
                     <option value="">Vyberte alternatívne stredisko</option>
                     {allStrediskaOptions
@@ -303,6 +329,74 @@ export default function RegistrationSVPClient({
                           {s.name}
                         </option>
                       ))}
+                  </select>
+                  {isFieldError('alternativneStredisko') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
+                </div>
+
+                {/* Vek žiakov */}
+                <div>
+                  <label className="block text-bombovo-dark font-semibold mb-2">
+                    Vek žiakov/študentov *
+                  </label>
+                  <select
+                    name="vekZiakov"
+                    value={formData.vekZiakov}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                  >
+                    <option value="MŠ">MŠ</option>
+                    <option value="1. stupeň ZŠ">1. stupeň ZŠ</option>
+                    <option value="2. stupeň ZŠ">2. stupeň ZŠ</option>
+                  </select>
+                </div>
+
+                {/* Počet žiakov + Počet pedagógov */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Počet žiakov/študentov *
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      name="pocetZiakov"
+                      value={formData.pocetZiakov}
+                      onChange={handleInputChange}
+                      className={fieldClass('pocetZiakov')}
+                    />
+                    {isFieldError('pocetZiakov') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
+                  </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Počet pedagógov *
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      name="pocetPedagogov"
+                      value={formData.pocetPedagogov}
+                      onChange={handleInputChange}
+                      className={fieldClass('pocetPedagogov')}
+                    />
+                    {isFieldError('pocetPedagogov') && <p className="mt-1 text-sm text-red-500">Toto pole je povinné</p>}
+                  </div>
+                </div>
+
+                {/* Zdravotník */}
+                <div>
+                  <label className="block text-bombovo-dark font-semibold mb-2">
+                    Zdravotník *
+                  </label>
+                  <select
+                    name="zdravotnik"
+                    value={formData.zdravotnik}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                  >
+                    <option value="Vlastný zdravotník">Vlastný zdravotník</option>
+                    <option value="Zdravotník z CK">Zdravotník z CK</option>
                   </select>
                 </div>
 
@@ -315,7 +409,6 @@ export default function RegistrationSVPClient({
                     name="animacnyProgram"
                     value={formData.animacnyProgram}
                     onChange={handleInputChange}
-                    required
                     className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
                   >
                     <option value="S animačným programom">S animačným programom</option>
@@ -339,75 +432,28 @@ export default function RegistrationSVPClient({
                   </select>
                 </div>
 
-                {/* Počet pedagógov */}
+                {/* Poznámka */}
                 <div>
                   <label className="block text-bombovo-dark font-semibold mb-2">
-                    Počet pedagógov *
+                    Poznámka
                   </label>
-                  <input
-                    type="number"
-                    name="pocetPedagogov"
-                    value={formData.pocetPedagogov}
+                  <textarea
+                    name="poznamka"
+                    value={formData.poznamka}
                     onChange={handleInputChange}
-                    required
-                    min="1"
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
+                    rows={4}
+                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red resize-none"
+                    placeholder="Napíšte prípadné poznámky alebo špeciálne požiadavky..."
                   />
-                </div>
-
-                {/* Vek žiakov */}
-                <div>
-                  <label className="block text-bombovo-dark font-semibold mb-2">
-                    Vek žiakov/študentov *
-                  </label>
-                  <select
-                    name="vekZiakov"
-                    value={formData.vekZiakov}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
-                  >
-                    <option value="MŠ">MŠ</option>
-                    <option value="1. stupeň ZŠ">1. stupeň ZŠ</option>
-                    <option value="2. stupeň ZŠ">2. stupeň ZŠ</option>
-                  </select>
-                </div>
-
-                {/* Počet žiakov */}
-                <div>
-                  <label className="block text-bombovo-dark font-semibold mb-2">
-                    Počet žiakov/študentov *
-                  </label>
-                  <input
-                    type="number"
-                    name="pocetZiakov"
-                    value={formData.pocetZiakov}
-                    onChange={handleInputChange}
-                    required
-                    min="1"
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
-                  />
-                </div>
-
-                {/* Zdravotník */}
-                <div>
-                  <label className="block text-bombovo-dark font-semibold mb-2">
-                    Zdravotník *
-                  </label>
-                  <select
-                    name="zdravotnik"
-                    value={formData.zdravotnik}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:border-bombovo-red"
-                  >
-                    <option value="Vlastný zdravotník">Vlastný zdravotník</option>
-                    <option value="Zdravotník z CK">Zdravotník z CK</option>
-                  </select>
                 </div>
 
                 {/* Submit */}
                 <div className="pt-6">
+                  {showErrors && requiredFields.some((f) => !formData[f]) && (
+                    <div className="mb-4 p-4 bg-red-50 border-2 border-red-500 rounded-xl">
+                      <p className="text-sm text-red-600 font-semibold">Prosím vyplňte všetky povinné polia označené červenou farbou.</p>
+                    </div>
+                  )}
                   {submitError && (
                     <div className="mb-4 p-4 bg-red-50 border-2 border-bombovo-red rounded-xl">
                       <p className="text-sm text-bombovo-red">{submitError}</p>
