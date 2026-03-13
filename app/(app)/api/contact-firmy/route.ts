@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    if (!body.nazovFirmy || !body.sposobFinancovania) {
+    if (!body.nazovFirmy || !body.email || !body.telefon || !body.sposobFinancovania) {
       return NextResponse.json({ error: 'Chýbajú povinné polia' }, { status: 400 })
     }
 
@@ -32,6 +32,8 @@ export async function POST(request: NextRequest) {
 <table style="border-collapse:collapse;width:100%;max-width:600px">
   ${row('Názov firmy', v(body.nazovFirmy))}
   ${row('Počet zamestnancov', v(body.pocetZamestnancov))}
+  ${row('Email', v(body.email))}
+  ${row('Telefón', v(body.telefon))}
   ${row('Spôsob financovania', v(body.sposobFinancovania))}
   ${extraRows}
   ${row('Poznámky / Otázky', v(body.poznamky))}

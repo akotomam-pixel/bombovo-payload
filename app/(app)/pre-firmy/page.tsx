@@ -11,6 +11,8 @@ export default function PreFirmyPage() {
   const [formData, setFormData] = useState({
     nazovFirmy: '',
     pocetZamestnancov: '',
+    email: '',
+    telefon: '',
     sposobFinancovania: '',
     castTabora: '',
     poziadavka: '',
@@ -30,7 +32,7 @@ export default function PreFirmyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.nazovFirmy.trim() || !formData.pocetZamestnancov.trim() || !formData.sposobFinancovania) {
+    if (!formData.nazovFirmy.trim() || !formData.pocetZamestnancov.trim() || !formData.email.trim() || !formData.telefon.trim() || !formData.sposobFinancovania) {
       setSubmitError('Prosím vyplňte všetky povinné polia')
       return
     }
@@ -49,7 +51,7 @@ export default function PreFirmyPage() {
 
       setSubmitSuccess(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      setFormData({ nazovFirmy: '', pocetZamestnancov: '', sposobFinancovania: '', castTabora: '', poziadavka: '', poznamky: '' })
+      setFormData({ nazovFirmy: '', pocetZamestnancov: '', email: '', telefon: '', sposobFinancovania: '', castTabora: '', poziadavka: '', poznamky: '' })
     } catch {
       setSubmitError('Niečo sa pokazilo. Skúste to prosím znova.')
     } finally {
@@ -419,6 +421,39 @@ export default function PreFirmyPage() {
                     id="pocetZamestnancov"
                     name="pocetZamestnancov"
                     value={formData.pocetZamestnancov}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 text-base text-bombovo-dark bg-white border-2 border-bombovo-blue rounded-xl outline-none focus:border-bombovo-red transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Email & Telefón */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-bombovo-dark mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 text-base text-bombovo-dark bg-white border-2 border-bombovo-blue rounded-xl outline-none focus:border-bombovo-red transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="telefon" className="block text-sm font-medium text-bombovo-dark mb-2">
+                    Telefón *
+                  </label>
+                  <input
+                    type="tel"
+                    id="telefon"
+                    name="telefon"
+                    value={formData.telefon}
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 text-base text-bombovo-dark bg-white border-2 border-bombovo-blue rounded-xl outline-none focus:border-bombovo-red transition-colors"
