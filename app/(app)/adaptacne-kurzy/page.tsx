@@ -18,29 +18,47 @@ export default function AdaptacneKurzyPage() {
     note: ''
   })
   const [formError, setFormError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
     if (formError) {
       setFormError('')
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // Validate required fields
+
     if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim() || !formData.email.trim()) {
       setFormError('Prosím vyplňte všetky povinné polia')
       return
     }
-    
-    // TODO: Email functionality to be added later
-    console.log('Form submitted:', formData)
-    alert('Formulár bol odoslaný! (Email funkcionalita bude pridaná neskôr)')
+
+    setIsSubmitting(true)
     setFormError('')
+
+    try {
+      const res = await fetch('/api/contact-adaptacne', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        throw new Error('Server error')
+      }
+
+      setSubmitSuccess(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setFormData({ name: '', address: '', phone: '', email: '', people: '', note: '' })
+    } catch {
+      setFormError('Niečo sa pokazilo. Skúste to prosím znova.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -256,6 +274,23 @@ export default function AdaptacneKurzyPage() {
           </h2>
 
           <div className="border-4 border-bombovo-blue rounded-3xl p-8 md:p-10 bg-bombovo-gray">
+            {submitSuccess ? (
+              <div className="py-12 text-center">
+                <div className="text-5xl mb-4">🎉</div>
+                <h3 className="text-2xl font-bold text-bombovo-dark mb-3">
+                  Vaša prihláška bola odoslaná!
+                </h3>
+                <p className="text-lg text-bombovo-dark mb-6">
+                  Ozveme sa vám čoskoro.
+                </p>
+                <button
+                  onClick={() => setSubmitSuccess(false)}
+                  className="px-8 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold rounded-full hover:translate-y-0.5 transition-all duration-200"
+                >
+                  Poslať ďalšiu prihlášku
+                </button>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {/* Name */}
@@ -374,11 +409,13 @@ export default function AdaptacneKurzyPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                Odoslať
+                {isSubmitting ? 'Odosiela sa...' : 'Odoslať'}
               </button>
             </form>
+            )}
           </div>
         </div>
       </section>

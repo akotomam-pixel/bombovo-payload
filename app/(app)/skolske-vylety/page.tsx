@@ -103,13 +103,18 @@ export default function SkolskeVyletyPage() {
     setSubmitError('')
 
     try {
-      // TODO: Send to backend API
-      console.log('Form data:', formData)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      const res = await fetch('/api/contact-vylety', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        throw new Error('Server error')
+      }
+
       setSubmitSuccess(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       setFormData({
         teacherName: '',
         schoolAddress: '',
@@ -118,7 +123,7 @@ export default function SkolskeVyletyPage() {
         numberOfPeople: '',
         note: ''
       })
-    } catch (error) {
+    } catch {
       setSubmitError('Niečo sa pokazilo. Skúste to prosím znova.')
     } finally {
       setIsSubmitting(false)
