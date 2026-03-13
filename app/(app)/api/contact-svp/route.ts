@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const { error } = await resend.emails.send({
       from: 'Bombovo <info@bombovo.sk>',
-      to: ['sabina@bombovo.sk'],
+      to: ['sabina.b@bombovo.sk'],
       subject: 'Nova prihlaska SvP',
       text: [
         'Nova prihlaska Skola v prirode',
