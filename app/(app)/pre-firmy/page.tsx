@@ -17,15 +17,44 @@ export default function PreFirmyPage() {
     poznamky: '',
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    if (submitError) setSubmitError('')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    alert('Ďakujeme za vašu prihlášku! Náš tím sa vám ozve v priebehu niekoľkých dní.')
+
+    if (!formData.nazovFirmy.trim() || !formData.pocetZamestnancov.trim() || !formData.sposobFinancovania) {
+      setSubmitError('Prosím vyplňte všetky povinné polia')
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const res = await fetch('/api/contact-firmy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) throw new Error('Server error')
+
+      setSubmitSuccess(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setFormData({ nazovFirmy: '', pocetZamestnancov: '', sposobFinancovania: '', castTabora: '', poziadavka: '', poznamky: '' })
+    } catch {
+      setSubmitError('Niečo sa pokazilo. Skúste to prosím znova.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const showCastTaboraField = formData.sposobFinancovania === 'cast-tabora'
@@ -345,6 +374,23 @@ export default function PreFirmyPage() {
           </h2>
 
           <div className="border-4 border-bombovo-blue rounded-3xl p-8 md:p-10 bg-bombovo-gray">
+            {submitSuccess ? (
+              <div className="py-12 text-center">
+                <div className="text-5xl mb-4">🎉</div>
+                <h3 className="text-2xl font-bold text-bombovo-dark mb-3">
+                  Ďakujeme za vašu prihlášku!
+                </h3>
+                <p className="text-lg text-bombovo-dark mb-6">
+                  Náš tím sa vám ozve v priebehu niekoľkých dní.
+                </p>
+                <button
+                  onClick={() => setSubmitSuccess(false)}
+                  className="px-8 py-3 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold rounded-full hover:translate-y-0.5 transition-all duration-200"
+                >
+                  Poslať ďalšiu prihlášku
+                </button>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {/* Row 1: Názov Firmy & Počet Zamestnancov */}
@@ -464,13 +510,23 @@ export default function PreFirmyPage() {
               </p>
 
               {/* Submit Button */}
+              {/* Submit Error */}
+              {submitError && (
+                <div className="p-4 bg-bombovo-red/10 border-2 border-bombovo-red rounded-xl">
+                  <p className="text-sm text-bombovo-red font-medium text-center">{submitError}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200"
+                disabled={isSubmitting}
+                className="w-full px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
-                ODOSLAŤ PRIHLÁŠKU
+                {isSubmitting ? 'Odosiela sa...' : 'ODOSLAŤ PRIHLÁŠKU'}
               </button>
             </form>
+            )}
           </div>
         </div>
         </section>

@@ -166,12 +166,16 @@ export default function PrihlaskaZdravotnikPage() {
     setSubmitError('')
 
     try {
-      // TODO: Send to backend API
-      console.log('Form data:', formData)
-      
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      const res = await fetch('/api/contact-zdravotnik', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) throw new Error('Server error')
+
       setSubmitSuccess(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       if (typeof window !== 'undefined') { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'job_application_submitted' }); }
       setFormData({
         titul: '',
