@@ -41,6 +41,7 @@ try {
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port       = 465;
     $mail->CharSet    = 'UTF-8';
+    $mail->Encoding   = 'quoted-printable';
 
     $mail->setFrom('info@bombovo.sk', 'Bombovo');
     $mail->addAddress('sabina@bombovo.sk');
