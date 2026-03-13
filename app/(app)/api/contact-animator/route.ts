@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     const { error } = await resend.emails.send({
       from: 'Bombovo <info@bombovo.sk>',
-      to: ['pata@bombovo.sk'],
+      to: ['maja@bombovo.sk'],
       subject: 'Nova prihlaska Animator',
       html: `<!DOCTYPE html><html><body style="font-family:sans-serif;color:#222;padding:20px">
 <h2 style="color:#1a1a2e">Nová prihláška – Animátor</h2>
