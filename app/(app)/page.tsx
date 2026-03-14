@@ -22,8 +22,65 @@ async function getHomepage() {
   }
 }
 
+
+// Fetch strediska directly with depth:1 so cardImage + heroGallery photos
+// are fully resolved — nested upload fields inside relationships are not
+// reliably resolved when going through the homepage global query.
+async function getStrediskaByIds(ids: string[]) {
+  if (ids.length === 0) return []
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'strediska',
+      where: { id: { in: ids } },
+      limit: ids.length,
+      depth: 1,
+    })
+    return result.docs as Record<string, any>[]
+  } catch {
+    return []
+  }
+}
+
 export default async function Home() {
   const hp = await getHomepage()
+
+  // Extract stredisko IDs from the homepage global (they may still be raw IDs
+  // or partially-resolved objects depending on Payload depth behaviour).
+  const rawSkoly: any[] = (hp as any)?.featuredSkoly ?? []
+  const strediskoIds: string[] = rawSkoly
+    .map((item: any) => {
+      const s = item?.skola
+      if (!s) return null
+      return typeof s === 'object' ? String(s.id ?? '') : String(s)
+    })
+    .filter(Boolean) as string[]
+
+  // Fetch the strediska directly — this guarantees photos are resolved.
+  const strediskaByIdMap = new Map<string, Record<string, any>>()
+  if (strediskoIds.length > 0) {
+    const docs = await getStrediskaByIds(strediskoIds)
+    for (const doc of docs) {
+      strediskaByIdMap.set(String(doc.id), doc)
+    }
+  }
+
+  // Build enriched featuredSkoly using the directly-fetched strediska.
+  // Inject _imageUrl: cardImage first, then first heroGallery photo.
+  const enrichedFeaturedSkoly = strediskoIds.map((id) => {
+    const doc = strediskaByIdMap.get(id) ?? null
+    if (!doc) return { skola: null }
+    const cardUrl = (doc.cardImage as any)?.url as string | undefined
+    const galleryUrl = Array.isArray(doc.heroGallery)
+      ? ((doc.heroGallery[0]?.photo as any)?.url as string | undefined)
+      : undefined
+    return {
+      skola: {
+        ...doc,
+        _imageUrl: cardUrl ?? galleryUrl ?? null,
+      },
+    }
+  })
 
   return (
     <main className="min-h-screen">
@@ -87,12 +144,11 @@ export default async function Home() {
       <div className="bg-bombovo-gray">
         <SkolyVPrirode
           headline={hp?.skolyHeadline ?? 'Pozri Si Naše Školy V Prírode'}
-          featuredSkoly={hp?.featuredSkoly ?? []}
+          featuredSkoly={enrichedFeaturedSkoly}
         />
+        {/* DIVIDER 5 */}
+        <WaveDivider color="blue" variant={2} />
       </div>
-
-      {/* DIVIDER 5 */}
-      <WaveDivider color="blue" variant={2} />
 
       {/* Section 6.1: Giveaway */}
       <div className="bg-white">

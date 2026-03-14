@@ -7,7 +7,7 @@ interface Stredisko {
   name: string
   slug: string
   price?: string
-  cardImage?: { url: string } | null
+  _imageUrl?: string | null
 }
 
 interface FeaturedSkolaItem {
@@ -43,9 +43,9 @@ export default function SkolyVPrirode({ headline, featuredSkoly }: SkolyVPrirode
             >
               {/* Image */}
               <div className="h-64 relative overflow-hidden">
-                {stredisko.cardImage?.url && (
+                {stredisko._imageUrl && (
                   <img
-                    src={stredisko.cardImage.url}
+                    src={stredisko._imageUrl}
                     alt={stredisko.name}
                     className="w-full h-full object-cover"
                   />

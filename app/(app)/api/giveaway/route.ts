@@ -24,12 +24,27 @@ function slugifyCamp(name: string): string {
     .replace(/[^a-z0-9-]/g, '')
 }
 
+async function checkSubscriberExists(apiKey: string, listId: string, email: string): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `https://api2.ecomailapp.cz/lists/${listId}/subscriber/${encodeURIComponent(email)}`,
+      {
+        method: 'GET',
+        headers: { key: apiKey },
+      },
+    )
+    return res.ok
+  } catch {
+    // If we can't check, treat as new to be safe (autoresponder will still fire)
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { email, name, selectedCamp, source } = body
 
-    // Validate
     if (!email || !EMAIL_REGEX.test(email)) {
       return NextResponse.json({ error: 'Neplatný email.' }, { status: 400 })
     }
@@ -37,27 +52,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Meno je povinné.' }, { status: 400 })
     }
 
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanName = name.trim()
+
     const payload = await getPayloadClient()
 
     // Save to Payload
-    const entry = await payload.create({
+    await payload.create({
       collection: 'giveaway-entries',
       data: {
-        email: email.trim().toLowerCase(),
-        name: name.trim(),
+        email: cleanEmail,
+        name: cleanName,
         selectedCamp: selectedCamp || 'Akýkoľvek Tábor',
         source: source || 'popup',
         syncedToEcomail: false,
       },
     })
 
-    // Attempt Ecomail sync — failure does NOT block response
+    // Ecomail sync — failure does NOT block the response
     try {
       const apiKey = process.env.ECOMAIL_API_KEY
       const listId = process.env.ECOMAIL_LIST_ID
 
       if (apiKey && listId) {
         const campTag = slugifyCamp(selectedCamp || 'akykolvek-tabor')
+
+        // Check if subscriber already exists in the list
+        const alreadyExists = await checkSubscriberExists(apiKey, listId, cleanEmail)
+
+        // New contacts get novy-kontakt tag to trigger the welcome sequence.
+        // Existing contacts only get the new camp + sutaz tags — no welcome sequence.
+        const tags = alreadyExists
+          ? [campTag, 'sutaz-2026']
+          : ['novy-kontakt', campTag, 'sutaz-2026']
 
         const ecomailRes = await fetch(
           `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,
@@ -69,21 +96,20 @@ export async function POST(req: NextRequest) {
             },
             body: JSON.stringify({
               subscriber_data: {
-                email: email.trim().toLowerCase(),
-                name: name.trim(),
-                tags: [source || 'popup', campTag],
+                email: cleanEmail,
+                name: cleanName,
+                tags,
               },
-              trigger_autoresponders: true,
+              trigger_autoresponders: !alreadyExists,
               update_existing: true,
             }),
           },
         )
 
         if (ecomailRes.ok) {
-          // Mark as synced
           const existing = await payload.find({
             collection: 'giveaway-entries',
-            where: { email: { equals: email.trim().toLowerCase() } },
+            where: { email: { equals: cleanEmail } },
             limit: 1,
           })
           if (existing.docs.length > 0) {
@@ -95,16 +121,16 @@ export async function POST(req: NextRequest) {
           }
         } else {
           const errText = await ecomailRes.text()
-          console.error('Ecomail sync failed:', ecomailRes.status, errText)
+          console.error('[giveaway] Ecomail sync failed:', ecomailRes.status, errText)
         }
       }
     } catch (ecomailErr) {
-      console.error('Ecomail error (non-blocking):', ecomailErr)
+      console.error('[giveaway] Ecomail error (non-blocking):', ecomailErr)
     }
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Giveaway API error:', err)
+    console.error('[giveaway] Error:', err)
     return NextResponse.json({ error: 'Interná chyba servera.' }, { status: 500 })
   }
 }

@@ -37,15 +37,6 @@ const HARDCODED_SECTION3: [Section3Block, Section3Block, Section3Block] = [
   },
 ]
 
-const HARDCODED_CENTERS: CenterData[] = [
-  { id: 'stred-europy-krahule',   name: 'Stred Európy Krahule',   price: 'od 165.00 €', image: '/images/Skoly%20v%20Prirode/krahule.png' },
-  { id: 'penzion-rohacan',        name: 'Penzión Roháčan',        price: 'od 185.00 €', image: '/images/Skoly%20v%20Prirode/penzionrohac.png' },
-  { id: 'penzion-sabina',         name: 'Penzión Sabina',         price: 'od 200.00 €', image: '/images/Skoly%20v%20Prirode/penzionsabina.png' },
-  { id: 'hotel-zuna',             name: 'Hotel Zuna',             price: 'od 195.00 €', image: '/images/Skoly%20v%20Prirode/hotelzuna.png' },
-  { id: 'hotel-martinske-hole',   name: 'Hotel Martinské Hole',   price: 'od 200.00 €', image: '/images/Skoly%20v%20Prirode/martinskehole.png' },
-  { id: 'horsky-hotel-minciar',   name: 'Horský Hotel Minciar',   price: 'od 195.00 €', image: '/images/Skoly%20v%20Prirode/minciar.png' },
-  { id: 'horsky-hotel-lomy',      name: 'Horský Hotel Lomy',      price: 'od 165.00 €', image: '/images/Skoly%20v%20Prirode/lomy.png' },
-]
 
 // ─── Helper: pull URL from a Payload media relation ──────────────────────────
 function mediaUrl(field: unknown): string | undefined {
@@ -64,7 +55,7 @@ export default async function SkolyVPrirodePage() {
     reviews: HARDCODED_REVIEWS,
     section3: HARDCODED_SECTION3,
     strediskaHeadline: 'Naše strediská na rok 2026',
-    centers: HARDCODED_CENTERS,
+    centers: [],
   }
 
   try {
@@ -101,19 +92,17 @@ export default async function SkolyVPrirodePage() {
     // ── Fetch strediska from Strediska collection ─────────────────────────────
     const strediskaResult = await payload.find({ collection: 'strediska', limit: 50, depth: 1 })
     if (strediskaResult.docs.length > 0) {
-      const payloadCenters: CenterData[] = strediskaResult.docs.map((doc: any) => {
-        const hardcoded = HARDCODED_CENTERS.find((c) => c.id === doc.slug)
+      data.centers = strediskaResult.docs.map((doc: any) => {
+        const galleryUrl = Array.isArray(doc.heroGallery)
+          ? mediaUrl(doc.heroGallery[0]?.photo)
+          : undefined
         return {
-          id:    doc.slug,
-          name:  doc.name  ?? hardcoded?.name  ?? '',
-          price: doc.price ?? hardcoded?.price ?? '',
-          image: mediaUrl(doc.cardImage) ?? hardcoded?.image ?? '',
+          id:    doc.slug  ?? '',
+          name:  doc.name  ?? '',
+          price: doc.price ?? '',
+          image: mediaUrl(doc.cardImage) ?? galleryUrl ?? '',
         }
       })
-      // Merge: Payload docs first, then any hardcoded centers not yet in Payload
-      const payloadSlugs = new Set(payloadCenters.map((c) => c.id))
-      const remainingHardcoded = HARDCODED_CENTERS.filter((c) => !payloadSlugs.has(c.id))
-      data.centers = [...payloadCenters, ...remainingHardcoded]
     }
   } catch {
     // Payload unavailable — use full hardcoded fallback (already set above)
