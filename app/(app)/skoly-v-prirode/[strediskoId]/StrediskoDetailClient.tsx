@@ -246,7 +246,7 @@ export default function StrediskoDetailClient({
             <div className="flex flex-col lg:flex-row gap-8 items-center">
               <div className="lg:w-[65%] w-full">
                 <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
-                  <LazyVideo src="/images/Videos/skolavprirode2-compressed.mp4" className="w-full h-full object-cover" />
+                  <LazyVideo src="/images/Videos/skolavprirode2.mp4" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="lg:w-1/2 w-full space-y-6">
