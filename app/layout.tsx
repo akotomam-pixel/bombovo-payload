@@ -33,14 +33,20 @@ export default function RootLayout({
         <Script id="gtm-datalayer-init" strategy="beforeInteractive">
           {`window.dataLayer = window.dataLayer || [];`}
         </Script>
-        {/* Ecomail web tracking */}
-        <Script src="//d70shl7vidtft.cloudfront.net/ecmtr-2.4.2.js" strategy="afterInteractive" />
+        {/* Ecomail web tracking — library loaded dynamically so ecotrack calls only
+            run inside onload, guaranteeing the library exists before use */}
         <Script id="ecomail-tracker" strategy="afterInteractive">
-          {`window.ecotrack('newTracker', 'cf', 'd2dpiwfhf3tz0r.cloudfront.net', {
-  appId: 'bombovo'
-});
-window.ecotrack('setUserIdFromLocation', 'ecmid');
-window.ecotrack('trackPageView');`}
+          {`(function() {
+  var s = document.createElement('script');
+  s.src = '//d70shl7vidtft.cloudfront.net/ecmtr-2.4.2.js';
+  s.async = true;
+  s.onload = function() {
+    window.ecotrack('newTracker', 'cf', 'd2dpiwfhf3tz0r.cloudfront.net', { appId: 'bombovo' });
+    window.ecotrack('setUserIdFromLocation', 'ecmid');
+    window.ecotrack('trackPageView');
+  };
+  document.head.appendChild(s);
+})();`}
         </Script>
         {/* Google Tag Manager */}
         <Script id="gtm-head" strategy="afterInteractive">
