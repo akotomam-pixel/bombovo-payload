@@ -1,0 +1,13 @@
+User-agent: *
+
+# Block private registration/application pages from search results
+Disallow: /prihlaska/
+Disallow: /prihlaska-svp/
+Disallow: /prihlaska-animator
+Disallow: /prihlaska-zdravotnik
+Disallow: /animatori/
+
+# Allow everything else
+Allow: /
+
+Sitemap: https://bombovo.sk/sitemap.xml
