@@ -46,6 +46,12 @@ function mediaUrl(field: unknown): string | undefined {
   return undefined
 }
 
+// ─── Helper: generate a Next.js-optimized image URL ──────────────────────────
+function thumbUrl(url: string | undefined, w = 640): string {
+  if (!url) return ''
+  return `/_next/image?url=${encodeURIComponent(url)}&w=${w}&q=75`
+}
+
 export default async function SkolyVPrirodePage() {
   let data: SkolyVPrirodPageData = {
     headline: 'Školy v prírode',
@@ -73,7 +79,7 @@ export default async function SkolyVPrirodePage() {
       data.reviews = global.reviews.map((r: any) => ({
         content: r.content ?? '',
         author:  r.author  ?? '',
-        photo:   mediaUrl(r.photo),
+        photo:   thumbUrl(mediaUrl(r.photo), 384),
       }))
     }
 
@@ -85,7 +91,7 @@ export default async function SkolyVPrirodePage() {
     const payloadSection3 = blocks.map(({ headlineKey, bodyKey, photoKey }, i) => ({
       headline: global[headlineKey] ?? HARDCODED_SECTION3[i].headline,
       body:     global[bodyKey]     ?? HARDCODED_SECTION3[i].body,
-      photo:    mediaUrl(global[photoKey]) ?? '',
+      photo:    thumbUrl(mediaUrl(global[photoKey]), 828),
     })) as [Section3Block, Section3Block, Section3Block]
     data.section3 = payloadSection3
 
@@ -100,7 +106,7 @@ export default async function SkolyVPrirodePage() {
           id:    doc.slug  ?? '',
           name:  doc.name  ?? '',
           price: doc.price ?? '',
-          image: mediaUrl(doc.cardImage) ?? galleryUrl ?? '',
+          image: thumbUrl(mediaUrl(doc.cardImage) ?? galleryUrl, 640),
         }
       })
     }
