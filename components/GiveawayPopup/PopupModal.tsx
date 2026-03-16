@@ -120,7 +120,7 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
               alt="Vyhraj tábor zadarmo"
               fill
               className="object-cover"
-              unoptimized={photoUrl.startsWith('http')}
+              priority
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
@@ -148,7 +148,7 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
               alt="Vyhraj tábor zadarmo"
               fill
               className="object-cover"
-              unoptimized={photoUrl.startsWith('http')}
+              priority
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">

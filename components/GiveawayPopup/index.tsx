@@ -34,6 +34,12 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
     // Already seen this session — don't show
     if (sessionStorage.getItem(SESSION_KEY)) return
 
+    // Pre-fetch the popup image in the background so it's cached when popup opens
+    if (content.photoUrl) {
+      const preload = new window.Image()
+      preload.src = `/_next/image?url=${encodeURIComponent(content.photoUrl)}&w=1200&q=80`
+    }
+
     // If user came from /sutaz, show popup quickly (1 second) and clear the flag
     const cameFromSutaz = sessionStorage.getItem(SUTAZ_FLAG)
     const delay = cameFromSutaz ? 1000 : delaySeconds * 1000
@@ -47,7 +53,7 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
     }, delay)
 
     return () => clearTimeout(timer)
-  }, [mounted, delaySeconds])
+  }, [mounted, delaySeconds, content.photoUrl])
 
   const handleClose = useCallback(() => {
     setVisible(false)
