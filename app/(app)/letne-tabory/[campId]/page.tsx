@@ -7,6 +7,11 @@ import { getCampDetails } from '@/data/camps'
 import type { CampDetailData } from '@/data/camps/types'
 import CampDetailClient from './CampDetailClient'
 
+// ─── Helper: generate a Next.js-optimized thumbnail URL ──────────────────────
+function thumbUrl(url: string): string {
+  return `/_next/image?url=${encodeURIComponent(url)}&w=384&q=75`
+}
+
 // Maps a Payload Camps document to the CampDetailData shape used by the template
 function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
   return {
@@ -21,7 +26,7 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
       const url = typeof item === 'object' && item !== null
         ? (typeof item.url === 'string' ? item.url : (typeof item.photo === 'object' ? item.photo?.url : null))
         : null
-      return url ? { src: url, thumb: url } : null
+      return url ? { src: url, thumb: thumbUrl(url) } : null
     }).filter(Boolean) as Array<{ src: string; thumb: string }>,
     bulletPoints: (doc.bulletPoints ?? []).map((b: { text: string }) => b.text),
 
@@ -63,7 +68,7 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
         const url = typeof item?.photo === 'object' && item.photo !== null
           ? item.photo.url
           : null
-        return url ? { src: url, thumb: url } : null
+        return url ? { src: url, thumb: thumbUrl(url) } : null
       }).filter(Boolean) as Array<{ src: string; thumb: string }>,
       mapCoordinates:
         doc.mapLat != null && doc.mapLng != null

@@ -55,6 +55,11 @@ function mediaUrl(field: unknown): string | undefined {
   return undefined
 }
 
+// ─── Helper: generate a Next.js-optimized thumbnail URL ──────────────────────
+function thumbUrl(url: string): string {
+  return `/_next/image?url=${encodeURIComponent(url)}&w=384&q=75`
+}
+
 // ─── Helper: map Payload doc to StrediskoDetailData ──────────────────────────
 function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): StrediskoDetailData {
   const extractItems = (arr: any[]): string[] =>
@@ -65,7 +70,7 @@ function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): Stre
       ? doc.heroGallery.map((_: any, i: number) => {
           const url = mediaUrl(_.photo)
           return url
-            ? { src: url, thumb: url }
+            ? { src: url, thumb: thumbUrl(url) }
             : { src: `https://picsum.photos/seed/${strediskoId}photo${i}/1200/800`, thumb: `https://picsum.photos/seed/${strediskoId}photo${i}/400/267` }
         })
       : Array.from({ length: 6 }, (_, i) => ({

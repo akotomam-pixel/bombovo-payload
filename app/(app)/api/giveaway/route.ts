@@ -80,11 +80,11 @@ export async function POST(req: NextRequest) {
         // Check if subscriber already exists in the list
         const alreadyExists = await checkSubscriberExists(apiKey, listId, cleanEmail)
 
-        // New contacts get novy-kontakt tag to trigger the welcome sequence.
-        // Existing contacts only get the new camp + sutaz tags — no welcome sequence.
+        // New contacts: fire welcome autoresponder, tag as novy-kontakt.
+        // Existing contacts: no autoresponder, add sutaz-2026 tag instead.
         const tags = alreadyExists
-          ? [campTag, 'sutaz-2026']
-          : ['novy-kontakt', campTag, 'sutaz-2026']
+          ? ['sutaz-2026', campTag]
+          : ['novy-kontakt', campTag]
 
         const ecomailRes = await fetch(
           `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,

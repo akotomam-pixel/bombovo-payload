@@ -210,7 +210,13 @@ export default function RegistrationClient({
         await fetch('/api/profitour/order/complete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_Objednavka, klic }),
+          body: JSON.stringify({
+            id_Objednavka,
+            klic,
+            email: formData.email,
+            name: formData.parentName,
+            campName,
+          }),
         });
       }
       // If profisTerminId is not set yet, the form still submits but without Profis
