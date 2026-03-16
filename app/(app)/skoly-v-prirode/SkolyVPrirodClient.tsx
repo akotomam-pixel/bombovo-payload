@@ -140,7 +140,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="w-full lg:w-[60%] flex items-center justify-center">
                 <div className="w-full relative">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
-                    <LazyVideo src="/images/Videos/skolyvprirode1.mp4" className="w-full h-full object-cover" />
+                    <LazyVideo src="/images/Videos/skolyvprirode1-compressed.mp4" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
