@@ -59,6 +59,14 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
     [],
   )
 
+  // Pre-fetch all gallery images at display size so clicking thumbnails is instant
+  useEffect(() => {
+    galleryImages.forEach((img) => {
+      const el = new window.Image()
+      el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [openStredisko, setOpenStredisko] = useState(false)
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import Image from 'next/image'
 import LightGallery from 'lightgallery/react'
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
@@ -67,6 +67,14 @@ export default function StrediskoDetailClient({
   const lgRef = useRef<any>(null)
 
   const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section3, programText, detaily, dates } = data
+
+  // Pre-fetch all gallery images at display size so clicking thumbnails is instant
+  useEffect(() => {
+    heroGallery.forEach((img) => {
+      const el = new window.Image()
+      el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalPhotos = heroGallery.length
 
