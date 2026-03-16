@@ -126,7 +126,7 @@ export default function StrediskoDetailClient({
                       style={{ minHeight: '400px' }}
                       onClick={() => lgRef.current?.openGallery(0)}
                     >
-                      <img src={heroGallery[0]?.src} alt="Foto 1" className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
+                      <img src={heroGallery[0]?.src ? `/_next/image?url=${encodeURIComponent(heroGallery[0].src)}&w=1200&q=80` : ''} alt="Foto 1" className="w-full h-full object-cover" style={{ minHeight: '400px' }} />
                     </div>
 
                     {/* Right: 4 smaller photos */}

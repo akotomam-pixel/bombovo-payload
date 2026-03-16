@@ -118,7 +118,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
                   <img
-                    src={galleryImages[mainImage].src}
+                    src={galleryImages[mainImage].src ? `/_next/image?url=${encodeURIComponent(galleryImages[mainImage].src)}&w=1200&q=80` : ''}
                     alt={`Foto ${mainImage + 1}`}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
@@ -231,7 +231,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   onClick={() => lgRef.current?.openGallery(mainImage)}
                 >
                   <img
-                    src={galleryImages[mainImage].src}
+                    src={galleryImages[mainImage].src ? `/_next/image?url=${encodeURIComponent(galleryImages[mainImage].src)}&w=1200&q=80` : ''}
                     alt={`Foto ${mainImage + 1}`}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
