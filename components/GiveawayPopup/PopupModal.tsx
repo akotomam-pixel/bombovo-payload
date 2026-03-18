@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import StepYesNo from './steps/StepYesNo'
 import StepNameCamp from './steps/StepNameCamp'
 import StepEmail from './steps/StepEmail'
@@ -115,12 +114,10 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
         {/* Photo — bottom 50% */}
         <div className="relative h-1/2 flex-shrink-0">
           {photoUrl ? (
-            <Image
-              src={photoUrl}
+            <img
+              src={`/_next/image?url=${encodeURIComponent(photoUrl)}&w=1200&q=80`}
               alt="Vyhraj tábor zadarmo"
-              fill
-              className="object-cover"
-              priority
+              className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
@@ -143,12 +140,10 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
         {/* Left panel — photo */}
         <div className="relative w-[48%] flex-shrink-0">
           {photoUrl ? (
-            <Image
-              src={photoUrl}
+            <img
+              src={`/_next/image?url=${encodeURIComponent(photoUrl)}&w=1200&q=80`}
               alt="Vyhraj tábor zadarmo"
-              fill
-              className="object-cover"
-              priority
+              className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
