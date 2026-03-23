@@ -12,6 +12,7 @@ import GiveawaySection from '@/components/GiveawaySection'
 import FAQ from '@/components/FAQ'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
+import { camps as fallbackCamps } from '@/lib/campsData'
 
 async function getHomepage() {
   try {
@@ -155,7 +156,11 @@ export default async function Home() {
         <GiveawaySection
           headline={hp?.giveawayHeadline ?? 'Vyhraj tábor zadarmo!'}
           subHeadline={hp?.giveawaySubHeadline ?? 'Vyplň svoje meno, email a vyber si tábor, ktorý by si chcel vyhrať, a si zapojený do súťaže.'}
-          giveawayCamps={hp?.giveawayCamps ?? []}
+          giveawayCamps={
+            (hp?.giveawayCamps as any[])?.length
+              ? hp!.giveawayCamps as any[]
+              : fallbackCamps.map(c => ({ camp: { name: c.name }, isVisible: true }))
+          }
         />
       </div>
 
