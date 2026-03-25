@@ -117,7 +117,7 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
             <img
               src={`/_next/image?url=${encodeURIComponent(photoUrl)}&w=1200&q=80`}
               alt="Vyhraj tábor zadarmo"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="object-cover w-full h-full"
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
@@ -143,7 +143,7 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
             <img
               src={`/_next/image?url=${encodeURIComponent(photoUrl)}&w=1200&q=80`}
               alt="Vyhraj tábor zadarmo"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="object-cover w-full h-full"
             />
           ) : (
             <div className="w-full h-full bg-bombovo-blue flex items-center justify-center">
