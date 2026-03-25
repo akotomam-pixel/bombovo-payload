@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import ReactDOM from 'react-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import PopupModal from './PopupModal'
 import type { PopupContent } from './PopupModal'
@@ -65,37 +64,27 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
   if (!mounted || pathname === '/sutaz') return null
 
   return ReactDOM.createPortal(
-    <AnimatePresence>
+    <>
       {visible && (
         <>
           {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+          <div
             onClick={handleClose}
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal */}
-          <motion.div
-            key="modal"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+          <div
             onClick={(e) => e.stopPropagation()}
             className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
           >
             <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
               <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>,
+    </>,
     document.body,
   )
 }

@@ -19,6 +19,7 @@
     "graphql": "^16.12.0",
     "lightgallery": "^2.9.0",
     "next": "^15.5.9",
+    "nextjs-toploader": "^3.9.17",
     "nodemailer": "^8.0.1",
     "payload": "^3.77.0",
     "react": "^18.3.1",

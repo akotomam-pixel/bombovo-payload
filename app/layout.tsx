@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { The_Girl_Next_Door } from 'next/font/google'
 import Script from 'next/script'
 import React from 'react'
+import NextTopLoader from 'nextjs-toploader'
 
 const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
@@ -67,6 +68,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
+        <NextTopLoader color="#F5A623" showSpinner={false} />
         {children}
       </body>
     </html>
