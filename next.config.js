@@ -23,19 +23,6 @@ const nextConfig = {
     ],
     minimumCacheTTL: 2678400,
   },
-  async headers() {
-    return [
-      {
-        // Strip Payload's Critical-CH header from all public routes so browsers
-        // don't make a second round-trip request on every cold visit.
-        source: '/((?!admin).*)',
-        headers: [
-          { key: 'Critical-CH', value: '' },
-          { key: 'Accept-CH', value: '' },
-        ],
-      },
-    ]
-  },
 }
 
 module.exports = withPayload(nextConfig)

@@ -67,30 +67,33 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
   return ReactDOM.createPortal(
     <AnimatePresence>
       {visible && (
-        <motion.div
-          key="backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          onClick={handleClose}
-          className="fixed inset-0 z-50 bg-black/60"
-        />
-      )}
-      {visible && (
-        <motion.div
-          key="modal"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.96 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          onClick={(e) => e.stopPropagation()}
-          className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-        >
-          <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
-            <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
-          </div>
-        </motion.div>
+        <>
+          {/* Backdrop */}
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleClose}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+          />
+
+          {/* Modal */}
+          <motion.div
+            key="modal"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+          >
+            <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
+              <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
+            </div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>,
     document.body,

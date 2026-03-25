@@ -191,12 +191,11 @@ export default function StrediskoDetailClient({
 
                   {/* CTA */}
                   <div>
-                    <button
-                      onClick={() => document.getElementById('terminy')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="w-full md:w-auto px-8 py-3 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200"
-                    >
-                      Pozri termíny
-                    </button>
+                    <a href="#terminy">
+                      <button className="w-full md:w-auto px-8 py-3 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
+                        Pozri termíny
+                      </button>
+                    </a>
                   </div>
                 </div>
               </div>

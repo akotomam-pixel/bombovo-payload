@@ -1,20 +1,12 @@
 import type { Metadata } from 'next'
-import { The_Girl_Next_Door, Poppins } from 'next/font/google'
+import { The_Girl_Next_Door } from 'next/font/google'
 import Script from 'next/script'
 import React from 'react'
-import NextTopLoader from 'nextjs-toploader'
 
 const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
   subsets: ['latin'],
   variable: '--font-amatic',
-  display: 'swap',
-})
-
-const poppins = Poppins({
-  weight: ['300', '400', '500', '600', '700', '800'],
-  subsets: ['latin'],
-  variable: '--font-poppins',
   display: 'swap',
 })
 
@@ -29,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="sk" className={`${theGirlNextDoor.variable} ${poppins.variable}`}>
+    <html lang="sk" className={theGirlNextDoor.variable}>
       <head>
         <Script
           id="cookieyes"
@@ -75,7 +67,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-        <NextTopLoader color="#F5A623" showSpinner={false} />
         {children}
       </body>
     </html>
