@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Stat {
   number: string
@@ -75,7 +76,7 @@ export default function HeroSection({ subHeadline, headline, stats }: HeroSectio
                     loop
                     muted
                     playsInline
-                    preload="auto"
+                    preload="metadata"
                     poster="/images/Videos/homepage-poster.jpg"
                   >
                     <source src="/images/Videos/homepage2.2.mp4" type="video/mp4" />
@@ -93,7 +94,7 @@ export default function HeroSection({ subHeadline, headline, stats }: HeroSectio
                 <div key={i} className="flex flex-col items-center text-center">
                   <div className="w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center mb-2">
                     {stat.icon?.url && (
-                      <img src={stat.icon.url} alt={stat.label} className="w-full h-full object-contain" />
+                      <Image src={stat.icon.url} alt={stat.label} width={64} height={64} className="w-full h-full object-contain" />
                     )}
                   </div>
                   <p className="text-sm lg:text-base font-bold text-bombovo-dark leading-tight mb-0.5">{stat.number}</p>

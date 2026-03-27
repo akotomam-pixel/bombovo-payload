@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 
 interface Review {
   reviewText: string
@@ -58,9 +59,11 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
               style={{ transform: 'rotate(4deg)', maxWidth: '300px' }}
             >
               {current.photo?.url && (
-                <img
+                <Image
                   src={current.photo.url}
                   alt={`Review ${currentReviewIndex + 1}`}
+                  width={250}
+                  height={320}
                   className="object-cover"
                   style={{ width: '250px', height: '320px' }}
                 />
@@ -123,12 +126,13 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                   style={{ left: '0%', bottom: '15%', transform: 'rotate(-6deg)', zIndex: 1 }}
                 >
                   <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                    <img
+                    <Image
                       src={reviews[0].photo.url}
                       alt="Review Photo 1"
+                      width={200}
+                      height={260}
                       className="object-cover"
                       style={{ width: '200px', height: '260px' }}
-                      loading="lazy"
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                       {reviews[0].badgeText || 'Letné Tábory 2025'}
@@ -142,12 +146,13 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                   style={{ left: '30%', top: '10%', transform: 'rotate(4deg)', zIndex: 2 }}
                 >
                   <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                    <img
+                    <Image
                       src={reviews[1].photo.url}
                       alt="Review Photo 2"
+                      width={200}
+                      height={260}
                       className="object-cover"
                       style={{ width: '200px', height: '260px' }}
-                      loading="lazy"
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                       {reviews[1].badgeText || 'Letné Tábory 2025'}
@@ -161,12 +166,13 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                   style={{ right: '5%', top: '0%', transform: 'rotate(-4deg)', zIndex: 3 }}
                 >
                   <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                    <img
+                    <Image
                       src={reviews[2].photo.url}
                       alt="Review Photo 3"
+                      width={200}
+                      height={260}
                       className="object-cover"
                       style={{ width: '200px', height: '260px' }}
-                      loading="lazy"
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
                       {reviews[2].badgeText || 'Letné Tábory 2025'}

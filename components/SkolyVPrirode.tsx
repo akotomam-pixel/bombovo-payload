@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Stredisko {
   id: string
@@ -44,10 +45,12 @@ export default function SkolyVPrirode({ headline, featuredSkoly }: SkolyVPrirode
               {/* Image */}
               <div className="h-64 relative overflow-hidden">
                 {stredisko._imageUrl && (
-                  <img
+                  <Image
                     src={stredisko._imageUrl}
                     alt={stredisko.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 )}
               </div>

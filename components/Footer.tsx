@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { FaFacebook, FaInstagram, FaEnvelope, FaPhone } from 'react-icons/fa'
 import FooterNewsletter from './FooterNewsletter'
 
@@ -158,11 +159,11 @@ export default function Footer() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
             <h2 className="text-2xl md:text-3xl font-bold text-white">Ďakujeme našim partnerom</h2>
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center bg-white overflow-hidden">
-                <img src="/images/partner1.png" alt="Partner 1" className="w-full h-full object-cover" />
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl relative bg-white overflow-hidden">
+                <Image src="/images/partner1.png" alt="Partner 1" fill className="object-cover" />
               </div>
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center bg-white overflow-hidden">
-                <img src="/images/partner2.png" alt="Partner 2" className="w-full h-full object-cover" />
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl relative bg-white overflow-hidden">
+                <Image src="/images/partner2.png" alt="Partner 2" fill className="object-cover" />
               </div>
             </div>
           </div>

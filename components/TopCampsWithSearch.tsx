@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
@@ -77,10 +78,12 @@ export default function TopCampsWithSearch({ headline, featuredCamps }: TopCamps
               <div key={camp.id} className="bg-white rounded-3xl shadow-lg overflow-hidden">
                 <div className="w-full aspect-[4/3] relative overflow-hidden">
                   {camp.cardImage?.url && (
-                    <img
+                    <Image
                       src={camp.cardImage.url}
                       alt={camp.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   )}
                 </div>

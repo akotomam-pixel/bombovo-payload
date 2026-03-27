@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Reason {
   headline: string
@@ -56,11 +57,12 @@ export default function FourReasons({ headline, reasons }: FourReasonsProps) {
                 <div className={`flex-1 w-full ${index % 2 === 0 ? 'md:order-3' : 'md:order-1'}`}>
                   <div className="relative rounded-3xl h-56 md:h-64 overflow-hidden shadow-lg">
                     {reason.photo?.url && (
-                      <img
+                      <Image
                         src={reason.photo.url}
                         alt={reason.headline}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
                       />
                     )}
                   </div>
