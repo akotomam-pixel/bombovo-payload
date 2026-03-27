@@ -101,7 +101,7 @@ export default function RegistrationClient({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const clearFieldError = (name: string) => {
     if (fieldErrors[name]) {
@@ -122,9 +122,9 @@ export default function RegistrationClient({
   };
 
   const validateFields = (): boolean => {
-    const errors: Record<string, boolean> = {};
+    const errors: Record<string, string> = {};
     const req = (field: string, value: string | boolean) => {
-      if (!value || (typeof value === 'string' && !value.trim())) errors[field] = true;
+      if (!value || (typeof value === 'string' && !value.trim())) errors[field] = 'Prosím vyplňte povinné polia.';
     };
     req('parentFirstName', formData.parentFirstName);
     req('parentLastName', formData.parentLastName);
@@ -305,6 +305,7 @@ export default function RegistrationClient({
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
       const isAgeError = msg.includes('nie je možné obsadiť') || msg.includes('Kalkulace.Warning') || msg.includes('vek') || msg.includes('věk');
+      const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       if (isAgeError) {
         if (formData.hasSecondChild && formData.birthDate2) {
           setBirthDate2Error(true);
@@ -313,6 +314,9 @@ export default function RegistrationClient({
           setBirthDateError(true);
           document.getElementById('birthDate')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+      } else if (isPhoneError) {
+        setFieldErrors({ phone: 'Zadali ste nesprávne číslo.' });
+        document.getElementById('field-phone')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         setSubmitError(msg);
       }
@@ -322,7 +326,7 @@ export default function RegistrationClient({
   };
 
   const ageErrorMsg = campAge
-    ? `Tento tábor je pre deti vo veku ${campAge}, prosím skontrolujte zadaný dátum narodenia dieťaťa.`
+    ? `Tento tábor je pre deti vo veku ${campAge} rokov, prosím skontrolujte zadaný dátum narodenia dieťaťa.`
     : 'Prosím skontrolujte zadaný dátum narodenia dieťaťa.';
 
   return (
@@ -428,7 +432,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.parentFirstName ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.parentFirstName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.parentFirstName && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.parentFirstName}</p>}
                     </div>
                     <div id="field-parentLastName">
                       <label className={`block font-semibold mb-2 ${fieldErrors.parentLastName ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -442,7 +446,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.parentLastName ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.parentLastName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.parentLastName && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.parentLastName}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-[2fr_1fr] gap-4">
@@ -458,7 +462,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.street ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.street && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.street && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.street}</p>}
                     </div>
                     <div id="field-streetNumber">
                       <label className={`block font-semibold mb-2 ${fieldErrors.streetNumber ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -472,7 +476,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.streetNumber ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.streetNumber && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.streetNumber && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.streetNumber}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -488,7 +492,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.city ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.city && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.city && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.city}</p>}
                     </div>
                     <div id="field-zip">
                       <label className={`block font-semibold mb-2 ${fieldErrors.zip ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -502,7 +506,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.zip ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.zip && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.zip && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.zip}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -518,7 +522,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.phone ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.phone && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.phone && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.phone}</p>}
                     </div>
                     <div id="field-email">
                       <label className={`block font-semibold mb-2 ${fieldErrors.email ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -532,7 +536,7 @@ export default function RegistrationClient({
                         required
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.email ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
-                      {fieldErrors.email && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.email && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.email}</p>}
                     </div>
                   </div>
                 </div>
@@ -556,7 +560,7 @@ export default function RegistrationClient({
                       required
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childFirstName ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childFirstName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childFirstName && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childFirstName}</p>}
                   </div>
                   <div id="field-childLastName">
                     <label className={`block font-semibold mb-2 ${fieldErrors.childLastName ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -570,7 +574,7 @@ export default function RegistrationClient({
                       required
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childLastName ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childLastName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childLastName && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childLastName}</p>}
                   </div>
                 </div>
                 <div id="field-birthDate" className="mb-4">
@@ -587,7 +591,7 @@ export default function RegistrationClient({
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
                   />
                   {fieldErrors.birthDate && !birthDateError && (
-                    <p className="mt-2 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>
+                    <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate}</p>
                   )}
                   {birthDateError && (
                     <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
@@ -606,7 +610,7 @@ export default function RegistrationClient({
                       required
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreet ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childStreet && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childStreet && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childStreet}</p>}
                   </div>
                   <div id="field-childStreetNumber">
                     <label className={`block font-semibold mb-2 ${fieldErrors.childStreetNumber ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -620,7 +624,7 @@ export default function RegistrationClient({
                       required
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreetNumber ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childStreetNumber && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childStreetNumber && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childStreetNumber}</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -636,7 +640,7 @@ export default function RegistrationClient({
                       required
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childCity ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childCity && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childCity && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childCity}</p>}
                   </div>
                   <div id="field-childZip">
                     <label className={`block font-semibold mb-2 ${fieldErrors.childZip ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -651,7 +655,7 @@ export default function RegistrationClient({
                       placeholder="napr. 81101"
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childZip ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.childZip && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.childZip && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childZip}</p>}
                   </div>
                 </div>
               </div>
@@ -697,7 +701,7 @@ export default function RegistrationClient({
                       rows={3}
                       className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.intoleranceDetails ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
-                    {fieldErrors.intoleranceDetails && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                    {fieldErrors.intoleranceDetails && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.intoleranceDetails}</p>}
                   </div>
                 )}
               </div>
@@ -738,7 +742,7 @@ export default function RegistrationClient({
                   <option value="L">L</option>
                   <option value="XL">XL</option>
                 </select>
-                {fieldErrors.tshirtSize && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                {fieldErrors.tshirtSize && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.tshirtSize}</p>}
               </div>
 
               {/* Pridať druhé dieťa */}
@@ -782,7 +786,7 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childFirstName2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childFirstName2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childFirstName2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childFirstName2}</p>}
                       </div>
                       <div id="field-childLastName2">
                         <label className={`block font-semibold mb-2 ${fieldErrors.childLastName2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -796,7 +800,7 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childLastName2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childLastName2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childLastName2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childLastName2}</p>}
                       </div>
                     </div>
                     <div id="field-birthDate2">
@@ -813,7 +817,7 @@ export default function RegistrationClient({
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
                       {fieldErrors.birthDate2 && !birthDate2Error && (
-                        <p className="mt-2 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>
+                        <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate2}</p>
                       )}
                       {birthDate2Error && (
                         <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
@@ -832,7 +836,7 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreet2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childStreet2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childStreet2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childStreet2}</p>}
                       </div>
                       <div id="field-childStreetNumber2">
                         <label className={`block font-semibold mb-2 ${fieldErrors.childStreetNumber2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -846,7 +850,7 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreetNumber2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childStreetNumber2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childStreetNumber2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childStreetNumber2}</p>}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -862,7 +866,7 @@ export default function RegistrationClient({
                           required={formData.hasSecondChild}
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childCity2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childCity2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childCity2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childCity2}</p>}
                       </div>
                       <div id="field-childZip2">
                         <label className={`block font-semibold mb-2 ${fieldErrors.childZip2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
@@ -877,7 +881,7 @@ export default function RegistrationClient({
                           placeholder="napr. 81101"
                           className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childZip2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
-                        {fieldErrors.childZip2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                        {fieldErrors.childZip2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.childZip2}</p>}
                       </div>
                     </div>
 
@@ -921,7 +925,7 @@ export default function RegistrationClient({
                             rows={3}
                             className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.intoleranceDetails2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                           />
-                          {fieldErrors.intoleranceDetails2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                          {fieldErrors.intoleranceDetails2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.intoleranceDetails2}</p>}
                         </div>
                       )}
                     </div>
@@ -960,7 +964,7 @@ export default function RegistrationClient({
                         <option value="L">L</option>
                         <option value="XL">XL</option>
                       </select>
-                      {fieldErrors.tshirtSize2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                      {fieldErrors.tshirtSize2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.tshirtSize2}</p>}
                     </div>
                   </div>
                 )}
@@ -1058,7 +1062,7 @@ export default function RegistrationClient({
                     Súhlasím so spracovaním osobných údajov a so všetkými podmienkami platnými na rok 2026 *
                   </span>
                 </label>
-                {fieldErrors.gdprConsent && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
+                {fieldErrors.gdprConsent && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.gdprConsent}</p>}
               </div>
 
               {/* Platba */}
