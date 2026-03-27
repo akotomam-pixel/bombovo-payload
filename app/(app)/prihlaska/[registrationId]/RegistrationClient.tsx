@@ -38,15 +38,18 @@ export default function RegistrationClient({
 }: Props) {
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
-    parentName: "",
+    parentFirstName: "",
+    parentLastName: "",
     street: "",
+    streetNumber: "",
     city: "",
     zip: "",
     phone: "",
     email: "",
 
     // Informácie dieťaťa
-    childName: "",
+    childFirstName: "",
+    childLastName: "",
     birthDate: "",
 
     // Intolerancie
@@ -60,14 +63,17 @@ export default function RegistrationClient({
 
     // Adresa dieťaťa 1
     childStreet: "",
+    childStreetNumber: "",
     childCity: "",
     childZip: "",
 
     // Druhé dieťa
     hasSecondChild: false,
-    childName2: "",
+    childFirstName2: "",
+    childLastName2: "",
     birthDate2: "",
     childStreet2: "",
+    childStreetNumber2: "",
     childCity2: "",
     childZip2: "",
     hasIntolerance2: "nie",
@@ -115,17 +121,17 @@ export default function RegistrationClient({
         const cestujici = [
           {
             datumNarozeni: formData.birthDate,
-            jmeno: formData.childName.split(/\s+/)[0] ?? formData.childName,
-            prijmeni: formData.childName.split(/\s+/).slice(1).join(' ') || '-',
-            ulice: formData.childStreet,
+            jmeno: formData.childFirstName,
+            prijmeni: formData.childLastName || '-',
+            ulice: [formData.childStreet, formData.childStreetNumber].filter(Boolean).join(' '),
             psc: formData.childZip,
           },
           ...(formData.hasSecondChild && formData.birthDate2
             ? [{
                 datumNarozeni: formData.birthDate2,
-                jmeno: formData.childName2.split(/\s+/)[0] ?? formData.childName2,
-                prijmeni: formData.childName2.split(/\s+/).slice(1).join(' ') || '-',
-                ulice: formData.childStreet2,
+                jmeno: formData.childFirstName2,
+                prijmeni: formData.childLastName2 || '-',
+                ulice: [formData.childStreet2, formData.childStreetNumber2].filter(Boolean).join(' '),
                 psc: formData.childZip2,
               }]
             : []),
@@ -133,10 +139,10 @@ export default function RegistrationClient({
 
         // ── Build notes string (child names + all extra fields Profis can't store) ──
         const extras = [
-          `Dieťa 1: ${formData.childName}`,
-          formData.childStreet ? `Adresa dieťaťa 1: ${formData.childStreet}, ${formData.childCity} ${formData.childZip}` : '',
-          formData.hasSecondChild && formData.childName2 ? `Dieťa 2: ${formData.childName2}` : '',
-          formData.hasSecondChild && formData.childStreet2 ? `Adresa dieťaťa 2: ${formData.childStreet2}, ${formData.childCity2} ${formData.childZip2}` : '',
+          `Dieťa 1: ${formData.childFirstName} ${formData.childLastName}`.trim(),
+          formData.childStreet ? `Adresa dieťaťa 1: ${[formData.childStreet, formData.childStreetNumber].filter(Boolean).join(' ')}, ${formData.childCity} ${formData.childZip}` : '',
+          formData.hasSecondChild && (formData.childFirstName2 || formData.childLastName2) ? `Dieťa 2: ${formData.childFirstName2} ${formData.childLastName2}`.trim() : '',
+          formData.hasSecondChild && formData.childStreet2 ? `Adresa dieťaťa 2: ${[formData.childStreet2, formData.childStreetNumber2].filter(Boolean).join(' ')}, ${formData.childCity2} ${formData.childZip2}` : '',
           formData.tshirtSize ? `Tričko: ${formData.tshirtSize}` : '',
           formData.hasSecondChild && formData.tshirtSize2 ? `Tričko 2: ${formData.tshirtSize2}` : '',
           formData.roomWith ? `Ubytovať s: ${formData.roomWith}` : '',
@@ -185,11 +191,11 @@ export default function RegistrationClient({
             id_SkupinaSlevaKombinace,
             svozTamId,
             svozZpetId,
-            jmeno: formData.parentName.split(/\s+/)[0] ?? formData.parentName,
-            prijmeni: formData.parentName.split(/\s+/).slice(1).join(' ') || '-',
+            jmeno: formData.parentFirstName,
+            prijmeni: formData.parentLastName || '-',
             email: formData.email,
             telefon: formData.phone,
-            ulice: formData.street,
+            ulice: [formData.street, formData.streetNumber].filter(Boolean).join(' '),
             mesto: formData.city,
             psc: formData.zip,
             cestujici,
@@ -214,7 +220,7 @@ export default function RegistrationClient({
             id_Objednavka,
             klic,
             email: formData.email,
-            name: formData.parentName,
+            name: `${formData.parentFirstName} ${formData.parentLastName}`.trim(),
             campName,
           }),
         });
@@ -336,31 +342,61 @@ export default function RegistrationClient({
                   Informácie Zákonného Zástupcu
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
-                      Meno a Priezvisko *
-                    </label>
-                    <input
-                      type="text"
-                      name="parentName"
-                      value={formData.parentName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-bombovo-dark font-semibold mb-2">
+                        Meno *
+                      </label>
+                      <input
+                        type="text"
+                        name="parentFirstName"
+                        value={formData.parentFirstName}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-bombovo-dark font-semibold mb-2">
+                        Priezvisko *
+                      </label>
+                      <input
+                        type="text"
+                        name="parentLastName"
+                        value={formData.parentLastName}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
-                      Ulica a číslo domu *
-                    </label>
-                    <input
-                      type="text"
-                      name="street"
-                      value={formData.street}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
-                    />
+                  <div className="grid grid-cols-[2fr_1fr] gap-4">
+                    <div>
+                      <label className="block text-bombovo-dark font-semibold mb-2">
+                        Ulica *
+                      </label>
+                      <input
+                        type="text"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-bombovo-dark font-semibold mb-2">
+                        Číslo domu *
+                      </label>
+                      <input
+                        type="text"
+                        name="streetNumber"
+                        value={formData.streetNumber}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      />
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -429,12 +465,12 @@ export default function RegistrationClient({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
-                      Meno a Priezvisko Dieťaťa *
+                      Meno Dieťaťa *
                     </label>
                     <input
                       type="text"
-                      name="childName"
-                      value={formData.childName}
+                      name="childFirstName"
+                      value={formData.childFirstName}
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
@@ -442,12 +478,12 @@ export default function RegistrationClient({
                   </div>
                   <div>
                     <label className="block text-bombovo-dark font-semibold mb-2">
-                      Dátum Narodenia *
+                      Priezvisko Dieťaťa *
                     </label>
                     <input
-                      type="date"
-                      name="birthDate"
-                      value={formData.birthDate}
+                      type="text"
+                      name="childLastName"
+                      value={formData.childLastName}
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
@@ -456,17 +492,44 @@ export default function RegistrationClient({
                 </div>
                 <div className="mb-4">
                   <label className="block text-bombovo-dark font-semibold mb-2">
-                    Ulica a číslo domu dieťaťa *
+                    Dátum Narodenia *
                   </label>
                   <input
-                    type="text"
-                    name="childStreet"
-                    value={formData.childStreet}
+                    type="date"
+                    name="birthDate"
+                    value={formData.birthDate}
                     onChange={handleInputChange}
                     required
-                    placeholder="napr. Hlavná 15"
                     className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                   />
+                </div>
+                <div className="grid grid-cols-[2fr_1fr] gap-4 mb-4">
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Ulica dieťaťa *
+                    </label>
+                    <input
+                      type="text"
+                      name="childStreet"
+                      value={formData.childStreet}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-bombovo-dark font-semibold mb-2">
+                      Číslo domu *
+                    </label>
+                    <input
+                      type="text"
+                      name="childStreetNumber"
+                      value={formData.childStreetNumber}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -613,12 +676,12 @@ export default function RegistrationClient({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-bombovo-dark font-semibold mb-2">
-                          Meno a Priezvisko Dieťaťa *
+                          Meno Dieťaťa *
                         </label>
                         <input
                           type="text"
-                          name="childName2"
-                          value={formData.childName2}
+                          name="childFirstName2"
+                          value={formData.childFirstName2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
                           className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
@@ -626,12 +689,12 @@ export default function RegistrationClient({
                       </div>
                       <div>
                         <label className="block text-bombovo-dark font-semibold mb-2">
-                          Dátum Narodenia *
+                          Priezvisko Dieťaťa *
                         </label>
                         <input
-                          type="date"
-                          name="birthDate2"
-                          value={formData.birthDate2}
+                          type="text"
+                          name="childLastName2"
+                          value={formData.childLastName2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
                           className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
@@ -640,17 +703,44 @@ export default function RegistrationClient({
                     </div>
                     <div>
                       <label className="block text-bombovo-dark font-semibold mb-2">
-                        Ulica a číslo domu dieťaťa *
+                        Dátum Narodenia *
                       </label>
                       <input
-                        type="text"
-                        name="childStreet2"
-                        value={formData.childStreet2}
+                        type="date"
+                        name="birthDate2"
+                        value={formData.birthDate2}
                         onChange={handleInputChange}
                         required={formData.hasSecondChild}
-                        placeholder="napr. Hlavná 15"
                         className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
                       />
+                    </div>
+                    <div className="grid grid-cols-[2fr_1fr] gap-4">
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Ulica dieťaťa *
+                        </label>
+                        <input
+                          type="text"
+                          name="childStreet2"
+                          value={formData.childStreet2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-bombovo-dark font-semibold mb-2">
+                          Číslo domu *
+                        </label>
+                        <input
+                          type="text"
+                          name="childStreetNumber2"
+                          value={formData.childStreetNumber2}
+                          onChange={handleInputChange}
+                          required={formData.hasSecondChild}
+                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
