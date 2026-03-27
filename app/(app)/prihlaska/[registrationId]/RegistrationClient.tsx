@@ -82,7 +82,6 @@ export default function RegistrationClient({
     tshirtSize2: "",
 
     // Checkboxy
-    employerContribution: false,
     insurance: false,
     newsletter: false,
     photoConsent: "ano",
@@ -149,7 +148,6 @@ export default function RegistrationClient({
           formData.hasIntolerance === 'ano' && formData.intoleranceDetails ? `Intolerancia: ${formData.intoleranceDetails}` : '',
           formData.hasSecondChild && formData.hasIntolerance2 === 'ano' && formData.intoleranceDetails2 ? `Intolerancia 2: ${formData.intoleranceDetails2}` : '',
           formData.hasSecondChild && formData.roomWith2 ? `Ubytovať s 2: ${formData.roomWith2}` : '',
-          formData.employerContribution ? 'Príspevok od zamestnávateľa: áno' : '',
           formData.insurance ? 'Poistenie ECP: áno' : '',
           `Platba: ${formData.paymentMethod === 'zaloha' ? 'záloha 50€' : 'celá suma'}`,
           formData.additionalInfo ? `Poznámka: ${formData.additionalInfo}` : '',
@@ -872,23 +870,6 @@ export default function RegistrationClient({
 
               {/* Checkboxy */}
               <div className="mb-8 space-y-4">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="employerContribution"
-                    checked={formData.employerContribution}
-                    onChange={handleInputChange}
-                    className="w-5 h-5 mt-1 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
-                  />
-                  <div>
-                    <span className="text-bombovo-dark font-semibold">
-                      Mám záujem využiť príspevok na rekreáciu od zamestnávateľa
-                    </span>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Faktúra Vám bude zaslaná po realizácii tábora.
-                    </p>
-                  </div>
-                </label>
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
