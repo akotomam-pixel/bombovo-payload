@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useMemo, useEffect } from 'react'
+import LazyVideo from '@/components/LazyVideo'
 import Image from 'next/image'
 import LightGallery from 'lightgallery/react'
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
@@ -253,9 +254,7 @@ export default function StrediskoDetailClient({
             <div className="flex flex-col lg:flex-row gap-8 items-center">
               <div className="lg:w-[65%] w-full">
                 <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
-                  <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover">
-                    <source src="/images/Videos/skolavprirode2.mp4" type="video/mp4" />
-                  </video>
+                  <LazyVideo src="/images/Videos/skolavprirode2.mp4" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="lg:w-1/2 w-full space-y-6">
