@@ -101,11 +101,19 @@ export default function RegistrationClient({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+
+  const clearFieldError = (name: string) => {
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => { const next = { ...prev }; delete next[name]; return next; });
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
+    clearFieldError(name);
     if (type === "checkbox") {
       setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
     } else {
@@ -113,11 +121,56 @@ export default function RegistrationClient({
     }
   };
 
+  const validateFields = (): boolean => {
+    const errors: Record<string, boolean> = {};
+    const req = (field: string, value: string | boolean) => {
+      if (!value || (typeof value === 'string' && !value.trim())) errors[field] = true;
+    };
+    req('parentFirstName', formData.parentFirstName);
+    req('parentLastName', formData.parentLastName);
+    req('street', formData.street);
+    req('streetNumber', formData.streetNumber);
+    req('city', formData.city);
+    req('zip', formData.zip);
+    req('phone', formData.phone);
+    req('email', formData.email);
+    req('childFirstName', formData.childFirstName);
+    req('childLastName', formData.childLastName);
+    req('birthDate', formData.birthDate);
+    req('childStreet', formData.childStreet);
+    req('childStreetNumber', formData.childStreetNumber);
+    req('childCity', formData.childCity);
+    req('childZip', formData.childZip);
+    if (formData.hasIntolerance === 'ano') req('intoleranceDetails', formData.intoleranceDetails);
+    req('tshirtSize', formData.tshirtSize);
+    req('gdprConsent', formData.gdprConsent);
+    if (formData.hasSecondChild) {
+      req('childFirstName2', formData.childFirstName2);
+      req('childLastName2', formData.childLastName2);
+      req('birthDate2', formData.birthDate2);
+      req('childStreet2', formData.childStreet2);
+      req('childStreetNumber2', formData.childStreetNumber2);
+      req('childCity2', formData.childCity2);
+      req('childZip2', formData.childZip2);
+      if (formData.hasIntolerance2 === 'ano') req('intoleranceDetails2', formData.intoleranceDetails2);
+      req('tshirtSize2', formData.tshirtSize2);
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstKey = Object.keys(errors)[0];
+      const el = document.getElementById(`field-${firstKey}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
     setBirthDateError(false);
     setBirthDate2Error(false);
+    if (!validateFields()) return;
     setIsSubmitting(true);
 
     try {
@@ -353,6 +406,7 @@ export default function RegistrationClient({
           ) : (
             <form
               onSubmit={handleSubmit}
+              noValidate
               className="bg-white rounded-3xl border-4 border-bombovo-blue p-6 md:p-8"
             >
               {/* Informácie Zákonného Zástupcu */}
@@ -362,8 +416,8 @@ export default function RegistrationClient({
                 </h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-parentFirstName">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.parentFirstName ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Meno *
                       </label>
                       <input
@@ -372,11 +426,12 @@ export default function RegistrationClient({
                         value={formData.parentFirstName}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.parentFirstName ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.parentFirstName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-parentLastName">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.parentLastName ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Priezvisko *
                       </label>
                       <input
@@ -385,13 +440,14 @@ export default function RegistrationClient({
                         value={formData.parentLastName}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.parentLastName ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.parentLastName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-[2fr_1fr] gap-4">
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-street">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.street ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Ulica *
                       </label>
                       <input
@@ -400,11 +456,12 @@ export default function RegistrationClient({
                         value={formData.street}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.street ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.street && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-streetNumber">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.streetNumber ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Číslo domu *
                       </label>
                       <input
@@ -413,13 +470,14 @@ export default function RegistrationClient({
                         value={formData.streetNumber}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.streetNumber ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.streetNumber && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-city">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.city ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Mesto *
                       </label>
                       <input
@@ -428,11 +486,12 @@ export default function RegistrationClient({
                         value={formData.city}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.city ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.city && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-zip">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.zip ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         PSČ *
                       </label>
                       <input
@@ -441,13 +500,14 @@ export default function RegistrationClient({
                         value={formData.zip}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.zip ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.zip && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-phone">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.phone ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Telefón *
                       </label>
                       <input
@@ -456,11 +516,12 @@ export default function RegistrationClient({
                         value={formData.phone}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.phone ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.phone && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-email">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.email ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Email *
                       </label>
                       <input
@@ -469,8 +530,9 @@ export default function RegistrationClient({
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.email ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.email && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
                   </div>
                 </div>
@@ -482,8 +544,8 @@ export default function RegistrationClient({
                   Informácie Dieťaťa
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childFirstName">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childFirstName ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       Meno Dieťaťa *
                     </label>
                     <input
@@ -492,11 +554,12 @@ export default function RegistrationClient({
                       value={formData.childFirstName}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childFirstName ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childFirstName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childLastName">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childLastName ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       Priezvisko Dieťaťa *
                     </label>
                     <input
@@ -505,12 +568,13 @@ export default function RegistrationClient({
                       value={formData.childLastName}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childLastName ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childLastName && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
                 </div>
-                <div className="mb-4">
-                  <label className={`block font-semibold mb-2 ${birthDateError ? 'text-red-600' : 'text-bombovo-dark'}`}>
+                <div id="field-birthDate" className="mb-4">
+                  <label className={`block font-semibold mb-2 ${birthDateError || fieldErrors.birthDate ? 'text-red-600' : 'text-bombovo-dark'}`}>
                     Dátum Narodenia *
                   </label>
                   <input
@@ -520,15 +584,18 @@ export default function RegistrationClient({
                     value={formData.birthDate}
                     onChange={(e) => { setBirthDateError(false); handleInputChange(e); }}
                     required
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError ? 'border-red-500' : 'border-bombovo-blue'}`}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
                   />
+                  {fieldErrors.birthDate && !birthDateError && (
+                    <p className="mt-2 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>
+                  )}
                   {birthDateError && (
                     <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
                   )}
                 </div>
                 <div className="grid grid-cols-[2fr_1fr] gap-4 mb-4">
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childStreet">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childStreet ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       Ulica dieťaťa *
                     </label>
                     <input
@@ -537,11 +604,12 @@ export default function RegistrationClient({
                       value={formData.childStreet}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreet ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childStreet && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childStreetNumber">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childStreetNumber ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       Číslo domu *
                     </label>
                     <input
@@ -550,13 +618,14 @@ export default function RegistrationClient({
                       value={formData.childStreetNumber}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreetNumber ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childStreetNumber && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childCity">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childCity ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       Mesto *
                     </label>
                     <input
@@ -565,11 +634,12 @@ export default function RegistrationClient({
                       value={formData.childCity}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childCity ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childCity && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
-                  <div>
-                    <label className="block text-bombovo-dark font-semibold mb-2">
+                  <div id="field-childZip">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.childZip ? 'text-red-600' : 'text-bombovo-dark'}`}>
                       PSČ *
                     </label>
                     <input
@@ -579,8 +649,9 @@ export default function RegistrationClient({
                       onChange={handleInputChange}
                       required
                       placeholder="napr. 81101"
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childZip ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.childZip && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
                 </div>
               </div>
@@ -615,17 +686,18 @@ export default function RegistrationClient({
                   </label>
                 </div>
                 {formData.hasIntolerance === "ano" && (
-                  <div className="mt-4">
-                    <label className="block text-bombovo-dark font-semibold mb-2">
-                      Prosím špecifikujte špeciálnu stravu dieťaťa
+                  <div id="field-intoleranceDetails" className="mt-4">
+                    <label className={`block font-semibold mb-2 ${fieldErrors.intoleranceDetails ? 'text-red-600' : 'text-bombovo-dark'}`}>
+                      Prosím špecifikujte špeciálnu stravu dieťaťa *
                     </label>
                     <textarea
                       name="intoleranceDetails"
                       value={formData.intoleranceDetails}
                       onChange={handleInputChange}
                       rows={3}
-                      className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.intoleranceDetails ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
+                    {fieldErrors.intoleranceDetails && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                   </div>
                 )}
               </div>
@@ -646,8 +718,8 @@ export default function RegistrationClient({
               </div>
 
               {/* Veľkosť trička */}
-              <div className="mb-8">
-                <label className="block text-bombovo-dark font-semibold mb-2">
+              <div id="field-tshirtSize" className="mb-8">
+                <label className={`block font-semibold mb-2 ${fieldErrors.tshirtSize ? 'text-red-600' : 'text-bombovo-dark'}`}>
                   Vyberte veľkosť trička Bombovo *
                 </label>
                 <select
@@ -655,7 +727,7 @@ export default function RegistrationClient({
                   value={formData.tshirtSize}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.tshirtSize ? 'border-red-500' : 'border-bombovo-blue'}`}
                 >
                   <option value="">Zvoľte veľkosť</option>
                   <option value="122">122 (7-8 rokov)</option>
@@ -666,6 +738,7 @@ export default function RegistrationClient({
                   <option value="L">L</option>
                   <option value="XL">XL</option>
                 </select>
+                {fieldErrors.tshirtSize && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
               </div>
 
               {/* Pridať druhé dieťa */}
@@ -697,8 +770,8 @@ export default function RegistrationClient({
                       Informácie 2. Dieťaťa
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childFirstName2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childFirstName2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           Meno Dieťaťa *
                         </label>
                         <input
@@ -707,11 +780,12 @@ export default function RegistrationClient({
                           value={formData.childFirstName2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childFirstName2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childFirstName2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childLastName2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childLastName2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           Priezvisko Dieťaťa *
                         </label>
                         <input
@@ -720,12 +794,13 @@ export default function RegistrationClient({
                           value={formData.childLastName2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childLastName2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childLastName2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
                     </div>
-                    <div>
-                      <label className={`block font-semibold mb-2 ${birthDate2Error ? 'text-red-600' : 'text-bombovo-dark'}`}>
+                    <div id="field-birthDate2">
+                      <label className={`block font-semibold mb-2 ${birthDate2Error || fieldErrors.birthDate2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Dátum Narodenia *
                       </label>
                       <input
@@ -735,15 +810,18 @@ export default function RegistrationClient({
                         value={formData.birthDate2}
                         onChange={(e) => { setBirthDate2Error(false); handleInputChange(e); }}
                         required={formData.hasSecondChild}
-                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error ? 'border-red-500' : 'border-bombovo-blue'}`}
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {fieldErrors.birthDate2 && !birthDate2Error && (
+                        <p className="mt-2 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>
+                      )}
                       {birthDate2Error && (
                         <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
                       )}
                     </div>
                     <div className="grid grid-cols-[2fr_1fr] gap-4">
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childStreet2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childStreet2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           Ulica dieťaťa *
                         </label>
                         <input
@@ -752,11 +830,12 @@ export default function RegistrationClient({
                           value={formData.childStreet2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreet2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childStreet2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childStreetNumber2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childStreetNumber2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           Číslo domu *
                         </label>
                         <input
@@ -765,13 +844,14 @@ export default function RegistrationClient({
                           value={formData.childStreetNumber2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childStreetNumber2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childStreetNumber2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childCity2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childCity2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           Mesto *
                         </label>
                         <input
@@ -780,11 +860,12 @@ export default function RegistrationClient({
                           value={formData.childCity2}
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childCity2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childCity2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
-                      <div>
-                        <label className="block text-bombovo-dark font-semibold mb-2">
+                      <div id="field-childZip2">
+                        <label className={`block font-semibold mb-2 ${fieldErrors.childZip2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                           PSČ *
                         </label>
                         <input
@@ -794,8 +875,9 @@ export default function RegistrationClient({
                           onChange={handleInputChange}
                           required={formData.hasSecondChild}
                           placeholder="napr. 81101"
-                          className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                          className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.childZip2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
+                        {fieldErrors.childZip2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                       </div>
                     </div>
 
@@ -828,17 +910,18 @@ export default function RegistrationClient({
                         </label>
                       </div>
                       {formData.hasIntolerance2 === "ano" && (
-                        <div className="mt-4">
-                          <label className="block text-bombovo-dark font-semibold mb-2">
-                            Prosím špecifikujte špeciálnu stravu dieťaťa
+                        <div id="field-intoleranceDetails2" className="mt-4">
+                          <label className={`block font-semibold mb-2 ${fieldErrors.intoleranceDetails2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
+                            Prosím špecifikujte špeciálnu stravu dieťaťa *
                           </label>
                           <textarea
                             name="intoleranceDetails2"
                             value={formData.intoleranceDetails2}
                             onChange={handleInputChange}
                             rows={3}
-                            className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.intoleranceDetails2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                           />
+                          {fieldErrors.intoleranceDetails2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                         </div>
                       )}
                     </div>
@@ -857,8 +940,8 @@ export default function RegistrationClient({
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                    <div id="field-tshirtSize2">
+                      <label className={`block font-semibold mb-2 ${fieldErrors.tshirtSize2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Vyberte veľkosť trička Bombovo *
                       </label>
                       <select
@@ -866,7 +949,7 @@ export default function RegistrationClient({
                         value={formData.tshirtSize2}
                         onChange={handleInputChange}
                         required={formData.hasSecondChild}
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.tshirtSize2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                       >
                         <option value="">Zvoľte veľkosť</option>
                         <option value="122">122 (7-8 rokov)</option>
@@ -877,6 +960,7 @@ export default function RegistrationClient({
                         <option value="L">L</option>
                         <option value="XL">XL</option>
                       </select>
+                      {fieldErrors.tshirtSize2 && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
                     </div>
                   </div>
                 )}
@@ -960,7 +1044,7 @@ export default function RegistrationClient({
               </div>
 
               {/* GDPR */}
-              <div className="mb-8">
+              <div id="field-gdprConsent" className="mb-8">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -970,10 +1054,11 @@ export default function RegistrationClient({
                     required
                     className="w-5 h-5 mt-1 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
                   />
-                  <span className="text-bombovo-dark font-semibold">
+                  <span className={`font-semibold ${fieldErrors.gdprConsent ? 'text-red-600' : 'text-bombovo-dark'}`}>
                     Súhlasím so spracovaním osobných údajov a so všetkými podmienkami platnými na rok 2026 *
                   </span>
                 </label>
+                {fieldErrors.gdprConsent && <p className="mt-1 text-sm text-red-600 font-medium">Prosím vyplňte povinné polia.</p>}
               </div>
 
               {/* Platba */}
