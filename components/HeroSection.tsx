@@ -76,7 +76,7 @@ export default function HeroSection({ subHeadline, headline, stats }: HeroSectio
                     loop
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="auto"
                     poster="/images/Videos/homepage-poster.jpg"
                   >
                     <source src="/images/Videos/homepage2.2.mp4" type="video/mp4" />

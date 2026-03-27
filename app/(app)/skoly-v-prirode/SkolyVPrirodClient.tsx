@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import LazyVideo from '@/components/LazyVideo'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -140,7 +139,9 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="w-full lg:w-[60%] flex items-center justify-center">
                 <div className="w-full relative">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
-                    <LazyVideo src="/images/Videos/skolyvprirode1.mp4" className="w-full h-full object-cover" />
+                    <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover">
+                      <source src="/images/Videos/skolyvprirode1.mp4" type="video/mp4" />
+                    </video>
                   </div>
                 </div>
               </div>

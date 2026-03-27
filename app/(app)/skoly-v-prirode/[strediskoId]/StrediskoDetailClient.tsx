@@ -8,7 +8,6 @@ import lgZoom from 'lightgallery/plugins/zoom'
 import 'lightgallery/css/lightgallery.css'
 import 'lightgallery/css/lg-zoom.css'
 import 'lightgallery/css/lg-thumbnail.css'
-import LazyVideo from '@/components/LazyVideo'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -254,7 +253,9 @@ export default function StrediskoDetailClient({
             <div className="flex flex-col lg:flex-row gap-8 items-center">
               <div className="lg:w-[65%] w-full">
                 <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
-                  <LazyVideo src="/images/Videos/skolavprirode2.mp4" className="w-full h-full object-cover" />
+                  <video autoPlay loop muted playsInline preload="auto" className="w-full h-full object-cover">
+                    <source src="/images/Videos/skolavprirode2.mp4" type="video/mp4" />
+                  </video>
                 </div>
               </div>
               <div className="lg:w-1/2 w-full space-y-6">
