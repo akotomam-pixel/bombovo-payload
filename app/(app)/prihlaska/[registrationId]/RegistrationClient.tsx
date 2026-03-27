@@ -23,6 +23,7 @@ interface Props {
   registrationId: string;
   profisTerminId: number | null;
   id_ZajezdHotel: number | null;
+  campAge?: string | null;
 }
 
 export default function RegistrationClient({
@@ -35,6 +36,7 @@ export default function RegistrationClient({
   registrationId,
   profisTerminId,
   id_ZajezdHotel,
+  campAge,
 }: Props) {
   const [formData, setFormData] = useState({
     // Informácie zákonného zástupcu
@@ -97,6 +99,8 @@ export default function RegistrationClient({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [birthDateError, setBirthDateError] = useState(false);
+  const [birthDate2Error, setBirthDate2Error] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -112,6 +116,8 @@ export default function RegistrationClient({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+    setBirthDateError(false);
+    setBirthDate2Error(false);
     setIsSubmitting(true);
 
     try {
@@ -245,11 +251,26 @@ export default function RegistrationClient({
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
-      setSubmitError(msg);
+      const isAgeError = msg.includes('nie je možné obsadiť') || msg.includes('Kalkulace.Warning') || msg.includes('vek') || msg.includes('věk');
+      if (isAgeError) {
+        if (formData.hasSecondChild && formData.birthDate2) {
+          setBirthDate2Error(true);
+          document.getElementById('birthDate2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          setBirthDateError(true);
+          document.getElementById('birthDate')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        setSubmitError(msg);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const ageErrorMsg = campAge
+    ? `Tento tábor je pre deti vo veku ${campAge}, prosím skontrolujte zadaný dátum narodenia dieťaťa.`
+    : 'Prosím skontrolujte zadaný dátum narodenia dieťaťa.';
 
   return (
     <div className="min-h-screen flex flex-col bg-bombovo-gray">
@@ -489,17 +510,21 @@ export default function RegistrationClient({
                   </div>
                 </div>
                 <div className="mb-4">
-                  <label className="block text-bombovo-dark font-semibold mb-2">
+                  <label className={`block font-semibold mb-2 ${birthDateError ? 'text-red-600' : 'text-bombovo-dark'}`}>
                     Dátum Narodenia *
                   </label>
                   <input
+                    id="birthDate"
                     type="date"
                     name="birthDate"
                     value={formData.birthDate}
-                    onChange={handleInputChange}
+                    onChange={(e) => { setBirthDateError(false); handleInputChange(e); }}
                     required
-                    className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError ? 'border-red-500' : 'border-bombovo-blue'}`}
                   />
+                  {birthDateError && (
+                    <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-[2fr_1fr] gap-4 mb-4">
                   <div>
@@ -700,17 +725,21 @@ export default function RegistrationClient({
                       </div>
                     </div>
                     <div>
-                      <label className="block text-bombovo-dark font-semibold mb-2">
+                      <label className={`block font-semibold mb-2 ${birthDate2Error ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Dátum Narodenia *
                       </label>
                       <input
+                        id="birthDate2"
                         type="date"
                         name="birthDate2"
                         value={formData.birthDate2}
-                        onChange={handleInputChange}
+                        onChange={(e) => { setBirthDate2Error(false); handleInputChange(e); }}
                         required={formData.hasSecondChild}
-                        className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
+                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error ? 'border-red-500' : 'border-bombovo-blue'}`}
                       />
+                      {birthDate2Error && (
+                        <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
+                      )}
                     </div>
                     <div className="grid grid-cols-[2fr_1fr] gap-4">
                       <div>

@@ -16,6 +16,7 @@ interface MatchedData {
   discountedPrice: string;
   profisTerminId?: number | null;
   id_ZajezdHotel?: number | null;
+  campAge?: string | null;
 }
 
 // Search Payload CMS: iterate all camps and their dates arrays for a matching registrationId
@@ -41,6 +42,7 @@ async function findInPayload(registrationId: string): Promise<MatchedData | null
           discountedPrice: match.discountedPrice ?? match.originalPrice ?? "",
           profisTerminId: match.profisTerminId ?? null,
           id_ZajezdHotel: match.id_ZajezdHotel ?? null,
+          campAge: (doc as any).age ?? null,
         };
       }
     }
@@ -121,6 +123,7 @@ export default async function RegistrationPage({
       registrationId={registrationId}
       profisTerminId={data.profisTerminId ?? null}
       id_ZajezdHotel={data.id_ZajezdHotel ?? null}
+      campAge={data.campAge ?? null}
     />
   );
 }
