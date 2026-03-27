@@ -5,14 +5,44 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
+import { FiUsers, FiZap, FiStar, FiSun, FiBook, FiTrendingUp } from 'react-icons/fi'
+import { GiPalette, GiSoccerBall, GiMountains, GiSwordsPower } from 'react-icons/gi'
+import { MdChildCare, MdSportsBasketball, MdDirectionsRun } from 'react-icons/md'
 import { useRouter } from 'next/navigation'
 
 interface Camp {
   id: string
   name: string
   slug: string
+  age?: string | null
+  campTypes?: string[] | null
   cardImage?: { url: string } | null
   section2_description?: Array<{ paragraph: string }> | null
+}
+
+function getTypeIcon(type: string) {
+  switch (type) {
+    case 'Akčný': return <FiZap className="w-4 h-4" />
+    case 'Umelecký': return <GiPalette className="w-4 h-4" />
+    case 'Oddychový': return <FiSun className="w-4 h-4" />
+    case 'Športový': return <GiSoccerBall className="w-4 h-4" />
+    case 'Unikátny': return <FiStar className="w-4 h-4" />
+    case 'Tínedžerský': return <FiTrendingUp className="w-4 h-4" />
+    case 'Náučný': return <FiBook className="w-4 h-4" />
+    case 'Dobrodružný': return <GiMountains className="w-4 h-4" />
+    case 'Pre najmenších': return <MdChildCare className="w-4 h-4" />
+    case 'Fantasy': return <GiSwordsPower className="w-4 h-4" />
+    case 'Basketbal': return <MdSportsBasketball className="w-4 h-4" />
+    case 'Tanečný': return <MdDirectionsRun className="w-4 h-4" />
+    case 'Tvorivý': return <GiPalette className="w-4 h-4" />
+    default: return <FiStar className="w-4 h-4" />
+  }
+}
+
+function formatAge(age: string): string {
+  const match = age.match(/(\d+)\s*[-–]\s*(\d+)/)
+  if (match) return `${match[1]}-${match[2]} r.`
+  return age
 }
 
 interface FeaturedCampItem {
@@ -88,7 +118,23 @@ export default function TopCampsWithSearch({ headline, featuredCamps }: TopCamps
                   )}
                 </div>
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold text-bombovo-dark mb-3">{camp.name}</h3>
+                  <h3 className="text-2xl font-bold text-bombovo-dark mb-2">{camp.name}</h3>
+                  {(camp.age || (camp.campTypes && camp.campTypes.length > 0)) && (
+                    <div className="flex items-center gap-4 text-gray-600 mb-3">
+                      {camp.age && (
+                        <div className="flex items-center gap-1.5">
+                          <FiUsers className="w-4 h-4 text-bombovo-blue flex-shrink-0" />
+                          <span className="text-sm font-medium">{formatAge(camp.age)}</span>
+                        </div>
+                      )}
+                      {camp.campTypes?.slice(0, 2).map((type, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 text-bombovo-blue">
+                          {getTypeIcon(type)}
+                          <span className="text-sm font-medium">{type}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {camp.section2_description?.[0]?.paragraph && (
                     <p className="text-bombovo-dark leading-relaxed mb-4 line-clamp-3">
                       {camp.section2_description[0].paragraph}
