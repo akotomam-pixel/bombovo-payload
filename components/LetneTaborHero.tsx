@@ -83,7 +83,7 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
                     }}
                   >
                     <Image
-                      src={`/_next/image?url=${encodeURIComponent(photo.url)}&w=960&q=80`}
+                      src={photo.url}
                       alt={`Letný tábor ${i + 1}`}
                       fill
                       className="object-cover"

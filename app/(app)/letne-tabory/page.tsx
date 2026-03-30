@@ -1,4 +1,4 @@
-export const revalidate = 3600
+export const revalidate = 60
 
 import { getPayloadClient } from '@/lib/payload'
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'
@@ -117,8 +117,8 @@ export default async function LetneTaborePage() {
       body: h.body || DEFAULT_HERO.body,
       photos: photos.length > 0 ? photos : DEFAULT_HERO.photos,
     }
-  } catch {
-    // Payload unavailable — fall through and use defaults
+  } catch (e) {
+    console.error('[letne-tabory] Payload fetch error:', e)
   }
 
   return <CampsClient camps={mergedCamps} heroData={heroData} />
