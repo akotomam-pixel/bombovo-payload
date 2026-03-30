@@ -66,13 +66,22 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
   return (
     <section className="bg-white">
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-8 md:pt-12 pb-8 md:pb-12">
-        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
+        {/* Grid: mobile = single column (headline → photos → text)
+                desktop = photos left (spans 2 rows) | headline + text right */}
+        <div className="grid md:grid-cols-2 gap-6 md:gap-x-20 md:gap-y-0">
 
-          {/* ── LEFT: Stacked photo carousel ── */}
-          <div className="w-full md:w-1/2 flex justify-center">
+          {/* ── HEADLINE — mobile: row 1, desktop: right col row 1 ── */}
+          <h1
+            className="md:col-start-2 md:row-start-1 text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight"
+          >
+            {headline}
+          </h1>
+
+          {/* ── PHOTOS — mobile: row 2, desktop: left col spans both rows ── */}
+          <div className="md:col-start-1 md:row-start-1 md:row-span-2 flex justify-center md:items-center">
             <div
-              className="relative"
-              style={{ width: '100%', maxWidth: 480, aspectRatio: '4/3' }}
+              className="relative w-full"
+              style={{ maxWidth: 480, aspectRatio: '4/3' }}
             >
               {photos.map((photo, i) => {
                 const pos = getPos(i)
@@ -100,22 +109,16 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
                   </div>
                 )
               })}
-
             </div>
           </div>
 
-          {/* ── RIGHT: Text ── */}
-          <div className="w-full md:w-1/2">
-            <h1 className="text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight mb-6">
-              {headline}
-            </h1>
-            <div className="space-y-4">
-              {body.split('\n').filter(line => line.trim() !== '').map((para, i) => (
-                <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {renderBold(para)}
-                </p>
-              ))}
-            </div>
+          {/* ── BODY TEXT — mobile: row 3, desktop: right col row 2 ── */}
+          <div className="md:col-start-2 md:row-start-2 space-y-4">
+            {body.split('\n').filter(line => line.trim() !== '').map((para, i) => (
+              <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">
+                {renderBold(para)}
+              </p>
+            ))}
           </div>
 
         </div>
