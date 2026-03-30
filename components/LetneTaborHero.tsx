@@ -65,7 +65,7 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
 
   return (
     <section className="bg-white">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-16 md:pt-24 pb-8 md:pb-12">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-8 md:pt-12 pb-8 md:pb-12">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
 
           {/* ── LEFT: Stacked photo carousel ── */}
