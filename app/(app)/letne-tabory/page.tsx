@@ -4,6 +4,18 @@ import { getPayloadClient } from '@/lib/payload'
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'
 import CampsClient from './CampsClient'
 
+interface HeroData {
+  headline: string
+  body: string
+  photos: { url: string }[]
+}
+
+const DEFAULT_HERO: HeroData = {
+  headline: 'Letné tábory pre deti 2026',
+  body: 'Viac ako 26 rokov organizujeme detské letné tábory pre deti od 6 do 17 rokov. Naše letné tábory sa každoročne nesú v duchu zábavy, bezpečia a programu, ktorý nikde inde deti nezažijú. V ponuke máme rôzne tábory, z ktorých sa každý nesie v inej téme. Fantasy, dobrodružné, športové ale aj umelecké tábory. Každý si nájde to svoje.\nMnohé deti, ktoré k nám prídu na tábor ako malé, odchádzajú z ich posledného tábora ako 17-roční len preto, že nechcú odísť. Aj preto máme návratnosť až 86 %. Vyber si letný tábor 2026 na Slovensku, ktorý je pre teba najlepší, a príď k nám zažiť nezabudnuteľné leto.',
+  photos: [],
+}
+
 // Same age-parsing logic as campsData.ts
 function parseAge(ageStr: string): { short: string; range: [number, number] } {
   const match = ageStr.match(/(\d+)\s*[-–]\s*(\d+)/)
@@ -65,33 +77,49 @@ export default async function LetneTaborePage() {
   )
 
   let mergedCamps: Camp[] = [...hardcodedCamps]
+  let heroData: HeroData = DEFAULT_HERO
 
   // Fetch from Payload — gracefully skip if DB is not connected
   try {
     const payload = await getPayloadClient()
-    const result = await payload.find({
-      collection: 'camps',
-      limit: 200,
-      depth: 1, // needed to populate cardImage and get its url
-    })
+
+    // Fetch camps and hero global in parallel
+    const [result, hlavna] = await Promise.all([
+      payload.find({
+        collection: 'camps',
+        limit: 200,
+        depth: 1,
+        sort: 'order',
+      }),
+      payload.findGlobal({ slug: 'letne-tabory-hlavna', depth: 1 }),
+    ])
 
     if (result.docs.length > 0) {
-      // Track which slugs Payload returned so we can keep the rest from hardcoded
       const payloadSlugs = new Set<string>()
-
       const payloadCamps = result.docs.map((doc) => {
         const camp = payloadDocToCamp(doc as Record<string, any>, hardcodedBySlug)
         payloadSlugs.add(camp.id)
         return camp
       })
-
-      // Payload camps first, then hardcoded camps that aren't in Payload yet
       const remainingHardcoded = hardcodedCamps.filter((c) => !payloadSlugs.has(c.id))
       mergedCamps = [...payloadCamps, ...remainingHardcoded]
     }
+
+    // Build hero data from the global
+    const h = hlavna as Record<string, any>
+    const photos: { url: string }[] = []
+    for (const key of ['photo1', 'photo2', 'photo3']) {
+      const p = h[key]
+      if (p && typeof p === 'object' && p.url) photos.push({ url: p.url })
+    }
+    heroData = {
+      headline: h.headline || DEFAULT_HERO.headline,
+      body: h.body || DEFAULT_HERO.body,
+      photos: photos.length > 0 ? photos : DEFAULT_HERO.photos,
+    }
   } catch {
-    // Payload unavailable — fall through and use all hardcoded camps
+    // Payload unavailable — fall through and use defaults
   }
 
-  return <CampsClient camps={mergedCamps} />
+  return <CampsClient camps={mergedCamps} heroData={heroData} />
 }

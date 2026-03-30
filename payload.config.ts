@@ -14,6 +14,7 @@ import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
 import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
 import { FooterGlobal } from './collections/globals/Footer'
 import { HomepageGlobal } from './collections/globals/Homepage'
+import { LetneTaboryHlavna } from './collections/globals/LetneTaboryHlavna'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,7 +27,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Camps, Strediska, GiveawayEntries],
-  globals: [HomepageGlobal, SkolyVPrirode, GiveawayPopupGlobal, FooterGlobal],
+  globals: [HomepageGlobal, LetneTaboryHlavna, SkolyVPrirode, GiveawayPopupGlobal, FooterGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

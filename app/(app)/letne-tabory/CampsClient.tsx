@@ -8,13 +8,21 @@ import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
 import CampFilter from '@/components/CampFilter'
 import CampCard from '@/components/CampCard'
+import LetneTaborHero from '@/components/LetneTaborHero'
 import type { Camp } from '@/lib/campsData'
+
+interface HeroData {
+  headline: string
+  body: string
+  photos: { url: string }[]
+}
 
 interface Props {
   camps: Camp[]
+  heroData: HeroData
 }
 
-function CampsContent({ camps }: Props) {
+function CampsContent({ camps, heroData }: Props) {
   const searchParams = useSearchParams()
   const [selectedAge, setSelectedAge] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
@@ -57,6 +65,12 @@ function CampsContent({ camps }: Props) {
       <TopBar />
       <Header />
 
+      {/* Hero section with carousel */}
+      <LetneTaborHero
+        headline={heroData.headline}
+        body={heroData.body}
+        photos={heroData.photos}
+      />
 
       <main className="flex-grow bg-white">
         <section className="py-12">
@@ -139,7 +153,7 @@ function CampsContent({ camps }: Props) {
   )
 }
 
-export default function CampsClient({ camps }: Props) {
+export default function CampsClient({ camps, heroData }: Props) {
   return (
     <Suspense
       fallback={
@@ -153,7 +167,7 @@ export default function CampsClient({ camps }: Props) {
         </div>
       }
     >
-      <CampsContent camps={camps} />
+      <CampsContent camps={camps} heroData={heroData} />
     </Suspense>
   )
 }
