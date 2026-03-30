@@ -27,21 +27,40 @@ export const LetneTaboryHlavna: GlobalConfig = {
       },
     },
     {
-      name: 'photos',
-      type: 'array',
-      label: 'Fotky karusela',
-      admin: {
-        description: 'Pridaj ľubovoľný počet fotiek do karusela. Odporúčame formát 4:3.',
-      },
-      fields: [
-        {
-          name: 'photo',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-          label: 'Fotka',
-        },
-      ],
+      name: 'photo1',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 1 (karusel)',
+    },
+    {
+      name: 'photo2',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 2 (karusel)',
+    },
+    {
+      name: 'photo3',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 3 (karusel)',
+    },
+    {
+      name: 'photo4',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 4 (karusel, voliteľné)',
+    },
+    {
+      name: 'photo5',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 5 (karusel, voliteľné)',
+    },
+    {
+      name: 'photo6',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Fotka 6 (karusel, voliteľné)',
     },
   ],
 }

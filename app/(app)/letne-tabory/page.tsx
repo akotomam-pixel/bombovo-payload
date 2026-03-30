@@ -107,12 +107,11 @@ export default async function LetneTaborePage() {
 
     // Build hero data from the global
     const h = hlavna as Record<string, any>
-    const photos: { url: string }[] = Array.isArray(h.photos)
-      ? h.photos
-          .map((item: any) => item?.photo)
-          .filter((p: any) => p && typeof p === 'object' && p.url)
-          .map((p: any) => ({ url: p.url }))
-      : []
+    const photos: { url: string }[] = []
+    for (const key of ['photo1', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6']) {
+      const p = h[key]
+      if (p && typeof p === 'object' && p.url) photos.push({ url: p.url })
+    }
     heroData = {
       headline: h.headline || DEFAULT_HERO.headline,
       body: h.body || DEFAULT_HERO.body,
