@@ -27,22 +27,21 @@ export const LetneTaboryHlavna: GlobalConfig = {
       },
     },
     {
-      name: 'photo1',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Fotka 1 (karusel)',
-    },
-    {
-      name: 'photo2',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Fotka 2 (karusel)',
-    },
-    {
-      name: 'photo3',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Fotka 3 (karusel)',
+      name: 'photos',
+      type: 'array',
+      label: 'Fotky karusela',
+      admin: {
+        description: 'Pridaj ľubovoľný počet fotiek do karusela. Odporúčame formát 4:3.',
+      },
+      fields: [
+        {
+          name: 'photo',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          label: 'Fotka',
+        },
+      ],
     },
   ],
 }

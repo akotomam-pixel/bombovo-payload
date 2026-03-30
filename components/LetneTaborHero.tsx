@@ -58,7 +58,7 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
 
   return (
     <section className="bg-white">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-16 md:py-24">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 pt-16 md:pt-24 pb-8 md:pb-12">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
 
           {/* ── LEFT: Stacked photo carousel ── */}
@@ -87,35 +87,19 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
                       alt={`Letný tábor ${i + 1}`}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      priority={i === 0}
+                      sizes="(max-width: 768px) 100vw, 480px"
+                      priority={i === active}
                     />
                   </div>
                 )
               })}
 
-              {/* Dot indicators */}
-              {count > 1 && (
-                <div className="absolute -bottom-6 left-0 flex gap-2">
-                  {photos.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActive(i)}
-                      className={`rounded-full transition-all duration-300 ${
-                        i === active
-                          ? 'w-6 h-2.5 bg-bombovo-blue'
-                          : 'w-2.5 h-2.5 bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
           {/* ── RIGHT: Text ── */}
           <div className="w-full md:w-1/2">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark leading-tight mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-bombovo-dark leading-tight mb-6">
               {headline}
             </h1>
             <div className="space-y-4">
