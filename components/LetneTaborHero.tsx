@@ -118,9 +118,13 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark leading-tight mb-6">
               {headline}
             </h1>
-            <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-              {body}
-            </p>
+            <div className="space-y-4">
+              {body.split('\n').filter(line => line.trim() !== '').map((para, i) => (
+                <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">
+                  {para}
+                </p>
+              ))}
+            </div>
           </div>
 
         </div>
