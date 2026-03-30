@@ -14,6 +14,13 @@ interface Props {
   photos: HeroPhoto[]
 }
 
+function renderBold(text: string) {
+  const parts = text.split(/\*\*(.+?)\*\*/g)
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  )
+}
+
 export default function LetneTaborHero({ headline, body, photos }: Props) {
   const [active, setActive] = useState(0)
   const [animating, setAnimating] = useState(false)
@@ -105,7 +112,7 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
             <div className="space-y-4">
               {body.split('\n').filter(line => line.trim() !== '').map((para, i) => (
                 <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {para}
+                  {renderBold(para)}
                 </p>
               ))}
             </div>
