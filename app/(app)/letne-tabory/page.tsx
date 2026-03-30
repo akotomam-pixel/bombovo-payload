@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 0
 
 import { getPayloadClient } from '@/lib/payload'
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'
