@@ -109,7 +109,7 @@ export default function StepNameCamp({
           </button>
 
           {dropdownOpen && (
-            <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
+            <div className="absolute z-20 w-full bottom-full mb-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto">
               <button
                 type="button"
                 onClick={() => { setCamp(''); setDropdownOpen(false) }}

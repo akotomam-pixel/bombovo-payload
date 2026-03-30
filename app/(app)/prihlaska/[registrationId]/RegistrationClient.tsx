@@ -134,6 +134,9 @@ export default function RegistrationClient({
     req('zip', formData.zip);
     req('phone', formData.phone);
     req('email', formData.email);
+    if (!errors['email'] && formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors['email'] = 'Zadali ste nesprávnu emailovú adresu.';
+    }
     req('childFirstName', formData.childFirstName);
     req('childLastName', formData.childLastName);
     req('birthDate', formData.birthDate);
@@ -306,6 +309,7 @@ export default function RegistrationClient({
       const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
       const isAgeError = msg.includes('nie je možné obsadiť') || msg.includes('Kalkulace.Warning') || msg.includes('vek') || msg.includes('věk');
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
+      const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
         if (formData.hasSecondChild && formData.birthDate2) {
           setBirthDate2Error(true);
@@ -317,6 +321,9 @@ export default function RegistrationClient({
       } else if (isPhoneError) {
         setFieldErrors({ phone: 'Zadali ste nesprávne číslo.' });
         document.getElementById('field-phone')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (isEmailError) {
+        setFieldErrors({ email: 'Zadali ste nesprávnu emailovú adresu.' });
+        document.getElementById('field-email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         setSubmitError(msg);
       }
