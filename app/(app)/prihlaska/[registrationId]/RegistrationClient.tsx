@@ -126,13 +126,32 @@ export default function RegistrationClient({
       ? `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
       : '';
 
+  // Parse "11-16" or "Pre deti vo veku 11-16 rokov" → { min: 11, max: 16 }
+  const ageRange = (() => {
+    if (!campAge) return null;
+    const match = campAge.match(/(\d+)[–\-](\d+)/);
+    return match ? { min: Number(match[1]), max: Number(match[2]) } : null;
+  })();
+
+  // Year of the camp (used to calculate child age at camp time)
+  const campYear = (() => {
+    const m = dateStart.match(/\d{4}/);
+    return m ? Number(m[0]) : new Date().getFullYear();
+  })();
+
+  // Returns true when the year is complete AND falls outside the allowed range
+  const isYearOutOfRange = (y: string) => {
+    if (!ageRange || y.length !== 4) return false;
+    const age = campYear - Number(y);
+    return age < ageRange.min || age > ageRange.max;
+  };
+
   const handleDatePart = (
     part: 'day' | 'month' | 'year',
     rawVal: string,
     parts: { d: string; m: string; y: string },
     setParts: React.Dispatch<React.SetStateAction<{ d: string; m: string; y: string }>>,
     fieldName: 'birthDate' | 'birthDate2',
-    clearError: () => void,
     dRef: React.RefObject<HTMLInputElement | null>,
     mRef: React.RefObject<HTMLInputElement | null>,
     yRef: React.RefObject<HTMLInputElement | null>,
@@ -144,7 +163,12 @@ export default function RegistrationClient({
       : part === 'month' ? { ...parts, m: val }
       : { ...parts, y: val };
     setParts(next);
-    clearError();
+
+    // Validate age inline: error on if year is complete and out of range, clear otherwise
+    const hasError = isYearOutOfRange(next.y);
+    if (fieldName === 'birthDate') setBirthDateError(hasError);
+    else setBirthDate2Error(hasError);
+
     const iso = makeDateISO(next.d, next.m, next.y);
     setFormData(prev => ({ ...prev, [fieldName]: iso }));
     // Auto-advance focus
@@ -394,7 +418,12 @@ export default function RegistrationClient({
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
-        if (formData.hasSecondChild && formData.birthDate2) {
+        // Use the client-side age check to target the right child's field
+        const year1 = formData.birthDate ? Number(formData.birthDate.split('-')[0]) : 0;
+        const year2 = formData.birthDate2 ? Number(formData.birthDate2.split('-')[0]) : 0;
+        const child2Invalid = formData.hasSecondChild && year2 > 0 && isYearOutOfRange(String(year2));
+        const child1Invalid = year1 > 0 && isYearOutOfRange(String(year1));
+        if (child2Invalid || (formData.hasSecondChild && !child1Invalid && year2 > 0)) {
           setBirthDate2Error(true);
           document.getElementById('birthDate2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
@@ -415,8 +444,8 @@ export default function RegistrationClient({
     }
   };
 
-  const ageErrorMsg = campAge
-    ? `Tento tábor je pre deti vo veku ${campAge} rokov, prosím skontrolujte zadaný dátum narodenia dieťaťa.`
+  const ageErrorMsg = ageRange
+    ? `Tento tábor je pre deti vo veku ${ageRange.min}–${ageRange.max} rokov, prosím skontrolujte zadaný dátum narodenia dieťaťa.`
     : 'Prosím skontrolujte zadaný dátum narodenia dieťaťa.';
 
   return (
@@ -680,7 +709,7 @@ export default function RegistrationClient({
                       placeholder="DD"
                       maxLength={2}
                       value={bd1.d}
-                      onChange={e => handleDatePart('day', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      onChange={e => handleDatePart('day', e.target.value, bd1, setBd1, 'birthDate', d1Ref, m1Ref, y1Ref)}
                       className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
                     <span className="text-bombovo-dark font-semibold">/</span>
@@ -691,7 +720,7 @@ export default function RegistrationClient({
                       placeholder="MM"
                       maxLength={2}
                       value={bd1.m}
-                      onChange={e => handleDatePart('month', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      onChange={e => handleDatePart('month', e.target.value, bd1, setBd1, 'birthDate', d1Ref, m1Ref, y1Ref)}
                       onKeyDown={e => e.key === 'Backspace' && bd1.m === '' && d1Ref.current?.focus()}
                       className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
@@ -703,7 +732,7 @@ export default function RegistrationClient({
                       placeholder="YYYY"
                       maxLength={4}
                       value={bd1.y}
-                      onChange={e => handleDatePart('year', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      onChange={e => handleDatePart('year', e.target.value, bd1, setBd1, 'birthDate', d1Ref, m1Ref, y1Ref)}
                       onKeyDown={e => e.key === 'Backspace' && bd1.y === '' && m1Ref.current?.focus()}
                       className={`w-24 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
                     />
@@ -939,7 +968,7 @@ export default function RegistrationClient({
                           placeholder="DD"
                           maxLength={2}
                           value={bd2.d}
-                          onChange={e => handleDatePart('day', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          onChange={e => handleDatePart('day', e.target.value, bd2, setBd2, 'birthDate2', d2Ref, m2Ref, y2Ref)}
                           className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
                         <span className="text-bombovo-dark font-semibold">/</span>
@@ -950,7 +979,7 @@ export default function RegistrationClient({
                           placeholder="MM"
                           maxLength={2}
                           value={bd2.m}
-                          onChange={e => handleDatePart('month', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          onChange={e => handleDatePart('month', e.target.value, bd2, setBd2, 'birthDate2', d2Ref, m2Ref, y2Ref)}
                           onKeyDown={e => e.key === 'Backspace' && bd2.m === '' && d2Ref.current?.focus()}
                           className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
@@ -962,7 +991,7 @@ export default function RegistrationClient({
                           placeholder="YYYY"
                           maxLength={4}
                           value={bd2.y}
-                          onChange={e => handleDatePart('year', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          onChange={e => handleDatePart('year', e.target.value, bd2, setBd2, 'birthDate2', d2Ref, m2Ref, y2Ref)}
                           onKeyDown={e => e.key === 'Backspace' && bd2.y === '' && m2Ref.current?.focus()}
                           className={`w-24 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                         />
