@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 declare global {
   interface Window {
@@ -110,6 +110,50 @@ export default function RegistrationClient({
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Split date inputs (DD / MM / YYYY) — avoids the Mac browser date-picker confusion
+  const [bd1, setBd1] = useState({ d: '', m: '', y: '' });
+  const [bd2, setBd2] = useState({ d: '', m: '', y: '' });
+  const d1Ref = useRef<HTMLInputElement>(null);
+  const m1Ref = useRef<HTMLInputElement>(null);
+  const y1Ref = useRef<HTMLInputElement>(null);
+  const d2Ref = useRef<HTMLInputElement>(null);
+  const m2Ref = useRef<HTMLInputElement>(null);
+  const y2Ref = useRef<HTMLInputElement>(null);
+
+  const makeDateISO = (d: string, m: string, y: string) =>
+    d.length === 2 && m.length === 2 && y.length === 4
+      ? `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+      : '';
+
+  const handleDatePart = (
+    part: 'day' | 'month' | 'year',
+    rawVal: string,
+    parts: { d: string; m: string; y: string },
+    setParts: React.Dispatch<React.SetStateAction<{ d: string; m: string; y: string }>>,
+    fieldName: 'birthDate' | 'birthDate2',
+    clearError: () => void,
+    dRef: React.RefObject<HTMLInputElement | null>,
+    mRef: React.RefObject<HTMLInputElement | null>,
+    yRef: React.RefObject<HTMLInputElement | null>,
+  ) => {
+    const digits = rawVal.replace(/\D/g, '');
+    const maxLen = part === 'year' ? 4 : 2;
+    const val = digits.slice(0, maxLen);
+    const next = part === 'day' ? { ...parts, d: val }
+      : part === 'month' ? { ...parts, m: val }
+      : { ...parts, y: val };
+    setParts(next);
+    clearError();
+    const iso = makeDateISO(next.d, next.m, next.y);
+    setFormData(prev => ({ ...prev, [fieldName]: iso }));
+    // Auto-advance focus
+    if (part === 'day' && val.length === 2) mRef.current?.focus();
+    if (part === 'month' && val.length === 2) yRef.current?.focus();
+    // Auto-back on backspace when empty
+    if (part === 'month' && val === '' && rawVal === '') dRef.current?.focus();
+    if (part === 'year' && val === '' && rawVal === '') mRef.current?.focus();
+  };
 
   const clearFieldError = (name: string) => {
     if (fieldErrors[name]) {
@@ -627,15 +671,43 @@ export default function RegistrationClient({
                   <label className={`block font-semibold mb-2 ${birthDateError || fieldErrors.birthDate ? 'text-red-600' : 'text-bombovo-dark'}`}>
                     Dátum Narodenia *
                   </label>
-                  <input
-                    id="birthDate"
-                    type="date"
-                    name="birthDate"
-                    value={formData.birthDate}
-                    onChange={(e) => { setBirthDateError(false); handleInputChange(e); }}
-                    required
-                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={d1Ref}
+                      id="birthDate"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="DD"
+                      maxLength={2}
+                      value={bd1.d}
+                      onChange={e => handleDatePart('day', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
+                    />
+                    <span className="text-bombovo-dark font-semibold">/</span>
+                    <input
+                      ref={m1Ref}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="MM"
+                      maxLength={2}
+                      value={bd1.m}
+                      onChange={e => handleDatePart('month', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      onKeyDown={e => e.key === 'Backspace' && bd1.m === '' && d1Ref.current?.focus()}
+                      className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
+                    />
+                    <span className="text-bombovo-dark font-semibold">/</span>
+                    <input
+                      ref={y1Ref}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="YYYY"
+                      maxLength={4}
+                      value={bd1.y}
+                      onChange={e => handleDatePart('year', e.target.value, bd1, setBd1, 'birthDate', () => setBirthDateError(false), d1Ref, m1Ref, y1Ref)}
+                      onKeyDown={e => e.key === 'Backspace' && bd1.y === '' && m1Ref.current?.focus()}
+                      className={`w-24 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDateError || fieldErrors.birthDate ? 'border-red-500' : 'border-bombovo-blue'}`}
+                    />
+                  </div>
                   {fieldErrors.birthDate && !birthDateError && (
                     <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate}</p>
                   )}
@@ -858,15 +930,43 @@ export default function RegistrationClient({
                       <label className={`block font-semibold mb-2 ${birthDate2Error || fieldErrors.birthDate2 ? 'text-red-600' : 'text-bombovo-dark'}`}>
                         Dátum Narodenia *
                       </label>
-                      <input
-                        id="birthDate2"
-                        type="date"
-                        name="birthDate2"
-                        value={formData.birthDate2}
-                        onChange={(e) => { setBirthDate2Error(false); handleInputChange(e); }}
-                        required={formData.hasSecondChild}
-                        className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
-                      />
+                      <div className="flex items-center gap-2">
+                        <input
+                          ref={d2Ref}
+                          id="birthDate2"
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="DD"
+                          maxLength={2}
+                          value={bd2.d}
+                          onChange={e => handleDatePart('day', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
+                        />
+                        <span className="text-bombovo-dark font-semibold">/</span>
+                        <input
+                          ref={m2Ref}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="MM"
+                          maxLength={2}
+                          value={bd2.m}
+                          onChange={e => handleDatePart('month', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          onKeyDown={e => e.key === 'Backspace' && bd2.m === '' && d2Ref.current?.focus()}
+                          className={`w-16 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
+                        />
+                        <span className="text-bombovo-dark font-semibold">/</span>
+                        <input
+                          ref={y2Ref}
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="YYYY"
+                          maxLength={4}
+                          value={bd2.y}
+                          onChange={e => handleDatePart('year', e.target.value, bd2, setBd2, 'birthDate2', () => setBirthDate2Error(false), d2Ref, m2Ref, y2Ref)}
+                          onKeyDown={e => e.key === 'Backspace' && bd2.y === '' && m2Ref.current?.focus()}
+                          className={`w-24 px-3 py-3 border-2 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${birthDate2Error || fieldErrors.birthDate2 ? 'border-red-500' : 'border-bombovo-blue'}`}
+                        />
+                      </div>
                       {fieldErrors.birthDate2 && !birthDate2Error && (
                         <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate2}</p>
                       )}
