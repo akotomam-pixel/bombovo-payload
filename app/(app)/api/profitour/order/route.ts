@@ -238,7 +238,46 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ id_Objednavka: Number(id), klic })
+    const id_Objednavka = Number(id)
+
+    // ── Fetch ObjednavkaDetail to get id_Klient and real cestujici IDs ──────────
+    // These are needed for CestujiciExtraUpd (t-shirt) and KlientExtraUpd (intolerances)
+    let id_Klient: number | null = null
+    let cestujiciIds: number[] = []
+
+    try {
+      const detailRaw = await soapCall('Objednavka', 'ObjednavkaDetail', `
+        <ns:Context>
+          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+          <ns:VypsatNazvy>false</ns:VypsatNazvy>
+          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+          <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
+          <ns:Klic>${klic}</ns:Klic>
+          <ns:id_Objednavka>${id_Objednavka}</ns:id_Objednavka>
+        </ns:Context>`)
+
+      const detailXml = detailRaw._raw as string
+      console.log('[order] Detail XML:', detailXml.slice(0, 1200))
+
+      // Extract klient ID — look for id_Klient anywhere in the response
+      const klientIdStr = extractTag(detailXml, 'id_Klient')
+      if (klientIdStr) id_Klient = Number(klientIdStr)
+
+      // Extract all cestujici IDs — find every <ID> inside <Cestujici> blocks
+      // Each traveler element contains an ID child with the assigned positive integer ID
+      const cestujiciBlocks = detailXml.match(/<Cestujici[\s\S]*?<\/Cestujici>/g) ?? []
+      for (const block of cestujiciBlocks) {
+        const cid = extractTag(block, 'ID')
+        if (cid && Number(cid) > 0) cestujiciIds.push(Number(cid))
+      }
+
+      console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds)
+    } catch (e) {
+      console.warn('[order] ObjednavkaDetail fetch failed (non-blocking):', e)
+    }
+
+    return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)

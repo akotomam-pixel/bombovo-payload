@@ -58,7 +58,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
       <Link href={`/letne-tabory/${id}`} className="block h-64 relative overflow-hidden">
         <Image
           src={image}
-          alt={name}
+          alt={`${name} – letný tábor pre deti | Bombovo`}
           fill
           className="object-cover hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, 33vw"

@@ -1,6 +1,11 @@
 export const revalidate = 60
 
 import { getPayloadClient } from '@/lib/payload'
+
+export const metadata = {
+  title: 'Detské Letné Tábory 2026 | Bombovo',
+  description: 'Detské letné tábory 2026 na Slovensku. Viac ako 26 rokov skúseností, 86 % návratnosť detí. Fantasy, športové, dobrodružné aj umelecké tábory pre deti od 6 do 17 rokov.',
+}
 import { camps as hardcodedCamps, type Camp } from '@/lib/campsData'
 import CampsClient from './CampsClient'
 

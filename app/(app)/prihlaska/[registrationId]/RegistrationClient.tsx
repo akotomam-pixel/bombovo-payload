@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 declare global {
   interface Window {
@@ -98,6 +98,14 @@ export default function RegistrationClient({
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tshirtSizes, setTshirtSizes] = useState<{ id: number; nazev: string }[]>([]);
+
+  useEffect(() => {
+    fetch('/api/profitour/tshirt-sizes')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data.sizes)) setTshirtSizes(data.sizes) })
+      .catch(() => {}) // silent fail — fallback options shown below
+  }, []);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
@@ -269,10 +277,41 @@ export default function RegistrationClient({
           throw new Error(orderData.error ?? 'Chyba pri odosielaní objednávky.');
         }
 
-        // ObjednatResult returns ID (int as id_Objednavka) and Klic (string)
-        const { id_Objednavka, klic } = orderData;
+        // ObjednatResult returns ID, Klic, plus id_Klient + cestujiciIds from ObjednavkaDetail
+        const { id_Objednavka, klic, id_Klient, cestujiciIds } = orderData;
 
-        // ── Step 3: Finalize order ────────────────────────────────────────────
+        // ── Step 3: Extra fields (t-shirt + intolerances) ─────────────────────
+        // Non-blocking — failure must not prevent order finalization
+        try {
+          const extraCestujici = (cestujiciIds ?? []).map((id_Cestujici: number, idx: number) => ({
+            id_Cestujici,
+            id_VelikostTricka: idx === 0
+              ? (Number(formData.tshirtSize) || null)
+              : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
+          }));
+
+          const zdravotniParts = [
+            formData.hasIntolerance === 'ano' && formData.intoleranceDetails ? formData.intoleranceDetails : '',
+            formData.hasSecondChild && formData.hasIntolerance2 === 'ano' && formData.intoleranceDetails2
+              ? (formData.intoleranceDetails ? ` | Dieťa 2: ${formData.intoleranceDetails2}` : formData.intoleranceDetails2)
+              : '',
+          ].filter(Boolean).join('');
+
+          await fetch('/api/profitour/order/extra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id_Klient: id_Klient ?? null,
+              cestujici: extraCestujici,
+              zdravotniOmezeni: zdravotniParts || undefined,
+              gdprOmezeni: formData.additionalInfo || undefined,
+            }),
+          });
+        } catch (extraErr) {
+          console.warn('[prihlaska] order/extra non-blocking error:', extraErr);
+        }
+
+        // ── Step 4: Finalize order ────────────────────────────────────────────
         await fetch('/api/profitour/order/complete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -741,13 +780,18 @@ export default function RegistrationClient({
                   className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.tshirtSize ? 'border-red-500' : 'border-bombovo-blue'}`}
                 >
                   <option value="">Zvoľte veľkosť</option>
-                  <option value="122">122 (7-8 rokov)</option>
-                  <option value="136">136 (9-11 rokov)</option>
-                  <option value="146">146 (12-14 rokov)</option>
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
+                  {tshirtSizes.length > 0
+                    ? tshirtSizes.map(s => <option key={s.id} value={String(s.id)}>{s.nazev}</option>)
+                    : <>
+                        <option value="1">122 (7-8 rokov)</option>
+                        <option value="2">136 (9-11 rokov)</option>
+                        <option value="3">146 (12-14 rokov)</option>
+                        <option value="4">S</option>
+                        <option value="5">M</option>
+                        <option value="6">L</option>
+                        <option value="7">XL</option>
+                      </>
+                  }
                 </select>
                 {fieldErrors.tshirtSize && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.tshirtSize}</p>}
               </div>
@@ -963,13 +1007,18 @@ export default function RegistrationClient({
                         className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${fieldErrors.tshirtSize2 ? 'border-red-500' : 'border-bombovo-blue'}`}
                       >
                         <option value="">Zvoľte veľkosť</option>
-                        <option value="122">122 (7-8 rokov)</option>
-                        <option value="136">136 (9-11 rokov)</option>
-                        <option value="146">146 (12-14 rokov)</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
+                        {tshirtSizes.length > 0
+                          ? tshirtSizes.map(s => <option key={s.id} value={String(s.id)}>{s.nazev}</option>)
+                          : <>
+                              <option value="1">122 (7-8 rokov)</option>
+                              <option value="2">136 (9-11 rokov)</option>
+                              <option value="3">146 (12-14 rokov)</option>
+                              <option value="4">S</option>
+                              <option value="5">M</option>
+                              <option value="6">L</option>
+                              <option value="7">XL</option>
+                            </>
+                        }
                       </select>
                       {fieldErrors.tshirtSize2 && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.tshirtSize2}</p>}
                     </div>
