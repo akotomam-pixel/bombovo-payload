@@ -126,25 +126,12 @@ export default function RegistrationClient({
       ? `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
       : '';
 
-  // Parse "11-16" or "Pre deti vo veku 11-16 rokov" → { min: 11, max: 16 }
+  // Parse "11-16" or "Pre deti vo veku 11-16 rokov" → { min: 11, max: 16 } (used only for error message text)
   const ageRange = (() => {
     if (!campAge) return null;
     const match = campAge.match(/(\d+)[–\-](\d+)/);
     return match ? { min: Number(match[1]), max: Number(match[2]) } : null;
   })();
-
-  // Year of the camp (used to calculate child age at camp time)
-  const campYear = (() => {
-    const m = dateStart.match(/\d{4}/);
-    return m ? Number(m[0]) : new Date().getFullYear();
-  })();
-
-  // Returns true when the year is complete AND falls outside the allowed range
-  const isYearOutOfRange = (y: string) => {
-    if (!ageRange || y.length !== 4) return false;
-    const age = campYear - Number(y);
-    return age < ageRange.min || age > ageRange.max;
-  };
 
   const handleDatePart = (
     part: 'day' | 'month' | 'year',
@@ -163,12 +150,9 @@ export default function RegistrationClient({
       : part === 'month' ? { ...parts, m: val }
       : { ...parts, y: val };
     setParts(next);
-
-    // Validate age inline: error on if year is complete and out of range, clear otherwise
-    const hasError = isYearOutOfRange(next.y);
-    if (fieldName === 'birthDate') setBirthDateError(hasError);
-    else setBirthDate2Error(hasError);
-
+    // Clear any age error from a previous Profis submission when the user edits the date
+    if (fieldName === 'birthDate') setBirthDateError(false);
+    else setBirthDate2Error(false);
     const iso = makeDateISO(next.d, next.m, next.y);
     setFormData(prev => ({ ...prev, [fieldName]: iso }));
     // Auto-advance focus
@@ -418,12 +402,7 @@ export default function RegistrationClient({
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
-        // Use the client-side age check to target the right child's field
-        const year1 = formData.birthDate ? Number(formData.birthDate.split('-')[0]) : 0;
-        const year2 = formData.birthDate2 ? Number(formData.birthDate2.split('-')[0]) : 0;
-        const child2Invalid = formData.hasSecondChild && year2 > 0 && isYearOutOfRange(String(year2));
-        const child1Invalid = year1 > 0 && isYearOutOfRange(String(year1));
-        if (child2Invalid || (formData.hasSecondChild && !child1Invalid && year2 > 0)) {
+        if (formData.hasSecondChild && formData.birthDate2) {
           setBirthDate2Error(true);
           document.getElementById('birthDate2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
