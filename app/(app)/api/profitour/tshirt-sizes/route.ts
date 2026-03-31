@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
-import { soapCall, extractTag } from '@/lib/profis'
+import { soapCall } from '@/lib/profis'
 
 export async function GET() {
   try {
-    const raw = await soapCall('Ostatni', 'ExterniTabulka', `
+    // VelikostTricka is accessed via ExterniProcedura (not ExterniTabulka).
+    // Response format: <Table><Columns><Item>ID</Item><Item>Nazev</Item></Columns>
+    //                          <Rows><Row><Item>1</Item><Item>122</Item></Row>...</Rows></Table>
+    const raw = await soapCall('Ostatni', 'ExterniProcedura', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
         <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
@@ -19,25 +22,17 @@ export async function GET() {
     const xml = raw._raw as string
     console.log('[tshirt-sizes] Raw response:', xml.slice(0, 1000))
 
-    // Parse rows: each <a:ExterniRadek> contains <a:Hodnoty> with <a:ExterniHodnota> entries
     const sizes: { id: number; nazev: string }[] = []
-    const rowBlocks = xml.match(/<[a-z]:ExterniRadek[\s\S]*?<\/[a-z]:ExterniRadek>/g) ?? []
 
+    // Each <Row> has two <Item> children: ID and Nazev (in Columns order)
+    const rowBlocks = xml.match(/<Row>[\s\S]*?<\/Row>/g) ?? []
     for (const row of rowBlocks) {
-      // Extract all name/value pairs within this row
-      const hodnotaBlocks = row.match(/<[a-z]:ExterniHodnota[\s\S]*?<\/[a-z]:ExterniHodnota>/g) ?? []
-      let id: number | null = null
-      let nazev: string | null = null
-
-      for (const h of hodnotaBlocks) {
-        const sloupec = extractTag(h, 'Sloupec') ?? extractTag(h, 'a:Sloupec') ?? extractTag(h, 'b:Sloupec')
-        const hodnota = extractTag(h, 'Hodnota') ?? extractTag(h, 'a:Hodnota') ?? extractTag(h, 'b:Hodnota')
-        if (!sloupec || hodnota === null) continue
-        if (sloupec === 'ID') id = Number(hodnota)
-        if (sloupec === 'Nazev' || sloupec === 'Název') nazev = hodnota
+      const items = [...row.matchAll(/<Item>([^<]*)<\/Item>/g)].map(m => m[1].trim())
+      if (items.length >= 2 && items[0]) {
+        const id = Number(items[0])
+        const nazev = items[1]
+        if (id > 0 && nazev) sizes.push({ id, nazev })
       }
-
-      if (id !== null && nazev !== null) sizes.push({ id, nazev })
     }
 
     console.log('[tshirt-sizes] Parsed sizes:', sizes)

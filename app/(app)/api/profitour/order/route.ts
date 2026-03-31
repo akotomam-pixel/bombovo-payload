@@ -281,13 +281,26 @@ export async function POST(req: NextRequest) {
       const klientIdStr = extractTag(detailXml, 'id_Klient')
       if (klientIdStr) id_Klient = Number(klientIdStr)
 
-      // Extract individual traveler IDs — match each <CestujiciInputBase> element separately.
-      // Matching the outer <Cestujici> wrapper with lazy regex only yields one block (the whole
-      // list), so extractTag would only find the first child's ID even when there are two.
-      const cestujiciBlocks = detailXml.match(/<CestujiciInputBase[\s\S]*?<\/CestujiciInputBase>/g) ?? []
-      for (const block of cestujiciBlocks) {
-        const cid = extractTag(block, 'ID')
-        if (cid && Number(cid) > 0) cestujiciIds.push(Number(cid))
+      // Extract individual traveler IDs from the Cestujici section.
+      // Strategy: find the <Cestujici> container, then collect every <ID>N</ID>
+      // within it (uppercase tag = entity ID, not a foreign key like id_Klient).
+      // This works regardless of whether Profis wraps each traveler in
+      // <CestujiciInputBase>, <CestujiciKlientInput>, or plain <Cestujici> elements.
+      const cestujiciSection = extractTag(detailXml, 'Cestujici')
+      if (cestujiciSection) {
+        const idTags = cestujiciSection.match(/<ID>(\d+)<\/ID>/g) ?? []
+        for (const tag of idTags) {
+          const num = Number(tag.replace(/<[^>]+>/g, '').trim())
+          if (num > 0) cestujiciIds.push(num)
+        }
+      }
+      // Fallback: scan the full response for CestujiciInputBase elements
+      if (cestujiciIds.length === 0) {
+        const blocks = detailXml.match(/<CestujiciInputBase[\s\S]*?<\/CestujiciInputBase>/g) ?? []
+        for (const block of blocks) {
+          const cid = extractTag(block, 'ID')
+          if (cid && Number(cid) > 0) cestujiciIds.push(Number(cid))
+        }
       }
 
       console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds)
