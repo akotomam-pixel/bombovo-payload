@@ -64,20 +64,28 @@ export async function POST(req: NextRequest) {
       ? `<ns:id_ZajezdHotel><arr:int xmlns:arr="${ARR_NS}">${id_ZajezdHotel}</arr:int></ns:id_ZajezdHotel>`
       : ''
 
-    const paramsRaw = await soapCall('Katalog', 'KalkulaceParametry', `${ctx}
+    let paramsRaw = await soapCall('Katalog', 'KalkulaceParametry', `${ctx}
       <ns:id_Termin>${id_Termin}</ns:id_Termin>
-      ${hotelArrayXml}`)
+      ${hotelArrayXml}`).catch(async (err) => {
+      // If the hotel ID is stale/invalid in Payload CMS, retry without it so the API
+      // auto-resolves the correct hotel for this term.
+      if (id_ZajezdHotel && String(err?.message ?? '').includes('id_ZajezdHotel')) {
+        console.warn('[kalkulace] id_ZajezdHotel', id_ZajezdHotel, 'rejected by Profis — retrying without it')
+        id_ZajezdHotel = undefined
+        return soapCall('Katalog', 'KalkulaceParametry', `${ctx}
+          <ns:id_Termin>${id_Termin}</ns:id_Termin>`)
+      }
+      throw err
+    })
 
     const paramsXml = paramsRaw._raw as string
     console.log('[kalkulace] KalkulaceParametry response:', paramsXml.slice(0, 3000))
 
-    // Auto-extract id_ZajezdHotel from the response if not provided by client
-    if (!id_ZajezdHotel) {
-      const hotelId = extractTag(paramsXml, 'id_ZajezdHotel')
-      if (hotelId) {
-        id_ZajezdHotel = Number(hotelId)
-        console.log('[kalkulace] Auto-extracted id_ZajezdHotel from KalkulaceParametry:', id_ZajezdHotel)
-      }
+    // Auto-extract id_ZajezdHotel from the response (always — ensures we use the real API value)
+    const hotelId = extractTag(paramsXml, 'id_ZajezdHotel')
+    if (hotelId) {
+      id_ZajezdHotel = Number(hotelId)
+      console.log('[kalkulace] Resolved id_ZajezdHotel from KalkulaceParametry:', id_ZajezdHotel)
     }
 
     // Extract svoz (shuttle/transport) options — the API requires at least one entry

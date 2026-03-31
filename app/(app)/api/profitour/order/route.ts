@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
     id_SkupinaSlevaKombinace?: number
     svozTamId?: number | null
     svozZpetId?: number | null
+    insurance?: boolean
     jmeno?: string
     prijmeni?: string
     email?: string
@@ -167,6 +168,22 @@ export async function POST(req: NextRequest) {
       </ns:RezervaceUbytovani>`
     : ''
 
+  // Build Pojisteni XML: one PojisteniInputBase per traveler when insurance is checked.
+  // id_TypPojisteni=1 = "Komplexné cestovné poistenie" (confirmed via TypPojisteniList codebook).
+  // Field order (WCF alphabetical): PojisteniCestujici (P,C) → id_TypPojisteni (i,T)
+  const pojisteniXml = input.insurance
+    ? `<ns:Pojisteni>
+        ${input.cestujici!.map((_, i) => `<ns:PojisteniInputBase i:type="ns:PojisteniKalkulaceInput">
+            <ns:PojisteniCestujici>
+              <ns:PojisteniCestujiciInput>
+                <ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici>
+              </ns:PojisteniCestujiciInput>
+            </ns:PojisteniCestujici>
+            <ns:id_TypPojisteni>1</ns:id_TypPojisteni>
+          </ns:PojisteniInputBase>`).join('')}
+      </ns:Pojisteni>`
+    : `<ns:Pojisteni/>`
+
   // Build orderer address using the unified PSČ → id_Obec map
   const adresaXml = buildAdresaXml(input.ulice, input.psc)
 
@@ -208,7 +225,7 @@ export async function POST(req: NextRequest) {
           <ns:Cestujici>
             ${cestujiciXml}
           </ns:Cestujici>
-          <ns:Pojisteni/>
+          ${pojisteniXml}
           ${dopravyXml}
           ${ubytovaniXml}
           <ns:Skipasy/>
