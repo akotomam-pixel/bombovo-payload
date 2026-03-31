@@ -121,8 +121,9 @@ export default function RegistrationClient({
   const m2Ref = useRef<HTMLInputElement>(null);
   const y2Ref = useRef<HTMLInputElement>(null);
 
+  // Accept 1-2 digit day/month so single-digit entries like "5" still assemble correctly
   const makeDateISO = (d: string, m: string, y: string) =>
-    d.length === 2 && m.length === 2 && y.length === 4
+    d.length >= 1 && m.length >= 1 && y.length === 4
       ? `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
       : '';
 
@@ -402,13 +403,13 @@ export default function RegistrationClient({
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
+        setBirthDateError(true);
         if (formData.hasSecondChild && formData.birthDate2) {
           setBirthDate2Error(true);
-          document.getElementById('birthDate2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          setBirthDateError(true);
-          document.getElementById('birthDate')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+        // Scroll to whichever date field is visible first
+        const scrollTarget = document.getElementById('birthDate') ?? document.getElementById('birthDate2');
+        scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (isPhoneError) {
         setFieldErrors({ phone: 'Zadali ste nesprávne číslo.' });
         document.getElementById('field-phone')?.scrollIntoView({ behavior: 'smooth', block: 'center' });

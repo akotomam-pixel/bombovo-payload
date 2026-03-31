@@ -281,9 +281,10 @@ export async function POST(req: NextRequest) {
       const klientIdStr = extractTag(detailXml, 'id_Klient')
       if (klientIdStr) id_Klient = Number(klientIdStr)
 
-      // Extract all cestujici IDs — find every <ID> inside <Cestujici> blocks
-      // Each traveler element contains an ID child with the assigned positive integer ID
-      const cestujiciBlocks = detailXml.match(/<Cestujici[\s\S]*?<\/Cestujici>/g) ?? []
+      // Extract individual traveler IDs — match each <CestujiciInputBase> element separately.
+      // Matching the outer <Cestujici> wrapper with lazy regex only yields one block (the whole
+      // list), so extractTag would only find the first child's ID even when there are two.
+      const cestujiciBlocks = detailXml.match(/<CestujiciInputBase[\s\S]*?<\/CestujiciInputBase>/g) ?? []
       for (const block of cestujiciBlocks) {
         const cid = extractTag(block, 'ID')
         if (cid && Number(cid) > 0) cestujiciIds.push(Number(cid))
