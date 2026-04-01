@@ -83,7 +83,16 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
               className="relative w-full"
               style={{ maxWidth: 480, aspectRatio: '4/3' }}
             >
-              {photos.map((photo, i) => {
+              {(() => {
+                const altTags = [
+                  'Detské letné tábory na Slovensku – Bombovo',
+                  'Pobytové letné tábory na Slovensku – Bombovo',
+                  'Najlepšie letné tábory na Slovensku – Bombovo',
+                  'Tábory pre deti od 6 do 17 rokov – Bombovo',
+                  'Dobrodružné tábory pre deti – Bombovo',
+                  'Zážitkové tábory pre deti – Bombovo',
+                ]
+                return photos.map((photo, i) => {
                 const pos = getPos(i)
                 if (pos > 2) return null
                 const style = posStyles[pos]
@@ -100,7 +109,7 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
                   >
                     <Image
                       src={photo.url}
-                      alt={`Letný tábor ${i + 1}`}
+                      alt={altTags[i] ?? 'Letný tábor Bombovo'}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 480px"
@@ -108,7 +117,8 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
                     />
                   </div>
                 )
-              })}
+              })
+              })()}
             </div>
           </div>
 

@@ -87,7 +87,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {/* MOBILE ONLY: Headline */}
               <h1 className="lg:hidden text-3xl font-bold text-bombovo-dark">
                 {headline}
-                <br />
+                <br /><br />
                 <span className="relative inline-block">
                   <span className="text-bombovo-red font-bold">
                     {headlineHighlight}
@@ -108,7 +108,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="hidden lg:flex lg:w-[40%] flex-col justify-center space-y-6">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark">
                   {headline}
-                  <br />
+                  <br /><br />
                   <span className="relative inline-block">
                     <span className="text-bombovo-red font-bold">
                       {headlineHighlight}

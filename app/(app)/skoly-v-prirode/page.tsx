@@ -52,6 +52,11 @@ function thumbUrl(url: string | undefined, w = 640): string {
   return `/_next/image?url=${encodeURIComponent(url)}&w=${w}&q=75`
 }
 
+export const metadata = {
+  title: 'Školy v Prírode 2026 | Bombovo',
+  description: 'Školy v prírode 2026 pre základné školy na Slovensku. Profesionálni animátori a overené strediská. Školy môžu využiť príspevok ministerstva 100 € na žiaka.',
+}
+
 export default async function SkolyVPrirodePage() {
   let data: SkolyVPrirodPageData = {
     headline: 'Školy v prírode',

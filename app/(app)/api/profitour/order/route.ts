@@ -277,30 +277,20 @@ export async function POST(req: NextRequest) {
       const detailXml = detailRaw._raw as string
       console.log('[order] Detail XML:', detailXml.slice(0, 1200))
 
-      // Extract klient ID — look for id_Klient anywhere in the response
-      const klientIdStr = extractTag(detailXml, 'id_Klient')
-      if (klientIdStr) id_Klient = Number(klientIdStr)
+      // Extract klient ID — the orderer's klient data is in the first top-level <Klient>
+      // block. The field is <Klient><ID>N</ID>...</Klient> (NOT <id_Klient>N</id_Klient>).
+      const klientSection = extractTag(detailXml, 'Klient')
+      if (klientSection) id_Klient = Number(extractTag(klientSection, 'ID') ?? '0') || null
 
-      // Extract individual traveler IDs from the Cestujici section.
-      // Strategy: find the <Cestujici> container, then collect every <ID>N</ID>
-      // within it (uppercase tag = entity ID, not a foreign key like id_Klient).
-      // This works regardless of whether Profis wraps each traveler in
-      // <CestujiciInputBase>, <CestujiciKlientInput>, or plain <Cestujici> elements.
-      const cestujiciSection = extractTag(detailXml, 'Cestujici')
-      if (cestujiciSection) {
-        const idTags = cestujiciSection.match(/<ID>(\d+)<\/ID>/g) ?? []
-        for (const tag of idTags) {
-          const num = Number(tag.replace(/<[^>]+>/g, '').trim())
-          if (num > 0) cestujiciIds.push(num)
-        }
-      }
-      // Fallback: scan the full response for CestujiciInputBase elements
-      if (cestujiciIds.length === 0) {
-        const blocks = detailXml.match(/<CestujiciInputBase[\s\S]*?<\/CestujiciInputBase>/g) ?? []
-        for (const block of blocks) {
-          const cid = extractTag(block, 'ID')
-          if (cid && Number(cid) > 0) cestujiciIds.push(Number(cid))
-        }
+      // Extract individual traveler (cestujici) IDs.
+      // The safest source is <id_Cestujici>N</id_Cestujici> inside RezervaceDopravaCestujici —
+      // these are guaranteed to be the real Cestujici entity IDs (one per traveler per direction).
+      // De-duplicating gives us exactly one ID per child.
+      const idCestujiciTags = detailXml.match(/<id_Cestujici>(\d+)<\/id_Cestujici>/g) ?? []
+      const seen = new Set<number>()
+      for (const tag of idCestujiciTags) {
+        const num = Number(tag.replace(/<[^>]+>/g, '').trim())
+        if (num > 0 && !seen.has(num)) { seen.add(num); cestujiciIds.push(num) }
       }
 
       console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds)
