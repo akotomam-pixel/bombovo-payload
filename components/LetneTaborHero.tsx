@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import WaveDivider from '@/components/WaveDivider'
+import { renderBold } from '@/lib/renderBold'
 
 interface HeroPhoto {
   url: string
@@ -12,13 +13,6 @@ interface Props {
   headline: string
   body: string
   photos: HeroPhoto[]
-}
-
-function renderBold(text: string) {
-  const parts = text.split(/\*\*(.+?)\*\*/g)
-  return parts.map((part, i) =>
-    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-  )
 }
 
 export default function LetneTaborHero({ headline, body, photos }: Props) {

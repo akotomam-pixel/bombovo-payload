@@ -15,6 +15,7 @@ import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
 import Link from 'next/link'
 import { FaChevronDown } from 'react-icons/fa'
+import { renderBold } from '@/lib/renderBold'
 
 export interface DateEntry {
   startDate: string
@@ -216,7 +217,7 @@ export default function StrediskoDetailClient({
                   {section3.headline}
                 </h2>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed mb-6">
-                  {section3.bodyText}
+                  {renderBold(section3.bodyText)}
                 </p>
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold text-bombovo-dark mb-3">Zaujímavosti v okolí:</h3>
@@ -262,7 +263,7 @@ export default function StrediskoDetailClient({
                   Unikátny program ktorý si každé dieťa zamiluje
                 </h2>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {programText}
+                  {renderBold(programText)}
                 </p>
                 <div>
                   <Link href="/program-skoly-v-prirode">

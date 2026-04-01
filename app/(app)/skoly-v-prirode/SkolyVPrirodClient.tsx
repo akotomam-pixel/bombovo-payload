@@ -8,6 +8,7 @@ import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { renderBold } from '@/lib/renderBold'
 
 export interface ReviewData {
   content: string
@@ -125,7 +126,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   </span>
                 </h1>
                 <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {bodyText}
+                  {renderBold(bodyText)}
                 </p>
                 <div>
                   <a href="#strediska">
@@ -148,7 +149,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {/* MOBILE ONLY: Body text + button */}
               <div className="lg:hidden space-y-4">
                 <p className="text-base text-bombovo-dark leading-relaxed">
-                  {bodyText}
+                  {renderBold(bodyText)}
                 </p>
                 <div>
                   <a href="#strediska">
@@ -326,7 +327,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[0].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[0].body}</p>
+                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[0].body)}</p>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '4 / 3' }}>
@@ -344,7 +345,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                 </div>
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[1].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[1].body}</p>
+                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[1].body)}</p>
                 </div>
               </div>
 
@@ -352,7 +353,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[2].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[2].body}</p>
+                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[2].body)}</p>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '4 / 3' }}>

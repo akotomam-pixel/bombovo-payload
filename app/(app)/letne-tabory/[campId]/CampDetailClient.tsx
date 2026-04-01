@@ -14,6 +14,7 @@ import 'lightgallery/css/lightgallery.css'
 import 'lightgallery/css/lg-zoom.css'
 import 'lightgallery/css/lg-thumbnail.css'
 import type { CampDetailData } from '@/data/camps/types'
+import { renderBold } from '@/lib/renderBold'
 
 interface Props {
   campDetails: CampDetailData
@@ -336,7 +337,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                 </h2>
                 <div className="space-y-4 text-base md:text-lg text-bombovo-dark leading-relaxed mb-8">
                   {campDetails.section2.description.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
+                    <p key={idx}>{renderBold(paragraph)}</p>
                   ))}
                 </div>
                 <div className="text-center">
@@ -371,7 +372,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                 </h2>
                 <div className="space-y-4 text-base md:text-lg text-bombovo-dark leading-relaxed">
                   {campDetails.section3.text.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
+                    <p key={idx}>{renderBold(paragraph)}</p>
                   ))}
                 </div>
               </div>
@@ -416,14 +417,14 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                     <div className="border-4 border-bombovo-blue rounded-2xl bg-bombovo-gray p-6">
                       <h3 className="text-xl font-bold text-bombovo-dark mb-4">LOKALITA:</h3>
                       <p className="text-base text-bombovo-dark leading-relaxed">
-                        {campDetails.section4.details.lokalita}
+                        {renderBold(campDetails.section4.details.lokalita)}
                       </p>
                     </div>
 
                     <div className="border-4 border-bombovo-blue rounded-2xl bg-bombovo-gray p-6">
                       <h3 className="text-xl font-bold text-bombovo-dark mb-4">DOPRAVA:</h3>
                       <p className="text-base text-bombovo-dark leading-relaxed">
-                        {campDetails.section4.details.doprava}
+                        {renderBold(campDetails.section4.details.doprava)}
                       </p>
                     </div>
 
@@ -472,7 +473,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       <div className="space-y-8">
                         <p className="text-lg text-bombovo-dark leading-relaxed">
-                          {campDetails.section4.strediskoDescription}
+                          {renderBold(campDetails.section4.strediskoDescription)}
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {strediskoImages.slice(0, 6).map((img, index) => (
