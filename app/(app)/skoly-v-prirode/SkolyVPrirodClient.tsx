@@ -87,8 +87,8 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {/* MOBILE ONLY: Headline */}
               <h1 className="lg:hidden text-3xl font-bold text-bombovo-dark">
                 {headline}
-                <br /><br />
-                <span className="relative inline-block">
+                <br />
+                <span className="relative inline-block mt-1">
                   <span className="text-bombovo-red font-bold">
                     {headlineHighlight}
                   </span>
@@ -108,8 +108,8 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="hidden lg:flex lg:w-[40%] flex-col justify-center space-y-6">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark">
                   {headline}
-                  <br /><br />
-                  <span className="relative inline-block">
+                  <br />
+                  <span className="relative inline-block mt-1">
                     <span className="text-bombovo-red font-bold">
                       {headlineHighlight}
                     </span>
@@ -180,7 +180,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                 >
                   <img
                     src={reviewPhotoSrc(currentReviewIndex)}
-                    alt={`Review ${currentReviewIndex + 1}`}
+                    alt="Spokojní žiaci a učiteľka pri aktivite na škole v prírode"
                     className="object-cover"
                     style={{ width: '250px', height: '320px' }}
                   />
@@ -291,19 +291,19 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                 <div className="relative h-[400px] md:h-[500px] w-full">
                   <div className="absolute" style={{ left: '0%', bottom: '15%', transform: 'rotate(-6deg)', zIndex: 1 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                      <img src={reviewPhotoSrc(0)} alt="Review Photo 1" className="object-cover" style={{ width: '200px', height: '260px' }} />
+                      <img src={reviewPhotoSrc(0)} alt="Spokojní žiaci a učiteľka pri aktivite na škole v prírode" className="object-cover" style={{ width: '200px', height: '260px' }} />
                       <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
                     </div>
                   </div>
                   <div className="absolute" style={{ left: '30%', top: '10%', transform: 'rotate(4deg)', zIndex: 2 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                      <img src={reviewPhotoSrc(1)} alt="Review Photo 2" className="object-cover" style={{ width: '200px', height: '260px' }} />
+                      <img src={reviewPhotoSrc(1)} alt="Deti počas programu školy v prírode Bombovo" className="object-cover" style={{ width: '200px', height: '260px' }} />
                       <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
                     </div>
                   </div>
                   <div className="absolute" style={{ right: '5%', top: '0%', transform: 'rotate(-4deg)', zIndex: 3 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
-                      <img src={reviewPhotoSrc(2)} alt="Review Photo 3" className="object-cover" style={{ width: '200px', height: '260px' }} />
+                      <img src={reviewPhotoSrc(2)} alt="Skupina žiakov pri outdoor aktivite v prírode" className="object-cover" style={{ width: '200px', height: '260px' }} />
                       <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
                     </div>
                   </div>
@@ -325,7 +325,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {/* Block 1 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[0].headline}</h3>
+                  <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[0].headline}</h2>
                   <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[0].body}</p>
                 </div>
                 <div className="flex justify-center">
@@ -343,7 +343,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[1].headline}</h3>
+                  <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[1].headline}</h2>
                   <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[1].body}</p>
                 </div>
               </div>
@@ -351,7 +351,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {/* Block 3 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <h3 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[2].headline}</h3>
+                  <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[2].headline}</h2>
                   <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{section3[2].body}</p>
                 </div>
                 <div className="flex justify-center">
@@ -381,9 +381,9 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
       <div className="bg-white">
         <section id="strediska" className="py-16 md:py-20">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
               {strediskaHeadline}
-            </h2>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {centers.map((center) => (
                 <div
@@ -391,7 +391,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="h-64 relative overflow-hidden">
-                    <img src={center.image} alt={center.name} className="w-full h-full object-cover" />
+                    <img src={center.image} alt={`${center.name} – rekreačné stredisko pre školy v prírode`} className="w-full h-full object-cover" />
                   </div>
                   <div className="p-6 space-y-4">
                     <h3 className="text-2xl font-bold text-bombovo-dark leading-tight">{center.name}</h3>

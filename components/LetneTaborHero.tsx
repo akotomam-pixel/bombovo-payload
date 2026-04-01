@@ -85,12 +85,12 @@ export default function LetneTaborHero({ headline, body, photos }: Props) {
             >
               {(() => {
                 const altTags = [
-                  'Detské letné tábory na Slovensku – Bombovo',
-                  'Pobytové letné tábory na Slovensku – Bombovo',
-                  'Najlepšie letné tábory na Slovensku – Bombovo',
-                  'Tábory pre deti od 6 do 17 rokov – Bombovo',
-                  'Dobrodružné tábory pre deti – Bombovo',
-                  'Zážitkové tábory pre deti – Bombovo',
+                  'Deti pri aktivitách na letnom tábore Bombovo',
+                  'Skupinka detí na letnom tábore v prírode na Slovensku',
+                  'Zábava a program na detskom letnom tábore Bombovo',
+                  'Deti počas hry na pobytovom letnom tábore',
+                  'Animátori s deťmi na letnom tábore Bombovo 2026',
+                  'Deti na výlete počas letného tábora na Slovensku',
                 ]
                 return photos.map((photo, i) => {
                 const pos = getPos(i)
