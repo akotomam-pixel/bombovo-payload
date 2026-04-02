@@ -51,25 +51,44 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Load Google Maps JS SDK once
+  // Load Google Maps JS SDK once (handle script already in DOM / load event already fired)
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (window.google?.maps) {
-      setSdkLoaded(true)
-      return
+
+    function tryActivate() {
+      if (window.google?.maps) {
+        setSdkLoaded(true)
+        return true
+      }
+      return false
     }
+
+    if (tryActivate()) return
+
     const existing = document.querySelector(
-      `script[src*="maps.googleapis.com/maps/api/js"]`
-    )
+      'script[src*="maps.googleapis.com/maps/api/js"]',
+    ) as HTMLScriptElement | null
+
     if (existing) {
-      existing.addEventListener('load', () => setSdkLoaded(true))
-      return
+      const onLoad = () => tryActivate()
+      existing.addEventListener('load', onLoad)
+      tryActivate()
+      const poll = window.setInterval(() => {
+        if (tryActivate()) window.clearInterval(poll)
+      }, 50)
+      const stopPoll = window.setTimeout(() => window.clearInterval(poll), 15000)
+      return () => {
+        existing.removeEventListener('load', onLoad)
+        window.clearInterval(poll)
+        window.clearTimeout(stopPoll)
+      }
     }
+
     const script = document.createElement('script')
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`
     script.async = true
     script.defer = true
-    script.onload = () => setSdkLoaded(true)
+    script.onload = () => tryActivate()
     document.head.appendChild(script)
   }, [])
 
@@ -191,10 +210,13 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
     <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
       {/* Left column — calculator */}
       <div className="w-full lg:w-1/2">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark mb-6">
-          Zistite, ako ďaleko je{' '}
-          <span className="font-handwritten text-bombovo-red">{strediskoName}</span>
-          {' '}od vás
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark mb-6 leading-tight">
+          <span className="block">Zistite, ako ďaleko je</span>
+          <span className="block mt-1 md:mt-2">
+            <span className="font-handwritten text-bombovo-red">{strediskoName}</span>
+            {' '}
+            <span className="font-bold text-bombovo-dark">od vás</span>
+          </span>
         </h2>
 
         {/* Input + autocomplete */}

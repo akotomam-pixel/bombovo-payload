@@ -324,9 +324,11 @@ export default function StrediskoDetailClient({
             </div>
           </div>
         </section>
+      </div>
 
-        {/* Section 3.1: Distance Calculator */}
-        <section className="py-12 md:py-16 border-t border-bombovo-gray">
+      {/* Section 3.1: Distance Calculator — gray + blue top accent (like site dividers) */}
+      <div className="bg-bombovo-gray border-t-4 border-bombovo-blue">
+        <section className="py-12 md:py-16">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <DistanceCalculator
               strediskoName={name}
@@ -334,12 +336,12 @@ export default function StrediskoDetailClient({
             />
           </div>
         </section>
-
-        <WaveDivider color="red" variant={3} />
       </div>
 
+      <WaveDivider color="red" variant={3} />
+
       {/* Section 4: Video + Program Info */}
-      <div className="bg-bombovo-gray">
+      <div className="bg-white">
         <section className="py-12 md:py-16">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-8 items-center">
