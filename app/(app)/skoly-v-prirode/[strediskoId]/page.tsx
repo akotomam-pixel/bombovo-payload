@@ -87,11 +87,9 @@ function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): Stre
       : [],
     heroGallery,
     section2Photo: mediaUrl(doc.section2Photo),
-    // CMS map coords, or fall back to hardcoded data (slug matches stredisko id)
-    coordinates:
-      doc.mapLat != null && doc.mapLng != null
-        ? { lat: Number(doc.mapLat), lng: Number(doc.mapLng) }
-        : getStrediskoById(strediskoId)?.coordinates,
+    // Coordinates come from hardcoded data/strediska/ files (keyed by slug).
+    // mapLat/mapLng will be added back to the Payload schema once a DB migration is run.
+    coordinates: getStrediskoById(strediskoId)?.coordinates,
     section3: {
       headline: doc.section2Headline ?? '',
       bodyText: doc.section2Body ?? '',

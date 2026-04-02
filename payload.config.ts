@@ -34,10 +34,6 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
-    // push: true keeps the DB schema in sync with collection definitions automatically.
-    // Safe for single-instance deployments like Vercel (equivalent to running `payload migrate:fresh`
-    // but non-destructive for existing rows — it only ADDs missing columns).
-    push: true,
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
