@@ -158,7 +158,7 @@ export default function StrediskoDetailClient({
                 >
                   {heroGallery[mobilePhotoIndex]?.src && (
                     <img
-                      src={`/_next/image?url=${encodeURIComponent(heroGallery[mobilePhotoIndex].src)}&w=800&q=80`}
+                      src={`/_next/image?url=${encodeURIComponent(heroGallery[mobilePhotoIndex].src)}&w=828&q=80`}
                       alt={`Foto ${mobilePhotoIndex + 1}`}
                       className="absolute inset-0 w-full h-full object-cover"
                       draggable={false}
