@@ -33,6 +33,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
+  console.log('[order/extra] received:', JSON.stringify({
+    id_Klient: input.id_Klient,
+    cestujiciCount: input.cestujici?.length,
+    zdravotniOmezeni: input.zdravotniOmezeni,
+    gdprOmezeni: input.gdprOmezeni,
+  }))
+
   const errors: string[] = []
 
   // ── CestujiciExtraUpd: set t-shirt size for each traveler ─────────────────
@@ -74,7 +81,7 @@ export async function POST(req: NextRequest) {
       console.log(`[order/extra] KlientExtraUpd OK for id_Klient=${input.id_Klient}`)
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      console.error(`[order/extra] KlientExtraUpd failed for id_Klient=${input.id_Klient}:`, msg)
+      console.error(`[order/extra] KlientExtraUpd FAILED id_Klient=${input.id_Klient} zdravotni="${input.zdravotniOmezeni}" gdpr="${input.gdprOmezeni}" error:`, msg)
       errors.push(`KlientExtraUpd(${input.id_Klient}): ${msg}`)
     }
   }

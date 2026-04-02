@@ -271,12 +271,18 @@ export async function POST(req: NextRequest) {
         </ns:Context>`)
 
       const detailXml = detailRaw._raw as string
-      console.log('[order] Detail XML:', detailXml.slice(0, 1200))
+      console.log('[order] Detail XML (first 2000):', detailXml.slice(0, 2000))
 
-      // Extract klient ID — the orderer's klient data is in the first top-level <Klient>
-      // block. The field is <Klient><ID>N</ID>...</Klient> (NOT <id_Klient>N</id_Klient>).
-      const klientSection = extractTag(detailXml, 'Klient')
-      if (klientSection) id_Klient = Number(extractTag(klientSection, 'ID') ?? '0') || null
+      // Extract klient ID using multiple strategies (same style as cestujiciIds below).
+      // Strategy 1: <id_Klient>N</id_Klient> directly in the XML
+      const directKlientMatch = detailXml.match(/<id_Klient>(\d+)<\/id_Klient>/)
+      if (directKlientMatch) {
+        id_Klient = Number(directKlientMatch[1]) || null
+      } else {
+        // Strategy 2: <Klient ...><ID>N</ID> — first occurrence
+        const klientIdMatch = detailXml.match(/<Klient[^>]*>\s*<ID>(\d+)<\/ID>/)
+        if (klientIdMatch) id_Klient = Number(klientIdMatch[1]) || null
+      }
 
       // Extract individual traveler (cestujici) IDs.
       // The safest source is <id_Cestujici>N</id_Cestujici> inside RezervaceDopravaCestujici —
