@@ -33,7 +33,8 @@ interface Props {
 
 declare global {
   interface Window {
-    google: typeof google
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    google: any
     initGoogleMaps?: () => void
   }
 }
@@ -48,7 +49,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
   const [sdkLoaded, setSdkLoaded] = useState(false)
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null)
+  const autocompleteService = useRef<any>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Load Google Maps JS SDK once (handle script already in DOM / load event already fired)
@@ -124,9 +125,9 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
           types: ['geocode'],
           componentRestrictions: { country: 'sk' },
           language: 'sk',
-        } as google.maps.places.AutocompletionRequest,
-        (predictions, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+        },
+        (predictions: any[], status: string) => {
+          if (status === 'OK' && predictions) {
             setAutocompleteResults(
               predictions.map((p) => ({ description: p.description, placeId: p.place_id }))
             )
@@ -168,10 +169,10 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
       {
         origins: [inputValue],
         destinations: [{ lat: coordinates.lat, lng: coordinates.lng }],
-        travelMode: window.google.maps.TravelMode.DRIVING,
+        travelMode: 'DRIVING',
         language: 'sk',
       },
-      (response, status) => {
+      (response: any, status: string) => {
         clearInterval(progressInterval)
 
         if (

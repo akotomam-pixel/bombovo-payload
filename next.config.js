@@ -10,16 +10,11 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'y554alh0y1.ufs.sh',
-        pathname: '/f/*',
-      },
-      {
-        protocol: 'https',
-        hostname: 'utfs.io',
-        pathname: '/f/*',
-      },
+      // UploadThing CDN — all subdomains and paths
+      { protocol: 'https', hostname: 'utfs.io', pathname: '/**' },
+      { protocol: 'https', hostname: '**.ufs.sh', pathname: '/**' },
+      // Placeholder images (used as fallback when Payload has no photos)
+      { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
     ],
     minimumCacheTTL: 2678400,
   },
