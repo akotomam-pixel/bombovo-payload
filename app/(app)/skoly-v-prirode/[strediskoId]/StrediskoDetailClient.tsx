@@ -13,6 +13,7 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
+import DistanceCalculator from './DistanceCalculator'
 import Link from 'next/link'
 import { FaChevronDown } from 'react-icons/fa'
 import { renderBold } from '@/lib/renderBold'
@@ -32,6 +33,7 @@ export interface StrediskoDetailData {
   iconBullets: string[]
   heroGallery: Array<{ src: string; thumb: string }>
   section2Photo?: string
+  coordinates?: { lat: number; lng: number }
   section3: {
     headline: string
     bodyText: string
@@ -70,15 +72,29 @@ export default function StrediskoDetailClient({
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const lgRef = useRef<any>(null)
 
-  const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section2Photo, section3, programText, detaily, dates } = data
+  const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section2Photo, coordinates, section3, programText, detaily, dates } = data
 
-  // Pre-fetch all gallery images at display size so clicking thumbnails is instant
+  // Pre-fetch all gallery images at full size for LightGallery
   useEffect(() => {
     heroGallery.forEach((img) => {
       const el = new window.Image()
       el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Pre-fetch adjacent photos at carousel size (w=828) so swipes are instant.
+  // Runs every time the index changes — by the time the user swipes again, the
+  // next and previous photos are already in the browser cache.
+  useEffect(() => {
+    const preload = (i: number) => {
+      if (!heroGallery[i]) return
+      const el = new window.Image()
+      el.src = `/_next/image?url=${encodeURIComponent(heroGallery[i].src)}&w=828&q=80`
+    }
+    preload(mobilePhotoIndex + 1)
+    preload(mobilePhotoIndex + 2)
+    preload(mobilePhotoIndex - 1)
+  }, [mobilePhotoIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalPhotos = heroGallery.length
 
@@ -306,6 +322,16 @@ export default function StrediskoDetailClient({
                 </div>
               )}
             </div>
+          </div>
+        </section>
+
+        {/* Section 3.1: Distance Calculator */}
+        <section className="py-12 md:py-16 border-t border-bombovo-gray">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <DistanceCalculator
+              strediskoName={name}
+              coordinates={coordinates}
+            />
           </div>
         </section>
 

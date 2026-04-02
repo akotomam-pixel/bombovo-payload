@@ -61,5 +61,6 @@ export const hotelMartinskeHole: StrediskoData = {
     { startDate: '08.06.2026', endDate: '12.06.2026', days: 5, price: '210.00 €', available: false },
     { startDate: '15.06.2026', endDate: '19.06.2026', days: 5, price: '210.00 €', available: false },
     { startDate: '22.06.2026', endDate: '26.06.2026', days: 5, price: '200.00 €', available: false }
-  ]
+  ],
+  coordinates: { lat: 49.0661, lng: 18.9231 },
 }

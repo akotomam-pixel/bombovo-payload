@@ -34,5 +34,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Speed test output
+.unlighthouse/
 
+# Repomix output
+repomix-output.xml
+repomix-output.txt
 

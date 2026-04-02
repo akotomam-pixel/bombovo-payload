@@ -24,4 +24,5 @@ export interface StrediskoData {
     zaujimavostiVOkoli: string[]
   }
   dates: StrediskoDate[]
+  coordinates?: { lat: number; lng: number }
 }

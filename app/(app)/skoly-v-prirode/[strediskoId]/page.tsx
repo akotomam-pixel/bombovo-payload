@@ -87,6 +87,9 @@ function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): Stre
       : [],
     heroGallery,
     section2Photo: mediaUrl(doc.section2Photo),
+    coordinates: doc.mapLat && doc.mapLng
+      ? { lat: Number(doc.mapLat), lng: Number(doc.mapLng) }
+      : undefined,
     section3: {
       headline: doc.section2Headline ?? '',
       bodyText: doc.section2Body ?? '',
@@ -132,6 +135,7 @@ function mapHardcodedToDetail(
       src: `https://picsum.photos/seed/${strediskoId}photo${i}/1200/800`,
       thumb: `https://picsum.photos/seed/${strediskoId}photo${i}/400/267`,
     })),
+    coordinates: hc.coordinates,
     section3: {
       headline: hc.section3.headline,
       bodyText: hc.section3.bodyText,

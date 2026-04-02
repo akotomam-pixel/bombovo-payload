@@ -57,5 +57,6 @@ export const penzionRohacan: StrediskoData = {
     { startDate: '08.06.2026', endDate: '12.06.2026', days: 5, price: '195.00 €', available: false },
     { startDate: '15.06.2026', endDate: '19.06.2026', days: 5, price: '195.00 €', available: true },
     { startDate: '22.06.2026', endDate: '26.06.2026', days: 5, price: '185.00 €', available: false }
-  ]
+  ],
+  coordinates: { lat: 49.3500, lng: 19.5800 },
 }

@@ -62,5 +62,6 @@ export const horskyHotelLomy: StrediskoData = {
     { startDate: '14.09.2026', endDate: '18.09.2026', days: 5, price: '165.00 €', available: false },
     { startDate: '21.09.2026', endDate: '25.09.2026', days: 5, price: '165.00 €', available: true },
     { startDate: '28.09.2026', endDate: '02.10.2026', days: 5, price: '165.00 €', available: false }
-  ]
+  ],
+  coordinates: { lat: 48.7133, lng: 18.3694 },
 }
