@@ -148,26 +148,28 @@ export default function StrediskoDetailClient({
               <div className="lg:w-[70%] w-full">
 
                 {/* ── Mobile carousel (hidden on lg+) ── */}
+                {/* Uses the same heroGallery URLs as the desktop grid — no duplicate fetches. */}
                 <div
-                  className="lg:hidden relative rounded-2xl overflow-hidden bg-bombovo-blue cursor-pointer"
-                  style={{ aspectRatio: '4/3' }}
+                  className="lg:hidden relative w-full rounded-2xl overflow-hidden bg-bombovo-blue cursor-pointer"
+                  style={{ paddingBottom: '75%' /* 4:3 ratio */ }}
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                   onClick={() => lgRef.current?.openGallery(mobilePhotoIndex)}
                 >
-                  {heroGallery[mobilePhotoIndex] && (
+                  {heroGallery[mobilePhotoIndex]?.src && (
                     <img
                       src={`/_next/image?url=${encodeURIComponent(heroGallery[mobilePhotoIndex].src)}&w=800&q=80`}
                       alt={`Foto ${mobilePhotoIndex + 1}`}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      draggable={false}
                     />
                   )}
                   {/* Counter bottom-right */}
                   <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs font-bold px-2 py-1 rounded-full">
                     {mobilePhotoIndex + 1} / {totalPhotos}
                   </div>
-                  {/* Dots bottom-center */}
-                  <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 px-4 overflow-hidden">
+                  {/* Dots bottom-center — one dot per photo, auto-grows when photos are added */}
+                  <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 px-10 overflow-x-auto">
                     {heroGallery.map((_, i) => (
                       <button
                         key={i}
