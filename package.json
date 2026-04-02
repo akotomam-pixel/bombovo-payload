@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "payload migrate && next build",
+    "build": "tsx scripts/apply-migrations.ts && next build",
     "start": "next start",
     "lint": "next lint",
     "migrate:camps": "tsx scripts/migrate-camps.ts",
