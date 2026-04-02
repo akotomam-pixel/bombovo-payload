@@ -31,6 +31,7 @@ export interface StrediskoDetailData {
   basePrice: string
   iconBullets: string[]
   heroGallery: Array<{ src: string; thumb: string }>
+  section2Photo?: string
   section3: {
     headline: string
     bodyText: string
@@ -67,7 +68,7 @@ export default function StrediskoDetailClient({
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const lgRef = useRef<any>(null)
 
-  const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section3, programText, detaily, dates } = data
+  const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section2Photo, section3, programText, detaily, dates } = data
 
   // Pre-fetch all gallery images at display size so clicking thumbnails is instant
   useEffect(() => {
@@ -231,18 +232,26 @@ export default function StrediskoDetailClient({
                 </div>
               </div>
 
-              <div className="lg:w-[30%] w-full flex justify-center lg:justify-start">
-                <div className="w-full max-w-[400px]">
-                  <div className="bg-white p-5 pb-16 shadow-lg rounded-lg">
-                    <div className="w-full bg-[#90EE90] flex items-center justify-center" style={{ width: '100%', aspectRatio: '3 / 4' }}>
-                      <p className="text-lg font-bold text-bombovo-dark text-center px-4">[PHOTO PLACEHOLDER 3:4]</p>
+              {section2Photo && (
+                <div className="lg:w-[30%] w-full flex justify-center lg:justify-start">
+                  <div className="w-full max-w-[400px]">
+                    <div className="bg-white p-5 pb-16 shadow-lg rounded-lg">
+                      <div className="w-full relative overflow-hidden rounded" style={{ aspectRatio: '3 / 4' }}>
+                        <Image
+                          src={section2Photo}
+                          alt={name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 400px"
+                        />
+                      </div>
+                      <p className="text-center mt-6 font-handwritten text-bombovo-dark text-xl">
+                        2024 {name}
+                      </p>
                     </div>
-                    <p className="text-center mt-6 font-handwritten text-bombovo-dark text-xl">
-                      2024 {name}
-                    </p>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </section>

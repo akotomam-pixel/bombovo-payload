@@ -86,6 +86,7 @@ function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): Stre
       ? doc.bulletPoints.map((b: any) => b.text ?? '').filter(Boolean)
       : [],
     heroGallery,
+    section2Photo: mediaUrl(doc.section2Photo),
     section3: {
       headline: doc.section2Headline ?? '',
       bodyText: doc.section2Body ?? '',
