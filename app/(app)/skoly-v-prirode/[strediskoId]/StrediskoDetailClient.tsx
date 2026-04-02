@@ -317,13 +317,19 @@ export default function StrediskoDetailClient({
         <section className="py-12 md:py-16">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-8 items-center">
+              {/* Headline — mobile only (shows above video) */}
+              <h2 className="lg:hidden w-full text-2xl font-bold text-bombovo-dark">
+                Unikátny program ktorý si každé dieťa zamiluje
+              </h2>
+
               <div className="lg:w-[65%] w-full">
                 <div className="w-full rounded-2xl overflow-hidden shadow-lg bg-black" style={{ aspectRatio: '16 / 9' }}>
                   <LazyVideo src="/images/Videos/skolavprirode2.mp4" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="lg:w-1/2 w-full space-y-6">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark">
+                {/* Headline — desktop only (inside text column) */}
+                <h2 className="hidden lg:block text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark">
                   Unikátny program ktorý si každé dieťa zamiluje
                 </h2>
                 <div className="space-y-4">
