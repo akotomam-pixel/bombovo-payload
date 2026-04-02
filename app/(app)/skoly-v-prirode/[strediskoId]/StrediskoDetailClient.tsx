@@ -66,6 +66,8 @@ export default function StrediskoDetailClient({
   data: StrediskoDetailData
 }) {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
+  const [mobilePhotoIndex, setMobilePhotoIndex] = useState(0)
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const lgRef = useRef<any>(null)
 
   const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section2Photo, section3, programText, detaily, dates } = data
@@ -86,6 +88,19 @@ export default function StrediskoDetailClient({
     [],
   )
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX)
+  }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return
+    const dx = touchStartX - e.changedTouches[0].clientX
+    if (Math.abs(dx) > 40) {
+      if (dx > 0) setMobilePhotoIndex(i => Math.min(i + 1, totalPhotos - 1))
+      else setMobilePhotoIndex(i => Math.max(i - 1, 0))
+    }
+    setTouchStartX(null)
+  }
+
   return (
     <main className="min-h-screen bg-white">
       {/* Section 0: Top Bar & Header */}
@@ -99,9 +114,12 @@ export default function StrediskoDetailClient({
         <section className="pt-12 md:pt-16 pb-4 md:pb-5">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="lg:w-[80%]">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark whitespace-nowrap">
-                Škola v prírode -{' '}
-                <span className="relative inline-block">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark">
+                {/* Mobile: two lines, no dash */}
+                <span className="block md:hidden">Škola v prírode</span>
+                {/* Desktop: single line with dash */}
+                <span className="hidden md:inline">Škola v prírode -{' '}</span>
+                <span className="relative inline-block mt-1 md:mt-0">
                   <span className="font-handwritten text-bombovo-red text-4xl md:text-5xl lg:text-6xl">
                     {name}
                   </span>
@@ -128,7 +146,40 @@ export default function StrediskoDetailClient({
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Gallery (70%) */}
               <div className="lg:w-[70%] w-full">
-                <div className="rounded-2xl p-3 bg-bombovo-blue">
+
+                {/* ── Mobile carousel (hidden on lg+) ── */}
+                <div
+                  className="lg:hidden relative rounded-2xl overflow-hidden bg-bombovo-blue cursor-pointer"
+                  style={{ aspectRatio: '4/3' }}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
+                  onClick={() => lgRef.current?.openGallery(mobilePhotoIndex)}
+                >
+                  {heroGallery[mobilePhotoIndex] && (
+                    <img
+                      src={`/_next/image?url=${encodeURIComponent(heroGallery[mobilePhotoIndex].src)}&w=800&q=80`}
+                      alt={`Foto ${mobilePhotoIndex + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  {/* Counter bottom-right */}
+                  <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {mobilePhotoIndex + 1} / {totalPhotos}
+                  </div>
+                  {/* Dots bottom-center */}
+                  <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 px-4 overflow-hidden">
+                    {heroGallery.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={(e) => { e.stopPropagation(); setMobilePhotoIndex(i) }}
+                        className={`rounded-full flex-shrink-0 transition-all duration-200 ${i === mobilePhotoIndex ? 'w-2.5 h-2.5 bg-white' : 'w-2 h-2 bg-white/50'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Desktop 5-photo grid (hidden on mobile) ── */}
+                <div className="hidden lg:block rounded-2xl p-3 bg-bombovo-blue">
                   <div className="flex gap-2">
                     {/* Large Main Photo */}
                     <div
