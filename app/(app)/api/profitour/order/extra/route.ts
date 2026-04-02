@@ -69,7 +69,6 @@ export async function POST(req: NextRequest) {
             ${param('ID', input.id_Klient)}
             ${input.zdravotniOmezeni ? param('ZdravotniOmezeni', input.zdravotniOmezeni) : ''}
             ${input.gdprOmezeni ? param('GdprOmezeni', input.gdprOmezeni) : ''}
-            ${param('id_Organizace', process.env.PROFIS_ID_ORGANIZACE ?? '')}
           </ns:Parametry>
         </ns:Data>`)
       console.log(`[order/extra] KlientExtraUpd OK for id_Klient=${input.id_Klient}`)
