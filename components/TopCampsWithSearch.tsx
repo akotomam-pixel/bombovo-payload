@@ -110,7 +110,7 @@ export default function TopCampsWithSearch({ headline, featuredCamps }: TopCamps
                   {camp.cardImage?.url && (
                     <Image
                       src={camp.cardImage.url}
-                      alt={camp.name}
+                      alt={`${camp.name} – letný tábor pre deti`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -140,7 +140,7 @@ export default function TopCampsWithSearch({ headline, featuredCamps }: TopCamps
                       {camp.section2_description[0].paragraph}
                     </p>
                   )}
-                  <Link href={`/letne-tabory/${camp.slug}`}>
+                  <Link href={`/letne-tabory/${camp.slug}`} aria-label={`Pozri letný tábor ${camp.name}`}>
                     <button className="w-full py-4 px-8 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
                       Zistiť viac
                     </button>

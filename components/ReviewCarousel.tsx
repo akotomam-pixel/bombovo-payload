@@ -61,7 +61,7 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
               {current.photo?.url && (
                 <Image
                   src={current.photo.url}
-                  alt={`Review ${currentReviewIndex + 1}`}
+                  alt="Spokojné dieťa na letnom tábore"
                   width={250}
                   height={320}
                   className="object-cover"

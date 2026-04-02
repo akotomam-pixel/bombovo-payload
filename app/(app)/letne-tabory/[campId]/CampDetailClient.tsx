@@ -79,6 +79,27 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
     if (visibleThumbnailStart < totalImages - 5) setVisibleThumbnailStart(visibleThumbnailStart + 1)
   }
 
+  const campAltTags: Record<string, string> = {
+    'anglicke-leto': 'Anglický letný tábor pre deti od 8 do 12 rokov',
+    'olymp-kemp': 'Dobrodružný detský tábor inšpirovaný gréckou mytológiou',
+    'fest-animator-fest': 'Tínedžerský letný tábor pre deti od 13 rokov',
+    'tanecna-planeta': 'Tanečný tábor pre deti od 11 do 16 rokov',
+    'babinec': 'Letný tábor pre dievčatá od 10 do 16 rokov',
+    'tajomstvo-basketbaloveho-pohara': 'Basketbalový letný tábor pre deti od 12 rokov',
+    'trhlina': 'Tajomný akčný detský tábor plný záhad',
+    'ready-player-one': 'Gamer letný tábor pre deti od 10 rokov',
+    'v-dracej-nore': 'Fantasy dobrodružný tábor pre deti od 10 do 14 rokov',
+    'neverfort': 'Fantasy tábor Wednesday a Harry Potter pre deti',
+    'chlapinec': 'Letný tábor pre chlapcov od 10 do 16 rokov',
+    'artlantida': 'Umelecký a kreatívny tábor pre deti od 11 rokov',
+    'stastna-plutva': 'Letný tábor pre najmenších deti od 6 do 10 rokov',
+    'kazdy-den-novy-zazitok': 'Dobrodružný detský tábor pre deti od 8 do 14 rokov',
+    'expecto': 'Fantasy tábor kúziel pre deti od 10 do 16 rokov',
+    'woodkemp': 'Letný tábor v prírode pre deti od 9 do 16 rokov',
+    'z-bodu-nula-do-bodu-sto': 'Zážitkový letný tábor pre deti od 8 do 14 rokov',
+  }
+  const campAlt = campAltTags[campId] ?? 'Letný tábor pre deti Bombovo'
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <div className="bg-bombovo-gray">
@@ -128,7 +149,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                 >
                   <img
                     src={galleryImages[mainImage].src ? `/_next/image?url=${encodeURIComponent(galleryImages[mainImage].src)}&w=1200&q=80` : ''}
-                    alt={`Foto ${mainImage + 1}`}
+                    alt={campAlt}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
@@ -241,7 +262,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                 >
                   <img
                     src={galleryImages[mainImage].src ? `/_next/image?url=${encodeURIComponent(galleryImages[mainImage].src)}&w=1200&q=80` : ''}
-                    alt={`Foto ${mainImage + 1}`}
+                    alt={campAlt}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
@@ -268,7 +289,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                         >
                           <img
                             src={galleryImages[imageIndex].thumb}
-                            alt={`Foto ${imageIndex + 1}`}
+                            alt={`${campAlt} – foto ${imageIndex + 1}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -416,16 +437,20 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
 
                     <div className="border-4 border-bombovo-blue rounded-2xl bg-bombovo-gray p-6">
                       <h3 className="text-xl font-bold text-bombovo-dark mb-4">LOKALITA:</h3>
-                      <p className="text-base text-bombovo-dark leading-relaxed">
-                        {renderBold(campDetails.section4.details.lokalita)}
-                      </p>
+                      <div className="space-y-2">
+                        {campDetails.section4.details.lokalita.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                          <p key={i} className="text-base text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="border-4 border-bombovo-blue rounded-2xl bg-bombovo-gray p-6">
                       <h3 className="text-xl font-bold text-bombovo-dark mb-4">DOPRAVA:</h3>
-                      <p className="text-base text-bombovo-dark leading-relaxed">
-                        {renderBold(campDetails.section4.details.doprava)}
-                      </p>
+                      <div className="space-y-2">
+                        {campDetails.section4.details.doprava.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                          <p key={i} className="text-base text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="border-4 border-bombovo-blue rounded-2xl bg-bombovo-gray p-6">
@@ -472,9 +497,11 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                   <div className="bg-white p-8 md:p-12 rounded-b-3xl">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       <div className="space-y-8">
-                        <p className="text-lg text-bombovo-dark leading-relaxed">
-                          {renderBold(campDetails.section4.strediskoDescription)}
-                        </p>
+                        <div className="space-y-4">
+                          {campDetails.section4.strediskoDescription.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                            <p key={i} className="text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                          ))}
+                        </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {strediskoImages.slice(0, 6).map((img, index) => (
                             <div

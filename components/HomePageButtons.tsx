@@ -8,8 +8,9 @@ export default function HomePageButtons() {
     <div className="md:hidden bg-bombovo-gray px-6 py-6">
       <div className="flex justify-center items-center gap-8">
         {/* Letné tábory - Black text with yellow hand-drawn underline */}
-        <Link 
+        <Link
           href="/letne-tabory"
+          aria-label="Detské letné tábory pre deti na Slovensku"
           className="relative group"
         >
           <span className="text-bombovo-dark font-semibold text-lg">
@@ -32,8 +33,9 @@ export default function HomePageButtons() {
         </Link>
 
         {/* Pre školy - Black text with red hand-drawn underline */}
-        <Link 
+        <Link
           href="/skoly-v-prirode"
+          aria-label="Školy v prírode pre základné školy Bombovo"
           className="relative group"
         >
           <span className="text-bombovo-dark font-semibold text-lg">

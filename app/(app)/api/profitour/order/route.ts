@@ -173,14 +173,10 @@ export async function POST(req: NextRequest) {
   // Field order (WCF alphabetical): PojisteniCestujici (P,C) → id_TypPojisteni (i,T)
   const pojisteniXml = input.insurance
     ? `<ns:Pojisteni>
-        ${input.cestujici!.map((_, i) => `<ns:PojisteniInputBase i:type="ns:PojisteniKalkulaceInput">
-            <ns:PojisteniCestujici>
-              <ns:PojisteniCestujiciInput>
-                <ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici>
-              </ns:PojisteniCestujiciInput>
-            </ns:PojisteniCestujici>
+        ${input.cestujici!.map((_, i) => `<ns:PojisteniInput>
+            <ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici>
             <ns:id_TypPojisteni>1</ns:id_TypPojisteni>
-          </ns:PojisteniInputBase>`).join('')}
+          </ns:PojisteniInput>`).join('')}
       </ns:Pojisteni>`
     : `<ns:Pojisteni/>`
 

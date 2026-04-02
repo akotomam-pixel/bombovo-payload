@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Detské Letné Tábory a Školy v Prírode | Bombovo',
+  description: 'Viac ako 26 rokov organizujeme detské letné tábory a školy v prírode pre deti od 6 do 17 rokov na Slovensku. 86 % návratnosť detí. Pozri ponuku 2026.',
+}
+
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import TopBar from '@/components/TopBar'

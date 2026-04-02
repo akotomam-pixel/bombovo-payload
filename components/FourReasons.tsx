@@ -75,7 +75,7 @@ export default function FourReasons({ headline, reasons }: FourReasonsProps) {
 
         {/* CTA Button */}
         <div className="text-center mt-16">
-          <Link href="/letne-tabory">
+          <Link href="/letne-tabory" aria-label="Detské letné tábory Bombovo 2026">
             <button className="px-8 py-4 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
               Pozri letné tábory
             </button>

@@ -47,7 +47,7 @@ export default function SkolyVPrirode({ headline, featuredSkoly }: SkolyVPrirode
                 {stredisko._imageUrl && (
                   <Image
                     src={stredisko._imageUrl}
-                    alt={stredisko.name}
+                    alt={`${stredisko.name} – škola v prírode`}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -66,7 +66,7 @@ export default function SkolyVPrirode({ headline, featuredSkoly }: SkolyVPrirode
                     </svg>
                   </div>
                 )}
-                <Link href={`/skoly-v-prirode/${stredisko.slug}`}>
+                <Link href={`/skoly-v-prirode/${stredisko.slug}`} aria-label={`Pozri školu v prírode ${stredisko.name}`}>
                   <button className="w-full py-4 px-8 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
                     Zistiť viac
                   </button>

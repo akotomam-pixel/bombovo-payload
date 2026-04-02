@@ -126,5 +126,30 @@ export default async function LetneTaborePage() {
     console.error('[letne-tabory] Payload fetch error:', e)
   }
 
-  return <CampsClient camps={mergedCamps} heroData={heroData} />
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Letné tábory Bombovo 2026',
+    itemListElement: mergedCamps.map((camp, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: camp.name,
+      url: `https://bombovo.sk/letne-tabory/${camp.id}`,
+      offers: {
+        '@type': 'Offer',
+        price: camp.price.replace(/\s?€/g, '').trim(),
+        priceCurrency: 'EUR',
+      },
+    })),
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <CampsClient camps={mergedCamps} heroData={heroData} />
+    </>
+  )
 }

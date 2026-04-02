@@ -55,7 +55,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
   return (
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Camp Photo */}
-      <Link href={`/letne-tabory/${id}`} className="block h-64 relative overflow-hidden">
+      <Link href={`/letne-tabory/${id}`} className="block h-64 relative overflow-hidden" aria-label={`Pozri letný tábor ${name}`}>
         <Image
           src={image}
           alt={`${name} – letný tábor pre deti | Bombovo`}
@@ -101,7 +101,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
           </div>
 
           {/* CTA Button */}
-          <Link href={`/letne-tabory/${id}`} className="flex-1">
+          <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Zistiť viac o letnom tábore ${name}`}>
             <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
               Zistiť viac
             </button>

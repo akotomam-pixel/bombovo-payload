@@ -24,6 +24,22 @@ export default function RootLayout({
   return (
     <html lang="sk" className={theGirlNextDoor.variable}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Bombovo',
+              url: 'https://bombovo.sk',
+              description: 'Detské letné tábory a školy v prírode pre deti od 6 do 17 rokov na Slovensku',
+              sameAs: [
+                'https://www.facebook.com/Bombovo.sk/',
+                'https://www.instagram.com/bombovo/?hl=en',
+              ],
+            }),
+          }}
+        />
         <Script
           id="cookieyes"
           type="text/javascript"

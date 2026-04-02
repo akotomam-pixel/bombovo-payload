@@ -71,6 +71,16 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
 
   const reviewPhotoSrc = (index: number) => reviews[index]?.photo ?? ''
 
+  const strediskoAria: Record<string, string> = {
+    'horsky-hotel-lomy': 'Škola v prírode na Horskom Hoteli Lomy',
+    'horsky-hotel-minciar': 'Škola v prírode na Horskom Hoteli Minciar',
+    'hotel-martinske-hole': 'Škola v prírode na Hotel Martinské Hole',
+    'hotel-zuna': 'Škola v prírode na Hotel Zuna',
+    'penzion-rohacan': 'Škola v prírode na Penzióne Roháčan',
+    'penzion-sabina': 'Škola v prírode na Penzióne Sabina',
+    'stred-europy-krahule': 'Škola v prírode Stred Európy Krahule',
+  }
+
   return (
     <main className="min-h-screen bg-white">
       {/* Section 0: Top Bar & Header */}
@@ -125,9 +135,13 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                     </svg>
                   </span>
                 </h1>
-                <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {renderBold(bodyText)}
-                </p>
+                <div className="space-y-4">
+                  {bodyText.split('\n').filter(line => line.trim() !== '').map((para, i) => (
+                    <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">
+                      {renderBold(para)}
+                    </p>
+                  ))}
+                </div>
                 <div>
                   <a href="#strediska">
                     <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
@@ -148,9 +162,11 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
 
               {/* MOBILE ONLY: Body text + button */}
               <div className="lg:hidden space-y-4">
-                <p className="text-base text-bombovo-dark leading-relaxed">
-                  {renderBold(bodyText)}
-                </p>
+                {bodyText.split('\n').filter(line => line.trim() !== '').map((para, i) => (
+                  <p key={i} className="text-base text-bombovo-dark leading-relaxed">
+                    {renderBold(para)}
+                  </p>
+                ))}
                 <div>
                   <a href="#strediska">
                     <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
@@ -327,7 +343,11 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[0].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[0].body)}</p>
+                  <div className="space-y-4">
+                    {section3[0].body.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                      <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                    ))}
+                  </div>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '4 / 3' }}>
@@ -345,7 +365,11 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                 </div>
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[1].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[1].body)}</p>
+                  <div className="space-y-4">
+                    {section3[1].body.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                      <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -353,7 +377,11 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
                   <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{section3[2].headline}</h2>
-                  <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(section3[2].body)}</p>
+                  <div className="space-y-4">
+                    {section3[2].body.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                      <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                    ))}
+                  </div>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-full rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: '4 / 3' }}>
@@ -364,7 +392,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
 
               {/* CTA */}
               <div className="text-center pt-4 pb-4 md:pt-8 md:pb-0">
-                <Link href="/program-skoly-v-prirode">
+                <Link href="/program-skoly-v-prirode" aria-label="Program školy v prírode Bombovo pre základné školy">
                   <button className="px-10 py-5 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
                     Pozri si náš program
                   </button>
@@ -400,7 +428,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                       <div className="flex-1 bg-bombovo-red rounded-2xl p-4 flex items-center justify-center">
                         <span className="text-white text-2xl font-bold">{center.price}</span>
                       </div>
-                      <Link href={`/skoly-v-prirode/${center.id}`} className="flex-1">
+                      <Link href={`/skoly-v-prirode/${center.id}`} aria-label={strediskoAria[center.id] ?? `Škola v prírode ${center.name}`} className="flex-1">
                         <button className="w-full h-full bg-bombovo-yellow text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
                           Výber možností
                         </button>

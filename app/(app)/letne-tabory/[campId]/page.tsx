@@ -149,5 +149,65 @@ export default async function CampDetailPage({
     )
   }
 
-  return <CampDetailClient campDetails={campDetails} campId={campId} />
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: campDetails.name,
+    description: campDetails.bulletPoints[0] ?? '',
+    location: {
+      '@type': 'Place',
+      name: campDetails.location,
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'Bombovo',
+      url: 'https://bombovo.sk',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: campDetails.price.replace(/\s?€/g, '').trim(),
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+    },
+    typicalAgeRange: campDetails.age,
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Bombovo',
+        item: 'https://bombovo.sk',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Letné tábory',
+        item: 'https://bombovo.sk/letne-tabory',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: campDetails.name,
+        item: `https://bombovo.sk/letne-tabory/${campId}`,
+      },
+    ],
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <CampDetailClient campDetails={campDetails} campId={campId} />
+    </>
+  )
 }

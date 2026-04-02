@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { soapCall, escapeXml } from '@/lib/profis'
 
-// Builds an ExterniParametrInput XML element
+// Builds a Pair XML element for ExterniProcedura parameters
 function param(name: string, value: string | number): string {
-  return `<ns:ExterniParametrInput>
-      <ns:Nazev>${name}</ns:Nazev>
-      <ns:Hodnota>${escapeXml(String(value))}</ns:Hodnota>
-    </ns:ExterniParametrInput>`
+  return `<ns:Pair>
+      <ns:Key>${name}</ns:Key>
+      <ns:Value>${escapeXml(String(value))}</ns:Value>
+    </ns:Pair>`
 }
 
 function externiContext(): string {

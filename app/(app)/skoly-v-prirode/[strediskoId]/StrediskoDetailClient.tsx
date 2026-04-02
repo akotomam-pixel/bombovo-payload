@@ -216,9 +216,11 @@ export default function StrediskoDetailClient({
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark mb-6">
                   {section3.headline}
                 </h2>
-                <p className="text-base md:text-lg text-bombovo-dark leading-relaxed mb-6">
-                  {renderBold(section3.bodyText)}
-                </p>
+                <div className="space-y-4 mb-6">
+                  {section3.bodyText.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                    <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                  ))}
+                </div>
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold text-bombovo-dark mb-3">Zaujímavosti v okolí:</h3>
                   <ul className="space-y-2 text-bombovo-dark">
@@ -262,9 +264,11 @@ export default function StrediskoDetailClient({
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark">
                   Unikátny program ktorý si každé dieťa zamiluje
                 </h2>
-                <p className="text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {renderBold(programText)}
-                </p>
+                <div className="space-y-4">
+                  {programText.split('\n').filter(l => l.trim() !== '').map((para, i) => (
+                    <p key={i} className="text-base md:text-lg text-bombovo-dark leading-relaxed">{renderBold(para)}</p>
+                  ))}
+                </div>
                 <div>
                   <Link href="/program-skoly-v-prirode">
                     <button className="px-8 py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
