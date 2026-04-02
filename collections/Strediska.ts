@@ -92,6 +92,25 @@ export const Strediska: CollectionConfig = {
       label: 'Section 2 photo',
     },
 
+    {
+      name: 'mapLat',
+      type: 'number',
+      label: 'Mapa – zemepisná šírka (latitude)',
+      admin: {
+        description:
+          'Súradnica pre Google mapu a vzdialenostnú kalkulačku. Formát: desatinné číslo, napr. 48.7133. Ak necháte prázdne, použijú sa predvolené súradnice z kódu.',
+      },
+    },
+    {
+      name: 'mapLng',
+      type: 'number',
+      label: 'Mapa – zemepisná dĺžka (longitude)',
+      admin: {
+        description:
+          'Druhá súradnica k šírke. Spolu tvoria polohu strediska na mape (skopírujte ich z Google Maps).',
+      },
+    },
+
     // ─── Accordion: Details ───────────────────────────────────────────────────
     {
       name: 'ubytovanie',
