@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'
 
@@ -14,12 +14,6 @@ const LOADING_STEPS: { progress: number; label: string }[] = [
 ]
 
 type Status = 'idle' | 'loading' | 'result' | 'error'
-
-interface AutocompleteResult {
-  description: string
-  lat: string
-  lon: string
-}
 
 interface DistanceResult {
   distanceText: string
@@ -49,38 +43,6 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
   const [progress, setProgress] = useState(0)
   const [loadingLabel, setLoadingLabel] = useState('')
   const [result, setResult] = useState<DistanceResult | null>(null)
-  const [autocompleteResults, setAutocompleteResults] = useState<AutocompleteResult[]>([])
-  const [selectedCoords, setSelectedCoords] = useState<{ lat: string; lon: string } | null>(null)
-
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  const handleInputChange = useCallback((value: string) => {
-    setInputValue(value)
-    setSelectedCoords(null)
-    if (debounceTimer.current) clearTimeout(debounceTimer.current)
-    if (!value.trim()) {
-      setAutocompleteResults([])
-      return
-    }
-    debounceTimer.current = setTimeout(() => {
-      fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&countrycodes=sk&format=json&limit=5&addressdetails=1`,
-        { headers: { 'User-Agent': 'BombovoApp/1.0 (bombovo.sk)' } },
-      )
-        .then((r) => r.json())
-        .then((data: any[]) => {
-          setAutocompleteResults(
-            data.map((item) => ({
-              description: item.display_name,
-              lat: item.lat,
-              lon: item.lon,
-            })),
-          )
-        })
-        .catch(() => setAutocompleteResults([]))
-    }, 400)
-  }, [])
 
   const animateProgress = useCallback(() => {
     let stepIndex = 0
@@ -104,34 +66,27 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
     setProgress(0)
     setLoadingLabel(LOADING_STEPS[0].label)
     setResult(null)
-    setAutocompleteResults([])
 
     const progressInterval = animateProgress()
 
     try {
-      // Step 1: resolve user coordinates (from autocomplete selection or fresh geocode)
-      let userLat: number
-      let userLon: number
+      // Geocode the typed address with Nominatim
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(inputValue)}&countrycodes=sk&format=json&limit=1`,
+        { headers: { 'User-Agent': 'BombovoApp/1.0 (bombovo.sk)' } },
+      )
+      const geoData: any[] = await geoRes.json()
 
-      if (selectedCoords) {
-        userLat = parseFloat(selectedCoords.lat)
-        userLon = parseFloat(selectedCoords.lon)
-      } else {
-        const geoRes = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(inputValue)}&countrycodes=sk&format=json&limit=1`,
-          { headers: { 'User-Agent': 'BombovoApp/1.0 (bombovo.sk)' } },
-        )
-        const geoData: any[] = await geoRes.json()
-        if (!geoData.length) {
-          clearInterval(progressInterval)
-          setStatus('error')
-          return
-        }
-        userLat = parseFloat(geoData[0].lat)
-        userLon = parseFloat(geoData[0].lon)
+      if (!geoData.length) {
+        clearInterval(progressInterval)
+        setStatus('error')
+        return
       }
 
-      // Step 2: calculate driving distance via OpenRouteService
+      const userLat = parseFloat(geoData[0].lat)
+      const userLon = parseFloat(geoData[0].lon)
+
+      // Calculate driving distance via OpenRouteService
       // ORS takes [longitude, latitude] — opposite order from Google Maps
       const orsKey = process.env.NEXT_PUBLIC_ORS_API_KEY
       const orsRes = await fetch(
@@ -182,7 +137,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
       clearInterval(progressInterval)
       setStatus('error')
     }
-  }, [inputValue, coordinates, selectedCoords, animateProgress])
+  }, [inputValue, coordinates, animateProgress])
 
   const reset = useCallback(() => {
     setInputValue('')
@@ -190,8 +145,6 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
     setProgress(0)
     setLoadingLabel('')
     setResult(null)
-    setAutocompleteResults([])
-    setSelectedCoords(null)
   }, [])
 
   return (
@@ -207,36 +160,17 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
           </span>
         </h2>
 
-        {/* Input + autocomplete */}
-        <div className="relative mb-4" ref={dropdownRef}>
+        {/* Input */}
+        <div className="mb-4">
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
             placeholder="Zadajte vašu lokalitu (napr. ZŠ Bratislava, Miletičova)"
             disabled={status === 'loading'}
             className="w-full px-4 py-3 text-base text-bombovo-dark bg-white border-2 border-bombovo-gray rounded-xl outline-none focus:border-bombovo-blue transition-colors duration-200 disabled:opacity-60"
           />
-          {autocompleteResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border-2 border-bombovo-blue rounded-xl overflow-hidden shadow-lg">
-              {autocompleteResults.map((r) => (
-                <button
-                  key={`${r.lat}-${r.lon}`}
-                  type="button"
-                  className="w-full text-left px-4 py-2 text-sm text-bombovo-dark hover:bg-bombovo-gray transition-colors duration-150"
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    setInputValue(r.description)
-                    setSelectedCoords({ lat: r.lat, lon: r.lon })
-                    setAutocompleteResults([])
-                  }}
-                >
-                  {r.description}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Calculate button */}
