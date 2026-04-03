@@ -69,5 +69,5 @@ export const stredEuropyKrahule: StrediskoData = {
     { startDate: '21.09.2026', endDate: '25.09.2026', days: 5, price: '165.00 €', available: true },
     { startDate: '28.09.2026', endDate: '02.10.2026', days: 5, price: '165.00 €', available: true }
   ],
-  coordinates: { lat: 48.6706, lng: 18.9075 },
+  coordinates: { lat: 48.72597374471306, lng: 18.94208325673093 },
 }

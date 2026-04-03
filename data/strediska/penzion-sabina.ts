@@ -57,5 +57,5 @@ export const penzionSabina: StrediskoData = {
     { startDate: '15.06.2026', endDate: '19.06.2026', days: 5, price: '210.00 €', available: false },
     { startDate: '22.06.2026', endDate: '26.06.2026', days: 5, price: '200.00 €', available: false }
   ],
-  coordinates: { lat: 48.9200, lng: 20.4600 },
+  coordinates: { lat: 48.91251498690676, lng: 20.268869797102443 },
 }

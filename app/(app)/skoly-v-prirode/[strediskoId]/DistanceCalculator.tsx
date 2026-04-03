@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'
 
@@ -17,7 +17,8 @@ type Status = 'idle' | 'loading' | 'result' | 'error'
 
 interface AutocompleteResult {
   description: string
-  placeId: string
+  lat: string
+  lon: string
 }
 
 interface DistanceResult {
@@ -31,12 +32,15 @@ interface Props {
   coordinates?: { lat: number; lng: number }
 }
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    google: any
-    initGoogleMaps?: () => void
-  }
+function formatDistance(meters: number): string {
+  return `${(meters / 1000).toFixed(1).replace('.', ',')} km`
+}
+
+function formatDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600)
+  const m = Math.round((seconds % 3600) / 60)
+  if (h === 0) return `${m} minút`
+  return `${h} hodín ${m} minút`
 }
 
 export default function DistanceCalculator({ strediskoName, coordinates }: Props) {
@@ -46,97 +50,36 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
   const [loadingLabel, setLoadingLabel] = useState('')
   const [result, setResult] = useState<DistanceResult | null>(null)
   const [autocompleteResults, setAutocompleteResults] = useState<AutocompleteResult[]>([])
-  const [sdkLoaded, setSdkLoaded] = useState(false)
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: string; lon: string } | null>(null)
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const autocompleteService = useRef<any>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // Load Google Maps JS SDK once (handle script already in DOM / load event already fired)
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    function tryActivate() {
-      if (window.google?.maps) {
-        setSdkLoaded(true)
-        return true
-      }
-      return false
-    }
-
-    if (tryActivate()) return
-
-    const existing = document.querySelector(
-      'script[src*="maps.googleapis.com/maps/api/js"]',
-    ) as HTMLScriptElement | null
-
-    if (existing) {
-      const onLoad = () => tryActivate()
-      existing.addEventListener('load', onLoad)
-      tryActivate()
-      const poll = window.setInterval(() => {
-        if (tryActivate()) window.clearInterval(poll)
-      }, 50)
-      const stopPoll = window.setTimeout(() => window.clearInterval(poll), 15000)
-      return () => {
-        existing.removeEventListener('load', onLoad)
-        window.clearInterval(poll)
-        window.clearTimeout(stopPoll)
-      }
-    }
-
-    const script = document.createElement('script')
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`
-    script.async = true
-    script.defer = true
-    script.onload = () => tryActivate()
-    document.head.appendChild(script)
-  }, [])
-
-  // Init autocomplete service when SDK is ready
-  useEffect(() => {
-    if (sdkLoaded && window.google?.maps?.places) {
-      autocompleteService.current = new window.google.maps.places.AutocompleteService()
-    }
-  }, [sdkLoaded])
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setAutocompleteResults([])
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value)
+    setSelectedCoords(null)
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
-    if (!value.trim() || !autocompleteService.current) {
+    if (!value.trim()) {
       setAutocompleteResults([])
       return
     }
     debounceTimer.current = setTimeout(() => {
-      autocompleteService.current!.getPlacePredictions(
-        {
-          input: value,
-          types: ['geocode'],
-          componentRestrictions: { country: 'sk' },
-          language: 'sk',
-        },
-        (predictions: any[], status: string) => {
-          if (status === 'OK' && predictions) {
-            setAutocompleteResults(
-              predictions.map((p) => ({ description: p.description, placeId: p.place_id }))
-            )
-          } else {
-            setAutocompleteResults([])
-          }
-        }
+      fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&countrycodes=sk&format=json&limit=5&addressdetails=1`,
+        { headers: { 'User-Agent': 'BombovoApp/1.0 (bombovo.sk)' } },
       )
-    }, 300)
+        .then((r) => r.json())
+        .then((data: any[]) => {
+          setAutocompleteResults(
+            data.map((item) => ({
+              description: item.display_name,
+              lat: item.lat,
+              lon: item.lon,
+            })),
+          )
+        })
+        .catch(() => setAutocompleteResults([]))
+    }, 400)
   }, [])
 
   const animateProgress = useCallback(() => {
@@ -154,49 +97,92 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
     return interval
   }, [])
 
-  const handleCalculate = useCallback(() => {
-    if (!inputValue.trim() || !coordinates || !sdkLoaded) return
+  const handleCalculate = useCallback(async () => {
+    if (!inputValue.trim() || !coordinates) return
 
     setStatus('loading')
     setProgress(0)
     setLoadingLabel(LOADING_STEPS[0].label)
     setResult(null)
+    setAutocompleteResults([])
 
     const progressInterval = animateProgress()
 
-    const service = new window.google.maps.DistanceMatrixService()
-    service.getDistanceMatrix(
-      {
-        origins: [inputValue],
-        destinations: [{ lat: coordinates.lat, lng: coordinates.lng }],
-        travelMode: 'DRIVING',
-        language: 'sk',
-      },
-      (response: any, status: string) => {
-        clearInterval(progressInterval)
+    try {
+      // Step 1: resolve user coordinates (from autocomplete selection or fresh geocode)
+      let userLat: number
+      let userLon: number
 
-        if (
-          status === 'OK' &&
-          response?.rows[0]?.elements[0]?.status === 'OK'
-        ) {
-          const element = response.rows[0].elements[0]
-          const distanceText = element.distance.text
-          const durationText = element.duration.text
-          const originText = response.originAddresses?.[0] ?? inputValue
-
-          setProgress(100)
-          setLoadingLabel('Hotovo!')
-
-          setTimeout(() => {
-            setResult({ distanceText, durationText, originText })
-            setStatus('result')
-          }, 300)
-        } else {
+      if (selectedCoords) {
+        userLat = parseFloat(selectedCoords.lat)
+        userLon = parseFloat(selectedCoords.lon)
+      } else {
+        const geoRes = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(inputValue)}&countrycodes=sk&format=json&limit=1`,
+          { headers: { 'User-Agent': 'BombovoApp/1.0 (bombovo.sk)' } },
+        )
+        const geoData: any[] = await geoRes.json()
+        if (!geoData.length) {
+          clearInterval(progressInterval)
           setStatus('error')
+          return
         }
+        userLat = parseFloat(geoData[0].lat)
+        userLon = parseFloat(geoData[0].lon)
       }
-    )
-  }, [inputValue, coordinates, sdkLoaded, animateProgress])
+
+      // Step 2: calculate driving distance via OpenRouteService
+      // ORS takes [longitude, latitude] — opposite order from Google Maps
+      const orsKey = process.env.NEXT_PUBLIC_ORS_API_KEY
+      const orsRes = await fetch(
+        'https://api.openrouteservice.org/v2/directions/driving-car',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: orsKey ?? '',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            coordinates: [
+              [userLon, userLat],
+              [coordinates.lng, coordinates.lat],
+            ],
+          }),
+        },
+      )
+
+      if (!orsRes.ok) {
+        clearInterval(progressInterval)
+        setStatus('error')
+        return
+      }
+
+      const orsData = await orsRes.json()
+      const summary = orsData.routes?.[0]?.summary
+
+      if (!summary) {
+        clearInterval(progressInterval)
+        setStatus('error')
+        return
+      }
+
+      clearInterval(progressInterval)
+      setProgress(100)
+      setLoadingLabel('Hotovo!')
+
+      setTimeout(() => {
+        setResult({
+          distanceText: formatDistance(summary.distance),
+          durationText: formatDuration(summary.duration),
+          originText: inputValue,
+        })
+        setStatus('result')
+      }, 300)
+    } catch {
+      clearInterval(progressInterval)
+      setStatus('error')
+    }
+  }, [inputValue, coordinates, selectedCoords, animateProgress])
 
   const reset = useCallback(() => {
     setInputValue('')
@@ -205,6 +191,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
     setLoadingLabel('')
     setResult(null)
     setAutocompleteResults([])
+    setSelectedCoords(null)
   }, [])
 
   return (
@@ -235,12 +222,13 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
             <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border-2 border-bombovo-blue rounded-xl overflow-hidden shadow-lg">
               {autocompleteResults.map((r) => (
                 <button
-                  key={r.placeId}
+                  key={`${r.lat}-${r.lon}`}
                   type="button"
                   className="w-full text-left px-4 py-2 text-sm text-bombovo-dark hover:bg-bombovo-gray transition-colors duration-150"
                   onMouseDown={(e) => {
                     e.preventDefault()
                     setInputValue(r.description)
+                    setSelectedCoords({ lat: r.lat, lon: r.lon })
                     setAutocompleteResults([])
                   }}
                 >
@@ -298,7 +286,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
         {status === 'error' && (
           <div className="mt-4 p-5 bg-bombovo-gray rounded-2xl border-2 border-red-400">
             <p className="text-base text-bombovo-dark leading-relaxed">
-              Nepodarilo sa vypočítať vzdialenosť. Skúste zadať presnú adresu školy.
+              Lokalitu sa nepodarilo nájsť. Skúste zadať mesto alebo presnú adresu školy.
             </p>
             <button
               onClick={reset}
@@ -310,7 +298,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
         )}
       </div>
 
-      {/* Right column / bottom on mobile — Google Maps iframe */}
+      {/* Right column / bottom on mobile — Google Maps iframe (untouched) */}
       <div className="w-full lg:w-1/2">
         {coordinates ? (
           <iframe

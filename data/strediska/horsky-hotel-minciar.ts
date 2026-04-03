@@ -55,5 +55,5 @@ export const horskyHotelMinciar: StrediskoData = {
     { startDate: '15.06.2026', endDate: '19.06.2026', days: 5, price: '205.00 €', available: false },
     { startDate: '22.06.2026', endDate: '26.06.2026', days: 5, price: '195.00 €', available: false }
   ],
-  coordinates: { lat: 48.7350, lng: 19.1350 },
+  coordinates: { lat: 48.73882490763306, lng: 18.982751281749284 },
 }
