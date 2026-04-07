@@ -19,12 +19,35 @@ function externiContext(): string {
     </ns:Context>`
 }
 
+// KlientSouhlasAktivovat — WCF field order for KlientHesloContext:
+//   Context (base):           UzivatelHeslo, UzivatelLogin, VypsatNazvy, id_Jazyk
+//   KlientContextBase (own):  id_Klient
+//   KlientHesloContext (own): KlientHeslo (empty — admin call on behalf of client)
+// SouhlasInput field order: id_TypSouhlas, Poznamka
+function klientSouhlasXml(id_Klient: number, id_TypSouhlas: number): string {
+  return `
+    <ns:Context i:type="ns:KlientHesloContext">
+      <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+      <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+      <ns:VypsatNazvy>false</ns:VypsatNazvy>
+      <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+      <ns:id_Klient>${id_Klient}</ns:id_Klient>
+      <ns:KlientHeslo></ns:KlientHeslo>
+    </ns:Context>
+    <ns:Data>
+      <ns:id_TypSouhlas>${id_TypSouhlas}</ns:id_TypSouhlas>
+      <ns:Poznamka i:nil="true"/>
+    </ns:Data>`
+}
+
 export async function POST(req: NextRequest) {
   let input: {
     id_Klient?: number | null
     cestujici?: Array<{ id_Cestujici: number; id_VelikostTricka: number | null }>
     zdravotniOmezeni?: string    // intolerances
     gdprOmezeni?: string         // additional info / other notes
+    newsletter?: boolean         // consent ID 1 (Newsletter) + ID 2 (Marketing)
+    photoConsent?: string        // 'ano' → consent ID 3 (Fotka)
   }
 
   try {
@@ -38,6 +61,8 @@ export async function POST(req: NextRequest) {
     cestujiciCount: input.cestujici?.length,
     zdravotniOmezeni: input.zdravotniOmezeni,
     gdprOmezeni: input.gdprOmezeni,
+    newsletter: input.newsletter,
+    photoConsent: input.photoConsent,
   }))
 
   const errors: string[] = []
@@ -83,6 +108,33 @@ export async function POST(req: NextRequest) {
       const msg = e instanceof Error ? e.message : String(e)
       console.error(`[order/extra] KlientExtraUpd FAILED id_Klient=${input.id_Klient} zdravotni="${input.zdravotniOmezeni}" gdpr="${input.gdprOmezeni}" error:`, msg)
       errors.push(`KlientExtraUpd(${input.id_Klient}): ${msg}`)
+    }
+  }
+
+  // ── KlientSouhlasAktivovat: newsletter + marketing + photo consent ────────────
+  // Consent type IDs (from TypSouhlasList): 1=Newsletter, 2=Marketing, 3=Fotka
+  if (input.id_Klient) {
+    if (input.newsletter) {
+      for (const id_TypSouhlas of [1, 2]) {
+        try {
+          await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, id_TypSouhlas))
+          console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}`)
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e)
+          console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}:`, msg)
+          errors.push(`KlientSouhlasAktivovat(${id_TypSouhlas}): ${msg}`)
+        }
+      }
+    }
+    if (input.photoConsent === 'ano') {
+      try {
+        await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, 3))
+        console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=3 (Fotka)`)
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=3:`, msg)
+        errors.push(`KlientSouhlasAktivovat(3): ${msg}`)
+      }
     }
   }
 

@@ -358,6 +358,8 @@ export default function RegistrationClient({
               cestujici: extraCestujici,
               zdravotniOmezeni: zdravotniParts || undefined,
               gdprOmezeni: formData.additionalInfo || undefined,
+              newsletter: formData.gdprConsent || undefined,
+              photoConsent: formData.photoConsent || undefined,
             }),
           });
         } catch (extraErr) {
