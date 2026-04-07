@@ -207,7 +207,7 @@ export default function RegistrationClient({
     req('childZip', formData.childZip);
     if (formData.hasIntolerance === 'ano') req('intoleranceDetails', formData.intoleranceDetails);
     req('tshirtSize', formData.tshirtSize);
-    req('gdprConsent', formData.gdprConsent);
+    if (!formData.gdprConsent) errors['gdprConsent'] = 'Prosím zaškrtnite všetky povinné polia na vyplnenie prihlášky.';
     if (formData.hasSecondChild) {
       req('childFirstName2', formData.childFirstName2);
       req('childLastName2', formData.childLastName2);
@@ -1150,34 +1150,6 @@ export default function RegistrationClient({
                 />
               </div>
 
-              {/* Checkboxy */}
-              <div className="mb-8 space-y-4">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="insurance"
-                    checked={formData.insurance}
-                    onChange={handleInputChange}
-                    className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
-                  />
-                  <span className="text-bombovo-dark font-semibold">
-                    Mám záujem o komplexné cestovné poistenie ECP (4.50 €)
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="newsletter"
-                    checked={formData.newsletter}
-                    onChange={handleInputChange}
-                    className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
-                  />
-                  <span className="text-bombovo-dark font-semibold">
-                    Súhlasím so zasielaním noviniek
-                  </span>
-                </label>
-              </div>
-
               {/* Súhlas so zverejnením fotografií */}
               <div className="mb-8">
                 <label className="block text-bombovo-dark font-semibold mb-3">
@@ -1212,7 +1184,7 @@ export default function RegistrationClient({
                 </p>
               </div>
 
-              {/* GDPR */}
+              {/* GDPR / newsletter súhlas */}
               <div id="field-gdprConsent" className="mb-8">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
@@ -1224,41 +1196,34 @@ export default function RegistrationClient({
                     className="w-5 h-5 mt-1 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
                   />
                   <span className={`font-semibold ${fieldErrors.gdprConsent ? 'text-red-600' : 'text-bombovo-dark'}`}>
-                    Súhlasím so spracovaním osobných údajov a so všetkými podmienkami platnými na rok 2026 *
+                    Súhlasím so zasielaním noviniek v zmysle GDPR dokumentácie *
                   </span>
                 </label>
                 {fieldErrors.gdprConsent && <p className="mt-1 text-sm text-red-600 font-medium">{fieldErrors.gdprConsent}</p>}
               </div>
 
+              {/* ECP poistenie */}
+              <div className="mb-8">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="insurance"
+                    checked={formData.insurance}
+                    onChange={handleInputChange}
+                    className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow rounded"
+                  />
+                  <span className="text-bombovo-dark font-semibold">
+                    Mám záujem o komplexné cestovné poistenie ECP (4.50 €)
+                  </span>
+                </label>
+              </div>
+
               {/* Platba */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-bombovo-dark mb-6">Platba</h2>
-                <div className="space-y-3">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="zaloha"
-                      checked={formData.paymentMethod === "zaloha"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
-                    />
-                    <span className="text-bombovo-dark">
-                      Zaplatím zálohu 50 eur a zostatok doplatím najneskôr 2 týždne pred nástupom
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="naraz"
-                      checked={formData.paymentMethod === "naraz"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-bombovo-yellow focus:ring-bombovo-yellow"
-                    />
-                    <span className="text-bombovo-dark">Zaplatím celú sumu tábora</span>
-                  </label>
-                </div>
+                <p className="text-bombovo-dark">
+                  Zaplatím zálohu min 50 eur a zostatok doplatím najneskôr 2 týždne pred nástupom
+                </p>
               </div>
 
               {/* Ostatné informácie */}
