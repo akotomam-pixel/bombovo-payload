@@ -331,7 +331,7 @@ export default function RegistrationClient({
         }
 
         // ObjednatResult returns ID, Klic, plus id_Klient + cestujiciIds from ObjednavkaDetail
-        const { id_Objednavka, klic, id_Klient, cestujiciIds } = orderData;
+        const { id_Objednavka, klic, id_Klient, cestujiciIds, souhlasKlic, klientEmail } = orderData;
 
         // ── Step 3: Extra fields (t-shirt + intolerances) ─────────────────────
         // Non-blocking — failure must not prevent order finalization
@@ -360,6 +360,8 @@ export default function RegistrationClient({
               gdprOmezeni: formData.additionalInfo || undefined,
               newsletter: formData.gdprConsent || undefined,
               photoConsent: formData.photoConsent || undefined,
+              klientEmail: klientEmail ?? undefined,
+              souhlasKlic: souhlasKlic ?? undefined,
             }),
           });
         } catch (extraErr) {

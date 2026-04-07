@@ -257,6 +257,8 @@ export async function POST(req: NextRequest) {
     // These are needed for CestujiciExtraUpd (t-shirt) and KlientExtraUpd (intolerances)
     let id_Klient: number | null = null
     let cestujiciIds: number[] = []
+    let souhlasKlic: string | null = null
+    let klientEmail: string | null = null
 
     try {
       const detailRaw = await soapCall('Objednavka', 'ObjednavkaDetail', `
@@ -295,12 +297,18 @@ export async function POST(req: NextRequest) {
         if (num > 0 && !seen.has(num)) { seen.add(num); cestujiciIds.push(num) }
       }
 
-      console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds)
+      // Extract SouhlasKlic and Email from the Klient object — needed for KlientSouhlasAktivovat
+      const souhlasKlicMatch = detailXml.match(/<SouhlasKlic>([^<]+)<\/SouhlasKlic>/)
+      if (souhlasKlicMatch) souhlasKlic = souhlasKlicMatch[1].trim()
+      const klientEmailMatch = detailXml.match(/<Klient[^>]*>[\s\S]*?<Email>([^<]+)<\/Email>/)
+      if (klientEmailMatch) klientEmail = klientEmailMatch[1].trim()
+
+      console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds, 'souhlasKlic:', souhlasKlic ? '(set)' : '(missing)')
     } catch (e) {
       console.warn('[order] ObjednavkaDetail fetch failed (non-blocking):', e)
     }
 
-    return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds })
+    return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds, souhlasKlic, klientEmail })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)

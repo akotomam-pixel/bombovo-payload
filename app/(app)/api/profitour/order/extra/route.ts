@@ -19,20 +19,21 @@ function externiContext(): string {
     </ns:Context>`
 }
 
-// KlientSouhlasAktivovat — WCF field order for KlientHesloContext:
+// KlientSouhlasAktivovat — WCF field order for KlientKlicContext:
 //   Context (base):           UzivatelHeslo, UzivatelLogin, VypsatNazvy, id_Jazyk
 //   KlientContextBase (own):  id_Klient
-//   KlientHesloContext (own): KlientHeslo (empty — admin call on behalf of client)
+//   KlientKlicContext (own):  Email (E < K), Klic
 // SouhlasInput field order: id_TypSouhlas, Poznamka
-function klientSouhlasXml(id_Klient: number, id_TypSouhlas: number): string {
+function klientSouhlasXml(id_Klient: number, id_TypSouhlas: number, email: string, souhlasKlic: string): string {
   return `
-    <ns:Context i:type="ns:KlientHesloContext">
+    <ns:Context i:type="ns:KlientKlicContext">
       <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
       <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
       <ns:VypsatNazvy>false</ns:VypsatNazvy>
       <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
       <ns:id_Klient>${id_Klient}</ns:id_Klient>
-      <ns:KlientHeslo></ns:KlientHeslo>
+      <ns:Email>${escapeXml(email)}</ns:Email>
+      <ns:Klic>${souhlasKlic}</ns:Klic>
     </ns:Context>
     <ns:Data>
       <ns:id_TypSouhlas>${id_TypSouhlas}</ns:id_TypSouhlas>
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
     gdprOmezeni?: string         // additional info / other notes
     newsletter?: boolean         // consent ID 1 (Newsletter) + ID 2 (Marketing)
     photoConsent?: string        // 'ano' → consent ID 3 (Fotka)
+    klientEmail?: string         // needed for KlientKlicContext
+    souhlasKlic?: string         // SouhlasKlic from ObjednavkaDetail — consent auth key
   }
 
   try {
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
   // ── KlientExtraUpd: set intolerances + other info for the orderer (klient) ─
   if (input.id_Klient && (input.zdravotniOmezeni || input.gdprOmezeni)) {
     try {
-      await soapCall('Ostatni', 'ExterniProcedura', `
+      const res = await soapCall('Ostatni', 'ExterniProcedura', `
         ${externiContext()}
         <ns:Data>
           <ns:Nazev>KlientExtraUpd</ns:Nazev>
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
             ${input.gdprOmezeni ? param('GdprOmezeni', input.gdprOmezeni) : ''}
           </ns:Parametry>
         </ns:Data>`)
-      console.log(`[order/extra] KlientExtraUpd OK for id_Klient=${input.id_Klient}`)
+      console.log(`[order/extra] KlientExtraUpd raw response:`, (res._raw as string)?.slice(0, 500))
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
       console.error(`[order/extra] KlientExtraUpd FAILED id_Klient=${input.id_Klient} zdravotni="${input.zdravotniOmezeni}" gdpr="${input.gdprOmezeni}" error:`, msg)
@@ -113,27 +116,19 @@ export async function POST(req: NextRequest) {
 
   // ── KlientSouhlasAktivovat: newsletter + marketing + photo consent ────────────
   // Consent type IDs (from TypSouhlasList): 1=Newsletter, 2=Marketing, 3=Fotka
-  if (input.id_Klient) {
-    if (input.newsletter) {
-      for (const id_TypSouhlas of [1, 2]) {
-        try {
-          await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, id_TypSouhlas))
-          console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}`)
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : String(e)
-          console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}:`, msg)
-          errors.push(`KlientSouhlasAktivovat(${id_TypSouhlas}): ${msg}`)
-        }
-      }
-    }
-    if (input.photoConsent === 'ano') {
+  if (input.id_Klient && input.klientEmail && input.souhlasKlic) {
+    const consentIds = [
+      ...(input.newsletter ? [1, 2] : []),
+      ...(input.photoConsent === 'ano' ? [3] : []),
+    ]
+    for (const id_TypSouhlas of consentIds) {
       try {
-        await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, 3))
-        console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=3 (Fotka)`)
+        await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, id_TypSouhlas, input.klientEmail, input.souhlasKlic))
+        console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}`)
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e)
-        console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=3:`, msg)
-        errors.push(`KlientSouhlasAktivovat(3): ${msg}`)
+        console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}:`, msg)
+        errors.push(`KlientSouhlasAktivovat(${id_TypSouhlas}): ${msg}`)
       }
     }
   }
