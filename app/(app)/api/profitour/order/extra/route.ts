@@ -44,9 +44,13 @@ function klientSouhlasXml(id_Klient: number, id_TypSouhlas: number, email: strin
 export async function POST(req: NextRequest) {
   let input: {
     id_Klient?: number | null
-    cestujici?: Array<{ id_Cestujici: number; id_VelikostTricka: number | null }>
-    zdravotniOmezeni?: string    // intolerances
-    gdprOmezeni?: string         // additional info / other notes
+    cestujici?: Array<{
+      id_Cestujici: number
+      id_KlientCestujici?: number | null  // Cestujici.Klient.ID — for KlientExtraUpd (intolerance)
+      id_VelikostTricka: number | null
+      zdravotniOmezeni?: string           // intolerance text for this specific child
+    }>
+    gdprOmezeni?: string         // additional info / other notes → saved on orderer klient
     newsletter?: boolean         // consent ID 1 (Newsletter) + ID 2 (Marketing)
     photoConsent?: string        // 'ano' → consent ID 3 (Fotka)
     klientEmail?: string         // needed for KlientKlicContext
@@ -62,7 +66,7 @@ export async function POST(req: NextRequest) {
   console.log('[order/extra] received:', JSON.stringify({
     id_Klient: input.id_Klient,
     cestujiciCount: input.cestujici?.length,
-    zdravotniOmezeni: input.zdravotniOmezeni,
+    cestujici: input.cestujici?.map(c => ({ id: c.id_Cestujici, klId: c.id_KlientCestujici, zdrav: c.zdravotniOmezeni })),
     gdprOmezeni: input.gdprOmezeni,
     newsletter: input.newsletter,
     photoConsent: input.photoConsent,
@@ -70,31 +74,53 @@ export async function POST(req: NextRequest) {
 
   const errors: string[] = []
 
-  // ── CestujiciExtraUpd: set t-shirt size for each traveler ─────────────────
+  // ── CestujiciExtraUpd + KlientExtraUpd: t-shirt and intolerance per child ──
   if (input.cestujici?.length) {
     for (const c of input.cestujici) {
-      if (!c.id_VelikostTricka) continue  // skip if no size chosen
-      try {
-        await soapCall('Ostatni', 'ExterniProcedura', `
-          ${externiContext()}
-          <ns:Data>
-            <ns:Nazev>CestujiciExtraUpd</ns:Nazev>
-            <ns:Parametry>
-              ${param('ID', c.id_Cestujici)}
-              ${param('id_VelikostTricka', c.id_VelikostTricka)}
-            </ns:Parametry>
-          </ns:Data>`)
-        console.log(`[order/extra] CestujiciExtraUpd OK for id_Cestujici=${c.id_Cestujici}, id_VelikostTricka=${c.id_VelikostTricka}`)
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e)
-        console.error(`[order/extra] CestujiciExtraUpd failed for id_Cestujici=${c.id_Cestujici}:`, msg)
-        errors.push(`CestujiciExtraUpd(${c.id_Cestujici}): ${msg}`)
+      // T-shirt size
+      if (c.id_VelikostTricka) {
+        try {
+          await soapCall('Ostatni', 'ExterniProcedura', `
+            ${externiContext()}
+            <ns:Data>
+              <ns:Nazev>CestujiciExtraUpd</ns:Nazev>
+              <ns:Parametry>
+                ${param('ID', c.id_Cestujici)}
+                ${param('id_VelikostTricka', c.id_VelikostTricka)}
+              </ns:Parametry>
+            </ns:Data>`)
+          console.log(`[order/extra] CestujiciExtraUpd OK id_Cestujici=${c.id_Cestujici} id_VelikostTricka=${c.id_VelikostTricka}`)
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e)
+          console.error(`[order/extra] CestujiciExtraUpd FAILED id_Cestujici=${c.id_Cestujici}:`, msg)
+          errors.push(`CestujiciExtraUpd(${c.id_Cestujici}): ${msg}`)
+        }
+      }
+
+      // Intolerance — must use the child's own Klient ID (Cestujici.id_Klient), not the orderer's
+      if (c.id_KlientCestujici && c.zdravotniOmezeni) {
+        try {
+          const res = await soapCall('Ostatni', 'ExterniProcedura', `
+            ${externiContext()}
+            <ns:Data>
+              <ns:Nazev>KlientExtraUpd</ns:Nazev>
+              <ns:Parametry>
+                ${param('ID', c.id_KlientCestujici)}
+                ${param('ZdravotniOmezeni', c.zdravotniOmezeni)}
+              </ns:Parametry>
+            </ns:Data>`)
+          console.log(`[order/extra] KlientExtraUpd OK id_KlientCestujici=${c.id_KlientCestujici} raw:`, (res._raw as string)?.slice(0, 300))
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e)
+          console.error(`[order/extra] KlientExtraUpd FAILED id_KlientCestujici=${c.id_KlientCestujici} zdravotni="${c.zdravotniOmezeni}" error:`, msg)
+          errors.push(`KlientExtraUpd(${c.id_KlientCestujici}): ${msg}`)
+        }
       }
     }
   }
 
-  // ── KlientExtraUpd: set intolerances + other info for the orderer (klient) ─
-  if (input.id_Klient && (input.zdravotniOmezeni || input.gdprOmezeni)) {
+  // ── KlientExtraUpd: save GdprOmezeni (other notes) on the orderer klient ──
+  if (input.id_Klient && input.gdprOmezeni) {
     try {
       const res = await soapCall('Ostatni', 'ExterniProcedura', `
         ${externiContext()}
@@ -102,15 +128,14 @@ export async function POST(req: NextRequest) {
           <ns:Nazev>KlientExtraUpd</ns:Nazev>
           <ns:Parametry>
             ${param('ID', input.id_Klient)}
-            ${input.zdravotniOmezeni ? param('ZdravotniOmezeni', input.zdravotniOmezeni) : ''}
-            ${input.gdprOmezeni ? param('GdprOmezeni', input.gdprOmezeni) : ''}
+            ${param('GdprOmezeni', input.gdprOmezeni)}
           </ns:Parametry>
         </ns:Data>`)
-      console.log(`[order/extra] KlientExtraUpd raw response:`, (res._raw as string)?.slice(0, 500))
+      console.log(`[order/extra] KlientExtraUpd (gdprOmezeni) raw:`, (res._raw as string)?.slice(0, 300))
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      console.error(`[order/extra] KlientExtraUpd FAILED id_Klient=${input.id_Klient} zdravotni="${input.zdravotniOmezeni}" gdpr="${input.gdprOmezeni}" error:`, msg)
-      errors.push(`KlientExtraUpd(${input.id_Klient}): ${msg}`)
+      console.error(`[order/extra] KlientExtraUpd (gdprOmezeni) FAILED id_Klient=${input.id_Klient}:`, msg)
+      errors.push(`KlientExtraUpd-gdpr(${input.id_Klient}): ${msg}`)
     }
   }
 

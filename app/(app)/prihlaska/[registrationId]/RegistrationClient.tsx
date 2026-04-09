@@ -331,24 +331,25 @@ export default function RegistrationClient({
         }
 
         // ObjednatResult returns ID, Klic, plus id_Klient + cestujiciIds from ObjednavkaDetail
-        const { id_Objednavka, klic, id_Klient, cestujiciIds, souhlasKlic, klientEmail } = orderData;
+        const { id_Objednavka, klic, id_Klient, cestujiciIds, cestujiciKlientIds, souhlasKlic, klientEmail } = orderData;
 
         // ── Step 3: Extra fields (t-shirt + intolerances) ─────────────────────
         // Non-blocking — failure must not prevent order finalization
         try {
-          const extraCestujici = (cestujiciIds ?? []).map((id_Cestujici: number, idx: number) => ({
-            id_Cestujici,
-            id_VelikostTricka: idx === 0
-              ? (Number(formData.tshirtSize) || null)
-              : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
-          }));
-
-          const zdravotniParts = [
-            formData.hasIntolerance === 'ano' && formData.intoleranceDetails ? formData.intoleranceDetails : '',
-            formData.hasSecondChild && formData.hasIntolerance2 === 'ano' && formData.intoleranceDetails2
-              ? (formData.intoleranceDetails ? ` | Dieťa 2: ${formData.intoleranceDetails2}` : formData.intoleranceDetails2)
-              : '',
-          ].filter(Boolean).join('');
+          const extraCestujici = (cestujiciIds ?? []).map((id_Cestujici: number, idx: number) => {
+            const isFirstChild = idx === 0;
+            const intolerance = isFirstChild
+              ? (formData.hasIntolerance === 'ano' ? formData.intoleranceDetails : undefined)
+              : (formData.hasSecondChild && formData.hasIntolerance2 === 'ano' ? formData.intoleranceDetails2 : undefined);
+            return {
+              id_Cestujici,
+              id_KlientCestujici: (cestujiciKlientIds ?? [])[idx] ?? null,
+              id_VelikostTricka: isFirstChild
+                ? (Number(formData.tshirtSize) || null)
+                : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
+              zdravotniOmezeni: intolerance || undefined,
+            };
+          });
 
           await fetch('/api/profitour/order/extra', {
             method: 'POST',
@@ -356,7 +357,6 @@ export default function RegistrationClient({
             body: JSON.stringify({
               id_Klient: id_Klient ?? null,
               cestujici: extraCestujici,
-              zdravotniOmezeni: zdravotniParts || undefined,
               gdprOmezeni: formData.additionalInfo || undefined,
               newsletter: formData.gdprConsent || undefined,
               photoConsent: formData.photoConsent || undefined,
@@ -407,10 +407,16 @@ export default function RegistrationClient({
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
+        // #region agent log
+        fetch('http://127.0.0.1:7718/ingest/40836efc-fc10-47c8-8667-1ed88a990e23',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d0d83a'},body:JSON.stringify({sessionId:'d0d83a',hypothesisId:'A+B',location:'RegistrationClient.tsx:isAgeError-handler',message:'Age error caught — checking which child is flagged',data:{errMsg:msg,birthDate1:formData.birthDate,birthDate2:formData.birthDate2,hasSecondChild:formData.hasSecondChild,ageRange,campAge},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         setBirthDateError(true);
         if (formData.hasSecondChild && formData.birthDate2) {
           setBirthDate2Error(true);
         }
+        // #region agent log
+        fetch('http://127.0.0.1:7718/ingest/40836efc-fc10-47c8-8667-1ed88a990e23',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d0d83a'},body:JSON.stringify({sessionId:'d0d83a',hypothesisId:'A',location:'RegistrationClient.tsx:after-setBirthDateErrors',message:'Both error states set — child1 always true, child2 based on existence',data:{birthDateError:true,birthDate2Error:(formData.hasSecondChild && !!formData.birthDate2)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         // Scroll to whichever date field is visible first
         const scrollTarget = document.getElementById('birthDate') ?? document.getElementById('birthDate2');
         scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });

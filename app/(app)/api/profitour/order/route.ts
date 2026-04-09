@@ -257,6 +257,7 @@ export async function POST(req: NextRequest) {
     // These are needed for CestujiciExtraUpd (t-shirt) and KlientExtraUpd (intolerances)
     let id_Klient: number | null = null
     let cestujiciIds: number[] = []
+    let cestujiciKlientIds: number[] = []
     let souhlasKlic: string | null = null
     let klientEmail: string | null = null
 
@@ -297,18 +298,27 @@ export async function POST(req: NextRequest) {
         if (num > 0 && !seen.has(num)) { seen.add(num); cestujiciIds.push(num) }
       }
 
+      // Extract the Klient ID from each Cestujici (child traveler) — needed for KlientExtraUpd (intolerance)
+      // Each inner <Cestujici><ID>N</ID>...<Klient><ID>M</ID> → M is the klient ID to use
+      const innerCestujiciPattern = /<Cestujici><ID>\d+<\/ID>[\s\S]*?<Klient[^>]*><ID>(\d+)<\/ID>/g
+      let cm: RegExpExecArray | null
+      while ((cm = innerCestujiciPattern.exec(detailXml)) !== null) {
+        const klId = Number(cm[1])
+        if (klId > 0) cestujiciKlientIds.push(klId)
+      }
+
       // Extract SouhlasKlic and Email from the Klient object — needed for KlientSouhlasAktivovat
       const souhlasKlicMatch = detailXml.match(/<SouhlasKlic>([^<]+)<\/SouhlasKlic>/)
       if (souhlasKlicMatch) souhlasKlic = souhlasKlicMatch[1].trim()
       const klientEmailMatch = detailXml.match(/<Klient[^>]*>[\s\S]*?<Email>([^<]+)<\/Email>/)
       if (klientEmailMatch) klientEmail = klientEmailMatch[1].trim()
 
-      console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds, 'souhlasKlic:', souhlasKlic ? '(set)' : '(missing)')
+      console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds, 'cestujiciKlientIds:', cestujiciKlientIds, 'souhlasKlic:', souhlasKlic ? '(set)' : '(missing)')
     } catch (e) {
       console.warn('[order] ObjednavkaDetail fetch failed (non-blocking):', e)
     }
 
-    return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds, souhlasKlic, klientEmail })
+    return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds, cestujiciKlientIds, souhlasKlic, klientEmail })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)
