@@ -109,6 +109,8 @@ export default function RegistrationClient({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
+  const [birthDateMsg, setBirthDateMsg] = useState<string | null>(null);
+  const [birthDate2Msg, setBirthDate2Msg] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Split date inputs (DD / MM / YYYY) — avoids the Mac browser date-picker confusion
@@ -152,8 +154,8 @@ export default function RegistrationClient({
       : { ...parts, y: val };
     setParts(next);
     // Clear any age error from a previous Profis submission when the user edits the date
-    if (fieldName === 'birthDate') setBirthDateError(false);
-    else setBirthDate2Error(false);
+    if (fieldName === 'birthDate') { setBirthDateError(false); setBirthDateMsg(null); }
+    else { setBirthDate2Error(false); setBirthDate2Msg(null); }
     const iso = makeDateISO(next.d, next.m, next.y);
     setFormData(prev => ({ ...prev, [fieldName]: iso }));
     // Auto-advance focus
@@ -243,6 +245,8 @@ export default function RegistrationClient({
     setSubmitError(null);
     setBirthDateError(false);
     setBirthDate2Error(false);
+    setBirthDateMsg(null);
+    setBirthDate2Msg(null);
     if (!validateFields()) return;
     setIsSubmitting(true);
 
@@ -413,9 +417,21 @@ export default function RegistrationClient({
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
       const isAgeError = msg.includes('nie je možné obsadiť') || msg.includes('Kalkulace.Warning') || msg.includes('vek') || msg.includes('věk');
+      const isDateError = msg.includes('cannot be parsed as the type') || msg.includes('DateTime');
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
-      if (isAgeError) {
+      if (isDateError) {
+        const isInvalidDate = (iso: string) => !iso || isNaN(new Date(iso).getTime());
+        const child1Bad = isInvalidDate(formData.birthDate);
+        const child2Bad = formData.hasSecondChild && isInvalidDate(formData.birthDate2);
+        const invalidMsg = 'Nesprávne zadaný dátum narodenia. Skontrolujte prosím zadaný dátum.';
+        if (child1Bad || (!child1Bad && !child2Bad)) { setBirthDateError(true); setBirthDateMsg(invalidMsg); }
+        if (child2Bad) { setBirthDate2Error(true); setBirthDate2Msg(invalidMsg); }
+        const scrollTarget = (child2Bad && !child1Bad)
+          ? document.getElementById('birthDate2')
+          : document.getElementById('birthDate');
+        scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (isAgeError) {
         // Determine which child's date is actually out of range so only that field turns red.
         // Profis is still the sole validator — this is purely for UI highlighting.
         const childAgeOutOfRange = (birthDate: string): boolean => {
@@ -753,7 +769,7 @@ export default function RegistrationClient({
                     <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate}</p>
                   )}
                   {birthDateError && (
-                    <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
+                    <p className="mt-2 text-sm text-red-600 font-medium">{birthDateMsg ?? ageErrorMsg}</p>
                   )}
                 </div>
                 <div className="grid grid-cols-[2fr_1fr] gap-4 mb-4">
@@ -1012,7 +1028,7 @@ export default function RegistrationClient({
                         <p className="mt-2 text-sm text-red-600 font-medium">{fieldErrors.birthDate2}</p>
                       )}
                       {birthDate2Error && (
-                        <p className="mt-2 text-sm text-red-600 font-medium">{ageErrorMsg}</p>
+                        <p className="mt-2 text-sm text-red-600 font-medium">{birthDate2Msg ?? ageErrorMsg}</p>
                       )}
                     </div>
                     <div className="grid grid-cols-[2fr_1fr] gap-4">
