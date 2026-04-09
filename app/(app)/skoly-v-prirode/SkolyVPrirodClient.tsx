@@ -143,11 +143,12 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   ))}
                 </div>
                 <div>
-                  <a href="#strediska">
-                    <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
-                      Pozri strediská
-                    </button>
-                  </a>
+                  <button
+                    onClick={() => document.getElementById('strediska')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200"
+                  >
+                    Pozri strediská
+                  </button>
                 </div>
               </div>
 
@@ -168,11 +169,12 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   </p>
                 ))}
                 <div>
-                  <a href="#strediska">
-                    <button className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200">
-                      Pozri strediská
-                    </button>
-                  </a>
+                  <button
+                    onClick={() => document.getElementById('strediska')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="px-8 py-4 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-lg rounded-full hover:translate-y-0.5 transition-all duration-200"
+                  >
+                    Pozri strediská
+                  </button>
                 </div>
               </div>
 
