@@ -3,26 +3,6 @@ import { getPayloadClient } from '@/lib/payload'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function slugifyCamp(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[áä]/g, 'a')
-    .replace(/[čč]/g, 'c')
-    .replace(/[ďď]/g, 'd')
-    .replace(/[éě]/g, 'e')
-    .replace(/[íï]/g, 'i')
-    .replace(/[ľĺ]/g, 'l')
-    .replace(/[ňň]/g, 'n')
-    .replace(/[óô]/g, 'o')
-    .replace(/[řŕ]/g, 'r')
-    .replace(/[šš]/g, 's')
-    .replace(/[ťť]/g, 't')
-    .replace(/[úů]/g, 'u')
-    .replace(/[ýý]/g, 'y')
-    .replace(/[žž]/g, 'z')
-    .replace(/[^a-z0-9-]/g, '')
-}
 
 async function checkSubscriberExists(apiKey: string, listId: string, email: string): Promise<boolean> {
   try {
@@ -75,16 +55,8 @@ export async function POST(req: NextRequest) {
       const listId = process.env.ECOMAIL_LIST_ID
 
       if (apiKey && listId) {
-        const campTag = slugifyCamp(selectedCamp || 'akykolvek-tabor')
-
         // Check if subscriber already exists in the list
         const alreadyExists = await checkSubscriberExists(apiKey, listId, cleanEmail)
-
-        // New contacts: fire welcome autoresponder, tag as novy-kontakt.
-        // Existing contacts: no autoresponder, add sutaz-2026 tag instead.
-        const tags = alreadyExists
-          ? ['sutaz-2026', campTag]
-          : ['novy-kontakt', campTag]
 
         const ecomailRes = await fetch(
           `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,
@@ -98,7 +70,10 @@ export async function POST(req: NextRequest) {
               subscriber_data: {
                 email: cleanEmail,
                 name: cleanName,
-                tags,
+                tags: alreadyExists ? ['OldSutaz'] : ['NewSutaz'],
+                custom_fields: {
+                  CAMP_NAME: selectedCamp || 'Akýkoľvek Tábor',
+                },
               },
               trigger_autoresponders: !alreadyExists,
               update_existing: true,

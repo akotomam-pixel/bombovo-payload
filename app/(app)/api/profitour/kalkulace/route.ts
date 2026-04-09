@@ -67,13 +67,37 @@ export async function POST(req: NextRequest) {
     let paramsRaw = await soapCall('Katalog', 'KalkulaceParametry', `${ctx}
       <ns:id_Termin>${id_Termin}</ns:id_Termin>
       ${hotelArrayXml}`).catch(async (err) => {
-      // If the hotel ID is stale/invalid in Payload CMS, retry without it so the API
-      // auto-resolves the correct hotel for this term.
-      if (id_ZajezdHotel && String(err?.message ?? '').includes('id_ZajezdHotel')) {
+      const errMsg = String(err?.message ?? '')
+      if (!errMsg.includes('id_ZajezdHotel')) throw err
+
+      if (id_ZajezdHotel) {
+        // Stale/invalid hotel ID from Payload — retry without it
         console.warn('[kalkulace] id_ZajezdHotel', id_ZajezdHotel, 'rejected by Profis — retrying without it')
         id_ZajezdHotel = undefined
         return soapCall('Katalog', 'KalkulaceParametry', `${ctx}
           <ns:id_Termin>${id_Termin}</ns:id_Termin>`)
+      }
+
+      // No hotel ID provided but Profis requires one (multi-hotel camp).
+      // Call TerminDetail to discover the hotel ID, then retry KalkulaceParametry with it.
+      console.warn('[kalkulace] id_ZajezdHotel required by Profis — fetching from TerminDetail')
+      try {
+        const terminDetailRaw = await soapCall('Katalog', 'TerminDetail', `${ctx}
+          <ns:ID>${id_Termin}</ns:ID>`)
+        const tdXml = terminDetailRaw._raw as string
+        // Extract the first ZajezdHotel ID from the response
+        const zajezdHotelBlock = extractTag(tdXml, 'ZajezdHotel')
+        const discoveredHotelId = zajezdHotelBlock ? Number(extractTag(zajezdHotelBlock, 'ID') ?? '0') : 0
+        if (discoveredHotelId) {
+          id_ZajezdHotel = discoveredHotelId
+          console.log('[kalkulace] Discovered id_ZajezdHotel from TerminDetail:', id_ZajezdHotel)
+          const newHotelArrayXml = `<ns:id_ZajezdHotel><arr:int xmlns:arr="${ARR_NS}">${id_ZajezdHotel}</arr:int></ns:id_ZajezdHotel>`
+          return soapCall('Katalog', 'KalkulaceParametry', `${ctx}
+            <ns:id_Termin>${id_Termin}</ns:id_Termin>
+            ${newHotelArrayXml}`)
+        }
+      } catch (tdErr) {
+        console.error('[kalkulace] TerminDetail fallback failed:', tdErr)
       }
       throw err
     })
