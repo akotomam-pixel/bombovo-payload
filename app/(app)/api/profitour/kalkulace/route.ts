@@ -81,8 +81,15 @@ export async function POST(req: NextRequest) {
     const paramsXml = paramsRaw._raw as string
     console.log('[kalkulace] KalkulaceParametry response:', paramsXml.slice(0, 3000))
 
-    // Auto-extract id_ZajezdHotel from the response (always — ensures we use the real API value)
-    const hotelId = extractTag(paramsXml, 'id_ZajezdHotel')
+    // Auto-extract id_ZajezdHotel from the response (always — ensures we use the real API value).
+    // Profis may return it as <id_ZajezdHotel>X</id_ZajezdHotel> OR nested inside a
+    // <ZajezdHotel><ID>X</ID></ZajezdHotel> block — try both patterns.
+    const hotelId =
+      extractTag(paramsXml, 'id_ZajezdHotel') ??
+      (() => {
+        const zajezdBlock = extractTag(paramsXml, 'ZajezdHotel')
+        return zajezdBlock ? extractTag(zajezdBlock, 'ID') : null
+      })()
     if (hotelId) {
       id_ZajezdHotel = Number(hotelId)
       console.log('[kalkulace] Resolved id_ZajezdHotel from KalkulaceParametry:', id_ZajezdHotel)
@@ -172,19 +179,31 @@ export async function POST(req: NextRequest) {
     console.log('[kalkulace] Step 2: Kalkulace with id_Termin:', id_Termin, 'id_ZajezdHotel:', id_ZajezdHotel)
     console.log('[kalkulace] ubytovaniXml:', ubytovaniXml.slice(0, 500))
     console.log('[kalkulace] dopravyXml:', dopravyXml.slice(0, 500))
-    const raw = await soapCall('Katalog', 'Kalkulace', `${ctx}
+
+    const buildKalkulaceBody = (withUbytovani: boolean) => `${ctx}
       <ns:Data>
         <ns:Cestujici>
           ${cestujiciXml}
         </ns:Cestujici>
         <ns:Pojisteni/>
         ${dopravyXml}
-        ${ubytovaniXml}
+        ${withUbytovani ? ubytovaniXml : ''}
         <ns:Skipasy/>
         <ns:id_TypStrava>${id_TypStrava}</ns:id_TypStrava>
         ${slevaParamXml}
         <ns:id_Termin>${id_Termin}</ns:id_Termin>
-      </ns:Data>`)
+      </ns:Data>`
+
+    const raw = await soapCall('Katalog', 'Kalkulace', buildKalkulaceBody(true)).catch(async (err) => {
+      // If Profis rejects because hotel ID is missing/invalid, retry without the accommodation block.
+      // This allows price calculation to proceed for terms where the hotel is not required.
+      if (String(err?.message ?? '').includes('id_ZajezdHotel') || String(err?.message ?? '').includes('ZajezdHotel')) {
+        console.warn('[kalkulace] Kalkulace rejected hotel ID — retrying without accommodation section')
+        id_ZajezdHotel = undefined
+        return soapCall('Katalog', 'Kalkulace', buildKalkulaceBody(false))
+      }
+      throw err
+    })
 
     const xml = raw._raw as string
     console.log('[kalkulace] Kalkulace response:', xml.slice(0, 800))

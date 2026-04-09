@@ -65,7 +65,49 @@ export async function POST(req: NextRequest) {
         <ns:MinimalniDelkaRezervace>0</ns:MinimalniDelkaRezervace>
       </ns:Data>`)
 
-    // ── Send confirmation email via Profis (id_Pravidlo=1 → "Objednávka - klient") ──
+    // ── FakturyVystavit: issue invoices so payment conditions are filled on the contract ──
+    // Must run before SmlouvaPridat. id_FakturaRada left empty = system default.
+    try {
+      await soapCall('Objednavka', 'FakturyVystavit', `
+        <ns:Context>
+          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+          <ns:VypsatNazvy>false</ns:VypsatNazvy>
+          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+          <ns:Klic>${klic}</ns:Klic>
+          <ns:id_Objednavka>${id_Objednavka}</ns:id_Objednavka>
+        </ns:Context>
+        <ns:id_FakturaRada i:nil="true"/>`)
+      console.log('[order/complete] FakturyVystavit OK')
+    } catch (fakturaErr) {
+      console.error('[order/complete] FakturyVystavit error (non-blocking):', fakturaErr)
+    }
+
+    // ── SmlouvaPridat: generate the pre-filled contract PDF ──────────────────────
+    // Must run before ObjednavkaEmailOdeslat so the PDF exists to attach.
+    // id_SmlouvaVzor left empty = system picks default template.
+    // StavSmlouvaOdeslana=true marks contract as sent to client.
+    try {
+      await soapCall('Objednavka', 'SmlouvaPridat', `
+        <ns:Context>
+          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+          <ns:VypsatNazvy>false</ns:VypsatNazvy>
+          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+          <ns:Klic>${klic}</ns:Klic>
+          <ns:id_Objednavka>${id_Objednavka}</ns:id_Objednavka>
+        </ns:Context>
+        <ns:Data>
+          <ns:Heslo i:nil="true"/>
+          <ns:StavSmlouvaOdeslana>true</ns:StavSmlouvaOdeslana>
+          <ns:id_SmlouvaVzor i:nil="true"/>
+        </ns:Data>`)
+      console.log('[order/complete] SmlouvaPridat OK')
+    } catch (smlouvaErr) {
+      console.error('[order/complete] SmlouvaPridat error (non-blocking):', smlouvaErr)
+    }
+
+    // ── ObjednavkaEmailOdeslat: send contract email (id_Pravidlo=11 → "Odoslanie zmluvy Tábory") ──
     // Non-blocking: the order is already saved; a mail failure must not break the response.
     try {
       await soapCall('Objednavka', 'ObjednavkaEmailOdeslat', `
@@ -77,8 +119,9 @@ export async function POST(req: NextRequest) {
           <ns:Klic>${klic}</ns:Klic>
           <ns:id_Objednavka>${id_Objednavka}</ns:id_Objednavka>
         </ns:Context>
-        <ns:id_Pravidlo>1</ns:id_Pravidlo>
+        <ns:id_Pravidlo>11</ns:id_Pravidlo>
         <ns:ID2>0</ns:ID2>`)
+      console.log('[order/complete] ObjednavkaEmailOdeslat OK id_Pravidlo=11')
     } catch (emailErr) {
       console.error('[order/complete] ObjednavkaEmailOdeslat error (non-blocking):', emailErr)
     }

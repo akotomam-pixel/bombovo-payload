@@ -407,18 +407,31 @@ export default function RegistrationClient({
       const isPhoneError = msg.includes('Telefon') || msg.includes('telefon') || msg.includes('KlientDataInput.Telefon');
       const isEmailError = msg.includes('Email') || msg.includes('KlientDataInput.Email');
       if (isAgeError) {
-        // #region agent log
-        fetch('http://127.0.0.1:7718/ingest/40836efc-fc10-47c8-8667-1ed88a990e23',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d0d83a'},body:JSON.stringify({sessionId:'d0d83a',hypothesisId:'A+B',location:'RegistrationClient.tsx:isAgeError-handler',message:'Age error caught — checking which child is flagged',data:{errMsg:msg,birthDate1:formData.birthDate,birthDate2:formData.birthDate2,hasSecondChild:formData.hasSecondChild,ageRange,campAge},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        setBirthDateError(true);
+        // Determine which child's date is actually out of range so only that field turns red.
+        // Profis is still the sole validator — this is purely for UI highlighting.
+        const childAgeOutOfRange = (birthDate: string): boolean => {
+          if (!birthDate || !ageRange) return true;
+          const birth = new Date(birthDate);
+          if (isNaN(birth.getTime())) return true;
+          const today = new Date();
+          let age = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+          return age < ageRange.min || age > ageRange.max;
+        };
+
+        const child1Bad = childAgeOutOfRange(formData.birthDate);
+        const child2Bad = formData.hasSecondChild && !!formData.birthDate2 && childAgeOutOfRange(formData.birthDate2);
+        const onlyChild2Bad = !child1Bad && child2Bad;
+        const onlyChild1Bad = child1Bad && !child2Bad;
+
+        setBirthDateError(!onlyChild2Bad);
         if (formData.hasSecondChild && formData.birthDate2) {
-          setBirthDate2Error(true);
+          setBirthDate2Error(!onlyChild1Bad);
         }
-        // #region agent log
-        fetch('http://127.0.0.1:7718/ingest/40836efc-fc10-47c8-8667-1ed88a990e23',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'d0d83a'},body:JSON.stringify({sessionId:'d0d83a',hypothesisId:'A',location:'RegistrationClient.tsx:after-setBirthDateErrors',message:'Both error states set — child1 always true, child2 based on existence',data:{birthDateError:true,birthDate2Error:(formData.hasSecondChild && !!formData.birthDate2)},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        // Scroll to whichever date field is visible first
-        const scrollTarget = document.getElementById('birthDate') ?? document.getElementById('birthDate2');
+        const scrollTarget = onlyChild2Bad
+          ? document.getElementById('birthDate2')
+          : document.getElementById('birthDate');
         scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (isPhoneError) {
         setFieldErrors({ phone: 'Zadali ste nesprávne číslo.' });
