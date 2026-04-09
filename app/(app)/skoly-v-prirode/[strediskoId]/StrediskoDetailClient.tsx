@@ -262,11 +262,12 @@ export default function StrediskoDetailClient({
 
                   {/* CTA */}
                   <div>
-                    <a href="#terminy">
-                      <button className="w-full md:w-auto px-8 py-3 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200">
-                        Pozri termíny
-                      </button>
-                    </a>
+                    <button
+                      onClick={() => document.getElementById('terminy')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="w-full md:w-auto px-8 py-3 bg-bombovo-red border-2 border-bombovo-dark text-white font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200"
+                    >
+                      Pozri termíny
+                    </button>
                   </div>
                 </div>
               </div>
@@ -324,10 +325,12 @@ export default function StrediskoDetailClient({
             </div>
           </div>
         </section>
+
+        <WaveDivider color="blue" variant={1} />
       </div>
 
-      {/* Section 3.1: Distance Calculator — gray + blue top accent (like site dividers) */}
-      <div className="bg-bombovo-gray border-t-4 border-bombovo-blue">
+      {/* Section 3.1: Distance Calculator */}
+      <div className="bg-bombovo-gray">
         <section className="py-12 md:py-16">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <DistanceCalculator
@@ -336,9 +339,9 @@ export default function StrediskoDetailClient({
             />
           </div>
         </section>
-      </div>
 
-      <WaveDivider color="red" variant={3} />
+        <WaveDivider color="red" variant={3} />
+      </div>
 
       {/* Section 4: Video + Program Info */}
       <div className="bg-white">

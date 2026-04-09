@@ -110,26 +110,14 @@ export async function POST(req: NextRequest) {
       </ns:Adresa>`
   }
 
-  // CestujiciKlientInput: uses KlientDataInput to store name, birth date and address
-  // so Profis contract shows these fields in the "Cestujúci" table.
-  // WCF order: base CestujiciInputBase (ID), then own CestujiciKlientInput (Klient)
-  // KlientDataInput fields (alphabetical): Adresa, Jmeno, Narozeni, Prijmeni
+  // Objednat uses CestujiciNarozeniInput (birth date only) — Profis needs age for pricing.
+  // Personal data (name, address) is saved separately via CestujiciUlozit after ObjednavkaDetail
+  // returns the real Cestujici IDs, which is the correct sequence per the Profis FAQ.
   const cestujiciXml = input.cestujici!
-    .map((c, i) => {
-      const childAdresaXml = buildAdresaXml(c.ulice, c.psc)
-      const jmeno = c.jmeno ?? ''
-      const prijmeni = c.prijmeni ?? ''
-      return `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
-          <ns:ID>${-(i + 1)}</ns:ID>
-          <ns:Klient i:type="ns:KlientDataInput">
-            ${childAdresaXml}
-            <ns:Jmeno>${ex(jmeno)}</ns:Jmeno>
-            <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
-            <ns:Prijmeni>${ex(prijmeni)}</ns:Prijmeni>
-            <ns:id_Pohlavi>M</ns:id_Pohlavi>
-          </ns:Klient>
-        </ns:CestujiciInputBase>`
-    })
+    .map((c, i) => `<ns:CestujiciInputBase i:type="ns:CestujiciNarozeniInput">
+        <ns:ID>${-(i + 1)}</ns:ID>
+        <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
+      </ns:CestujiciInputBase>`)
     .join('')
 
   // Build RezervaceDopravy from svoz IDs passed through from Kalkulace.
@@ -314,6 +302,49 @@ export async function POST(req: NextRequest) {
       if (klientEmailMatch) klientEmail = klientEmailMatch[1].trim()
 
       console.log('[order] id_Klient:', id_Klient, 'cestujiciIds:', cestujiciIds, 'cestujiciKlientIds:', cestujiciKlientIds, 'souhlasKlic:', souhlasKlic ? '(set)' : '(missing)')
+
+      // ── CestujiciUlozit: save full personal data using real Cestujici IDs ────────
+      // Must be called AFTER ObjednavkaDetail so we have the real IDs (not negative placeholders).
+      // This is the correct Profis sequence: Objednat → ObjednavkaDetail → CestujiciUlozit.
+      if (cestujiciIds.length > 0 && input.cestujici?.length) {
+        try {
+          const cestujiciUlozitXml = cestujiciIds
+            .map((realId, i) => {
+              const c = input.cestujici![i]
+              if (!c) return ''
+              const adresaXml = buildAdresaXml(c.ulice, c.psc)
+              const adresaNode = adresaXml || '<ns:Adresa i:nil="true"/>'
+              return `<ns:CestujiciKlientInput>
+                  <ns:ID>${realId}</ns:ID>
+                  <ns:Klient i:type="ns:KlientDataInput">
+                    ${adresaNode}
+                    <ns:Jmeno>${ex(c.jmeno ?? '')}</ns:Jmeno>
+                    <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
+                    <ns:Prijmeni>${ex(c.prijmeni ?? '')}</ns:Prijmeni>
+                    <ns:id_Pohlavi>M</ns:id_Pohlavi>
+                  </ns:Klient>
+                </ns:CestujiciKlientInput>`
+            })
+            .filter(Boolean)
+            .join('')
+
+          await soapCall('Objednavka', 'CestujiciUlozit', `
+            <ns:Context>
+              <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+              <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+              <ns:VypsatNazvy>false</ns:VypsatNazvy>
+              <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+              <ns:Klic>${klic}</ns:Klic>
+              <ns:id_Objednavka>${id_Objednavka}</ns:id_Objednavka>
+            </ns:Context>
+            <ns:Cestujici>
+              ${cestujiciUlozitXml}
+            </ns:Cestujici>`)
+          console.log('[order] CestujiciUlozit OK for ids:', cestujiciIds)
+        } catch (e) {
+          console.error('[order] CestujiciUlozit FAILED:', e)
+        }
+      }
     } catch (e) {
       console.warn('[order] ObjednavkaDetail fetch failed (non-blocking):', e)
     }

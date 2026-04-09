@@ -193,6 +193,9 @@ export default function RegistrationClient({
     req('streetNumber', formData.streetNumber);
     req('city', formData.city);
     req('zip', formData.zip);
+    if (!errors['zip'] && formData.zip && !/^\d{5}$/.test(formData.zip.replace(/\s/g, ''))) {
+      errors['zip'] = 'Prosím zadajte správne PSČ.';
+    }
     req('phone', formData.phone);
     req('email', formData.email);
     if (!errors['email'] && formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -205,6 +208,9 @@ export default function RegistrationClient({
     req('childStreetNumber', formData.childStreetNumber);
     req('childCity', formData.childCity);
     req('childZip', formData.childZip);
+    if (!errors['childZip'] && formData.childZip && !/^\d{5}$/.test(formData.childZip.replace(/\s/g, ''))) {
+      errors['childZip'] = 'Prosím zadajte správne PSČ.';
+    }
     if (formData.hasIntolerance === 'ano') req('intoleranceDetails', formData.intoleranceDetails);
     req('tshirtSize', formData.tshirtSize);
     if (!formData.gdprConsent) errors['gdprConsent'] = 'Prosím zaškrtnite všetky povinné polia na vyplnenie prihlášky.';
@@ -216,6 +222,9 @@ export default function RegistrationClient({
       req('childStreetNumber2', formData.childStreetNumber2);
       req('childCity2', formData.childCity2);
       req('childZip2', formData.childZip2);
+      if (!errors['childZip2'] && formData.childZip2 && !/^\d{5}$/.test(formData.childZip2.replace(/\s/g, ''))) {
+        errors['childZip2'] = 'Prosím zadajte správne PSČ.';
+      }
       if (formData.hasIntolerance2 === 'ano') req('intoleranceDetails2', formData.intoleranceDetails2);
       req('tshirtSize2', formData.tshirtSize2);
     }

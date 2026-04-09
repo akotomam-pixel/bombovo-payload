@@ -70,22 +70,17 @@ export async function POST(req: NextRequest) {
       const errMsg = String(err?.message ?? '')
       if (!errMsg.includes('id_ZajezdHotel')) throw err
 
+      // Hotel ID is wrong/missing — use TerminDetail to discover the correct one
       if (id_ZajezdHotel) {
-        // Stale/invalid hotel ID from Payload — retry without it
-        console.warn('[kalkulace] id_ZajezdHotel', id_ZajezdHotel, 'rejected by Profis — retrying without it')
-        id_ZajezdHotel = undefined
-        return soapCall('Katalog', 'KalkulaceParametry', `${ctx}
-          <ns:id_Termin>${id_Termin}</ns:id_Termin>`)
+        console.warn('[kalkulace] id_ZajezdHotel', id_ZajezdHotel, 'rejected by Profis — fetching correct one from TerminDetail')
+      } else {
+        console.warn('[kalkulace] id_ZajezdHotel required by Profis — fetching from TerminDetail')
       }
 
-      // No hotel ID provided but Profis requires one (multi-hotel camp).
-      // Call TerminDetail to discover the hotel ID, then retry KalkulaceParametry with it.
-      console.warn('[kalkulace] id_ZajezdHotel required by Profis — fetching from TerminDetail')
       try {
         const terminDetailRaw = await soapCall('Katalog', 'TerminDetail', `${ctx}
           <ns:ID>${id_Termin}</ns:ID>`)
         const tdXml = terminDetailRaw._raw as string
-        // Extract the first ZajezdHotel ID from the response
         const zajezdHotelBlock = extractTag(tdXml, 'ZajezdHotel')
         const discoveredHotelId = zajezdHotelBlock ? Number(extractTag(zajezdHotelBlock, 'ID') ?? '0') : 0
         if (discoveredHotelId) {
