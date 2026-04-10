@@ -110,14 +110,23 @@ export async function POST(req: NextRequest) {
       </ns:Adresa>`
   }
 
-  // Objednat uses CestujiciNarozeniInput (birth date only) — Profis needs age for pricing.
-  // Personal data (name, address) is saved separately via CestujiciUlozit after ObjednavkaDetail
-  // returns the real Cestujici IDs, which is the correct sequence per the Profis FAQ.
+  // Objednat uses CestujiciKlientInput — passes full child data (name, address, birthdate)
+  // directly in Objednat so Profis creates proper Klient records for each Cestujici.
+  // This is required for KlientExtraUpd (intolerance) to work, as it needs Cestujici.id_Klient.
   const cestujiciXml = input.cestujici!
-    .map((c, i) => `<ns:CestujiciInputBase i:type="ns:CestujiciNarozeniInput">
-        <ns:ID>${-(i + 1)}</ns:ID>
-        <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
-      </ns:CestujiciInputBase>`)
+    .map((c, i) => {
+      const childAdresaXml = buildAdresaXml(c.ulice, c.psc)
+      return `<ns:CestujiciInputBase i:type="ns:CestujiciKlientInput">
+          <ns:ID>${-(i + 1)}</ns:ID>
+          <ns:Klient i:type="ns:KlientDataInput">
+            ${childAdresaXml || '<ns:Adresa i:nil="true"/>'}
+            <ns:Jmeno>${ex(c.jmeno ?? '')}</ns:Jmeno>
+            <ns:Narozeni>${toDateTime(c.datumNarozeni)}</ns:Narozeni>
+            <ns:Prijmeni>${ex(c.prijmeni ?? '')}</ns:Prijmeni>
+            <ns:id_Pohlavi>M</ns:id_Pohlavi>
+          </ns:Klient>
+        </ns:CestujiciInputBase>`
+    })
     .join('')
 
   // Build RezervaceDopravy from svoz IDs passed through from Kalkulace.
