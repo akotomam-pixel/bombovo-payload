@@ -477,7 +477,7 @@ export default function RegistrationClient({
       } else if (msg.includes('Nelze rezervovat') || msg.includes('TerminOvereniDostupnosti')) {
         setSubmitErrorNode(
           <>
-            Tento termín je už plne obsadený, skúste si vybrať iný tábor z našej ponuky táborov, ale nás kontaktujte na{' '}
+            Tento termín je už plne obsadený, skúste si vybrať iný tábor z našej ponuky táborov, alebo nás kontaktujte na{' '}
             <a href="mailto:bombovo@bombovo.sk" className="underline text-blue-600">bombovo@bombovo.sk</a>
             {' '}alebo telefonicky na číslo{' '}
             <a href="tel:+421915774213" className="underline text-blue-600">+421 915 774 213</a>.
