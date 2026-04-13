@@ -464,8 +464,10 @@ export default function RegistrationClient({
       } else if (isEmailError) {
         setFieldErrors({ email: 'Zadali ste nesprávnu emailovú adresu.' });
         document.getElementById('field-email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (msg.includes('Nelze rezervovat') || msg.includes('TerminOvereniDostupnosti')) {
+        setSubmitError('Tento termín je už plne obsadený, prosím pozrite si iný termín. V prípade vážneho záujmu nás kontaktujte na emaili bombovo@bombovo.sk alebo na telefónnom čísle +421 915 774 213.');
       } else {
-        setSubmitError(msg);
+        setSubmitError(`Prihlášku na tábor ${campName} momentálne nie je možné odoslať. Prosím kontaktujte nás na emaili bombovo@bombovo.sk alebo na telefónnom čísle +421 915 774 213 a my vám s prihláškou pomôžeme.`);
       }
     } finally {
       setIsSubmitting(false);

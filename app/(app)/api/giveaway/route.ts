@@ -98,6 +98,28 @@ export async function POST(req: NextRequest) {
           const errText = await ecomailRes.text()
           console.error('[giveaway] Ecomail sync failed:', ecomailRes.status, errText)
         }
+
+        // If existing contact, also add to OldSutaz Helper list to trigger automation
+        if (alreadyExists) {
+          await fetch(
+            `https://api2.ecomailapp.cz/lists/44/subscribe`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                key: apiKey,
+              },
+              body: JSON.stringify({
+                subscriber_data: {
+                  email: cleanEmail,
+                  name: cleanName,
+                },
+                trigger_autoresponders: true,
+                update_existing: true,
+              }),
+            },
+          )
+        }
       }
     } catch (ecomailErr) {
       console.error('[giveaway] Ecomail error (non-blocking):', ecomailErr)

@@ -139,14 +139,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ── KlientSouhlasAktivovat: newsletter + marketing + photo consent ────────────
-  // Consent type IDs (from TypSouhlasList): 1=Newsletter, 2=Marketing, 3=Fotka
+  // ── KlientSouhlasAktivovat / KlientSouhlasDeaktivovat: newsletter + marketing + photo consent ──
+  // Consent type IDs: 1=Newsletter, 2=Marketing, 3=Fotka
   if (input.id_Klient && input.klientEmail && input.souhlasKlic) {
-    const consentIds = [
+    const activateIds = [
       ...(input.newsletter ? [1, 2] : []),
       ...(input.photoConsent === 'ano' ? [3] : []),
     ]
-    for (const id_TypSouhlas of consentIds) {
+    for (const id_TypSouhlas of activateIds) {
       try {
         await soapCall('Klient', 'KlientSouhlasAktivovat', klientSouhlasXml(input.id_Klient, id_TypSouhlas, input.klientEmail, input.souhlasKlic))
         console.log(`[order/extra] KlientSouhlasAktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}`)
@@ -154,6 +154,19 @@ export async function POST(req: NextRequest) {
         const msg = e instanceof Error ? e.message : String(e)
         console.error(`[order/extra] KlientSouhlasAktivovat FAILED id_Klient=${input.id_Klient} id_TypSouhlas=${id_TypSouhlas}:`, msg)
         errors.push(`KlientSouhlasAktivovat(${id_TypSouhlas}): ${msg}`)
+      }
+    }
+
+    // Explicitly deactivate photo consent when parent selects "Nie" — required for
+    // zmluva to show "Nesúhlasím" instead of leaving the field blank
+    if (input.photoConsent === 'nie') {
+      try {
+        await soapCall('Klient', 'KlientSouhlasDeaktivovat', klientSouhlasXml(input.id_Klient, 3, input.klientEmail, input.souhlasKlic))
+        console.log(`[order/extra] KlientSouhlasDeaktivovat OK id_Klient=${input.id_Klient} id_TypSouhlas=3`)
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        console.error(`[order/extra] KlientSouhlasDeaktivovat FAILED id_Klient=${input.id_Klient}:`, msg)
+        errors.push(`KlientSouhlasDeaktivovat(3): ${msg}`)
       }
     }
   }
