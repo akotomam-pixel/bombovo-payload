@@ -107,6 +107,7 @@ export default function RegistrationClient({
       .catch(() => {}) // silent fail — fallback options shown below
   }, []);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitErrorNode, setSubmitErrorNode] = useState<React.ReactNode>(null);
   const [birthDateError, setBirthDateError] = useState(false);
   const [birthDate2Error, setBirthDate2Error] = useState(false);
   const [birthDateMsg, setBirthDateMsg] = useState<string | null>(null);
@@ -243,6 +244,7 @@ export default function RegistrationClient({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+    setSubmitErrorNode(null);
     setBirthDateError(false);
     setBirthDate2Error(false);
     setBirthDateMsg(null);
@@ -473,7 +475,14 @@ export default function RegistrationClient({
         setFieldErrors({ email: 'Zadali ste nesprávnu emailovú adresu.' });
         document.getElementById('field-email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (msg.includes('Nelze rezervovat') || msg.includes('TerminOvereniDostupnosti')) {
-        setSubmitError('Tento termín je už plne obsadený, prosím pozrite si iný termín. V prípade vážneho záujmu nás kontaktujte na emaili bombovo@bombovo.sk alebo na telefónnom čísle +421 915 774 213.');
+        setSubmitErrorNode(
+          <>
+            Tento termín je už plne obsadený, skúste si vybrať iný tábor z našej ponuky táborov, ale nás kontaktujte na{' '}
+            <a href="mailto:bombovo@bombovo.sk" className="underline text-blue-600">bombovo@bombovo.sk</a>
+            {' '}alebo telefonicky na číslo{' '}
+            <a href="tel:+421915774213" className="underline text-blue-600">+421 915 774 213</a>.
+          </>
+        );
       } else {
         setSubmitError(`Prihlášku na tábor ${campName} momentálne nie je možné odoslať. Prosím kontaktujte nás na emaili bombovo@bombovo.sk alebo na telefónnom čísle +421 915 774 213 a my vám s prihláškou pomôžeme.`);
       }
@@ -1301,9 +1310,9 @@ export default function RegistrationClient({
 
               {/* Submit */}
               <div className="text-center space-y-4">
-                {submitError && (
+                {(submitError || submitErrorNode) && (
                   <div className="p-4 bg-red-50 border-2 border-red-400 rounded-xl text-red-700 font-semibold text-sm">
-                    {submitError}
+                    {submitErrorNode ?? submitError}
                   </div>
                 )}
                 <button
