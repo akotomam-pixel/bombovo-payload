@@ -49,8 +49,10 @@ export async function POST(req: NextRequest) {
       id_KlientCestujici?: number | null  // Cestujici.Klient.ID — for KlientExtraUpd (intolerance)
       id_VelikostTricka: number | null
       zdravotniOmezeni?: string           // intolerance text for this specific child
+      childName?: string                  // child's first name — used to prefix GdprOmezeni
+      roomWith?: string                   // "ubytovať s" value for this child
     }>
-    gdprOmezeni?: string         // additional info / other notes → saved on orderer klient
+    gdprOmezeni?: string         // additional info / other notes — appended to each child's GdprOmezeni
     newsletter?: boolean         // consent ID 1 (Newsletter) + ID 2 (Marketing)
     photoConsent?: string        // 'ano' → consent ID 3 (Fotka)
     klientEmail?: string         // needed for KlientKlicContext
@@ -116,26 +118,29 @@ export async function POST(req: NextRequest) {
           errors.push(`KlientExtraUpd(${c.id_KlientCestujici}): ${msg}`)
         }
       }
-    }
-  }
 
-  // ── KlientExtraUpd: save GdprOmezeni (other notes) on the orderer klient ──
-  if (input.id_Klient && input.gdprOmezeni) {
-    try {
-      const res = await soapCall('Ostatni', 'ExterniProcedura', `
-        ${externiContext()}
-        <ns:Data>
-          <ns:Nazev>KlientExtraUpd</ns:Nazev>
-          <ns:Parametry>
-            ${param('ID', input.id_Klient)}
-            ${param('GdprOmezeni', input.gdprOmezeni)}
-          </ns:Parametry>
-        </ns:Data>`)
-      console.log(`[order/extra] KlientExtraUpd (gdprOmezeni) raw:`, (res._raw as string)?.slice(0, 300))
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e)
-      console.error(`[order/extra] KlientExtraUpd (gdprOmezeni) FAILED id_Klient=${input.id_Klient}:`, msg)
-      errors.push(`KlientExtraUpd-gdpr(${input.id_Klient}): ${msg}`)
+      // Ostatné informácie — same pattern as intolerance, must use child's Klient ID.
+      // Build per-child string: "[childName]: ubytovať s [roomWith]" + additionalInfo if present.
+      const roomWithText = c.childName && c.roomWith ? `${c.childName}: ubytovať s ${c.roomWith}` : undefined
+      const gdprText = [roomWithText, input.gdprOmezeni].filter(Boolean).join(', ')
+      if (c.id_KlientCestujici && gdprText) {
+        try {
+          const res = await soapCall('Ostatni', 'ExterniProcedura', `
+            ${externiContext()}
+            <ns:Data>
+              <ns:Nazev>KlientExtraUpd</ns:Nazev>
+              <ns:Parametry>
+                ${param('ID', c.id_KlientCestujici)}
+                ${param('GdprOmezeni', gdprText)}
+              </ns:Parametry>
+            </ns:Data>`)
+          console.log(`[order/extra] KlientExtraUpd (gdprOmezeni) OK id_KlientCestujici=${c.id_KlientCestujici} text="${gdprText}" raw:`, (res._raw as string)?.slice(0, 300))
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e)
+          console.error(`[order/extra] KlientExtraUpd (gdprOmezeni) FAILED id_KlientCestujici=${c.id_KlientCestujici}:`, msg)
+          errors.push(`KlientExtraUpd-gdpr(${c.id_KlientCestujici}): ${msg}`)
+        }
+      }
     }
   }
 

@@ -354,6 +354,12 @@ export default function RegistrationClient({
             const intolerance = isFirstChild
               ? (formData.hasIntolerance === 'ano' ? formData.intoleranceDetails : undefined)
               : (formData.hasSecondChild && formData.hasIntolerance2 === 'ano' ? formData.intoleranceDetails2 : undefined);
+            const childName = isFirstChild
+              ? formData.childFirstName
+              : formData.childFirstName2;
+            const roomWith = isFirstChild
+              ? (formData.roomWith || undefined)
+              : (formData.hasSecondChild ? (formData.roomWith2 || undefined) : undefined);
             return {
               id_Cestujici,
               id_KlientCestujici: (cestujiciKlientIds ?? [])[idx] ?? null,
@@ -361,6 +367,8 @@ export default function RegistrationClient({
                 ? (Number(formData.tshirtSize) || null)
                 : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
               zdravotniOmezeni: intolerance || undefined,
+              childName: childName || undefined,
+              roomWith,
             };
           });
 
