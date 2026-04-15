@@ -616,11 +616,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                           {date.discountedPrice}
                         </p>
                       </div>
-                      {date.vypredane ? (
-                        <button disabled className="bg-gray-400 text-white font-bold px-5 py-3 rounded-full shadow-md cursor-not-allowed opacity-70">
-                          Vypredané
-                        </button>
-                      ) : date.registrationId ? (
+                      {date.registrationId ? (
                         <Link href={`/prihlaska/${date.registrationId}`}>
                           <button className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
                             Mám záujem

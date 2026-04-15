@@ -349,15 +349,6 @@ export const Camps: CollectionConfig = {
             description: 'The id_ZajezdHotel from ProfisXML for this camp. Set automatically by the populate script.',
           },
         },
-        {
-          name: 'vypredane',
-          type: 'checkbox',
-          label: 'Vypredané',
-          defaultValue: false,
-          admin: {
-            description: 'Zaškrtnite ak je termín vypredaný — tlačidlo sa zmení na "Vypredané" a prihlásenie bude zablokované.',
-          },
-        },
       ],
     },
   ],

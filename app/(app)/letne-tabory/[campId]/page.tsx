@@ -84,7 +84,6 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
         originalPrice?: string
         discountedPrice?: string
         registrationId?: string
-        vypredane?: boolean
       }) => ({
         start: d.start,
         end: d.end,
@@ -92,7 +91,6 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
         originalPrice: d.originalPrice ?? '',
         discountedPrice: d.discountedPrice ?? d.originalPrice ?? '',
         registrationId: d.registrationId ? Number(d.registrationId) : undefined,
-        vypredane: d.vypredane ?? false,
       })),
     },
   }
