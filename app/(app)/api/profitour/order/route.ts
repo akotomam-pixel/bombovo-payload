@@ -18,8 +18,9 @@ export async function POST(req: NextRequest) {
     ulice?: string
     mesto?: string
     psc?: string
-    cestujici?: Array<{ datumNarozeni: string; jmeno?: string; prijmeni?: string; ulice?: string; psc?: string }>
+    cestujici?: Array<{ datumNarozeni: string; jmeno?: string; prijmeni?: string; ulice?: string; psc?: string; roomWith?: string }>
     poznamka?: string
+    additionalInfo?: string
     url?: string
   }
 
@@ -156,12 +157,17 @@ export async function POST(req: NextRequest) {
   //              Own:  id_Ubytovani (i,U), id_ZajezdHotel (i,Z)
   const ubytovaniXml = input.id_ZajezdHotel
     ? `<ns:RezervaceUbytovani>
-        ${input.cestujici!.map((_, i) => `<ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+        ${input.cestujici!.map((c, i) => {
+          const roomWithText = c.jmeno && c.roomWith ? `${c.jmeno}: ubytovať s ${c.roomWith}` : undefined
+          const poznamkaText = [roomWithText, input.additionalInfo].filter(Boolean).join(', ')
+          return `<ns:RezervaceUbytovaniInputBase i:type="ns:RezervaceUbytovaniKalkulaceInput">
+            ${poznamkaText ? `<ns:Poznamka>${ex(poznamkaText)}</ns:Poznamka>` : ''}
             <ns:RezervaceUbytovaniCestujici><ns:RezervaceUbytovaniCestujiciInput><ns:id_Cestujici>${-(i + 1)}</ns:id_Cestujici></ns:RezervaceUbytovaniCestujiciInput></ns:RezervaceUbytovaniCestujici>
             <ns:id_TypStrava>${input.id_TypStrava ?? 0}</ns:id_TypStrava>
             <ns:id_Ubytovani>${input.id_Ubytovani ?? 0}</ns:id_Ubytovani>
             <ns:id_ZajezdHotel>${input.id_ZajezdHotel}</ns:id_ZajezdHotel>
-          </ns:RezervaceUbytovaniInputBase>`).join('')}
+          </ns:RezervaceUbytovaniInputBase>`
+        }).join('')}
       </ns:RezervaceUbytovani>`
     : ''
 

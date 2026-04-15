@@ -262,6 +262,7 @@ export default function RegistrationClient({
             prijmeni: formData.childLastName || '-',
             ulice: [formData.childStreet, formData.childStreetNumber].filter(Boolean).join(' '),
             psc: formData.childZip,
+            roomWith: formData.roomWith || undefined,
           },
           ...(formData.hasSecondChild && formData.birthDate2
             ? [{
@@ -270,6 +271,7 @@ export default function RegistrationClient({
                 prijmeni: formData.childLastName2 || '-',
                 ulice: [formData.childStreet2, formData.childStreetNumber2].filter(Boolean).join(' '),
                 psc: formData.childZip2,
+                roomWith: formData.roomWith2 || undefined,
               }]
             : []),
         ];
@@ -335,6 +337,7 @@ export default function RegistrationClient({
             psc: formData.zip,
             cestujici,
             insurance: formData.insurance,
+            additionalInfo: formData.additionalInfo || undefined,
             poznamka: extras,
             url: typeof window !== 'undefined' ? window.location.href : 'https://bombovo.sk',
           }),
