@@ -59,6 +59,7 @@ export interface CampDetailData {
       days: number
       originalPrice: string
       discountedPrice: string
+      vypredane?: boolean
     }[]
   }
 }

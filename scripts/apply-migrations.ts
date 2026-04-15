@@ -25,6 +25,12 @@ async function run() {
     `)
     console.log('✓ strediska.map_lat / map_lng')
 
+    // Migration 20260415_000000 — add vypredane flag to camps_dates
+    await client.query(`
+      ALTER TABLE "camps_dates" ADD COLUMN IF NOT EXISTS "vypredane" boolean DEFAULT false;
+    `)
+    console.log('✓ camps_dates.vypredane')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
