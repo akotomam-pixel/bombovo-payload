@@ -7,6 +7,8 @@ import { getCampDetails } from '@/data/camps'
 import type { CampDetailData } from '@/data/camps/types'
 import CampDetailClient from './CampDetailClient'
 
+export const dynamic = 'force-dynamic'
+
 // ─── Helper: generate a Next.js-optimized thumbnail URL ──────────────────────
 function thumbUrl(url: string): string {
   return `/_next/image?url=${encodeURIComponent(url)}&w=384&q=75`
