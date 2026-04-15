@@ -553,12 +553,12 @@ export default function RegistrationClient({
           </div>
         </div>
 
-        {/* Form Container */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {isSubmitted ? (
+        {/* Success box — wider than the form, outside max-w-4xl */}
+        {isSubmitted && (
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="bg-white rounded-3xl border-4 border-bombovo-blue p-6 md:p-8 my-12">
               <div className="text-center py-16 space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-bombovo-dark mb-6">
+                <h2 className="text-2xl md:text-4xl font-bold text-bombovo-dark mb-6 md:whitespace-nowrap">
                   Ďakujeme za vašu rezerváciu a nevieme sa dočkať!
                 </h2>
                 <p className="text-lg md:text-xl text-bombovo-dark leading-relaxed">
@@ -576,7 +576,12 @@ export default function RegistrationClient({
                 </p>
               </div>
             </div>
-          ) : (
+          </div>
+        )}
+
+        {/* Form Container */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {!isSubmitted && (
             <form
               onSubmit={handleSubmit}
               noValidate
