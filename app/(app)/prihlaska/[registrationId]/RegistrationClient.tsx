@@ -100,6 +100,11 @@ export default function RegistrationClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tshirtSizes, setTshirtSizes] = useState<{ id: number; nazev: string }[]>([]);
 
+  const [discountStatus, setDiscountStatus] = useState<'idle' | 'applying' | 'applied' | 'error'>('idle');
+  const [discountMessage, setDiscountMessage] = useState<string | null>(null);
+  const [appliedDiscountParamId, setAppliedDiscountParamId] = useState<number | null>(null);
+  const [discountedPriceFromCode, setDiscountedPriceFromCode] = useState<string | null>(null);
+
   useEffect(() => {
     fetch('/api/profitour/tshirt-sizes')
       .then(r => r.json())
@@ -241,6 +246,55 @@ export default function RegistrationClient({
     return true;
   };
 
+  const handleApplyDiscount = async () => {
+    const kod = formData.discountCode.trim();
+    if (!kod || !profisTerminId) return;
+    setDiscountStatus('applying');
+    setDiscountMessage(null);
+    try {
+      const discRes = await fetch('/api/profitour/discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kod }),
+      });
+      const discData = await discRes.json();
+      if (!discRes.ok || discData.error) {
+        setDiscountStatus('error');
+        setDiscountMessage(discData.error ?? 'Neplatný zľavový kód.');
+        return;
+      }
+      const paramId: number = discData.id_SkupinaSlevaParametr;
+      setAppliedDiscountParamId(paramId);
+
+      // Re-run Kalkulace with the discount param to show the new price
+      const birthDates = [
+        formData.birthDate,
+        ...(formData.hasSecondChild && formData.birthDate2 ? [formData.birthDate2] : []),
+      ].filter(Boolean);
+      const kalRes = await fetch('/api/profitour/kalkulace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_Termin: profisTerminId,
+          id_ZajezdHotel: id_ZajezdHotel ?? undefined,
+          birthDates: birthDates.length ? birthDates : undefined,
+          discountParamId: paramId,
+        }),
+      });
+      const kalData = await kalRes.json();
+      if (kalData.kalkulace?.celkemCena) {
+        const mena = kalData.kalkulace.mena ?? '€';
+        setDiscountedPriceFromCode(`${kalData.kalkulace.celkemCena} ${mena}`);
+      }
+
+      setDiscountStatus('applied');
+      setDiscountMessage('Zľavový kód bol úspešne uplatnený!');
+    } catch {
+      setDiscountStatus('error');
+      setDiscountMessage('Neplatný zľavový kód.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
@@ -302,6 +356,7 @@ export default function RegistrationClient({
             id_Termin: profisTerminId,
             id_ZajezdHotel: id_ZajezdHotel ?? undefined,
             birthDates,
+            ...(appliedDiscountParamId ? { discountParamId: appliedDiscountParamId } : {}),
           }),
         });
         const kalkulaceData = await kalkulaceRes.json();
@@ -1215,14 +1270,37 @@ export default function RegistrationClient({
                 <label className="block text-bombovo-dark font-semibold mb-2">
                   Zľavový kupón (nepovinné)
                 </label>
-                <input
-                  type="text"
-                  name="discountCode"
-                  value={formData.discountCode}
-                  onChange={handleInputChange}
-                  placeholder="Zadajte zľavový kód"
-                  className="w-full px-4 py-3 border-2 border-bombovo-blue rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="discountCode"
+                    value={formData.discountCode}
+                    onChange={e => {
+                      handleInputChange(e);
+                      if (discountStatus !== 'idle') {
+                        setDiscountStatus('idle');
+                        setDiscountMessage(null);
+                        setAppliedDiscountParamId(null);
+                        setDiscountedPriceFromCode(null);
+                      }
+                    }}
+                    placeholder="Zadajte zľavový kód"
+                    className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${discountStatus === 'applied' ? 'border-green-500' : discountStatus === 'error' ? 'border-red-500' : 'border-bombovo-blue'}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyDiscount}
+                    disabled={discountStatus === 'applying' || !formData.discountCode.trim()}
+                    className="px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {discountStatus === 'applying' ? 'Overujem...' : 'Uplatniť'}
+                  </button>
+                </div>
+                {discountMessage && (
+                  <p className={`mt-2 text-sm font-medium ${discountStatus === 'applied' ? 'text-green-600' : 'text-red-600'}`}>
+                    {discountMessage}
+                  </p>
+                )}
               </div>
 
               {/* Súhlas so zverejnením fotografií */}
@@ -1347,8 +1425,16 @@ export default function RegistrationClient({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-bombovo-dark font-bold">Zľavnená cena:</span>
-                  <span className="text-2xl font-bold text-bombovo-red">{discountedPrice}</span>
+                  <span className="text-2xl font-bold text-bombovo-red">
+                    {discountStatus === 'applied' && discountedPriceFromCode ? discountedPriceFromCode : discountedPrice}
+                  </span>
                 </div>
+                {discountStatus === 'applied' && (
+                  <div className="flex justify-between items-center text-sm text-green-600 font-semibold">
+                    <span>Zľavový kód „{formData.discountCode.toUpperCase()}":</span>
+                    <span>uplatnený ✓</span>
+                  </div>
+                )}
                 {formData.insurance && (
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-bombovo-dark">Cestovné poistenie ECP:</span>

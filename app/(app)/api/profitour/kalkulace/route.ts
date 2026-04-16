@@ -32,14 +32,14 @@ function extractFirstSvozId(xml: string, svozTag: string): string | null {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { id_Termin?: number; id_ZajezdHotel?: number; birthDates?: string[] }
+  let body: { id_Termin?: number; id_ZajezdHotel?: number; birthDates?: string[]; discountParamId?: number }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { id_Termin, birthDates } = body
+  const { id_Termin, birthDates, discountParamId } = body
   let { id_ZajezdHotel } = body
 
   if (!id_Termin) {
@@ -191,7 +191,11 @@ export async function POST(req: NextRequest) {
         </ns:RezervaceUbytovani>`
       : ''
 
-    const slevaParamXml = defaultParamIds.length
+    // If a discount code param ID was supplied (from SkupinaSlevaParametrKod), use it
+    // instead of the catalog defaults so the discount is applied to the price.
+    const slevaParamXml = discountParamId
+      ? `<ns:id_SkupinaSlevaParametr><arr:int xmlns:arr="${ARR_NS}">${discountParamId}</arr:int></ns:id_SkupinaSlevaParametr>`
+      : defaultParamIds.length
       ? `<ns:id_SkupinaSlevaParametr>${defaultParamIds.map(id => `<arr:int xmlns:arr="${ARR_NS}">${id}</arr:int>`).join('')}</ns:id_SkupinaSlevaParametr>`
       : ''
 
