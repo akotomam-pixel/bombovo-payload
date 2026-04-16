@@ -304,6 +304,15 @@ export default function RegistrationClient({
     setBirthDateMsg(null);
     setBirthDate2Msg(null);
     if (!validateFields()) return;
+
+    // If a discount code was entered but not validated by Profis, block the submission
+    if (formData.discountCode.trim() && discountStatus !== 'applied') {
+      setDiscountStatus('error');
+      setDiscountMessage('Použitý kód je neplatný.');
+      document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -344,7 +353,6 @@ export default function RegistrationClient({
           formData.hasSecondChild && formData.roomWith2 ? `Ubytovať s 2: ${formData.roomWith2}` : '',
           `Platba: ${formData.paymentMethod === 'zaloha' ? 'záloha 50€' : 'celá suma'}`,
           formData.additionalInfo ? `Poznámka: ${formData.additionalInfo}` : '',
-          formData.discountCode ? `Zľavový kód: ${formData.discountCode}` : '',
         ].filter(Boolean).join(' | ');
 
         // ── Step 1: Kalkulace — get id_SkupinaSlevaKombinace ─────────────────
@@ -1266,7 +1274,7 @@ export default function RegistrationClient({
               </div>
 
               {/* Zľavový kupón */}
-              <div className="mb-8">
+              <div id="field-discountCode" className="mb-8">
                 <label className="block text-bombovo-dark font-semibold mb-2">
                   Zľavový kupón (nepovinné)
                 </label>
