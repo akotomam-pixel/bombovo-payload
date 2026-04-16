@@ -561,7 +561,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
               </div>
               <div className="bg-white py-8 px-8">
                 {campDetails.section5.dates.map((date, idx) => (
-                  <div key={idx} className={`grid grid-cols-4 gap-6 items-center ${idx < campDetails.section5.dates.length - 1 ? 'mb-6' : ''}`}>
+                  <div key={idx} className={`grid grid-cols-4 gap-6 items-center ${idx < campDetails.section5.dates.length - 1 ? 'mb-6' : ''} ${date.vypredane ? 'opacity-50' : ''}`}>
                     <div className="text-center">
                       <p className="text-lg font-semibold text-bombovo-dark">{date.start} - {date.end}</p>
                     </div>
@@ -575,7 +575,11 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                       </div>
                     </div>
                     <div className="text-center">
-                      {date.registrationId ? (
+                      {date.vypredane ? (
+                        <button disabled className="px-8 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
+                          VYPREDANÉ
+                        </button>
+                      ) : date.registrationId ? (
                         <Link href={`/prihlaska/${date.registrationId}`}>
                           <button className="px-8 py-4 bg-bombovo-red border-2 border-white text-white font-bold text-lg rounded-full">
                             MÁM ZÁUJEM
@@ -598,7 +602,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
             <div className="md:hidden">
               <h2 className="text-3xl font-bold text-bombovo-dark mb-6">Dostupné termíny</h2>
               {campDetails.section5.dates.map((date, idx) => (
-                <div key={idx} className="bg-white rounded-2xl mb-4 shadow-lg overflow-hidden">
+                <div key={idx} className={`bg-white rounded-2xl mb-4 shadow-lg overflow-hidden ${date.vypredane ? 'opacity-50' : ''}`}>
                   <div className="bg-[#FDCA40] p-4">
                     <p className="text-base font-semibold text-bombovo-dark">
                       Termín {date.start} - {date.end}
@@ -617,8 +621,8 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                         </p>
                       </div>
                       {date.vypredane ? (
-                        <button disabled className="bg-gray-300 text-gray-500 font-bold px-5 py-3 rounded-full shadow-md cursor-not-allowed">
-                          Vypredané
+                        <button disabled className="px-6 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
+                          VYPREDANÉ
                         </button>
                       ) : date.registrationId ? (
                         <Link href={`/prihlaska/${date.registrationId}`}>
