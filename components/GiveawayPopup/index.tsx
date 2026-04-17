@@ -8,6 +8,8 @@ import type { PopupContent } from './PopupModal'
 
 const SESSION_KEY = 'bombovo_giveaway_seen'
 const SUTAZ_FLAG = 'bombovo_came_from_sutaz'
+const SUBMITTED_KEY = 'bombovo_giveaway_submitted'
+const SUPPRESS_DAYS = 2
 
 interface Props extends PopupContent {
   delaySeconds: number
@@ -32,6 +34,13 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
 
     // Already seen this session — don't show
     if (sessionStorage.getItem(SESSION_KEY)) return
+
+    // Submitted within the last 2 days — don't show
+    const submittedAt = localStorage.getItem(SUBMITTED_KEY)
+    if (submittedAt) {
+      const elapsed = Date.now() - Number(submittedAt)
+      if (elapsed < SUPPRESS_DAYS * 24 * 60 * 60 * 1000) return
+    }
 
     // Pre-fetch the popup image in the background so it's cached when popup opens
     if (content.photoUrl) {

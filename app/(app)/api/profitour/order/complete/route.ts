@@ -2,15 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { soapCall } from '@/lib/profis'
 
 
-async function checkSubscriberExists(apiKey: string, listId: string, email: string): Promise<boolean> {
+async function getSubscriberTags(apiKey: string, listId: string, email: string): Promise<string[]> {
   try {
     const res = await fetch(
       `https://api2.ecomailapp.cz/lists/${listId}/subscriber/${encodeURIComponent(email)}`,
       { method: 'GET', headers: { key: apiKey } },
     )
-    return res.ok
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data?.tags) ? data.tags : []
   } catch {
-    return false
+    return []
   }
 }
 
@@ -106,7 +108,7 @@ export async function POST(req: NextRequest) {
       console.error('[order/complete] ObjednavkaEmailOdeslat error (non-blocking):', emailErr)
     }
 
-    // ── Ecomail sync (Hlavný zoznam tábory) ─────────────────────────────────────
+    // ── Ecomail sync ─────────────────────────────────────────────────────────────
     // Runs after Profis is fully finalized. Failure is silent — purchase is never blocked.
     if (email && name) {
       try {
@@ -115,24 +117,49 @@ export async function POST(req: NextRequest) {
 
         if (apiKey) {
           const cleanEmail = email.trim().toLowerCase()
-          const alreadyExists = await checkSubscriberExists(apiKey, listId, cleanEmail)
+          const cleanName = name.trim()
+          const resolvedCampName = campName || 'Letný tábor'
 
+          // Fetch existing tags from list 43 so we don't overwrite them
+          const existingTags = await getSubscriberTags(apiKey, listId, cleanEmail)
+
+          // Subscribe to list 43 (main list) — keep existing tags, set CAMP_NAME, no autoresponder
           await fetch(`https://api2.ecomailapp.cz/lists/${listId}/subscribe`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', key: apiKey },
             body: JSON.stringify({
               subscriber_data: {
                 email: cleanEmail,
-                name: name.trim(),
-                tags: ['purchase'],
-                custom_fields: {
-                  CAMP_NAME: campName || 'Letný tábor',
-                },
+                name: cleanName,
+                tags: existingTags,
+                custom_fields: { CAMP_NAME: resolvedCampName },
               },
-              trigger_autoresponders: !alreadyExists,
+              trigger_autoresponders: false,
               update_existing: true,
             }),
           })
+
+          // Subscribe to list 46 (PostPurchase Helper) — triggers post-purchase sequence
+          // CAMP_NAME must be set here so *|CAMP_NAME|* merge tag works in the email
+          await fetch(`https://api2.ecomailapp.cz/lists/46/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', key: apiKey },
+            body: JSON.stringify({
+              subscriber_data: {
+                email: cleanEmail,
+                name: cleanName,
+                custom_fields: { CAMP_NAME: resolvedCampName },
+              },
+              trigger_autoresponders: true,
+              update_existing: true,
+            }),
+          })
+
+          // Delete from list 45 (NewSutaz Helper) — stops welcome sequence immediately on purchase
+          fetch(
+            `https://api2.ecomailapp.cz/lists/45/subscriber/${encodeURIComponent(cleanEmail)}`,
+            { method: 'DELETE', headers: { key: apiKey } },
+          ).catch(err => console.error('[order/complete] Ecomail list 45 delete error (non-blocking):', err))
         }
       } catch (ecomailErr) {
         console.error('[order/complete] Ecomail sync error (non-blocking):', ecomailErr)

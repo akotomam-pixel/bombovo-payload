@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -108,6 +108,8 @@ export default function TestTaborPage() {
   const [openStredisko, setOpenStredisko] = useState(false)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentLightboxPhoto, setCurrentLightboxPhoto] = useState(0)
+  const [videoPlaying, setVideoPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -206,8 +208,8 @@ export default function TestTaborPage() {
             </div>
 
             {/* Desktop Layout */}
-            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-5 gap-8">
-              <div className="lg:col-span-2 flex flex-col justify-center space-y-6">
+            <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="flex flex-col justify-center space-y-6">
                 <h1 className="text-3xl md:text-4xl font-bold text-bombovo-dark">
                   {pageData.headline}{' '}
                   <span className="relative inline-block text-bombovo-red">
@@ -253,7 +255,7 @@ export default function TestTaborPage() {
               </div>
 
               {/* Photo Gallery */}
-              <div className="lg:col-span-3">
+              <div>
                 <div className="w-full rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: '#90EE90', aspectRatio: '4/3' }}>
                   <p className="text-lg font-bold text-bombovo-dark">[Photo will be placed here]</p>
                 </div>
@@ -349,6 +351,32 @@ export default function TestTaborPage() {
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
+              {/* Video */}
+              <div className="flex flex-col justify-center">
+                <div className="relative w-full rounded-2xl overflow-hidden">
+                  <video
+                    ref={videoRef}
+                    controls
+                    preload="none"
+                    className="w-full rounded-2xl"
+                    poster="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/kdnz-thumbnail.png"
+                    onPlay={() => setVideoPlaying(true)}
+                  >
+                    <source src="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/webvideo-KDZN.mp4" type="video/mp4" />
+                  </video>
+                  {!videoPlaying && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                      onClick={() => { videoRef.current?.play(); setVideoPlaying(true) }}
+                    >
+                      <div className="w-20 h-20 bg-bombovo-red rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-200">
+                        <div className="w-0 h-0 ml-2" style={{ borderTop: '18px solid transparent', borderBottom: '18px solid transparent', borderLeft: '30px solid white' }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Review Carousel */}
               <div className="rounded-3xl p-8 md:p-10 flex flex-col justify-center min-h-[300px] bg-bombovo-gray border-4 border-bombovo-red shadow-lg">
                 <div className="space-y-6">
@@ -367,16 +395,6 @@ export default function TestTaborPage() {
                       className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === currentReview ? 'bg-bombovo-dark' : 'bg-gray-300'}`}
                       aria-label={`Go to review ${index + 1}`}
                     />
-                  ))}
-                </div>
-              </div>
-
-              {/* Text */}
-              <div className="flex flex-col justify-center space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">{pageData.section3.headline}</h2>
-                <div className="space-y-4 text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {pageData.section3.text.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
                   ))}
                 </div>
               </div>

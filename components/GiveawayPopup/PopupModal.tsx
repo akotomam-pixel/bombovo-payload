@@ -44,7 +44,10 @@ export default function PopupModal({ onClose, photoUrl, camps, maxSize, ...conte
     setEntryCamp(camp)
     setStep(2)
   }
-  function handleSuccess() { setStep(3) }
+  function handleSuccess() {
+    localStorage.setItem('bombovo_giveaway_submitted', String(Date.now()))
+    setStep(3)
+  }
   function handleBack() { setStep(1) }
 
   const stepContent = (

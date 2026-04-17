@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
   const normalizedKod = kod.trim().toUpperCase()
 
   try {
-    const raw = await soapCall('Katalog', 'SkupinaSlevaParametrKod', `
+    // SkupinaSlevaParametrKod is an external procedure — must be called via ExterniProcedura
+    // with the procedure name in <Nazev> and params as key-value <Pair> elements
+    const raw = await soapCall('Katalog', 'ExterniProcedura', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
         <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
@@ -27,15 +29,24 @@ export async function POST(req: NextRequest) {
         <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
         <ns:Rezim>${process.env.PROFIS_REZIM}</ns:Rezim>
       </ns:Context>
-      <ns:Kod>${escapeXml(normalizedKod)}</ns:Kod>`)
+      <ns:Data>
+        <ns:Nazev>SkupinaSlevaParametrKod</ns:Nazev>
+        <ns:Parametry>
+          <ns:Pair>
+            <ns:Key>Kod</ns:Key>
+            <ns:Value>${escapeXml(normalizedKod)}</ns:Value>
+          </ns:Pair>
+        </ns:Parametry>
+      </ns:Data>`)
 
     const xml = raw._raw as string
-    console.log('[discount] SkupinaSlevaParametrKod response:', xml.slice(0, 500))
+    console.log('[discount] ExterniProcedura/SkupinaSlevaParametrKod response:', xml.slice(0, 500))
 
-    // WCF returns result wrapped in <SkupinaSlevaParametrKodResult> or as a plain int
+    // Response may wrap the ID in various tags depending on Profis WCF version
     const idStr =
-      extractTag(xml, 'SkupinaSlevaParametrKodResult') ??
       extractTag(xml, 'id_SkupinaSlevaParametr') ??
+      extractTag(xml, 'ExterniProceduraResult') ??
+      extractTag(xml, 'Value') ??
       extractTag(xml, 'ID')
 
     const id_SkupinaSlevaParametr = idStr ? Number(idStr) : 0

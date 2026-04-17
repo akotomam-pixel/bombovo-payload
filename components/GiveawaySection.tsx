@@ -56,6 +56,7 @@ export default function GiveawaySection({ headline, subHeadline, giveawayCamps }
       })
       const data = await res.json()
       if (res.ok && !data.error) {
+        localStorage.setItem('bombovo_giveaway_submitted', String(Date.now()))
         setSubmitted(true)
       } else {
         setErrors({ email: data.error || 'Nastala chyba. Skúste to znova.' })

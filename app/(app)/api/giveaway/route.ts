@@ -3,20 +3,43 @@ import { getPayloadClient } from '@/lib/payload'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+const LIST_44 = '44'
+const LIST_45 = '45'
+
+function slugifyCampName(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
 
 async function checkSubscriberExists(apiKey: string, listId: string, email: string): Promise<boolean> {
   try {
     const res = await fetch(
       `https://api2.ecomailapp.cz/lists/${listId}/subscriber/${encodeURIComponent(email)}`,
-      {
-        method: 'GET',
-        headers: { key: apiKey },
-      },
+      { method: 'GET', headers: { key: apiKey } },
     )
     return res.ok
   } catch {
-    // If we can't check, treat as new to be safe (autoresponder will still fire)
     return false
+  }
+}
+
+async function getSubscriberTags(apiKey: string, listId: string, email: string): Promise<string[]> {
+  try {
+    const res = await fetch(
+      `https://api2.ecomailapp.cz/lists/${listId}/subscriber/${encodeURIComponent(email)}`,
+      { method: 'GET', headers: { key: apiKey } },
+    )
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data?.tags) ? data.tags : []
+  } catch {
+    return []
   }
 }
 
@@ -34,6 +57,8 @@ export async function POST(req: NextRequest) {
 
     const cleanEmail = email.trim().toLowerCase()
     const cleanName = name.trim()
+    const campName = selectedCamp || 'Akýkoľvek Tábor'
+    const campTag = slugifyCampName(campName)
 
     const payload = await getPayloadClient()
 
@@ -43,7 +68,7 @@ export async function POST(req: NextRequest) {
       data: {
         email: cleanEmail,
         name: cleanName,
-        selectedCamp: selectedCamp || 'Akýkoľvek Tábor',
+        selectedCamp: campName,
         source: source || 'popup',
         syncedToEcomail: false,
       },
@@ -52,73 +77,80 @@ export async function POST(req: NextRequest) {
     // Ecomail sync — failure does NOT block the response
     try {
       const apiKey = process.env.ECOMAIL_API_KEY
-      const listId = process.env.ECOMAIL_LIST_ID
+      const listId = process.env.ECOMAIL_LIST_ID ?? '43'
 
-      if (apiKey && listId) {
-        // Check if subscriber already exists in the list
+      if (apiKey) {
         const alreadyExists = await checkSubscriberExists(apiKey, listId, cleanEmail)
 
-        const ecomailRes = await fetch(
-          `https://api2.ecomailapp.cz/lists/${listId}/subscribe`,
-          {
+        if (!alreadyExists) {
+          // NEW contact: add to list 43 (no autoresponder) + list 45 (triggers welcome sequence)
+          await fetch(`https://api2.ecomailapp.cz/lists/${listId}/subscribe`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              key: apiKey,
-            },
+            headers: { 'Content-Type': 'application/json', key: apiKey },
             body: JSON.stringify({
               subscriber_data: {
                 email: cleanEmail,
                 name: cleanName,
-                tags: alreadyExists ? ['OldSutaz'] : ['NewSutaz'],
-                custom_fields: {
-                  CAMP_NAME: selectedCamp || 'Akýkoľvek Tábor',
-                },
+                tags: [campTag],
+                custom_fields: { CAMP_NAME: campName },
               },
-              trigger_autoresponders: !alreadyExists,
+              trigger_autoresponders: false,
               update_existing: true,
             }),
-          },
-        )
-
-        if (ecomailRes.ok) {
-          const existing = await payload.find({
-            collection: 'giveaway-entries',
-            where: { email: { equals: cleanEmail } },
-            limit: 1,
           })
-          if (existing.docs.length > 0) {
-            await payload.update({
-              collection: 'giveaway-entries',
-              id: existing.docs[0].id,
-              data: { syncedToEcomail: true },
-            })
-          }
+
+          await fetch(`https://api2.ecomailapp.cz/lists/${LIST_45}/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', key: apiKey },
+            body: JSON.stringify({
+              subscriber_data: { email: cleanEmail, name: cleanName },
+              trigger_autoresponders: true,
+              update_existing: true,
+            }),
+          })
         } else {
-          const errText = await ecomailRes.text()
-          console.error('[giveaway] Ecomail sync failed:', ecomailRes.status, errText)
+          // EXISTING contact: fetch existing tags, merge new camp tag, update list 43 + subscribe to list 44
+          const existingTags = await getSubscriberTags(apiKey, listId, cleanEmail)
+          const mergedTags = Array.from(new Set([...existingTags, campTag]))
+
+          await fetch(`https://api2.ecomailapp.cz/lists/${listId}/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', key: apiKey },
+            body: JSON.stringify({
+              subscriber_data: {
+                email: cleanEmail,
+                name: cleanName,
+                tags: mergedTags,
+                custom_fields: { CAMP_NAME: campName },
+              },
+              trigger_autoresponders: false,
+              update_existing: true,
+            }),
+          })
+
+          await fetch(`https://api2.ecomailapp.cz/lists/${LIST_44}/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', key: apiKey },
+            body: JSON.stringify({
+              subscriber_data: { email: cleanEmail, name: cleanName },
+              trigger_autoresponders: true,
+              update_existing: true,
+            }),
+          })
         }
 
-        // If existing contact, also add to OldSutaz Helper list to trigger automation
-        if (alreadyExists) {
-          await fetch(
-            `https://api2.ecomailapp.cz/lists/44/subscribe`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                key: apiKey,
-              },
-              body: JSON.stringify({
-                subscriber_data: {
-                  email: cleanEmail,
-                  name: cleanName,
-                },
-                trigger_autoresponders: true,
-                update_existing: true,
-              }),
-            },
-          )
+        // Mark as synced in Payload
+        const existing = await payload.find({
+          collection: 'giveaway-entries',
+          where: { email: { equals: cleanEmail } },
+          limit: 1,
+        })
+        if (existing.docs.length > 0) {
+          await payload.update({
+            collection: 'giveaway-entries',
+            id: existing.docs[0].id,
+            data: { syncedToEcomail: true },
+          })
         }
       }
     } catch (ecomailErr) {

@@ -1,0 +1,20 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml"
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      ".claude/**",
+      ".cursor/**",
+      "migrations/**",
+      "scripts/**",
+      "public/**",
+      "repomix-output.xml",
+      "*.txt",
+      "app/(payload)/admin/importMap.js"
+    ]
+  }
+}

@@ -387,7 +387,7 @@ export default function SutazClient({ photoUrl, camps }: Props) {
           <StepEmail
             name={entryName}
             selectedCamp={entryCamp}
-            onSuccess={() => goTo(3, 1)}
+            onSuccess={() => { localStorage.setItem('bombovo_giveaway_submitted', String(Date.now())); goTo(3, 1) }}
             onBack={() => goTo(1, -1)}
           />
         ) : (
