@@ -489,6 +489,17 @@ export default function RegistrationClient({
         window.ecotrack('addTrans', registrationId, 'Bombovo', cleanPrice, '0', '0', '', '', 'EUR');
         window.ecotrack('addItem', registrationId, registrationId, campName, 'letny-tabor', cleanPrice, '1');
         window.ecotrack('trackTrans');
+        const ecmid = new URLSearchParams(window.location.search).get('ecmid') ||
+                      document.cookie.match(/ecmid=([^;]+)/)?.[1] ||
+                      'priamy';
+        fetch('https://script.google.com/macros/s/AKfycbxb-uieDsMkLrXZ98LxTKUpjYIE7iCat4uue-YikXYLfuv1f_lEKeKg7Je5JYfOTEeZCQ/exec', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: formData.firstName + ' ' + formData.lastName,
+            price: cleanPrice + ' EUR',
+            ecmid: ecmid
+          })
+        }).catch(() => {});
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Neznáma chyba. Skúste znova.';
