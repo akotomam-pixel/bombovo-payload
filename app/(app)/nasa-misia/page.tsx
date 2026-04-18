@@ -411,7 +411,7 @@ export default function NasaMisiaPage() {
                 <span className="text-3xl">👤</span>
               </div>
               <h3 className="text-sm font-bold text-bombovo-dark mb-2 whitespace-nowrap px-1">
-                Nikola "Stará" Kalinová
+                Nicol "Stará" Kalinová
               </h3>
               <p className="text-xs text-bombovo-dark mb-3 leading-snug min-h-[2.5rem] px-1">
                 Garant tábora Babinec a energická animátorka milovaná deťmi
