@@ -96,7 +96,9 @@ export default function RegistrationClient({
     additionalInfo: "",
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success'
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tshirtSizes, setTshirtSizes] = useState<{ id: number; nazev: string }[]>([]);
 
@@ -618,7 +620,7 @@ export default function RegistrationClient({
 
         {/* Success box — wider than the form, outside max-w-4xl */}
         {isSubmitted && (
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8" style={{maxWidth: '1064px'}}>
             <div className="bg-white rounded-3xl border-4 border-bombovo-blue p-6 md:p-8 my-12">
               <div className="text-center py-16 space-y-6">
                 <h2 className="text-2xl md:text-4xl font-bold text-bombovo-dark mb-6 md:whitespace-nowrap">
