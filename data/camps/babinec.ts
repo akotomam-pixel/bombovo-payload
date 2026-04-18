@@ -36,8 +36,8 @@ export const babinecData: CampDetailData = {
     ],
     reviews: [
       {
-        text: 'Náš syn je už 7x veľmi spokojný a kamarátstva, ktoré si v tábore našiel, trvajú aj po jeho skončení. Budúce leto už pôjdeme jedine s vami. Máme odskúšaných viacero táborov, ale vy ste jediní, čo nás ani raz nesklamali.',
-        author: 'Andred D. Mamička Dieťaťa',
+        text: 'Naša dcéra je už 7x veľmi spokojná a kamarátstva, ktoré si v tábore našla, trvajú aj po jeho skončení. Budúce leto už pôjdeme jedine s vami. Máme odskúšaných viacero táborov, ale vy ste jediní, čo nás ani raz nesklamali.',
+        author: 'Andrea D. Mamička Dieťaťa',
       },
       {
         text: 'Ďakujeme za zážitky. Detská boli nadšené. Bol to ich prvý tábor, čo som sa bála, ale dcérka povedala, že si tam našla druhú rodinu 😁😍',

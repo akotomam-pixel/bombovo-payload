@@ -393,7 +393,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                       controls
                       preload="none"
                       className="w-full rounded-2xl"
-                      poster={campDetails.videoThumbnailUrl || ''}
+                      poster={campDetails.videoThumbnailUrl ? encodeURI(campDetails.videoThumbnailUrl) : ''}
                       onPlay={() => setVideoPlaying(true)}
                     >
                       <source src={campDetails.videoUrl} type="video/mp4" />

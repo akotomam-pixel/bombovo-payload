@@ -6,14 +6,14 @@ export const horskyHotelMinciar: StrediskoData = {
   headline: 'Škola v prírode - Horský Hotel Minciar',
   basePrice: 'od 195.00 €',
   iconBullets: [
-    'spoločenská miestnosŤ',
+    'Spoločenská miestnosť',
     'Sauna',
     'Letná terasa',
-    'trávnaté ihrisko',
+    'Trávnaté ihrisko',
     'In line dráha'
   ],
   section3: {
-    headline: 'V čom je stredisko horský hotel minciar tak výnimočné',
+    headline: 'V čom je stredisko Horský hotel Minciar tak výnimočné',
     bodyText: 'Hotel Minciar je našou dlhoročnou overenou klasikou, ktorá patrí medzi obľúbené strediská. Nachádza sa v srdci Kremnických hôr 10 km od mesta Kremnica a 4 km od geografického stredu Európy. Stredisko je vhodné pre stredne veľké skupiny.',
     nearbyAttractions: [
       '350 m od Hotela In line dráha',

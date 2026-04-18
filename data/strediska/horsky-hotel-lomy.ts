@@ -13,7 +13,7 @@ export const horskyHotelLomy: StrediskoData = {
     'Vonkajší bazén'
   ],
   section3: {
-    headline: 'V čom je stredisko horský hotel lomy tak výnimočné',
+    headline: 'V čom je stredisko Horský hotel Lomy tak výnimočné',
     bodyText: 'Hotel Lomy je dlhé roky našim najpredávanejším strediskom. Nachádza sa neďaleko Partizánskeho v prekrásnej doline pohoria Vtáčnik. Stredisko je plne zrekonštruované od chatiek až po izby na hoteli a jeho atmosféru a pokoj si zaručene zamilujete.',
     nearbyAttractions: [
       '20 km hvezdáreň v Partizánskom',
