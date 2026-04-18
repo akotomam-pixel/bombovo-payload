@@ -96,9 +96,7 @@ export default function RegistrationClient({
     additionalInfo: "",
   });
 
-  const [isSubmitted, setIsSubmitted] = useState(
-    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success'
-  );
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tshirtSizes, setTshirtSizes] = useState<{ id: number; nazev: string }[]>([]);
 
