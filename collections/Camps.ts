@@ -152,6 +152,24 @@ export const Camps: CollectionConfig = {
       ],
     },
 
+    // ─── Section 3: Video (optional) ─────────────────────────────────────────
+    {
+      name: 'videoUrl',
+      type: 'text',
+      label: 'Video URL',
+      admin: {
+        description: 'Cloudflare R2 URL for the camp video (e.g. https://pub-xxx.r2.dev/video.mp4). If set, replaces the text in section 3 with a video player.',
+      },
+    },
+    {
+      name: 'videoThumbnailUrl',
+      type: 'text',
+      label: 'Video thumbnail URL',
+      admin: {
+        description: 'Cloudflare R2 URL for the video poster/thumbnail image.',
+      },
+    },
+
     // ─── Section 3: Reviews ───────────────────────────────────────────────────
     {
       name: 'section3_headline',

@@ -23,6 +23,9 @@ export interface CampDetailData {
     buttonText: string
   }
   
+  videoUrl?: string
+  videoThumbnailUrl?: string
+
   section3: {
     headline: string
     text: string[]

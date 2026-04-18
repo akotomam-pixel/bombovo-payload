@@ -70,6 +70,8 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [openStredisko, setOpenStredisko] = useState(false)
+  const [videoPlaying, setVideoPlaying] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   const handlePrevThumbnail = () => {
     if (visibleThumbnailStart > 0) setVisibleThumbnailStart(visibleThumbnailStart - 1)
@@ -378,26 +380,56 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
           <WaveDivider color="blue" variant={2} />
         </div>
 
-        {/* Section 3: Reviews + Text */}
+        {/* Section 3: Reviews + Text (or Video) */}
         <section className="pt-16 md:pt-20 pb-6 md:pb-8 bg-white">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-              {/* Review Carousel */}
-              <ReviewCarousel reviews={reviews} />
-
-              {/* Text */}
-              <div className="flex flex-col justify-center space-y-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">
-                  {campDetails.section3.headline}
-                </h2>
-                <div className="space-y-4 text-base md:text-lg text-bombovo-dark leading-relaxed">
-                  {campDetails.section3.text.map((paragraph, idx) => (
-                    <p key={idx}>{renderBold(paragraph)}</p>
-                  ))}
+            {campDetails.videoUrl ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Video with red play button overlay */}
+                <div className="flex flex-col justify-center">
+                  <div className="relative w-full rounded-2xl overflow-hidden">
+                    <video
+                      ref={videoRef}
+                      controls
+                      preload="none"
+                      className="w-full rounded-2xl"
+                      poster={campDetails.videoThumbnailUrl || ''}
+                      onPlay={() => setVideoPlaying(true)}
+                    >
+                      <source src={campDetails.videoUrl} type="video/mp4" />
+                    </video>
+                    {!videoPlaying && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                        onClick={() => { videoRef.current?.play(); setVideoPlaying(true) }}
+                      >
+                        <div className="w-20 h-20 bg-bombovo-red rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-200">
+                          <div className="w-0 h-0 ml-2" style={{ borderTop: '18px solid transparent', borderBottom: '18px solid transparent', borderLeft: '30px solid white' }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {/* Review Carousel */}
+                <ReviewCarousel reviews={reviews} />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Review Carousel */}
+                <ReviewCarousel reviews={reviews} />
+                {/* Text */}
+                <div className="flex flex-col justify-center space-y-6">
+                  <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark">
+                    {campDetails.section3.headline}
+                  </h2>
+                  <div className="space-y-4 text-base md:text-lg text-bombovo-dark leading-relaxed">
+                    {campDetails.section3.text.map((paragraph, idx) => (
+                      <p key={idx}>{renderBold(paragraph)}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 

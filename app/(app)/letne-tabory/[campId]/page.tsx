@@ -45,6 +45,9 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
       buttonText: 'Pozri Dostupné Termíny',
     },
 
+    videoUrl: doc.videoUrl ?? undefined,
+    videoThumbnailUrl: doc.videoThumbnailUrl ?? undefined,
+
     section3: {
       headline: doc.section3_headline ?? '',
       text: (doc.section3_text ?? []).map((p: { paragraph: string }) => p.paragraph),

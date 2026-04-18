@@ -31,6 +31,13 @@ async function run() {
     `)
     console.log('✓ camps_dates.vypredane')
 
+    // Migration 20260418_000000 — add video fields to camps
+    await client.query(`
+      ALTER TABLE "camps" ADD COLUMN IF NOT EXISTS "video_url" varchar;
+      ALTER TABLE "camps" ADD COLUMN IF NOT EXISTS "video_thumbnail_url" varchar;
+    `)
+    console.log('✓ camps.video_url / video_thumbnail_url')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
