@@ -25,6 +25,11 @@ export default function RootLayout({
     <html lang="sk" className={theGirlNextDoor.variable}>
       <head>
         <script
+          id="cookieyes"
+          type="text/javascript"
+          src="https://cdn.cookieyes.com/client_data/500b87a6adab5aa80a/script.js"
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -39,12 +44,6 @@ export default function RootLayout({
               ],
             }),
           }}
-        />
-        <Script
-          id="cookieyes"
-          type="text/javascript"
-          src="https://cdn.cookieyes.com/client_data/500b87a6adab5aa80a/script.js"
-          strategy="beforeInteractive"
         />
         {/* Pre-initialize dataLayer so events queued before GTM loads are not lost */}
         <Script id="gtm-datalayer-init" strategy="beforeInteractive">
