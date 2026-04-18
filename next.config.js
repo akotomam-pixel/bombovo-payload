@@ -1,6 +1,12 @@
 const { withPayload } = require("@payloadcms/next/withPayload");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      { source: '/detske-tabory', destination: '/letne-tabory', permanent: true },
+      { source: '/detske-tabory/', destination: '/letne-tabory', permanent: true },
+    ]
+  },
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
