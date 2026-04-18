@@ -393,7 +393,7 @@ export default function NasaMisiaPage() {
                 Sofia "Sofa" Pračková
               </h3>
               <p className="text-xs text-bombovo-dark mb-3 leading-snug min-h-[2.5rem] px-1">
-                Garant tabora Babinec a animatorka s dlhorocnimi skusenostami
+                Garant tábora Babinec a animátorka s dlhoročnými skúsenosťami
               </p>
               <Link href="/animatori/sofa">
                 <button className="px-4 py-2 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-xs rounded-full hover:translate-y-0.5 transition-all duration-200 whitespace-nowrap">
@@ -414,7 +414,7 @@ export default function NasaMisiaPage() {
                 Nikola "Stará" Kalinová
               </h3>
               <p className="text-xs text-bombovo-dark mb-3 leading-snug min-h-[2.5rem] px-1">
-                Garant tabora Babine a energická animátorka milovaná deťmi
+                Garant tábora Babinec a energická animátorka milovaná deťmi
               </p>
               <Link href="/animatori/stara">
                 <button className="px-4 py-2 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-xs rounded-full hover:translate-y-0.5 transition-all duration-200 whitespace-nowrap">
