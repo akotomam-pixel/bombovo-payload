@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   try {
     // SkupinaSlevaParametrKod is an external procedure — must be called via ExterniProcedura
     // with the procedure name in <Nazev> and params as key-value <Pair> elements
-    const raw = await soapCall('Katalog', 'ExterniProcedura', `
+    const raw = await soapCall('Ostatni', 'ExterniProcedura', `
       <ns:Context>
         <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
         <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
@@ -42,12 +42,10 @@ export async function POST(req: NextRequest) {
     const xml = raw._raw as string
     console.log('[discount] ExterniProcedura/SkupinaSlevaParametrKod response:', xml.slice(0, 500))
 
-    // Response may wrap the ID in various tags depending on Profis WCF version
-    const idStr =
-      extractTag(xml, 'id_SkupinaSlevaParametr') ??
-      extractTag(xml, 'ExterniProceduraResult') ??
-      extractTag(xml, 'Value') ??
-      extractTag(xml, 'ID')
+    // Response is a table: <Columns><Item>id_SkupinaSlevaParametr</Item></Columns><Rows><Row><Item>123</Item></Row></Rows>
+    // Empty <Rows/> means code not found
+    const rowMatch = xml.match(/<Rows[^/][\s\S]*?<Item>(\d+)<\/Item>/)
+    const idStr = rowMatch?.[1] ?? null
 
     const id_SkupinaSlevaParametr = idStr ? Number(idStr) : 0
 
