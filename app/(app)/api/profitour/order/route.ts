@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     id_Ubytovani?: number
     id_TypStrava?: number
     id_SkupinaSlevaKombinace?: number
+    id_SkupinaSlevaParametr?: number
     svozTamId?: number | null
     svozZpetId?: number | null
     insurance?: boolean
@@ -229,6 +230,7 @@ export async function POST(req: NextRequest) {
           ${ubytovaniXml}
           <ns:Skipasy/>
           <ns:id_TypStrava>${input.id_TypStrava ?? 0}</ns:id_TypStrava>
+          ${input.id_SkupinaSlevaParametr ? `<ns:id_SkupinaSlevaParametr><arr:int xmlns:arr="http://schemas.microsoft.com/2003/10/Serialization/Arrays">${input.id_SkupinaSlevaParametr}</arr:int></ns:id_SkupinaSlevaParametr>` : ''}
           <ns:id_Termin>${input.id_Termin}</ns:id_Termin>
         </ns:Produkt>
         <ns:URL>${ex(input.url ?? 'https://bombovo.sk')}</ns:URL>

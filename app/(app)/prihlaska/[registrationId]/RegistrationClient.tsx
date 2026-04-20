@@ -389,6 +389,7 @@ export default function RegistrationClient({
             id_Ubytovani,
             id_TypStrava,
             id_SkupinaSlevaKombinace,
+            ...(appliedDiscountParamId ? { id_SkupinaSlevaParametr: appliedDiscountParamId } : {}),
             svozTamId,
             svozZpetId,
             jmeno: formData.parentFirstName,
