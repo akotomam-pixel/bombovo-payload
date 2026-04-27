@@ -67,9 +67,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Collect all unique PSČ values (orderer + all travelers) for a single ObecList lookup
+  // Normalize by stripping spaces so "010 01" and "01001" both match Profis response
   const allPsc = [...new Set([
-    input.psc,
-    ...input.cestujici!.map(c => c.psc),
+    input.psc?.replace(/\s/g, ''),
+    ...input.cestujici!.map(c => c.psc?.replace(/\s/g, '')),
   ].filter(Boolean) as string[])]
 
   // Build PSČ → id_Obec map from a single ObecList API call
