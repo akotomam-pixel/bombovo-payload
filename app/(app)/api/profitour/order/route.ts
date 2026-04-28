@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
 
   // Build PSČ → id_Obec map from a single ObecList API call
   const pscToObec: Record<string, number> = {}
+  let obecListReturnedData = false
   if (allPsc.length > 0) {
     try {
       const obceRaw = await soapCall('Ciselnik', 'ObecList', `
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
         <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
       const obceXml = obceRaw._raw as string
       const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
+      if (obceBlocks.length > 0) obecListReturnedData = true
       for (const block of obceBlocks) {
         const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
         if (psc && allPsc.includes(psc)) {
@@ -97,6 +99,21 @@ export async function POST(req: NextRequest) {
       console.log('[order] id_Obec map:', pscToObec)
     } catch (e) {
       console.warn('[order] ObecList lookup failed:', e)
+    }
+  }
+
+  // If ObecList returned data but a PSC wasn't found, block the order and tell the frontend
+  // which field is wrong. If ObecList failed entirely (network/fault), we don't blame the user.
+  if (obecListReturnedData) {
+    const parentPsc = input.psc?.replace(/\s/g, '')
+    if (parentPsc && !pscToObec[parentPsc]) {
+      return NextResponse.json({ error: 'PSC_NOT_FOUND:parent' }, { status: 400 })
+    }
+    for (let i = 0; i < input.cestujici!.length; i++) {
+      const childPsc = input.cestujici![i].psc?.replace(/\s/g, '')
+      if (childPsc && !pscToObec[childPsc]) {
+        return NextResponse.json({ error: `PSC_NOT_FOUND:child${i}` }, { status: 400 })
+      }
     }
   }
 

@@ -409,6 +409,21 @@ export default function RegistrationClient({
         const orderData = await orderRes.json();
 
         if (!orderRes.ok || orderData.error) {
+          if (orderData.error === 'PSC_NOT_FOUND:parent') {
+            setFieldErrors({ zip: 'Prosím zadajte správne PSČ.' });
+            document.getElementById('field-zip')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (orderData.error === 'PSC_NOT_FOUND:child0') {
+            setFieldErrors({ childZip: 'Prosím zadajte správne PSČ.' });
+            document.getElementById('field-childZip')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (orderData.error === 'PSC_NOT_FOUND:child1') {
+            setFieldErrors({ childZip2: 'Prosím zadajte správne PSČ.' });
+            document.getElementById('field-childZip2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
           throw new Error(orderData.error ?? 'Chyba pri odosielaní objednávky.');
         }
 
