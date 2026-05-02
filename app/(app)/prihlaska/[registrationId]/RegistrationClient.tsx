@@ -106,6 +106,11 @@ export default function RegistrationClient({
   const [discountedPriceFromCode, setDiscountedPriceFromCode] = useState<string | null>(null);
 
   useEffect(() => {
+    document.documentElement.style.overflowX = 'hidden';
+    return () => { document.documentElement.style.overflowX = ''; };
+  }, []);
+
+  useEffect(() => {
     fetch('/api/profitour/tshirt-sizes')
       .then(r => r.json())
       .then(data => { if (Array.isArray(data.sizes)) setTshirtSizes(data.sizes) })
