@@ -349,20 +349,20 @@ export default function TestTaborPage() {
         {/* Section 3: Reviews + Text */}
         <section className="pt-16 md:pt-20 pb-6 md:pb-8 bg-white">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
               {/* Video */}
-              <div className="flex flex-col justify-center">
-                <div className="relative w-full rounded-2xl overflow-hidden">
+              <div className="flex flex-col justify-center items-center">
+                <div className="relative w-[260px] rounded-2xl overflow-hidden">
                   <video
                     ref={videoRef}
                     controls
                     preload="none"
                     className="w-full rounded-2xl"
-                    poster="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/kdnz-thumbnail.png"
+                    poster="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/tanecna-planeta-thoumbnail.PNG"
                     onPlay={() => setVideoPlaying(true)}
                   >
-                    <source src="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/webvideo-KDZN.mp4" type="video/mp4" />
+                    <source src="https://pub-23f4bb3a873c470d812e9e17a6a97c7a.r2.dev/tanecna-planeta-video.mp4" type="video/mp4" />
                   </video>
                   {!videoPlaying && (
                     <div
@@ -378,14 +378,22 @@ export default function TestTaborPage() {
               </div>
 
               {/* Review Carousel */}
-              <div className="rounded-3xl p-8 md:p-10 flex flex-col justify-center min-h-[300px] bg-bombovo-gray border-4 border-bombovo-red shadow-lg">
-                <div className="space-y-6">
-                  <p className="text-lg md:text-xl text-bombovo-dark leading-relaxed italic">
-                    "{pageData.section3.reviews[currentReview].text}"
-                  </p>
-                  <p className="text-base md:text-lg text-bombovo-dark font-semibold">
-                    — {pageData.section3.reviews[currentReview].author}
-                  </p>
+              <div className="rounded-3xl p-8 md:p-10 flex flex-col bg-bombovo-gray border-4 border-bombovo-red shadow-lg">
+                <div className="grid">
+                  {pageData.section3.reviews.map((review, index) => (
+                    <div
+                      key={index}
+                      style={{ gridRow: 1, gridColumn: 1 }}
+                      className={`space-y-6 transition-opacity duration-300 ${index === currentReview ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    >
+                      <p className="text-lg md:text-xl text-bombovo-dark leading-relaxed italic">
+                        "{review.text}"
+                      </p>
+                      <p className="text-base md:text-lg text-bombovo-dark font-semibold">
+                        — {review.author}
+                      </p>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex justify-center gap-2.5 mt-8">
                   {pageData.section3.reviews.map((_, index) => (

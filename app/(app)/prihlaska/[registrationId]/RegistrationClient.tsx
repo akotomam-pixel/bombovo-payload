@@ -600,7 +600,7 @@ export default function RegistrationClient({
       <main className="flex-grow py-8 md:py-12">
         {/* Header Section */}
         <div className="mb-8 px-4">
-          <div className="flex items-center justify-center gap-4 mb-6 overflow-x-auto">
+          <div className="flex items-center justify-center gap-4 mb-6">
             <div className="flex-shrink-0">
               <Image
                 src="/images/reservation-icon.png"
@@ -610,7 +610,7 @@ export default function RegistrationClient({
                 className="w-16 h-16 md:w-20 md:h-20 object-contain"
               />
             </div>
-            <h1 className="text-2xl md:text-5xl font-bold text-bombovo-dark relative whitespace-nowrap">
+            <h1 className="text-2xl md:text-5xl font-bold text-bombovo-dark relative">
               Rezervácia Tábora {campName}
               <svg
                 className="absolute left-0 -bottom-2 w-full"
