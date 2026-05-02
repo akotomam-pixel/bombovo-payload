@@ -591,13 +591,13 @@ export default function RegistrationClient({
     : 'Prosím skontrolujte zadaný dátum narodenia dieťaťa.';
 
   return (
-    <div className="min-h-screen flex flex-col bg-bombovo-gray overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-bombovo-gray">
       <div className="bg-bombovo-gray">
         <TopBar />
       </div>
       <Header />
 
-      <main className="flex-grow py-8 md:py-12">
+      <main className="flex-grow py-8 md:py-12 overflow-x-hidden">
         {/* Header Section */}
         <div className="mb-8 px-4">
           <div className="flex items-center justify-center gap-4 mb-6">
