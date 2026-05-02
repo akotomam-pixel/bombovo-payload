@@ -632,13 +632,13 @@ export default function RegistrationClient({
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-bombovo-dark mt-8">
             <div className="flex items-center gap-3">
               <FaCalendarAlt className="text-bombovo-yellow text-2xl" />
-              <span className="text-lg md:text-xl font-bold whitespace-nowrap">
+              <span className="text-lg md:text-xl font-bold">
                 {dateStart} - {dateEnd}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <FaMapMarkerAlt className="text-bombovo-yellow text-2xl" />
-              <span className="text-lg md:text-xl font-bold whitespace-nowrap">
+              <span className="text-lg md:text-xl font-bold">
                 {campLocation}
               </span>
             </div>
