@@ -591,7 +591,7 @@ export default function RegistrationClient({
     : 'Prosím skontrolujte zadaný dátum narodenia dieťaťa.';
 
   return (
-    <div className="min-h-screen flex flex-col bg-bombovo-gray">
+    <div className="min-h-screen flex flex-col bg-bombovo-gray max-w-[100vw] overflow-x-hidden">
       <div className="bg-bombovo-gray">
         <TopBar />
       </div>
