@@ -1312,7 +1312,7 @@ export default function RegistrationClient({
                 <label className="block text-bombovo-dark font-semibold mb-2">
                   Zľavový kupón (nepovinné)
                 </label>
-                <div className="grid grid-cols-[1fr_auto] gap-2">
+                <div className="grid grid-cols-[1fr_1fr] sm:grid-cols-[1fr_auto] gap-2">
                   <input
                     type="text"
                     name="discountCode"
