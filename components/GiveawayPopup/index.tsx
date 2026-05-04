@@ -79,13 +79,13 @@ export default function GiveawayPopup({ delaySeconds, ...content }: Props) {
           {/* Backdrop */}
           <div
             onClick={handleClose}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none"
           >
             <div className="pointer-events-auto w-full h-full flex items-center justify-center md:px-4 md:py-4">
               <PopupModal {...content} onClose={handleClose} maxSize={maxSize} />
