@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { PostHog } from 'posthog-node'
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,13 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    const posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!)
+    posthog.identify({
+      distinctId: email,
+      properties: { email },
+    })
+    await posthog.shutdown()
 
     return NextResponse.json(
       { success: true, message: 'Správa bola úspešne odoslaná' },

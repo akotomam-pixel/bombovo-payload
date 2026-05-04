@@ -4,6 +4,7 @@ import Script from 'next/script'
 import React from 'react'
 import NextTopLoader from 'nextjs-toploader'
 import { Analytics } from '@vercel/analytics/next'
+import { PostHogProvider } from '@/components/PostHogProvider'
 
 const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
@@ -85,7 +86,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         <NextTopLoader color="#F5A623" showSpinner={false} />
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
         <Analytics />
       </body>
     </html>

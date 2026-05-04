@@ -1,10 +1,23 @@
 const { withPayload } = require("@payloadcms/next/withPayload");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/ingest/static/:path*',
+        destination: 'https://eu-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/ingest/:path*',
+        destination: 'https://eu.i.posthog.com/:path*',
+      },
+    ]
+  },
   async redirects() {
     return [
       { source: '/detske-tabory', destination: '/letne-tabory', permanent: true },
       { source: '/detske-tabory/', destination: '/letne-tabory', permanent: true },
+      { source: '/landingpages/10-dovodov', destination: '/advertorial-1', permanent: true },
     ]
   },
   reactStrictMode: true,

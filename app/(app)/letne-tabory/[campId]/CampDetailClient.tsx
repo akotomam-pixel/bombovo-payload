@@ -13,6 +13,7 @@ import lgZoom from 'lightgallery/plugins/zoom'
 import 'lightgallery/css/lightgallery.css'
 import 'lightgallery/css/lg-zoom.css'
 import 'lightgallery/css/lg-thumbnail.css'
+import posthog from 'posthog-js'
 import type { CampDetailData } from '@/data/camps/types'
 import { renderBold } from '@/lib/renderBold'
 
@@ -613,13 +614,13 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                         </button>
                       ) : date.registrationId ? (
                         <Link href={`/prihlaska/${date.registrationId}`}>
-                          <button className="px-8 py-4 bg-bombovo-red border-2 border-white text-white font-bold text-lg rounded-full">
+                          <button onClick={() => posthog.capture('interest_clicked')} className="px-8 py-4 bg-bombovo-red border-2 border-white text-white font-bold text-lg rounded-full">
                             MÁM ZÁUJEM
                           </button>
                         </Link>
                       ) : (
                         <Link href="/kontakt">
-                          <button className="px-8 py-4 bg-bombovo-red border-2 border-white text-white font-bold text-lg rounded-full">
+                          <button onClick={() => posthog.capture('interest_clicked')} className="px-8 py-4 bg-bombovo-red border-2 border-white text-white font-bold text-lg rounded-full">
                             MÁM ZÁUJEM
                           </button>
                         </Link>
@@ -658,13 +659,13 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                         </button>
                       ) : date.registrationId ? (
                         <Link href={`/prihlaska/${date.registrationId}`}>
-                          <button className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
+                          <button onClick={() => posthog.capture('interest_clicked')} className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
                             Mám záujem
                           </button>
                         </Link>
                       ) : (
                         <Link href="/kontakt">
-                          <button className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
+                          <button onClick={() => posthog.capture('interest_clicked')} className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
                             Mám záujem
                           </button>
                         </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import posthog from "posthog-js";
 
 declare global {
   interface Window {
@@ -494,6 +495,7 @@ export default function RegistrationClient({
       // If profisTerminId is not set yet, the form still submits but without Profis
       // (legacy flow — useful until all camps have profisTerminId populated)
 
+      posthog.identify(formData.email);
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
