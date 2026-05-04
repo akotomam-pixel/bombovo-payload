@@ -81,7 +81,7 @@ export default function CampFilter({
   }
 
   return (
-    <div className="sticky top-32 space-y-6 w-full pr-6">
+    <div className="lg:sticky lg:top-32 space-y-6 w-full pr-6">
       {/* Headline */}
       <h2 className="text-2xl font-bold text-bombovo-red">
         Hľadáčik Táboru
@@ -122,7 +122,7 @@ export default function CampFilter({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto"
+                className="lg:absolute lg:z-10 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto"
                 onWheel={(e) => e.stopPropagation()}
               >
                 {ageOptions.map((option) => (
@@ -172,7 +172,7 @@ export default function CampFilter({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto"
+                className="lg:absolute lg:z-10 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto"
                 onWheel={(e) => e.stopPropagation()}
               >
                 {typeOptions.map((option) => (
@@ -222,7 +222,7 @@ export default function CampFilter({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200"
+              className="lg:absolute lg:z-10 w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200"
             >
               {dateOptions.map((option) => (
                 <button
