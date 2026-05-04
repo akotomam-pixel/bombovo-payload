@@ -212,8 +212,24 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
           {/* Hero band */}
           <section className="bg-bombovo-gray py-12 text-center px-4">
             <h1 className="font-bold text-4xl md:text-5xl text-bombovo-dark">
-              Povedzte nám, ako to{' '}
-              <span className="text-bombovo-red underline decoration-bombovo-red">prebehlo</span>
+              Povedzte nám, ako prebehla vaša{' '}
+              <span className="relative inline-block text-bombovo-red">
+                škola v prírode
+                <svg
+                  className="absolute left-0 -bottom-2 w-full"
+                  viewBox="0 0 200 12"
+                  preserveAspectRatio="none"
+                  style={{ height: '10px' }}
+                >
+                  <path
+                    d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
+                    stroke="#DF2935"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
             </h1>
             <p className="text-lg text-gray-600 max-w-xl mx-auto mt-3 leading-relaxed">
               Vaša recenzia pomáha ostatným učiteľom pri rozhodovaní. Ďakujeme, že ste si našli
