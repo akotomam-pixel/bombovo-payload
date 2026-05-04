@@ -10,6 +10,7 @@ import { Media } from './collections/Media'
 import { Camps } from './collections/Camps'
 import { Strediska } from './collections/Strediska'
 import { GiveawayEntries } from './collections/GiveawayEntries'
+import { TeacherReviews } from './collections/TeacherReviews'
 import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
 import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
 import { FooterGlobal } from './collections/globals/Footer'
@@ -26,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Camps, Strediska, GiveawayEntries],
+  collections: [Users, Media, Camps, Strediska, GiveawayEntries, TeacherReviews],
   globals: [HomepageGlobal, LetneTaboryHlavna, SkolyVPrirode, GiveawayPopupGlobal, FooterGlobal],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
