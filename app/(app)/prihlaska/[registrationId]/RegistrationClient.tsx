@@ -496,6 +496,7 @@ export default function RegistrationClient({
       // (legacy flow — useful until all camps have profisTerminId populated)
 
       posthog.identify(formData.email);
+      posthog.capture('booking_submitted');
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
