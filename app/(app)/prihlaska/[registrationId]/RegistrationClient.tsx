@@ -1312,7 +1312,7 @@ export default function RegistrationClient({
                 <label className="block text-bombovo-dark font-semibold mb-2">
                   Zľavový kupón (nepovinné)
                 </label>
-                <div className="grid grid-cols-[1fr_1fr] sm:grid-cols-[1fr_auto] gap-2">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     name="discountCode"
@@ -1327,13 +1327,13 @@ export default function RegistrationClient({
                       }
                     }}
                     placeholder="Zadajte zľavový kód"
-                    className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow ${discountStatus === 'applied' ? 'border-green-500' : discountStatus === 'error' ? 'border-red-500' : 'border-bombovo-blue'}`}
+                    className={`w-1/2 min-w-0 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-bombovo-yellow sm:flex-1 sm:w-auto ${discountStatus === 'applied' ? 'border-green-500' : discountStatus === 'error' ? 'border-red-500' : 'border-bombovo-blue'}`}
                   />
                   <button
                     type="button"
                     onClick={handleApplyDiscount}
                     disabled={discountStatus === 'applying' || !formData.discountCode.trim()}
-                    className="px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="w-1/2 sm:w-auto px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {discountStatus === 'applying' ? 'Overujem...' : 'Uplatniť'}
                   </button>
