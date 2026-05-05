@@ -525,11 +525,52 @@
             border-left: 2px solid #eee;
         }
 
+        /* ── HERO SECTION ── */
+        .hero-section {
+            background: #EFEFEF;
+            padding: 40px 0 32px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 48px;
+            align-items: center;
+        }
+        .hero-headline {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.22;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+        .hero-headline .badge {
+            display: inline;
+            background: #F5C518;
+            padding: 2px 8px;
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.22;
+            letter-spacing: -0.01em;
+        }
+        .hero-photo {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+        }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 760px) {
             .fb-row { grid-template-columns: 1fr; }
             .article-headline { font-size: 30px; }
             .site-header img.logo { height: 72px; }
+            .hero-inner { grid-template-columns: 1fr; gap: 24px; }
+            .hero-headline, .hero-headline .badge { font-size: 32px; }
         }
     </style>
 </head>
@@ -550,6 +591,22 @@
     <a href="#">Správy</a> &rsaquo; <a href="#">Rodina</a> &rsaquo; <span>CK Bombovo</span>
 </div>
 
+<!-- ═══ HERO ═══ -->
+<section class="hero-section">
+    <div class="hero-inner">
+        <div>
+            <p class="hero-headline">
+                <span class="badge">10 dôvodov</span><br>
+                Prečo stovky rodičov prihlasujú<br>
+                svoje deti do Bombova
+            </p>
+        </div>
+        <a href="https://www.bombovo.sk/letne-tabory" target="_blank" onclick="fbq('trackCustom', 'CTAClick')">
+            <img class="hero-photo" src="images/photo-1.jpg" alt="Deti na tábore Bombovo">
+        </a>
+    </div>
+</section>
+
 <!-- ═══ MAIN LAYOUT ═══ -->
 <div class="page-wrap">
 
@@ -562,9 +619,6 @@
             <img src="images/photo-18.jpg" alt="Jana Kováčová" style="width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0;">
             Jana Kováčová – Redaktorka, Lepší Rodič &nbsp;·&nbsp; 22. apríla 2026
         </p>
-
-        <!-- PHOTO 1 -->
-        <a href="https://www.bombovo.sk/letne-tabory" target="_blank" onclick="console.log('CTAClick fired'); fbq('trackCustom', 'CTAClick')"><img src="images/photo-1.jpg" alt="" style="width:100%;display:block;margin:20px 0 6px;"></a>
 
         <p>Keď pred rokmi prišli do našich životov telefóny, nikto netušil, aký veľký dopad to bude mať na naše deti.</p>
 

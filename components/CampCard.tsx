@@ -97,13 +97,15 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
         {/* Price and CTA Row */}
         <div className="flex gap-3 mt-6">
           {/* Price */}
-          <div className="flex-1 bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">{price}</span>
-          </div>
+          <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Prihlásiť sa na tábor ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
+            <div className="bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
+              <span className="text-white text-3xl font-bold">{price}</span>
+            </div>
+          </Link>
 
           {/* CTA Button */}
           <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Zistiť viac o letnom tábore ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
-            <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
+            <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 active:translate-y-1 transition-transform duration-150">
               Zistiť viac
             </button>
           </Link>

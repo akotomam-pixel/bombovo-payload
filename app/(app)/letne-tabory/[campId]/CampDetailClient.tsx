@@ -634,46 +634,48 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
             {/* Mobile Cards */}
             <div className="md:hidden">
               <h2 className="text-3xl font-bold text-bombovo-dark mb-6">Dostupné termíny</h2>
-              {campDetails.section5.dates.map((date, idx) => (
-                <div key={idx} className={`bg-white rounded-2xl mb-4 shadow-lg overflow-hidden ${date.vypredane ? 'opacity-50' : ''}`}>
-                  <div className="bg-[#FDCA40] p-4">
-                    <p className="text-base font-semibold text-bombovo-dark">
-                      Termín {date.start} - {date.end}
-                    </p>
-                  </div>
-                  <div className="bg-white p-4">
-                    <p className="text-sm text-gray-600 mb-3">Počet dní {date.days}</p>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-base text-gray-400 line-through">{date.originalPrice}</p>
-                        <p
-                          className="text-xl font-bold text-bombovo-dark mt-2"
-                          style={{ textDecoration: 'underline', textDecorationColor: '#DF2935', textDecorationThickness: '3px', textUnderlineOffset: '4px' }}
-                        >
-                          {date.discountedPrice}
-                        </p>
+              {campDetails.section5.dates.map((date, idx) => {
+                const href = date.registrationId ? `/prihlaska/${date.registrationId}` : '/kontakt'
+                const cardInner = (
+                  <div className={`bg-white rounded-2xl mb-4 shadow-lg overflow-hidden ${date.vypredane ? 'opacity-50' : ''}`}>
+                    <div className="bg-[#FDCA40] p-4">
+                      <p className="text-base font-semibold text-bombovo-dark">
+                        Termín {date.start} - {date.end}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4">
+                      <p className="text-sm text-gray-600 mb-3">Počet dní {date.days}</p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-base text-gray-400 line-through">{date.originalPrice}</p>
+                          <p
+                            className="text-xl font-bold text-bombovo-dark mt-2"
+                            style={{ textDecoration: 'underline', textDecorationColor: '#DF2935', textDecorationThickness: '3px', textUnderlineOffset: '4px' }}
+                          >
+                            {date.discountedPrice}
+                          </p>
+                        </div>
+                        {date.vypredane ? (
+                          <button disabled className="px-6 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
+                            VYPREDANÉ
+                          </button>
+                        ) : (
+                          <button className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
+                            Mám záujem
+                          </button>
+                        )}
                       </div>
-                      {date.vypredane ? (
-                        <button disabled className="px-6 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
-                          VYPREDANÉ
-                        </button>
-                      ) : date.registrationId ? (
-                        <Link href={`/prihlaska/${date.registrationId}`}>
-                          <button onClick={() => posthog.capture('interest_clicked')} className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
-                            Mám záujem
-                          </button>
-                        </Link>
-                      ) : (
-                        <Link href="/kontakt">
-                          <button onClick={() => posthog.capture('interest_clicked')} className="bg-[#DF2935] text-white font-bold px-5 py-3 rounded-full shadow-md">
-                            Mám záujem
-                          </button>
-                        </Link>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+                return date.vypredane ? (
+                  <div key={idx}>{cardInner}</div>
+                ) : (
+                  <Link key={idx} href={href} onClick={() => posthog.capture('interest_clicked')}>
+                    {cardInner}
+                  </Link>
+                )
+              })}
             </div>
           </div>
         </section>
