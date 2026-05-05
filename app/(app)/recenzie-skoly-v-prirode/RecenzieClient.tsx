@@ -364,7 +364,7 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
           </section>
 
           {/* Reviews section */}
-          <section className="max-w-2xl mx-auto px-4 pb-16 w-full">
+          <section className="max-w-6xl mx-auto px-4 pb-16 w-full">
             <h2 className="text-3xl font-bold text-bombovo-dark mb-8">
               Čo hovoria ostatné učiteľky
             </h2>
@@ -373,7 +373,7 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
                 Buďte prvá škola, ktorá zanechá recenziu!
               </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {approvedReviews.map((review, i) => (
                   <ReviewCard key={i} review={review} />
                 ))}
