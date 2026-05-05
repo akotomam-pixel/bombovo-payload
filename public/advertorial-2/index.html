@@ -599,10 +599,17 @@
 
         <h1 class="article-headline">Firma s detskými tábormi vyhlásila vojnu sociálnym sieťam</h1>
         <p class="article-subheadline"><span class="highlight">„Kradnú deťom leto,"</span> hovorí riaditeľka Patrícia Mlyneková</p>
-        <p class="article-byline" style="display:flex;align-items:center;gap:10px;">
-            <img src="images/photo-18.jpg" alt="Jana Kováčová" style="width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-            Jana Kováčová – Redaktorka, Lepší Rodič &nbsp;·&nbsp; 22. apríla 2026
+        <p class="article-byline" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <img src="images/photo-18.jpg" alt="Doda Ullerová" style="width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+            <span>Doda Ullerová – Blogerka, Lepší Rodič &nbsp;·&nbsp; <span id="byline-date"></span> &nbsp;·&nbsp; 67&nbsp;821 Videní 🔥</span>
         </p>
+        <script>
+          (function() {
+            var months = ['januára','februára','marca','apríla','mája','júna','júla','augusta','septembra','októbra','novembra','decembra'];
+            var d = new Date();
+            document.getElementById('byline-date').textContent = d.getDate() + '. ' + months[d.getMonth()] + ' ' + d.getFullYear();
+          })();
+        </script>
 
         <!-- PHOTO 1 -->
         <a href="https://www.bombovo.sk/letne-tabory" target="_blank" onclick="console.log('CTAClick fired'); fbq('trackCustom', 'CTAClick')"><img src="images/photo-1.jpg" alt="" style="width:100%;display:block;margin:20px 0 6px;"></a>
