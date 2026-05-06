@@ -146,21 +146,40 @@
       max-width: 700px;
     }
 
-    /* Image placeholder wrapper */
+    /* Image wrapper — 3:4 portrait, cropped center */
     .img-wrap {
       border-radius: 18px;
       overflow: hidden;
       box-shadow: 0 12px 44px rgba(8,7,8,0.11), 0 2px 8px rgba(8,7,8,0.08);
-      height: 320px;
+      aspect-ratio: 3 / 4;
     }
-    .img-wrap img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .img-wrap img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 
     .hero-grid { grid-template-columns: 1fr; }
     @media (min-width: 768px) {
       .hero-grid { grid-template-columns: 52fr 48fr; }
     }
     @media (max-width: 767px) {
-      .img-wrap { height: 220px; border-radius: 14px; }
+      .img-wrap { border-radius: 14px; }
+    }
+
+    /* Hand-drawn red wave divider — desktop only */
+    .red-wave-divider { display: none; }
+    @media (min-width: 768px) {
+      .red-wave-divider {
+        display: block;
+        position: relative;
+        height: 32px;
+        width: 100%;
+        margin-top: -52px;
+        margin-bottom: 20px;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .red-wave-divider svg {
+        width: 100%;
+        height: 100%;
+      }
     }
   </style>
 </head>
@@ -171,7 +190,7 @@
     <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 flex-wrap text-sm font-bold text-white leading-snug">
       <span class="hidden sm:inline">🎯 Špeciálna zľava 20 €</span>
       <span class="sm:hidden text-xs">🎯 Zľava 20 €</span>
-      <span class="bg-white text-bv-blue px-2.5 py-0.5 rounded font-black tracking-widest text-xs">LT2026</span>
+      <span class="bg-white text-bv-blue px-2.5 py-0.5 rounded font-black tracking-widest text-xs">KÓD: LT2026</span>
       <span class="opacity-70 text-xs hidden sm:inline">· len pre prvých 100 rodičov · zostáva</span>
       <span class="opacity-70 text-xs sm:hidden">· zostáva</span>
       <span class="flex items-center gap-1">
@@ -194,11 +213,29 @@
           <span style="font-size:clamp(28px,6vw,44px); display:block;">svoje deti do Bombova</span>
         </h1>
       </div>
-      <div class="img-wrap">
-        <img src="https://placehold.co/700x340/22c55e/ffffff?text=Hlavná+fotka" alt="Tábory Bombovo">
+      <div class="img-wrap" style="aspect-ratio:auto;">
+        <img src="picure-1.gif" alt="Tábory Bombovo">
       </div>
     </div>
   </section>
+
+  <!-- Red hand-drawn divider after hero — desktop only -->
+  <div class="red-wave-divider">
+    <svg viewBox="0 0 1440 50" preserveAspectRatio="none" style="filter:url(#roughness-red)">
+      <defs>
+        <filter id="roughness-red">
+          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="turbulence"/>
+          <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3"/>
+        </filter>
+      </defs>
+      <path d="M-10,20 Q90,32 180,18 Q270,8 360,24 Q450,34 540,20 Q630,10 720,26 Q810,36 900,22 Q990,12 1080,28 Q1170,34 1260,24 Q1350,18 1450,28"
+        fill="none" stroke="#DF2935" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M-10,18 Q90,30 180,16 Q270,6 360,22 Q450,32 540,18 Q630,8 720,24 Q810,34 900,20 Q990,10 1080,26 Q1170,32 1260,22 Q1350,16 1450,26"
+        fill="none" stroke="#DF2935" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+      <path d="M-10,22 Q90,34 180,20 Q270,10 360,26 Q450,36 540,22 Q630,12 720,28 Q810,38 900,24 Q990,14 1080,30 Q1170,36 1260,26 Q1350,20 1450,30"
+        fill="none" stroke="#DF2935" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+    </svg>
+  </div>
 
   <!-- ░░ REASONS ░░ -->
   <main class="max-w-5xl mx-auto px-6">
@@ -207,14 +244,13 @@
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="relative">
-          <span class="deco-num">1</span>
-          <div class="relative" style="z-index:1;">
+<div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 1</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
               Každé leto dávajú tisíckam detí nezabudnuteľné zážitky.
             </h2>
             <p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
-              Pamätáš si svoje leto plné nezabudnuteľných zážitkov? Presne také leto dávajú tábory Bombovo moderným deťom.
+              <u>Pamätáš si svoje leto plné nezabudnuteľných zážitkov?</u> Presne také leto dávajú tábory Bombovo moderným deťom.
             </p>
             <p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
               Stavajú bunkre v lese, súťažia medzi sebou v prírode, tancujú, tvoria a oddychujú pri bazéne.
@@ -225,21 +261,18 @@
           </div>
         </div>
         <div class="img-wrap">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+1" alt="Deti v tábore">
+          <img src="picure-2.gif" alt="Deti v tábore">
         </div>
       </div>
     </section>
 
-    <div class="divider"></div>
-
     <!-- #2 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="img-wrap md:order-1 order-2">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+2" alt="Program v prírode">
+        <div class="img-wrap md:order-1 order-2" style="aspect-ratio:auto;">
+          <img src="picure-3.jpg" alt="Program v prírode">
         </div>
         <div class="relative md:order-2 order-1">
-          <span class="deco-num right">2</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 2</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -249,7 +282,7 @@
               Väčšina detí trávi leto na telefóne.
             </p>
             <p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
-              V Bombove sme pracovali roky na našom programe tak, aby každé dieťa dostalo hravou formou do prírody.
+              <strong>V Bombove sme pracovali roky na našom programe tak, aby každé dieťa dostalo hravou formou do prírody.</strong>
             </p>
             <p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
               Umelci. Počítačoví maniaci. Ale aj tanečníci…
@@ -262,13 +295,11 @@
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #3 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="relative">
-          <span class="deco-num">3</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 3</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -290,21 +321,19 @@
           </div>
         </div>
         <div class="img-wrap">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+3" alt="Spokojné deti">
+          <img src="picure-4.gif" alt="Spokojné deti">
         </div>
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #4 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="img-wrap md:order-1 order-2">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+4" alt="Bez skrytých poplatkov">
+          <img src="picure-5.png" alt="Bez skrytých poplatkov">
         </div>
         <div class="relative md:order-2 order-1">
-          <span class="deco-num right">4</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 4</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -328,29 +357,11 @@
       </div>
     </section>
 
-    <!-- MID CTA -->
-    <div class="bg-bv-dark rounded-3xl px-8 py-14 mb-20 text-center"
-         style="box-shadow:0 20px 60px rgba(8,7,8,0.2);">
-      <p class="text-bv-yellow font-semibold text-xs uppercase tracking-widest mb-3">Nezmeškajte zľavu</p>
-      <h3 class="font-black text-white mb-3 leading-tight" style="font-size:clamp(26px,4vw,40px);letter-spacing:-0.03em;">
-        Zľava 20 € čaká práve na vás
-      </h3>
-      <p class="text-white/55 text-lg mb-8">
-        Zadajte kód <span class="font-black text-white">LT2026</span> pri registrácii. Len prvých 100 rodičov.
-      </p>
-      <a href="https://www.bombovo.sk/letne-tabory?utm_source=facebook&utm_medium=cpc&utm_campaign=10-dovodov-2026&utm_content=mid-cta"
-         class="btn-primary text-base">
-        Vybrať tábor teraz →
-      </a>
-    </div>
-
-    <div class="divider"></div>
 
     <!-- #5 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="relative">
-          <span class="deco-num">5</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 5</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -368,37 +379,25 @@
           </div>
         </div>
         <div class="img-wrap">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+5" alt="Bezpečnosť">
+          <img src="picure-6.JPG" alt="Bezpečnosť">
         </div>
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #6 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="img-wrap md:order-1 order-2">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+6" alt="26 rokov skúseností">
+        <div class="img-wrap md:order-1 order-2" style="aspect-ratio:auto;">
+          <img src="picure-7.webp" alt="26 rokov skúseností">
         </div>
         <div class="relative md:order-2 order-1">
-          <span class="deco-num right">6</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 6</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
-              26 rokov skúseností. 50 000 detí odanimovaných.
+              26 rokov skúseností.<br><span style="white-space:nowrap;">50 000 detí odanimovaných.</span>
             </h2>
-            <div class="grid grid-cols-2 gap-3 mb-5">
-              <div class="stat-card">
-                <p class="font-black text-bv-dark" style="font-size:32px;line-height:1;">26</p>
-                <p class="text-bv-dark/55 text-xs font-semibold uppercase tracking-wide mt-1">Rokov skúseností</p>
-              </div>
-              <div class="stat-card">
-                <p class="font-black text-bv-dark" style="font-size:26px;line-height:1;">50 000</p>
-                <p class="text-bv-dark/55 text-xs font-semibold uppercase tracking-wide mt-1">Odanimovaných detí</p>
-              </div>
-            </div>
-            <p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
+<p class="text-bv-dark/70 leading-relaxed mb-3" style="line-height:1.75;">
               Za naše 26-ročné pôsobenie sme dokázali odanimovať až 50 000 detí.
             </p>
             <p class="text-bv-dark/70 leading-relaxed" style="line-height:1.75;">
@@ -409,13 +408,28 @@
       </div>
     </section>
 
-    <div class="divider"></div>
+    <!-- MID CTA — after #6 -->
+    <div class="bg-bv-dark rounded-3xl px-8 py-14 mb-20 text-center"
+         style="box-shadow:0 20px 60px rgba(8,7,8,0.2);">
+      <p class="text-bv-yellow font-semibold text-xs uppercase tracking-widest mb-3">Nezmeškajte zľavu</p>
+      <h3 class="font-black text-white mb-3 leading-tight" style="font-size:clamp(26px,4vw,40px);letter-spacing:-0.03em;">
+        Zľava 20 € na váš prvý tábor čaká práve na vás.
+      </h3>
+      <p class="text-white/55 text-lg mb-8">
+        Zadajte kód <span class="font-black text-white">LT2026</span> pri registrácii. Len prvých 100 rodičov.
+      </p>
+      <a href="https://www.bombovo.sk/letne-tabory?utm_source=facebook&utm_medium=cpc&utm_campaign=10-dovodov-2026&utm_content=mid-cta"
+         class="text-base"
+         style="display:inline-flex;align-items:center;gap:10px;background:#DF2935;color:#fff;font-weight:800;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;padding:17px 34px;border-radius:10px;text-decoration:none;box-shadow:0 4px 24px rgba(223,41,53,0.4),0 1px 4px rgba(0,0,0,0.12);transition:transform 0.22s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.22s ease;">
+        Vybrať tábor teraz →
+      </a>
+    </div>
+
 
     <!-- #7 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="relative">
-          <span class="deco-num">7</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 7</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -433,21 +447,19 @@
           </div>
         </div>
         <div class="img-wrap">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+7" alt="Ubytovanie">
+          <img src="picure-8.gif" alt="Ubytovanie">
         </div>
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #8 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="img-wrap md:order-1 order-2">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+8" alt="Spokojní rodičia">
+          <img src="picure-9.1.png" alt="Spokojní rodičia">
         </div>
         <div class="relative md:order-2 order-1">
-          <span class="deco-num right">8</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 8</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -465,13 +477,11 @@
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #9 -->
     <section class="mb-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <div class="relative">
-          <span class="deco-num">9</span>
           <div class="relative" style="z-index:1;">
             <p class="text-bv-blue font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 9</p>
             <h2 class="font-black text-bv-dark mb-5 leading-tight" style="font-size:clamp(24px,3.5vw,36px);letter-spacing:-0.025em;">
@@ -503,19 +513,17 @@
             </p>
           </div>
         </div>
-        <div class="img-wrap">
-          <img src="https://placehold.co/600x320/22c55e/ffffff?text=Foto+9" alt="17 táborov">
+        <div class="img-wrap" style="aspect-ratio:auto;">
+          <img src="picure-10.1.png" alt="17 táborov">
         </div>
       </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- #10 -->
     <section class="mb-20">
       <div class="bg-bv-yellow rounded-3xl p-8 md:p-12 relative overflow-hidden"
            style="box-shadow:0 20px 60px rgba(253,202,64,0.3);">
-        <span class="deco-num absolute top-0 right-4" style="opacity:0.1;color:#080708;font-size:clamp(120px,22vw,220px);">10</span>
         <div class="relative grid md:grid-cols-2 gap-10 items-center" style="z-index:1;">
           <div>
             <p class="text-bv-dark/50 font-semibold text-xs uppercase tracking-widest mb-3">Dôvod č. 10 · Špeciálna ponuka</p>
@@ -535,11 +543,12 @@
             </p>
           </div>
           <div class="flex flex-col gap-5">
-            <div class="img-wrap">
-              <img src="https://placehold.co/600x240/22c55e/ffffff?text=Foto+10" alt="Špeciálna zľava">
+            <div class="img-wrap md:order-1 order-2" style="aspect-ratio:auto;">
+              <img src="picure-11.JPG" alt="Špeciálna zľava">
             </div>
             <a href="https://www.bombovo.sk/letne-tabory?utm_source=facebook&utm_medium=cpc&utm_campaign=10-dovodov-2026&utm_content=reason-10"
-               class="btn-dark w-full justify-center text-base py-5">
+               class="w-full justify-center text-base py-5 md:order-2 order-1"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;background:#DF2935;color:#fff;font-weight:800;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;padding:20px 34px;border-radius:10px;text-decoration:none;box-shadow:0 4px 24px rgba(223,41,53,0.4),0 1px 4px rgba(0,0,0,0.12);">
               Vybrať môj tábor →
             </a>
           </div>
