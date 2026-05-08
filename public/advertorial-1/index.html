@@ -262,7 +262,7 @@
           </div>
         </div>
         <div class="img-wrap">
-          <video src="Video-2.mp4" autoplay loop muted playsinline style="margin-top:-30px;height:calc(100% + 30px);"></video>
+          <video data-src="Video-2.mp4" preload="none" autoplay loop muted playsinline style="margin-top:-30px;height:calc(100% + 30px);"></video>
         </div>
       </div>
     </section>
@@ -327,7 +327,7 @@
           </div>
         </div>
         <div class="img-wrap">
-          <video src="video-4.mp4" autoplay loop muted playsinline></video>
+          <video data-src="video-4.mp4" preload="none" autoplay loop muted playsinline></video>
         </div>
       </div>
     </section>
@@ -453,7 +453,7 @@
           </div>
         </div>
         <div class="img-wrap">
-          <video src="video-8.mp4" autoplay loop muted playsinline></video>
+          <video data-src="video-8.mp4" preload="none" autoplay loop muted playsinline></video>
         </div>
       </div>
     </section>
@@ -615,6 +615,24 @@
         posthog.capture('advertorial_clicked', { advertorial: 'advertorial-1' });
       });
     });
+  </script>
+
+  <script>
+    (function() {
+      var lazyVideos = document.querySelectorAll('video[data-src]');
+      if (!lazyVideos.length) return;
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          var v = entry.target;
+          v.src = v.dataset.src;
+          v.removeAttribute('data-src');
+          v.load();
+          observer.unobserve(v);
+        });
+      }, { rootMargin: '300px' });
+      lazyVideos.forEach(function(v) { observer.observe(v); });
+    })();
   </script>
 
 </body>
