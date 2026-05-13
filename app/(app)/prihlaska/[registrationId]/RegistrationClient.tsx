@@ -6,6 +6,7 @@ import posthog from "posthog-js";
 declare global {
   interface Window {
     ecotrack: (...args: unknown[]) => void
+    dataLayer: Record<string, unknown>[]
   }
 }
 import Image from "next/image";
@@ -116,6 +117,11 @@ export default function RegistrationClient({
       .then(r => r.json())
       .then(data => { if (Array.isArray(data.sizes)) setTshirtSizes(data.sizes) })
       .catch(() => {}) // silent fail — fallback options shown below
+  }, []);
+
+  useEffect(() => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'prihlaska_pageview' });
   }, []);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitErrorNode, setSubmitErrorNode] = useState<React.ReactNode>(null);
