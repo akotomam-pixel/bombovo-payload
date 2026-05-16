@@ -42,8 +42,31 @@ export const TeacherReviews: CollectionConfig = {
     {
       name: 'reviewText',
       type: 'textarea',
-      label: 'Recenzia',
-      required: true,
+      label: 'Recenzia (starý formát / fallback)',
+    },
+    {
+      name: 'q1',
+      type: 'textarea',
+      label: 'Q1: Ubytovanie a stredisko',
+      admin: { description: 'Ako ste boli spokojní s vybavením, čistotou a ubytovaním strediska?' },
+    },
+    {
+      name: 'q2',
+      type: 'textarea',
+      label: 'Q2: Animačný tím a program',
+      admin: { description: 'Ako ste boli spokojní s naším animačným tímom a programom?' },
+    },
+    {
+      name: 'q3',
+      type: 'textarea',
+      label: 'Q3: Čo sa vám páčilo',
+      admin: { description: 'Čo sa vám na škole v prírode najviac páčilo?' },
+    },
+    {
+      name: 'q4',
+      type: 'textarea',
+      label: 'Q4: Doplnok (nepovinné)',
+      admin: { description: 'Chceli by ste niečo dodať?' },
     },
     {
       name: 'stredisko',

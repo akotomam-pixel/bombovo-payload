@@ -38,6 +38,15 @@ async function run() {
     `)
     console.log('✓ camps.video_url / video_thumbnail_url')
 
+    // Migration 20260516_000000 — add q1/q2/q3/q4 to teacher_reviews
+    await client.query(`
+      ALTER TABLE "teacher_reviews" ADD COLUMN IF NOT EXISTS "q1" varchar;
+      ALTER TABLE "teacher_reviews" ADD COLUMN IF NOT EXISTS "q2" varchar;
+      ALTER TABLE "teacher_reviews" ADD COLUMN IF NOT EXISTS "q3" varchar;
+      ALTER TABLE "teacher_reviews" ADD COLUMN IF NOT EXISTS "q4" varchar;
+    `)
+    console.log('✓ teacher_reviews.q1 / q2 / q3 / q4')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
