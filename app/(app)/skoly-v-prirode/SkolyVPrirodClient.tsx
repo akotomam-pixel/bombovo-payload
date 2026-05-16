@@ -37,10 +37,11 @@ export interface SkolyVPrirodPageData {
   section3: [Section3Block, Section3Block, Section3Block]
   strediskaHeadline: string
   centers: CenterData[]
+  teacherReviewCount: number
 }
 
 export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageData }) {
-  const { headline, headlineHighlight, bodyText, reviews, section3, strediskaHeadline, centers } = data
+  const { headline, headlineHighlight, bodyText, reviews, section3, strediskaHeadline, centers, teacherReviewCount } = data
 
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0)
 
@@ -248,6 +249,22 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   />
                 ))}
               </div>
+
+              {teacherReviewCount > 0 && (
+                <div className="flex flex-col items-center gap-3 mt-6">
+                  <p className="text-sm text-gray-500 font-medium">
+                    Overených <span className="font-bold text-bombovo-dark">{teacherReviewCount}</span> recenzií od učiteľov
+                  </p>
+                  <Link href="/recenzie-skoly-v-prirode">
+                    <button className="inline-flex items-center gap-2 px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-sm rounded-full hover:translate-y-0.5 transition-transform duration-150">
+                      Prečítaj recenzie od učiteľov
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* DESKTOP LAYOUT */}
@@ -294,6 +311,22 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                     />
                   ))}
                 </div>
+
+                {teacherReviewCount > 0 && (
+                  <div className="flex flex-col items-center gap-3 mt-6">
+                    <p className="text-sm text-gray-500 font-medium">
+                      Overených <span className="font-bold text-bombovo-dark">{teacherReviewCount}</span> recenzií od učiteľov
+                    </p>
+                    <Link href="/recenzie-skoly-v-prirode">
+                      <button className="inline-flex items-center gap-2 px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-sm rounded-full hover:translate-y-0.5 transition-transform duration-150">
+                        Prečítaj recenzie od učiteľov
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </Link>
+                  </div>
+                )}
 
                 <button
                   onClick={nextReview}

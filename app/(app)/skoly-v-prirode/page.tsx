@@ -67,6 +67,7 @@ export default async function SkolyVPrirodePage() {
     section3: HARDCODED_SECTION3,
     strediskaHeadline: 'Naše strediská na rok 2026',
     centers: [],
+    teacherReviewCount: 0,
   }
 
   try {
@@ -99,6 +100,15 @@ export default async function SkolyVPrirodePage() {
       photo:    thumbUrl(mediaUrl(global[photoKey]), 828),
     })) as [Section3Block, Section3Block, Section3Block]
     data.section3 = payloadSection3
+
+    // ── Fetch approved teacher review count ───────────────────────────────────
+    const reviewCountResult = await payload.find({
+      collection: 'teacher-reviews',
+      where: { status: { equals: 'approved' } },
+      limit: 0,
+      depth: 0,
+    })
+    data.teacherReviewCount = reviewCountResult.totalDocs
 
     // ── Fetch strediska from Strediska collection ─────────────────────────────
     const strediskaResult = await payload.find({ collection: 'strediska', limit: 50, depth: 1 })
