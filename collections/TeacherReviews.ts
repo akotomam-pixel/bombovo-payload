@@ -60,7 +60,7 @@ export const TeacherReviews: CollectionConfig = {
       type: 'select',
       label: 'Stav',
       required: true,
-      defaultValue: 'pending',
+      defaultValue: 'approved',
       options: [
         { label: 'Čaká na schválenie', value: 'pending' },
         { label: 'Schválená', value: 'approved' },
