@@ -312,7 +312,8 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                 </div>
 
                 {teacherReviewCount > 0 && (
-                  <div className="flex justify-center mt-6">
+                  <div className="flex flex-col items-center gap-2 mt-6">
+                    <p className="text-sm text-gray-500 font-medium">Čo hovoria učitelia o Bombove?</p>
                     <Link href="/recenzie-skoly-v-prirode">
                       <button className="inline-flex items-center gap-2 px-6 py-3 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-sm rounded-full hover:translate-y-0.5 transition-transform duration-150">
                         Pozri viac recenzií od učiteľov
