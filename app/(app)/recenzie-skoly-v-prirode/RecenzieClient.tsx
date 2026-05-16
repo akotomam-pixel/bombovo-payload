@@ -242,10 +242,11 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
             )}
           </section>
 
-          <div className="max-w-3xl mx-auto px-4 py-8 w-full flex-1">
+          <div className="max-w-6xl mx-auto px-4 py-8 w-full flex-1">
 
             {/* ── Collapsible form ───────────────────────────────────────────── */}
-            <div className="border-4 border-bombovo-blue rounded-3xl overflow-hidden mb-10 bg-white shadow-sm">
+            <div className="max-w-2xl mx-auto mb-10">
+            <div className="border-4 border-bombovo-blue rounded-3xl overflow-hidden bg-white shadow-sm">
               <button
                 type="button"
                 onClick={() => setFormOpen(!formOpen)}
@@ -410,6 +411,7 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
                 </div>
               </div>
             </div>
+            </div>
 
             {/* ── Reviews list ───────────────────────────────────────────────── */}
             {approvedReviews.length === 0 ? (
@@ -421,7 +423,7 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
                 <h2 className="text-xl font-bold text-bombovo-dark mb-6">
                   Čo hovoria učitelia o Bombove
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {approvedReviews.map((review, i) => (
                     <ReviewCard key={i} review={review} />
                   ))}
