@@ -256,7 +256,8 @@ export default function RecenzieClient({ strediska, approvedReviews }: Props) {
                 <div className="flex items-center gap-3">
                   <span className="text-xl">✍️</span>
                   <span className="font-bold text-bombovo-dark text-base md:text-lg">
-                    Napíšte recenziu
+                    Napíšte recenziu{' '}
+                    <span className="font-normal text-sm text-gray-500">(kliknite pre napísanie recenzie)</span>
                   </span>
                 </div>
                 <svg
