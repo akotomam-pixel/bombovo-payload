@@ -53,6 +53,12 @@ async function run() {
     `)
     console.log('✓ strediska.vypredane')
 
+    // Migration 20260526_000001 — add photo_label to skoly_v_prirode_reviews
+    await client.query(`
+      ALTER TABLE "skoly_v_prirode_reviews" ADD COLUMN IF NOT EXISTS "photo_label" varchar;
+    `)
+    console.log('✓ skoly_v_prirode_reviews.photo_label')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
