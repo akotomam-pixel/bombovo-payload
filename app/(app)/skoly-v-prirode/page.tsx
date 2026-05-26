@@ -83,9 +83,10 @@ export default async function SkolyVPrirodePage() {
 
     if (Array.isArray(global.reviews) && global.reviews.length > 0) {
       data.reviews = global.reviews.map((r: any) => ({
-        content: r.content ?? '',
-        author:  r.author  ?? '',
-        photo:   thumbUrl(mediaUrl(r.photo), 384),
+        content:    r.content    ?? '',
+        author:     r.author     ?? '',
+        photo:      thumbUrl(mediaUrl(r.photo), 384),
+        photoLabel: r.photoLabel ?? '',
       }))
     }
 

@@ -55,6 +55,12 @@ export const SkolyVPrirode: GlobalConfig = {
           relationTo: 'media',
           label: 'Polaroid photo',
         },
+        {
+          name: 'photoLabel',
+          type: 'text',
+          label: 'Polaroid photo label',
+          admin: { description: 'Text shown below the photo, e.g. "2026 Školy v prírode"' },
+        },
       ],
     },
 

@@ -14,6 +14,7 @@ export interface ReviewData {
   content: string
   author: string
   photo?: string
+  photoLabel?: string
 }
 
 export interface CenterData {
@@ -206,7 +207,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                     style={{ width: '250px', height: '320px' }}
                   />
                   <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                    2025 Školy v prírode
+                    {reviews[currentReviewIndex].photoLabel || '2025 Školy v prírode'}
                   </p>
                 </div>
               </div>
@@ -343,19 +344,19 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                   <div className="absolute" style={{ left: '0%', bottom: '15%', transform: 'rotate(-6deg)', zIndex: 1 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
                       <img src={reviewPhotoSrc(0)} alt="Spokojní žiaci a učiteľka pri aktivite na škole v prírode" className="object-cover" style={{ width: '200px', height: '260px' }} />
-                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
+                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">{reviews[0].photoLabel || '2025 Školy v prírode'}</p>
                     </div>
                   </div>
                   <div className="absolute" style={{ left: '30%', top: '10%', transform: 'rotate(4deg)', zIndex: 2 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
                       <img src={reviewPhotoSrc(1)} alt="Deti počas programu školy v prírode Bombovo" className="object-cover" style={{ width: '200px', height: '260px' }} />
-                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
+                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">{reviews[1].photoLabel || '2025 Školy v prírode'}</p>
                     </div>
                   </div>
                   <div className="absolute" style={{ right: '5%', top: '0%', transform: 'rotate(-4deg)', zIndex: 3 }}>
                     <div className="bg-white p-4 pb-14 shadow-2xl rounded-sm">
                       <img src={reviewPhotoSrc(2)} alt="Skupina žiakov pri outdoor aktivite v prírode" className="object-cover" style={{ width: '200px', height: '260px' }} />
-                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">2025 Školy v prírode</p>
+                      <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">{reviews[2].photoLabel || '2025 Školy v prírode'}</p>
                     </div>
                   </div>
                 </div>
