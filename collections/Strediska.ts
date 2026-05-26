@@ -33,6 +33,17 @@ export const Strediska: CollectionConfig = {
       admin: { description: 'e.g. "od 165.00 €"' },
     },
 
+    // ─── Sold-out toggle ─────────────────────────────────────────────────────
+    {
+      name: 'vypredane',
+      type: 'checkbox',
+      label: 'Vypredané (sold out)',
+      defaultValue: false,
+      admin: {
+        description: 'Zaškrtnutím označíte stredisko ako vypredané – na stránke sa zobrazí červená páska "VYPREDANÉ" a karta bude sivá a neklikateľná.',
+      },
+    },
+
     // ─── Card image ───────────────────────────────────────────────────────────
     {
       name: 'cardImage',

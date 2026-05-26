@@ -21,6 +21,7 @@ export interface CenterData {
   name: string
   price: string
   image: string
+  vypredane?: boolean
 }
 
 export interface Section3Block {
@@ -450,22 +451,50 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
               {centers.map((center) => (
                 <div
                   key={center.id}
-                  className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  className={`bg-white rounded-3xl shadow-lg overflow-hidden relative transition-shadow duration-300 ${center.vypredane ? 'cursor-default' : 'hover:shadow-xl'}`}
                 >
-                  <div className="h-64 relative overflow-hidden">
-                    <img src={center.image} alt={`${center.name} – rekreačné stredisko pre školy v prírode`} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-2xl font-bold text-bombovo-dark leading-tight">{center.name}</h3>
-                    <div className="flex gap-3 mt-6">
-                      <div className="flex-1 bg-bombovo-red rounded-2xl p-4 flex items-center justify-center">
-                        <span className="text-white text-2xl font-bold">{center.price}</span>
+                  {/* Sold-out diagonal ribbon — rendered outside the grayscale wrapper so it stays red */}
+                  {center.vypredane && (
+                    <div
+                      className="absolute pointer-events-none z-10 text-white font-black text-sm text-center tracking-widest uppercase"
+                      style={{
+                        top: '36px',
+                        right: '-42px',
+                        width: '180px',
+                        padding: '9px 0',
+                        background: '#DC2626',
+                        transform: 'rotate(45deg)',
+                        boxShadow: '0 3px 10px rgba(0,0,0,0.35)',
+                        letterSpacing: '0.12em',
+                      }}
+                    >
+                      Vypredané
+                    </div>
+                  )}
+
+                  {/* Inner wrapper gets grayscale when sold out */}
+                  <div className={center.vypredane ? 'grayscale opacity-75' : ''}>
+                    <div className="h-64 relative overflow-hidden">
+                      <img src={center.image} alt={`${center.name} – rekreačné stredisko pre školy v prírode`} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-2xl font-bold text-bombovo-dark leading-tight">{center.name}</h3>
+                      <div className="flex gap-3 mt-6">
+                        <div className="flex-1 bg-bombovo-red rounded-2xl p-4 flex items-center justify-center">
+                          <span className="text-white text-2xl font-bold">{center.price}</span>
+                        </div>
+                        {center.vypredane ? (
+                          <div className="flex-1 bg-gray-300 text-gray-500 text-lg font-bold rounded-2xl p-4 flex items-center justify-center cursor-not-allowed select-none">
+                            Vypredané
+                          </div>
+                        ) : (
+                          <Link href={`/skoly-v-prirode/${center.id}`} aria-label={strediskoAria[center.id] ?? `Škola v prírode ${center.name}`} className="flex-1">
+                            <button className="w-full h-full bg-bombovo-yellow text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
+                              Výber možností
+                            </button>
+                          </Link>
+                        )}
                       </div>
-                      <Link href={`/skoly-v-prirode/${center.id}`} aria-label={strediskoAria[center.id] ?? `Škola v prírode ${center.name}`} className="flex-1">
-                        <button className="w-full h-full bg-bombovo-yellow text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
-                          Výber možností
-                        </button>
-                      </Link>
                     </div>
                   </div>
                 </div>

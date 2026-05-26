@@ -118,10 +118,11 @@ export default async function SkolyVPrirodePage() {
           ? mediaUrl(doc.heroGallery[0]?.photo)
           : undefined
         return {
-          id:    doc.slug  ?? '',
-          name:  doc.name  ?? '',
-          price: doc.price ?? '',
-          image: thumbUrl(mediaUrl(doc.cardImage) ?? galleryUrl, 640),
+          id:        doc.slug       ?? '',
+          name:      doc.name       ?? '',
+          price:     doc.price      ?? '',
+          image:     thumbUrl(mediaUrl(doc.cardImage) ?? galleryUrl, 640),
+          vypredane: doc.vypredane  ?? false,
         }
       })
     }
