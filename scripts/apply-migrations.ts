@@ -47,6 +47,12 @@ async function run() {
     `)
     console.log('✓ teacher_reviews.q1 / q2 / q3 / q4')
 
+    // Migration 20260526_000000 — add vypredane toggle to strediska
+    await client.query(`
+      ALTER TABLE "strediska" ADD COLUMN IF NOT EXISTS "vypredane" boolean DEFAULT false;
+    `)
+    console.log('✓ strediska.vypredane')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
