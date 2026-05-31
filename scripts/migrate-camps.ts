@@ -54,7 +54,7 @@ interface CampEntry {
 
 const CAMPS: CampEntry[] = [
   { order: 1,  slug: 'fest-animator-fest',              campTypes: ['Tínedžerský', 'Akčný'],        data: festAnimatorFestData },
-  { order: 2,  slug: 'olymp-kemp',                      campTypes: ['Náučný', 'Dobrodružný'],        data: olympKempData },
+  { order: 2,  slug: 'olymp-kemp',                      campTypes: ['Náučný', 'Dobrodružný', 'Športový'], data: olympKempData },
   { order: 3,  slug: 'tanecna-planeta',                  campTypes: ['Športový', 'Umelecký'],         data: tanecnaPlanetaData },
   { order: 4,  slug: 'babinec',                          campTypes: ['Unikátny', 'Oddychový'],        data: babinecData },
   { order: 5,  slug: 'tajomstvo-basketbaloveho-pohara',  campTypes: ['Športový', 'Akčný'],            data: tajomstvoBasketbalovehoPoharaData },
