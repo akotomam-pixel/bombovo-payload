@@ -320,7 +320,7 @@ export default function RegistrationClient({
     // If a discount code was entered but not validated by Profis, block the submission
     if (formData.discountCode.trim() && discountStatus !== 'applied') {
       setDiscountStatus('error');
-      setDiscountMessage('Použitý kód je neplatný.');
+      setDiscountMessage('Prosím kliknite na \'Uplatniť\' pre overenie kódu.');
       document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
@@ -1328,7 +1328,7 @@ export default function RegistrationClient({
                     value={formData.discountCode}
                     onChange={e => {
                       handleInputChange(e);
-                      if (discountStatus !== 'idle') {
+                      if (discountStatus !== 'idle' && e.target.value.trim().toUpperCase() !== formData.discountCode.trim().toUpperCase()) {
                         setDiscountStatus('idle');
                         setDiscountMessage(null);
                         setAppliedDiscountParamId(null);
