@@ -317,15 +317,35 @@ export default function RegistrationClient({
     setBirthDate2Msg(null);
     if (!validateFields()) return;
 
-    // If a discount code was entered but not validated by Profis, block the submission
-    if (formData.discountCode.trim() && discountStatus !== 'applied') {
-      setDiscountStatus('error');
-      setDiscountMessage('Prosím kliknite na \'Uplatniť\' pre overenie kódu.');
-      document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
     setIsSubmitting(true);
+
+    // Auto-validate discount code inline if entered but not yet applied via Uplatniť
+    let effectiveDiscountParamId = appliedDiscountParamId;
+    if (formData.discountCode.trim() && discountStatus !== 'applied') {
+      try {
+        const discRes = await fetch('/api/profitour/discount', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kod: formData.discountCode.trim() }),
+        });
+        const discData = await discRes.json();
+        if (!discRes.ok || discData.error) {
+          setDiscountStatus('error');
+          setDiscountMessage(discData.error ?? 'Neplatný zľavový kód.');
+          document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        effectiveDiscountParamId = discData.id_SkupinaSlevaParametr;
+        setAppliedDiscountParamId(effectiveDiscountParamId);
+        setDiscountStatus('applied');
+        setDiscountMessage('Zľavový kód bol úspešne uplatnený!');
+      } catch {
+        setDiscountStatus('error');
+        setDiscountMessage('Neplatný zľavový kód.');
+        document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+    }
 
     try {
       if (profisTerminId) {
@@ -376,7 +396,7 @@ export default function RegistrationClient({
             id_Termin: profisTerminId,
             id_ZajezdHotel: id_ZajezdHotel ?? undefined,
             birthDates,
-            ...(appliedDiscountParamId ? { discountParamId: appliedDiscountParamId } : {}),
+            ...(effectiveDiscountParamId ? { discountParamId: effectiveDiscountParamId } : {}),
           }),
         });
         const kalkulaceData = await kalkulaceRes.json();
@@ -401,7 +421,7 @@ export default function RegistrationClient({
             id_Ubytovani,
             id_TypStrava,
             id_SkupinaSlevaKombinace,
-            ...(appliedDiscountParamId ? { id_SkupinaSlevaParametr: appliedDiscountParamId } : {}),
+            ...(effectiveDiscountParamId ? { id_SkupinaSlevaParametr: effectiveDiscountParamId } : {}),
             svozTamId,
             svozZpetId,
             jmeno: formData.parentFirstName,
