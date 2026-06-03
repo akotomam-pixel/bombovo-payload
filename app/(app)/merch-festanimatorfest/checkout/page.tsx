@@ -331,14 +331,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Submit — bottom of form */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-base rounded-full hover:bg-yellow-400 active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-dark focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Spracúvam…' : 'Dokončiť objednávku'}
-              </button>
 
             </form>
 
