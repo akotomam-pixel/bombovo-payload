@@ -186,10 +186,10 @@ async function generateFaktura(p: {
   pdfmake.setUrlAccessPolicy(() => false)
   pdfmake.addFonts({
     Roboto: {
-      normal: path.join(process.cwd(), 'node_modules/pdfmake/build/fonts/Roboto/Roboto-Regular.ttf'),
-      bold: path.join(process.cwd(), 'node_modules/pdfmake/build/fonts/Roboto/Roboto-Medium.ttf'),
-      italics: path.join(process.cwd(), 'node_modules/pdfmake/build/fonts/Roboto/Roboto-Italic.ttf'),
-      bolditalics: path.join(process.cwd(), 'node_modules/pdfmake/build/fonts/Roboto/Roboto-MediumItalic.ttf'),
+      normal: path.join(process.cwd(), 'public/fonts/roboto/Roboto-Regular.ttf'),
+      bold: path.join(process.cwd(), 'public/fonts/roboto/Roboto-Medium.ttf'),
+      italics: path.join(process.cwd(), 'public/fonts/roboto/Roboto-Italic.ttf'),
+      bolditalics: path.join(process.cwd(), 'public/fonts/roboto/Roboto-MediumItalic.ttf'),
     },
   })
 
