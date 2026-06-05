@@ -115,13 +115,13 @@ export default function MerchPage() {
                 />
               </button>
 
-              {/* Thumbnails */}
-              <div className="flex gap-3">
-                {photos.slice(1, 4).map((src, i) => (
+              {/* Thumbnails — all 5 remaining photos */}
+              <div className="grid grid-cols-3 gap-3">
+                {photos.slice(1).map((src, i) => (
                   <button
                     key={src}
                     onClick={() => openGallery(i + 1)}
-                    className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-bombovo-gray cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-blue hover:opacity-90 transition-opacity"
+                    className="relative aspect-square rounded-2xl overflow-hidden bg-bombovo-gray cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-blue hover:opacity-90 transition-opacity"
                   >
                     <Image
                       src={src}
