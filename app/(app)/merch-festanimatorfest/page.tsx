@@ -140,17 +140,10 @@ function MerchPageInner() {
             {/* RIGHT — Product info */}
             <div className="lg:w-1/2 flex flex-col gap-6">
 
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-bombovo-red text-white text-xs font-bold rounded-full uppercase tracking-wide">FEST 2026</span>
-                <span className="px-3 py-1 bg-bombovo-yellow text-bombovo-dark text-xs font-bold rounded-full uppercase tracking-wide">47 kusov zostatok</span>
-                <span className="px-3 py-1 bg-bombovo-blue text-white text-xs font-bold rounded-full uppercase tracking-wide">Limitovaná edícia</span>
-              </div>
-
               {/* Title */}
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-bombovo-dark leading-tight">
-                  FEST Animator<br />Hoodie 2026
+                  FEST Animátor FEST<br />Mikina 2026
                 </h1>
                 <p className="mt-3 text-gray-600 leading-relaxed">
                   Teraz máš šancu nosiť originálnu mikinu FEST Animator Fest aj ty.
