@@ -221,7 +221,7 @@ export default function MerchPage() {
                   </button>
                   <span className="w-8 text-center font-bold text-lg text-bombovo-dark">{qty}</span>
                   <button
-                    onClick={() => setQty(q => Math.min(5, q + 1))}
+                    onClick={() => setQty(q => Math.min(2, q + 1))}
                     className="w-10 h-10 rounded-xl border-2 border-gray-200 font-bold text-lg flex items-center justify-center hover:border-bombovo-dark transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-blue"
                   >
                     +
