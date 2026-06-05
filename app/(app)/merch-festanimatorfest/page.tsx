@@ -25,18 +25,18 @@ const PHOTOS: Record<string, string[]> = {
   black: [
     '/images/merch/hoodie-black/photo-1.jpeg',
     '/images/merch/hoodie-black/photo-2.jpeg',
-    '/images/merch/hoodie-black/photo-3.png',
+    '/images/merch/hoodie-black/photo-3.jpeg',
     '/images/merch/hoodie-black/photo-4.jpeg',
     '/images/merch/hoodie-black/photo-5.jpeg',
-    '/images/merch/hoodie-black/photo-6.png',
+    '/images/merch/hoodie-black/photo-6.jpeg',
   ],
   gray: [
     '/images/merch/hoodie-grey/gphoto-1.jpeg',
     '/images/merch/hoodie-grey/gphoto-2.jpeg',
     '/images/merch/hoodie-grey/gphoto-3.jpeg',
-    '/images/merch/hoodie-grey/gphoto-4.png',
+    '/images/merch/hoodie-grey/gphoto-4.jpeg',
     '/images/merch/hoodie-grey/gphoto-5.jpeg',
-    '/images/merch/hoodie-grey/gphoto-6.png',
+    '/images/merch/hoodie-grey/gphoto-6.jpeg',
   ],
 }
 
