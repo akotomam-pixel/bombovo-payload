@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export const SALE_END_DATE = new Date('2026-06-12T23:59:59')
+export const SALE_END_DATE = new Date('2026-06-12T19:18:00')
 
 function useCountdown(target: Date) {
   const calc = () => {
@@ -59,9 +59,6 @@ export default function CountdownBanner() {
           <span className="text-white/30 text-xs pb-2.5">:</span>
           <Box value={t.seconds} label="Sek" />
         </div>
-        <span className="text-white/60 text-xs">
-          Táto ponuka platí už len <span className="text-bombovo-yellow font-semibold">{t.days} dní</span>.
-        </span>
       </div>
     </div>
   )
