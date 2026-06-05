@@ -443,6 +443,10 @@ export async function POST(request: NextRequest) {
         colorLabel, size, qty: Number(qty), delivery, total,
         turnus, street, city, zip,
       }),
+      attachments: [{
+        filename: `faktura-${orderId}.pdf`,
+        content: pdfBuffer,
+      }],
     })
 
     return NextResponse.json({ success: true, orderId })
