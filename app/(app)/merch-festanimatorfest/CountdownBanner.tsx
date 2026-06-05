@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export const SALE_END_DATE = new Date('2026-06-09T23:59:59')
+export const SALE_END_DATE = new Date('2026-06-12T23:59:59')
 
 function useCountdown(target: Date) {
   const calc = () => {
