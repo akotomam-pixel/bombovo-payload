@@ -1,10 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CountdownBanner from './CountdownBanner'
+import LightGallery from 'lightgallery/react'
+import lgThumbnail from 'lightgallery/plugins/thumbnail'
+import lgZoom from 'lightgallery/plugins/zoom'
+import 'lightgallery/css/lightgallery.css'
+import 'lightgallery/css/lg-zoom.css'
+import 'lightgallery/css/lg-thumbnail.css'
+import type { LightGallery as LightGalleryType } from 'lightgallery/lightgallery'
 
 const SIZES = ['S', 'M', 'L', 'XL']
 
@@ -13,8 +21,28 @@ const COLORS = [
   { id: 'gray', label: 'Sivá', hex: '#8a8a8a' },
 ]
 
+const PHOTOS: Record<string, string[]> = {
+  black: [
+    '/images/merch/hoodie-black/photo-1.jpeg',
+    '/images/merch/hoodie-black/photo-2.jpeg',
+    '/images/merch/hoodie-black/photo-3.jpeg',
+    '/images/merch/hoodie-black/photo-4.jpeg',
+    '/images/merch/hoodie-black/photo-5.jpeg',
+    '/images/merch/hoodie-black/photo-6.jpeg',
+  ],
+  gray: [
+    '/images/merch/hoodie-grey/gphoto-1.jpeg',
+    '/images/merch/hoodie-grey/gphoto-2.jpeg',
+    '/images/merch/hoodie-grey/gphoto-3.jpeg',
+    '/images/merch/hoodie-grey/gphoto-4.png',
+    '/images/merch/hoodie-grey/gphoto-5.jpeg',
+    '/images/merch/hoodie-grey/gphoto-6.png',
+  ],
+}
+
 export default function MerchPage() {
   const router = useRouter()
+  const lgRef = useRef<LightGalleryType | null>(null)
 
   const [selectedColor, setSelectedColor] = useState(COLORS[0])
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
@@ -22,6 +50,13 @@ export default function MerchPage() {
   const [sizeError, setSizeError] = useState(false)
 
   const basePrice = 39.99
+  const photos = PHOTOS[selectedColor.id]
+
+  const dynamicEl = photos.map(src => ({ src, thumb: src }))
+
+  function openGallery(index: number) {
+    lgRef.current?.openGallery(index)
+  }
 
   function handleOrder() {
     if (!selectedSize) {
@@ -29,7 +64,6 @@ export default function MerchPage() {
       return
     }
     setSizeError(false)
-
     const cart = {
       color: selectedColor.id,
       colorLabel: selectedColor.label,
@@ -46,25 +80,57 @@ export default function MerchPage() {
       <Header />
       <CountdownBanner />
 
+      {/* Hidden LightGallery instance */}
+      <div className="hidden">
+        <LightGallery
+          onInit={detail => { lgRef.current = detail.instance }}
+          plugins={[lgThumbnail, lgZoom]}
+          dynamic
+          dynamicEl={dynamicEl}
+          speed={500}
+          download={false}
+        >
+          <span />
+        </LightGallery>
+      </div>
+
       <main className="min-h-screen bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
           <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
 
             {/* LEFT — Image area */}
             <div className="lg:w-1/2 flex flex-col gap-4">
-              <div className="w-full aspect-square bg-bombovo-gray rounded-3xl flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-300">
-                <span className="text-7xl">👕</span>
-                <p className="text-bombovo-dark font-semibold text-lg">Fotky čoskoro</p>
-                <p className="text-gray-500 text-sm">AI-generované fotky budú pridané</p>
-              </div>
+              {/* Main image */}
+              <button
+                onClick={() => openGallery(0)}
+                className="relative w-full aspect-square rounded-3xl overflow-hidden bg-bombovo-gray cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-blue"
+              >
+                <Image
+                  src={photos[0]}
+                  alt={`FEST Animator Hoodie 2026 – ${selectedColor.label}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+              </button>
+
+              {/* Thumbnails */}
               <div className="flex gap-3">
-                {[1, 2, 3].map(i => (
-                  <div
-                    key={i}
-                    className="flex-1 aspect-square bg-bombovo-gray rounded-2xl flex items-center justify-center border-2 border-dashed border-gray-300"
+                {photos.slice(1, 4).map((src, i) => (
+                  <button
+                    key={src}
+                    onClick={() => openGallery(i + 1)}
+                    className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-bombovo-gray cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-blue hover:opacity-90 transition-opacity"
                   >
-                    <span className="text-2xl">👕</span>
-                  </div>
+                    <Image
+                      src={src}
+                      alt={`FEST Animator Hoodie 2026 – ${selectedColor.label} ${i + 2}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 33vw, 16vw"
+                    />
+                  </button>
                 ))}
               </div>
             </div>
