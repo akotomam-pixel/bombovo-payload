@@ -50,7 +50,7 @@ function MerchPageInner() {
   const [qty, setQty] = useState(1)
   const [sizeError, setSizeError] = useState(false)
 
-  const basePrice = 39.99
+  const basePrice = 44.56
   const photos = PHOTOS[selectedColor.id]
 
   const dynamicEl = photos.map(src => ({ src, thumb: src }))
@@ -155,7 +155,7 @@ function MerchPageInner() {
 
               {/* Price */}
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-bombovo-dark">€39.99</span>
+                <span className="text-3xl font-bold text-bombovo-dark">€44.56</span>
               </div>
 
               {/* Color picker */}

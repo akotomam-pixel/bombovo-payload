@@ -60,7 +60,7 @@ export default function CheckoutPage() {
     if (parsed.delivery) setDelivery(parsed.delivery)
   }, [router])
 
-  const shippingPrice = delivery === 'shipping' ? 5.34 : 0
+  const shippingPrice = delivery === 'shipping' ? 2.24 : 0
   const subtotal = cart ? parseFloat((cart.basePrice * cart.qty).toFixed(2)) : 0
   const total = parseFloat((subtotal + shippingPrice).toFixed(2))
 
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                       <span className={`font-bold text-sm flex-shrink-0 ${delivery === 'shipping' ? 'text-bombovo-yellow' : 'text-bombovo-dark'}`}>
-                        €5.34
+                        €2.24
                       </span>
                     </div>
                   </button>

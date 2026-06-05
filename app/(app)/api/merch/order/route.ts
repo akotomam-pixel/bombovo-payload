@@ -160,7 +160,7 @@ function buildAdminEmail(p: {
       ${row('Farba', p.colorLabel)}
       ${row('Veľkosť', p.size)}
       ${row('Množstvo', String(p.qty))}
-      ${row('Doručenie', p.delivery === 'shipping' ? 'Doručenie na adresu (+€5.34)' : 'Vyzdvihnutie na tábore (zadarmo)')}
+      ${row('Doručenie', p.delivery === 'shipping' ? 'Doručenie na adresu (+€2.24)' : 'Vyzdvihnutie na tábore (zadarmo)')}
       ${addressRow}
       ${p.turnus ? row('Turnus', p.turnus) : ''}
       ${row('Celkom', `€${p.total.toFixed(2)}`)}
@@ -222,13 +222,13 @@ async function generateFaktura(p: {
   if (p.shippingPrice > 0) {
     tableBody.push([
       { text: 'Doprava Slovenská pošta' },
-      { text: '€4.34', alignment: 'right' },
-      { text: '€1.00', alignment: 'right' },
-      { text: '€5.34', alignment: 'right' },
+      { text: '€1.82', alignment: 'right' },
+      { text: '€0.42', alignment: 'right' },
+      { text: '€2.24', alignment: 'right' },
     ])
-    sumBezDph = parseFloat((sumBezDph + 4.34).toFixed(2))
-    sumDph = parseFloat((sumDph + 1.00).toFixed(2))
-    sumTotal = parseFloat((sumTotal + 5.34).toFixed(2))
+    sumBezDph = parseFloat((sumBezDph + 1.82).toFixed(2))
+    sumDph = parseFloat((sumDph + 0.42).toFixed(2))
+    sumTotal = parseFloat((sumTotal + 2.24).toFixed(2))
   }
 
   tableBody.push([
@@ -378,8 +378,8 @@ export async function POST(request: NextRequest) {
     const orderId = `FEST-${orderNum}`
     const vsNumber = orderNum
 
-    const basePrice = 39.99
-    const shippingPrice = delivery === 'shipping' ? 5.34 : 0
+    const basePrice = 44.56
+    const shippingPrice = delivery === 'shipping' ? 2.24 : 0
     const total = parseFloat((basePrice * Number(qty) + shippingPrice).toFixed(2))
 
     const issuedAt = new Date()
