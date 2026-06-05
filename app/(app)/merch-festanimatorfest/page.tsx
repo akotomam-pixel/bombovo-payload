@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -40,8 +40,10 @@ const PHOTOS: Record<string, string[]> = {
   ],
 }
 
-export default function MerchPage() {
+function MerchPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const soldOut = searchParams.get('soldout') === '1'
   const lgRef = useRef<LightGalleryType | null>(null)
 
   const [selectedColor, setSelectedColor] = useState(COLORS[0])
@@ -230,12 +232,18 @@ export default function MerchPage() {
               </div>
 
               {/* CTA */}
-              <button
-                onClick={handleOrder}
-                className="w-full py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:bg-yellow-400 active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-dark focus-visible:ring-offset-2"
-              >
-                Objednať →
-              </button>
+              {soldOut ? (
+                <div className="w-full py-4 bg-bombovo-dark text-white font-bold text-lg rounded-full text-center">
+                  Vypredané 😔
+                </div>
+              ) : (
+                <button
+                  onClick={handleOrder}
+                  className="w-full py-4 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-full hover:bg-yellow-400 active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bombovo-dark focus-visible:ring-offset-2"
+                >
+                  Objednať →
+                </button>
+              )}
 
             </div>
           </div>
@@ -243,5 +251,13 @@ export default function MerchPage() {
       </main>
       <Footer />
     </>
+  )
+}
+
+export default function MerchPage() {
+  return (
+    <Suspense>
+      <MerchPageInner />
+    </Suspense>
   )
 }

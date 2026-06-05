@@ -93,6 +93,10 @@ export default function CheckoutPage() {
       const data = await res.json()
 
       if (!res.ok || !data.success) {
+        if (data.soldOut) {
+          router.replace('/merch-festanimatorfest?soldout=1')
+          return
+        }
         setError(data.error ?? 'Nastala chyba. Skús to prosím znova.')
         return
       }

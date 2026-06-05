@@ -4,9 +4,12 @@ import { encode } from 'bysquare/pay'
 import { PaymentOptions } from 'bysquare/pay'
 import QRCode from 'qrcode'
 import path from 'path'
+import { Pool } from 'pg'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const IBAN = 'SK95 1100 0000 0029 4706 5113'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URI })
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -350,7 +353,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Chýba doručovacia adresa' }, { status: 400 })
     }
 
-    const orderNum = Date.now().toString().slice(-6)
+    // ── Atomic stock check + increment ──────────────────────────────────────
+    const client = await pool.connect()
+    let orderNum: string
+    try {
+      await client.query('BEGIN')
+      const stockRes = await client.query(
+        'SELECT orders_count, max_orders FROM merch_stock WHERE id = 1 FOR UPDATE'
+      )
+      const { orders_count, max_orders } = stockRes.rows[0]
+      if (orders_count >= max_orders) {
+        await client.query('ROLLBACK')
+        return NextResponse.json({ error: 'Všetky mikiny sú už vypredané. Ďakujeme za záujem!', soldOut: true }, { status: 410 })
+      }
+      await client.query('UPDATE merch_stock SET orders_count = orders_count + 1 WHERE id = 1')
+      await client.query('COMMIT')
+      orderNum = Date.now().toString().slice(-6)
+    } catch (dbErr) {
+      await client.query('ROLLBACK').catch(() => {})
+      throw dbErr
+    } finally {
+      client.release()
+    }
     const orderId = `FEST-${orderNum}`
     const vsNumber = orderNum
 
