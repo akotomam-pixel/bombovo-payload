@@ -59,6 +59,27 @@ async function run() {
     `)
     console.log('✓ skoly_v_prirode_reviews.photo_label')
 
+    // Migration 20260607_000000 — create ad_events table for click/view tracking
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS "ad_events" (
+        "id"           serial PRIMARY KEY,
+        "type"         varchar NOT NULL,
+        "advertorial"  varchar,
+        "destination"  varchar,
+        "utm_source"   varchar,
+        "utm_medium"   varchar,
+        "utm_campaign" varchar,
+        "utm_content"  varchar,
+        "fbclid"       varchar,
+        "ip"           varchar,
+        "user_agent"   text,
+        "referrer"     varchar,
+        "updated_at"   timestamp(3) with time zone NOT NULL DEFAULT now(),
+        "created_at"   timestamp(3) with time zone NOT NULL DEFAULT now()
+      );
+    `)
+    console.log('✓ ad_events table created')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
