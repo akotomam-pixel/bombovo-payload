@@ -598,11 +598,11 @@
         }
         @media (max-width: 620px) {
             .article-headline { font-size: 28px; }
-            .main-col h2 { font-size: 18px; }
+            .main-col h2 { font-size: 22px; }
             .site-header img.logo { height: 72px; }
-            body { font-size: 16px; }
+            body { font-size: 19px; }
             .offer-box { padding: 22px 18px; }
-            .cta-btn { padding: 14px 24px; font-size: 15px; }
+            .cta-btn { padding: 14px 24px; font-size: 16px; }
         }
     </style>
 </head>
@@ -621,7 +621,7 @@
 
     <!-- BREADCRUMB -->
     <div class="breadcrumb">
-        <a href="#">Správy</a> &rsaquo; <a href="#">Rodina</a> &rsaquo; <span>CK Bombovo</span>
+        <a href="#">Správy</a> &rsaquo; <a href="#">Rodina</a> &rsaquo; <span>Tábory</span>
     </div>
 
     <!-- ═══ CONTENT GRID ═══ -->
@@ -1164,6 +1164,34 @@
         }
     }, { passive: true });
 })();
+</script>
+
+<!-- ══ UTM + fbclid PASSTHROUGH ══ -->
+<script>
+(function() {
+    var params = window.location.search;
+    if (!params) return;
+    document.querySelectorAll('a[href*="bombovo.sk"]').forEach(function(a) {
+        var url = new URL(a.href);
+        new URLSearchParams(params).forEach(function(value, key) {
+            url.searchParams.set(key, value);
+        });
+        a.href = url.toString();
+    });
+})();
+</script>
+
+<!-- ══ POSTHOG ══ -->
+<script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString()+" (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId setPersonPropertiesForFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_rYQLAwQkFqPLRgBY64LopKaxHQeiZ6uBFNcN69NhoRq7', {
+      api_host: 'https://eu.i.posthog.com',
+    });
+    document.querySelectorAll('a[href*="bombovo.sk"]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        posthog.capture('advertorial_clicked', { advertorial: 'advertorial-3' });
+      });
+    });
 </script>
 
 </body>
