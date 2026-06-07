@@ -7,8 +7,8 @@ import { Pool } from 'pg'
 
 const connectionString = process.env.DATABASE_URI
 if (!connectionString) {
-  console.error('Missing DATABASE_URI env variable')
-  process.exit(1)
+  console.warn('DATABASE_URI not set — skipping SQL migrations (prodMigrations will handle this at runtime)')
+  process.exit(0)
 }
 
 const pool = new Pool({ connectionString })

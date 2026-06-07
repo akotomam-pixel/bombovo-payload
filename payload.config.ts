@@ -4,7 +4,10 @@ import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
-import * as migrations from './migrations'
+import * as m1 from './migrations/20260402_000000_add_strediska_map_coords'
+import * as m2 from './migrations/20260516_000000_add_teacher_reviews_questions'
+import * as m3 from './migrations/20260526_000000_add_strediska_vypredane'
+import * as m4 from './migrations/20260607_000000_create_ad_events'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -41,7 +44,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
-    prodMigrations: migrations,
+    prodMigrations: [
+      { name: '20260402_000000_add_strediska_map_coords', up: m1.up, down: m1.down },
+      { name: '20260516_000000_add_teacher_reviews_questions', up: m2.up, down: m2.down },
+      { name: '20260526_000000_add_strediska_vypredane', up: m3.up, down: m3.down },
+      { name: '20260607_000000_create_ad_events', up: m4.up, down: m4.down },
+    ],
   }),
   plugins: [
     uploadthingStorage({
