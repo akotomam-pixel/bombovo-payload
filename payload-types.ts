@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    camps: Camp;
+    strediska: Strediska;
+    'giveaway-entries': GiveawayEntry;
+    'teacher-reviews': TeacherReview;
+    'ad-events': AdEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,17 +83,36 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    camps: CampsSelect<false> | CampsSelect<true>;
+    strediska: StrediskaSelect<false> | StrediskaSelect<true>;
+    'giveaway-entries': GiveawayEntriesSelect<false> | GiveawayEntriesSelect<true>;
+    'teacher-reviews': TeacherReviewsSelect<false> | TeacherReviewsSelect<true>;
+    'ad-events': AdEventsSelect<false> | AdEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    homepage: Homepage;
+    'letne-tabory-hlavna': LetneTaboryHlavna;
+    'skoly-v-prirode': SkolyVPrirode;
+    'giveaway-popup': GiveawayPopup;
+    footer: Footer;
+    'nasa-misia': NasaMisia;
+  };
+  globalsSelect: {
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'letne-tabory-hlavna': LetneTaboryHlavnaSelect<false> | LetneTaboryHlavnaSelect<true>;
+    'skoly-v-prirode': SkolyVPrirodeSelect<false> | SkolyVPrirodeSelect<true>;
+    'giveaway-popup': GiveawayPopupSelect<false> | GiveawayPopupSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+    'nasa-misia': NasaMisiaSelect<false> | NasaMisiaSelect<true>;
+  };
   locale: null;
   user: User;
   jobs: {
@@ -119,7 +143,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -144,8 +168,9 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
-  alt: string;
+  id: number;
+  alt?: string | null;
+  _key?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -157,13 +182,474 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      _key?: string | null;
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      _key?: string | null;
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    hero?: {
+      _key?: string | null;
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "camps".
+ */
+export interface Camp {
+  id: number;
+  name: string;
+  /**
+   * URL slug, e.g. "olymp-kemp". Must be unique.
+   */
+  slug: string;
+  /**
+   * Sort order on the Letné tábory listing page (1 = first).
+   */
+  order?: number | null;
+  /**
+   * Thumbnail shown on the camp card on the Letné tábory listing page.
+   */
+  cardImage?: (number | null) | Media;
+  /**
+   * Select up to 2 types — these appear as icons on the camp card. Values must match exactly (with diacritics).
+   */
+  campTypes?:
+    | (
+        | 'Akčný'
+        | 'Dobrodružný'
+        | 'Fantasy'
+        | 'Náučný'
+        | 'Oddychový'
+        | 'Športový'
+        | 'Tínedžerský'
+        | 'Umelecký'
+        | 'Unikátny'
+      )[]
+    | null;
+  /**
+   * Main headline, e.g. "Tábor gréckych hrdinov –"
+   */
+  headline?: string | null;
+  /**
+   * The red underlined part, e.g. "Olymp kemp"
+   */
+  headlineHighlight?: string | null;
+  /**
+   * Short bullet points shown under the headline
+   */
+  bulletPoints?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "Horský hotel Lomy"
+   */
+  location?: string | null;
+  /**
+   * e.g. "Pre deti vo veku 8-14 rokov"
+   */
+  age?: string | null;
+  /**
+   * Display price, e.g. "359 €"
+   */
+  price?: string | null;
+  /**
+   * Photos for the hero section gallery
+   */
+  heroGallery?:
+    | {
+        photo: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "O čom je Tábor Olymp Kemp?"
+   */
+  section2_headline?: string | null;
+  /**
+   * Paragraphs of the camp description
+   */
+  section2_description?:
+    | {
+        paragraph: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Rating bars — each value 0 to 10
+   */
+  ratings?: {
+    kreativita?: number | null;
+    mystika?: number | null;
+    sebarozvoj?: number | null;
+    pohyb?: number | null;
+    kritickeMyslenie?: number | null;
+  };
+  /**
+   * Cloudflare R2 URL for the camp video (e.g. https://pub-xxx.r2.dev/video.mp4). If set, replaces the text in section 3 with a video player.
+   */
+  videoUrl?: string | null;
+  /**
+   * Cloudflare R2 URL for the video poster/thumbnail image.
+   */
+  videoThumbnailUrl?: string | null;
+  /**
+   * e.g. "Ako Olymp Camp prežíva dieťa?"
+   */
+  section3_headline?: string | null;
+  /**
+   * Paragraphs below the section 3 headline
+   */
+  section3_text?:
+    | {
+        paragraph: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Parent reviews shown in the carousel
+   */
+  reviews?:
+    | {
+        text: string;
+        author: string;
+        id?: string | null;
+      }[]
+    | null;
+  vTomtoTaboreZazites?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  vCene?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  lokalita?: string | null;
+  doprava?: string | null;
+  ubytovanie?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  zaPriplatok?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  hasStredisko?: boolean | null;
+  /**
+   * e.g. "Horský hotel Lomy"
+   */
+  strediskoName?: string | null;
+  strediskoDescription?: string | null;
+  strediskoGallery?:
+    | {
+        photo: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  mapLat?: number | null;
+  mapLng?: number | null;
+  /**
+   * Add, remove or edit dates freely
+   */
+  dates?:
+    | {
+        /**
+         * e.g. "03.08.2026"
+         */
+        start: string;
+        /**
+         * e.g. "09.08.2026"
+         */
+        end: string;
+        days: number;
+        /**
+         * e.g. "359 €"
+         */
+        originalPrice?: string | null;
+        discountedPrice?: string | null;
+        /**
+         * Legacy manual ID — replaced by Profis Term ID below
+         */
+        registrationId?: string | null;
+        /**
+         * The id_Termin from ProfisXML for this date. Use the lookup script to find it.
+         */
+        profisTerminId?: number | null;
+        /**
+         * The id_ZajezdHotel from ProfisXML for this camp. Set automatically by the populate script.
+         */
+        id_ZajezdHotel?: number | null;
+        /**
+         * Zaškrtnite ak je termín vypredaný — tlačidlo sa zmení na "Vypredané" a prihlásenie bude zablokované.
+         */
+        vypredane?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "strediska".
+ */
+export interface Strediska {
+  id: number;
+  name: string;
+  /**
+   * URL slug, e.g. "stred-europy-krahule". Must be unique.
+   */
+  slug: string;
+  /**
+   * e.g. "od 165.00 €"
+   */
+  price?: string | null;
+  /**
+   * Zaškrtnutím označíte stredisko ako vypredané – na stránke sa zobrazí červená páska "VYPREDANÉ" a karta bude sivá a neklikateľná.
+   */
+  vypredane?: boolean | null;
+  /**
+   * Thumbnail shown on the Školy v Prírode listing page.
+   */
+  cardImage?: (number | null) | Media;
+  /**
+   * Photos for the stredisko detail page gallery.
+   */
+  heroGallery?:
+    | {
+        photo: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Short highlights shown with icons on the detail page, e.g. "kapacita 220 lôžok".
+   */
+  bulletPoints?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "V čom je stredisko tak výnimočné?"
+   */
+  section2Headline?: string | null;
+  section2Body?: string | null;
+  section2Photo?: (number | null) | Media;
+  /**
+   * Súradnica pre Google mapu a vzdialenostnú kalkulačku. Formát: desatinné číslo, napr. 48.7133. Ak necháte prázdne, použijú sa predvolené súradnice z kódu.
+   */
+  mapLat?: number | null;
+  /**
+   * Druhá súradnica k šírke. Spolu tvoria polohu strediska na mape (skopírujte ich z Google Maps).
+   */
+  mapLng?: number | null;
+  ubytovanie?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  vybavenieStrediska?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  zaujimavostiVOkoli?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  zlava?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  doplnkoveSluzby?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  vZakladnejCene?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  vCeneZahrnute?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  vCeneAnimacnehoProgramu?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  bombovyBalicek?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add, remove or edit dates freely.
+   */
+  dates?:
+    | {
+        /**
+         * e.g. "13.04.2026"
+         */
+        startDate: string;
+        /**
+         * e.g. "17.04.2026"
+         */
+        endDate: string;
+        /**
+         * Duration (usually 5)
+         */
+        days?: number | null;
+        /**
+         * e.g. "185.00 €"
+         */
+        price?: string | null;
+        capacity?: number | null;
+        /**
+         * Uncheck to show VYPREDANÉ on this date.
+         */
+        available?: boolean | null;
+        /**
+         * id_Termin from ProfisXML. Use the lookup script to find it.
+         */
+        profisTerminId?: number | null;
+        /**
+         * id_ZajezdHotel from ProfisXML for this stredisko.
+         */
+        id_ZajezdHotel?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "giveaway-entries".
+ */
+export interface GiveawayEntry {
+  id: number;
+  email: string;
+  name: string;
+  selectedCamp?: string | null;
+  source?: ('popup' | 'landing-page' | 'homepage' | 'other') | null;
+  /**
+   * Automaticky sa aktualizuje po úspešnom odoslaní do Ecomail.
+   */
+  syncedToEcomail?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teacher-reviews".
+ */
+export interface TeacherReview {
+  id: number;
+  teacherName: string;
+  schoolName: string;
+  stars: number;
+  reviewText?: string | null;
+  /**
+   * Ako ste boli spokojní s vybavením, čistotou a ubytovaním strediska?
+   */
+  q1?: string | null;
+  /**
+   * Ako ste boli spokojní s naším animačným tímom a programom?
+   */
+  q2?: string | null;
+  /**
+   * Čo sa vám na škole v prírode najviac páčilo?
+   */
+  q3?: string | null;
+  /**
+   * Chceli by ste niečo dodať?
+   */
+  q4?: string | null;
+  stredisko?: string | null;
+  kidCount?: number | null;
+  status: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-events".
+ */
+export interface AdEvent {
+  id: number;
+  type: 'view' | 'click';
+  /**
+   * Which advertorial page sent this event, e.g. advertorial-3
+   */
+  advertorial?: string | null;
+  /**
+   * Where the user was redirected (clicks only), e.g. /letne-tabory
+   */
+  destination?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  utmContent?: string | null;
+  fbclid?: string | null;
+  ip?: string | null;
+  userAgent?: string | null;
+  referrer?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -180,20 +666,40 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'camps';
+        value: number | Camp;
+      } | null)
+    | ({
+        relationTo: 'strediska';
+        value: number | Strediska;
+      } | null)
+    | ({
+        relationTo: 'giveaway-entries';
+        value: number | GiveawayEntry;
+      } | null)
+    | ({
+        relationTo: 'teacher-reviews';
+        value: number | TeacherReview;
+      } | null)
+    | ({
+        relationTo: 'ad-events';
+        value: number | AdEvent;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -203,10 +709,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -226,7 +732,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -260,6 +766,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  _key?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -271,6 +778,304 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              _key?: T;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              _key?: T;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        hero?:
+          | T
+          | {
+              _key?: T;
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "camps_select".
+ */
+export interface CampsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  order?: T;
+  cardImage?: T;
+  campTypes?: T;
+  headline?: T;
+  headlineHighlight?: T;
+  bulletPoints?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  location?: T;
+  age?: T;
+  price?: T;
+  heroGallery?:
+    | T
+    | {
+        photo?: T;
+        id?: T;
+      };
+  section2_headline?: T;
+  section2_description?:
+    | T
+    | {
+        paragraph?: T;
+        id?: T;
+      };
+  ratings?:
+    | T
+    | {
+        kreativita?: T;
+        mystika?: T;
+        sebarozvoj?: T;
+        pohyb?: T;
+        kritickeMyslenie?: T;
+      };
+  videoUrl?: T;
+  videoThumbnailUrl?: T;
+  section3_headline?: T;
+  section3_text?:
+    | T
+    | {
+        paragraph?: T;
+        id?: T;
+      };
+  reviews?:
+    | T
+    | {
+        text?: T;
+        author?: T;
+        id?: T;
+      };
+  vTomtoTaboreZazites?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  vCene?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  lokalita?: T;
+  doprava?: T;
+  ubytovanie?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  zaPriplatok?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  hasStredisko?: T;
+  strediskoName?: T;
+  strediskoDescription?: T;
+  strediskoGallery?:
+    | T
+    | {
+        photo?: T;
+        id?: T;
+      };
+  mapLat?: T;
+  mapLng?: T;
+  dates?:
+    | T
+    | {
+        start?: T;
+        end?: T;
+        days?: T;
+        originalPrice?: T;
+        discountedPrice?: T;
+        registrationId?: T;
+        profisTerminId?: T;
+        id_ZajezdHotel?: T;
+        vypredane?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "strediska_select".
+ */
+export interface StrediskaSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  price?: T;
+  vypredane?: T;
+  cardImage?: T;
+  heroGallery?:
+    | T
+    | {
+        photo?: T;
+        id?: T;
+      };
+  bulletPoints?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  section2Headline?: T;
+  section2Body?: T;
+  section2Photo?: T;
+  mapLat?: T;
+  mapLng?: T;
+  ubytovanie?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  vybavenieStrediska?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  zaujimavostiVOkoli?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  zlava?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  doplnkoveSluzby?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  vZakladnejCene?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  vCeneZahrnute?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  vCeneAnimacnehoProgramu?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  bombovyBalicek?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  dates?:
+    | T
+    | {
+        startDate?: T;
+        endDate?: T;
+        days?: T;
+        price?: T;
+        capacity?: T;
+        available?: T;
+        profisTerminId?: T;
+        id_ZajezdHotel?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "giveaway-entries_select".
+ */
+export interface GiveawayEntriesSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  selectedCamp?: T;
+  source?: T;
+  syncedToEcomail?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teacher-reviews_select".
+ */
+export interface TeacherReviewsSelect<T extends boolean = true> {
+  teacherName?: T;
+  schoolName?: T;
+  stars?: T;
+  reviewText?: T;
+  q1?: T;
+  q2?: T;
+  q3?: T;
+  q4?: T;
+  stredisko?: T;
+  kidCount?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-events_select".
+ */
+export interface AdEventsSelect<T extends boolean = true> {
+  type?: T;
+  advertorial?: T;
+  destination?: T;
+  utmSource?: T;
+  utmMedium?: T;
+  utmCampaign?: T;
+  utmContent?: T;
+  fbclid?: T;
+  ip?: T;
+  userAgent?: T;
+  referrer?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -311,6 +1116,482 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: number;
+  /**
+   * Video hrá ako pozadie — autoplay, loop, muted. (momentálne hardcoded)
+   */
+  heroVideo?: (number | null) | Media;
+  subHeadline?: string | null;
+  headline?: string | null;
+  stats?:
+    | {
+        icon?: (number | null) | Media;
+        number?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  reviews?:
+    | {
+        photo?: (number | null) | Media;
+        badgeText?: string | null;
+        reviewText?: string | null;
+        reviewAuthor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  reviewDisplaySeconds?: number | null;
+  featuredCampsHeadline?: string | null;
+  /**
+   * Vyberte max. 3 tábory. Fotka, názov a popis sa načítajú automaticky z tábora.
+   */
+  featuredCamps?:
+    | {
+        camp?: (number | null) | Camp;
+        id?: string | null;
+      }[]
+    | null;
+  reasonsHeadline?: string | null;
+  reasonsIntroHeadline?: string | null;
+  reasonsIntroText?: string | null;
+  reasons?:
+    | {
+        photo?: (number | null) | Media;
+        headline?: string | null;
+        text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  skolyHeadline?: string | null;
+  /**
+   * Vyberte strediská, ktoré sa zobrazia na domovskej stránke. Fotka, názov a cena sa načítajú automaticky zo strediska.
+   */
+  featuredSkoly?:
+    | {
+        skola?: (number | null) | Strediska;
+        id?: string | null;
+      }[]
+    | null;
+  giveawayHeadline?: string | null;
+  giveawaySubHeadline?: string | null;
+  /**
+   * Vyberte tábory, ktoré sa zobrazia v dropdownu súťažného formulára.
+   */
+  giveawayCamps?:
+    | {
+        camp?: (number | null) | Camp;
+        isVisible?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  faqHeadline?: string | null;
+  faqItems?:
+    | {
+        question?: string | null;
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "letne-tabory-hlavna".
+ */
+export interface LetneTaboryHlavna {
+  id: number;
+  /**
+   * Hlavný nadpis sekcie — zobrazí sa ako H1 na stránke letné tábory.
+   */
+  headline?: string | null;
+  /**
+   * Paragraf textu zobrazený pod H1.
+   */
+  body?: string | null;
+  photo1?: (number | null) | Media;
+  photo2?: (number | null) | Media;
+  photo3?: (number | null) | Media;
+  photo4?: (number | null) | Media;
+  photo5?: (number | null) | Media;
+  photo6?: (number | null) | Media;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skoly-v-prirode".
+ */
+export interface SkolyVPrirode {
+  id: number;
+  /**
+   * e.g. "Školy v prírode"
+   */
+  headline?: string | null;
+  /**
+   * e.g. "Ktoré učiteľky milujú"
+   */
+  headlineHighlight?: string | null;
+  /**
+   * Main paragraph shown beside the video
+   */
+  bodyText?: string | null;
+  /**
+   * School review quotes shown in the carousel
+   */
+  reviews?:
+    | {
+        content: string;
+        /**
+         * e.g. "ZŠ Odborárska, Bratislava"
+         */
+        author: string;
+        photo?: (number | null) | Media;
+        /**
+         * Text shown below the photo, e.g. "2026 Školy v prírode"
+         */
+        photoLabel?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "Overené strediská, ktoré spĺňajú všetky hygienické normy"
+   */
+  section3Headline?: string | null;
+  section3Body?: string | null;
+  section3Photo?: (number | null) | Media;
+  /**
+   * e.g. "Profesionálny a zaškolený animačný tím"
+   */
+  section3Block2Headline?: string | null;
+  section3Block2Body?: string | null;
+  section3Block2Photo?: (number | null) | Media;
+  /**
+   * e.g. "Unikátny program, ktorý nikde inde nenájdete"
+   */
+  section3Block3Headline?: string | null;
+  section3Block3Body?: string | null;
+  section3Block3Photo?: (number | null) | Media;
+  strediskaHeadline?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "giveaway-popup".
+ */
+export interface GiveawayPopup {
+  id: number;
+  /**
+   * Vypni pre skrytie popupu na celom webe.
+   */
+  isEnabled?: boolean | null;
+  delaySeconds?: number | null;
+  photo?: (number | null) | Media;
+  step0Headline?: string | null;
+  step0YesLabel?: string | null;
+  step0NoLabel?: string | null;
+  step1Headline?: string | null;
+  step1NamePlaceholder?: string | null;
+  step1CampDefaultLabel?: string | null;
+  step1NextLabel?: string | null;
+  step2Headline?: string | null;
+  step2EmailPlaceholder?: string | null;
+  step2SubmitLabel?: string | null;
+  step3SuccessHeadline?: string | null;
+  step3SuccessBody?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  section1Title?: string | null;
+  section1Docs?:
+    | {
+        name: string;
+        file?: (number | null) | Media;
+        /**
+         * Použite toto pole pre lokálne PDF súbory v /public/documents/
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  section2Title?: string | null;
+  section2Docs?:
+    | {
+        name: string;
+        file?: (number | null) | Media;
+        /**
+         * Použite toto pole pre lokálne PDF súbory v /public/documents/
+         */
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "nasa-misia".
+ */
+export interface NasaMisia {
+  id: number;
+  missionHeadline?: string | null;
+  missionText1?: string | null;
+  missionText2?: string | null;
+  missionImage?: (number | null) | Media;
+  testimonialQuote?: string | null;
+  testimonialAuthor?: string | null;
+  summerHeadline?: string | null;
+  summerText1?: string | null;
+  summerText2?: string | null;
+  summerImage?: (number | null) | Media;
+  kvalitaHeadline?: string | null;
+  kvalitaIntroText?: string | null;
+  /**
+   * Každý bod sa zobrazí s číslom a farebným krúžkom. Prvý = modrý, druhý = červený, tretí = žltý, a potom sa farby opakujú.
+   */
+  kvalitaPoints?:
+    | {
+        pointHeadline?: string | null;
+        pointText?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  teamHeadline?: string | null;
+  /**
+   * Pridaj, uprav alebo odstráň animátorov. Na jednom riadku sa zobrazí 5. Poradie môžeš meniť potiahnutím.
+   */
+  teamMembers?:
+    | {
+        name?: string | null;
+        description?: string | null;
+        photo?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  heroVideo?: T;
+  subHeadline?: T;
+  headline?: T;
+  stats?:
+    | T
+    | {
+        icon?: T;
+        number?: T;
+        label?: T;
+        id?: T;
+      };
+  reviews?:
+    | T
+    | {
+        photo?: T;
+        badgeText?: T;
+        reviewText?: T;
+        reviewAuthor?: T;
+        id?: T;
+      };
+  reviewDisplaySeconds?: T;
+  featuredCampsHeadline?: T;
+  featuredCamps?:
+    | T
+    | {
+        camp?: T;
+        id?: T;
+      };
+  reasonsHeadline?: T;
+  reasonsIntroHeadline?: T;
+  reasonsIntroText?: T;
+  reasons?:
+    | T
+    | {
+        photo?: T;
+        headline?: T;
+        text?: T;
+        id?: T;
+      };
+  skolyHeadline?: T;
+  featuredSkoly?:
+    | T
+    | {
+        skola?: T;
+        id?: T;
+      };
+  giveawayHeadline?: T;
+  giveawaySubHeadline?: T;
+  giveawayCamps?:
+    | T
+    | {
+        camp?: T;
+        isVisible?: T;
+        id?: T;
+      };
+  faqHeadline?: T;
+  faqItems?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "letne-tabory-hlavna_select".
+ */
+export interface LetneTaboryHlavnaSelect<T extends boolean = true> {
+  headline?: T;
+  body?: T;
+  photo1?: T;
+  photo2?: T;
+  photo3?: T;
+  photo4?: T;
+  photo5?: T;
+  photo6?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "skoly-v-prirode_select".
+ */
+export interface SkolyVPrirodeSelect<T extends boolean = true> {
+  headline?: T;
+  headlineHighlight?: T;
+  bodyText?: T;
+  reviews?:
+    | T
+    | {
+        content?: T;
+        author?: T;
+        photo?: T;
+        photoLabel?: T;
+        id?: T;
+      };
+  section3Headline?: T;
+  section3Body?: T;
+  section3Photo?: T;
+  section3Block2Headline?: T;
+  section3Block2Body?: T;
+  section3Block2Photo?: T;
+  section3Block3Headline?: T;
+  section3Block3Body?: T;
+  section3Block3Photo?: T;
+  strediskaHeadline?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "giveaway-popup_select".
+ */
+export interface GiveawayPopupSelect<T extends boolean = true> {
+  isEnabled?: T;
+  delaySeconds?: T;
+  photo?: T;
+  step0Headline?: T;
+  step0YesLabel?: T;
+  step0NoLabel?: T;
+  step1Headline?: T;
+  step1NamePlaceholder?: T;
+  step1CampDefaultLabel?: T;
+  step1NextLabel?: T;
+  step2Headline?: T;
+  step2EmailPlaceholder?: T;
+  step2SubmitLabel?: T;
+  step3SuccessHeadline?: T;
+  step3SuccessBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  section1Title?: T;
+  section1Docs?:
+    | T
+    | {
+        name?: T;
+        file?: T;
+        url?: T;
+        id?: T;
+      };
+  section2Title?: T;
+  section2Docs?:
+    | T
+    | {
+        name?: T;
+        file?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "nasa-misia_select".
+ */
+export interface NasaMisiaSelect<T extends boolean = true> {
+  missionHeadline?: T;
+  missionText1?: T;
+  missionText2?: T;
+  missionImage?: T;
+  testimonialQuote?: T;
+  testimonialAuthor?: T;
+  summerHeadline?: T;
+  summerText1?: T;
+  summerText2?: T;
+  summerImage?: T;
+  kvalitaHeadline?: T;
+  kvalitaIntroText?: T;
+  kvalitaPoints?:
+    | T
+    | {
+        pointHeadline?: T;
+        pointText?: T;
+        id?: T;
+      };
+  teamHeadline?: T;
+  teamMembers?:
+    | T
+    | {
+        name?: T;
+        description?: T;
+        photo?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
