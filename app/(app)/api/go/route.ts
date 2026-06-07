@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPayloadClient } from '@/lib/payload'
+import { Pool } from 'pg'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://bombovo.sk'
 
@@ -13,8 +13,14 @@ function isBot(userAgent: string): boolean {
   return BOT_PATTERNS.some(p => ua.includes(p))
 }
 
+let pool: Pool | null = null
+function getPool(): Pool {
+  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URI })
+  return pool
+}
+
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = new URL(req.url)
+  const { searchParams } = new URL(req.url)
 
   const to = searchParams.get('to') ?? ''
   const source = searchParams.get('source') ?? 'advertorial-3'
@@ -40,7 +46,6 @@ export async function GET(req: NextRequest) {
   if (fbclid) destUrl.searchParams.set('fbclid', fbclid)
 
   const finalUrl = destUrl.toString()
-
   const userAgent = req.headers.get('user-agent') ?? ''
 
   // Skip DB write for bots — just redirect
@@ -52,25 +57,11 @@ export async function GET(req: NextRequest) {
   const referrer = req.headers.get('referer') ?? ''
 
   // Non-blocking DB write with 2500ms timeout
-  const dbWrite = (async () => {
-    const payload = await getPayloadClient()
-    await payload.create({
-      collection: 'ad-events',
-      data: {
-        type: 'click',
-        advertorial: source,
-        destination,
-        utmSource: utmSource || undefined,
-        utmMedium: utmMedium || undefined,
-        utmCampaign: utmCampaign || undefined,
-        utmContent: utmContent || undefined,
-        fbclid: fbclid || undefined,
-        ip,
-        userAgent,
-        referrer,
-      },
-    })
-  })()
+  const dbWrite = getPool().query(
+    `INSERT INTO ad_events (type, advertorial, destination, utm_source, utm_medium, utm_campaign, utm_content, fbclid, ip, user_agent, referrer, updated_at, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,now(),now())`,
+    ['click', source, destination, utmSource||null, utmMedium||null, utmCampaign||null, utmContent||null, fbclid||null, ip||null, userAgent||null, referrer||null]
+  )
 
   const timeout = new Promise<void>((_, reject) =>
     setTimeout(() => reject(new Error('DB write timeout')), 2500),
