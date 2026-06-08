@@ -213,7 +213,7 @@ export default function RegistrationClient({
     req('streetNumber', formData.streetNumber);
     req('city', formData.city);
     req('zip', formData.zip);
-    if (!errors['zip'] && formData.zip && !/^\d{5}$/.test(formData.zip.replace(/\s/g, ''))) {
+    if (!errors['zip'] && formData.zip && formData.zip.replace(/\s/g, '').length < 3) {
       errors['zip'] = 'Prosím zadajte správne PSČ.';
     }
     req('phone', formData.phone);
@@ -228,7 +228,7 @@ export default function RegistrationClient({
     req('childStreetNumber', formData.childStreetNumber);
     req('childCity', formData.childCity);
     req('childZip', formData.childZip);
-    if (!errors['childZip'] && formData.childZip && !/^\d{5}$/.test(formData.childZip.replace(/\s/g, ''))) {
+    if (!errors['childZip'] && formData.childZip && formData.childZip.replace(/\s/g, '').length < 3) {
       errors['childZip'] = 'Prosím zadajte správne PSČ.';
     }
     if (formData.hasIntolerance === 'ano') req('intoleranceDetails', formData.intoleranceDetails);
@@ -242,7 +242,7 @@ export default function RegistrationClient({
       req('childStreetNumber2', formData.childStreetNumber2);
       req('childCity2', formData.childCity2);
       req('childZip2', formData.childZip2);
-      if (!errors['childZip2'] && formData.childZip2 && !/^\d{5}$/.test(formData.childZip2.replace(/\s/g, ''))) {
+      if (!errors['childZip2'] && formData.childZip2 && formData.childZip2.replace(/\s/g, '').length < 3) {
         errors['childZip2'] = 'Prosím zadajte správne PSČ.';
       }
       if (formData.hasIntolerance2 === 'ano') req('intoleranceDetails2', formData.intoleranceDetails2);

@@ -102,20 +102,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // If ObecList returned data but a PSC wasn't found, block the order and tell the frontend
-  // which field is wrong. If ObecList failed entirely (network/fault), we don't blame the user.
-  if (obecListReturnedData) {
-    const parentPsc = input.psc?.replace(/\s/g, '')
-    if (parentPsc && !pscToObec[parentPsc]) {
-      return NextResponse.json({ error: 'PSC_NOT_FOUND:parent' }, { status: 400 })
-    }
-    for (let i = 0; i < input.cestujici!.length; i++) {
-      const childPsc = input.cestujici![i].psc?.replace(/\s/g, '')
-      if (childPsc && !pscToObec[childPsc]) {
-        return NextResponse.json({ error: `PSC_NOT_FOUND:child${i}` }, { status: 400 })
-      }
-    }
-  }
+  // PSČ not found in ObecList means a foreign or non-standard address — allow the order through
+  // without a Profis address (AdresaDomaciInput requires id_Obec which only exists for SK municipalities).
+  // buildAdresaXml returns '' for unknown PSČ and the SOAP call sends i:nil="true" in that case.
 
   // Build address XML for a given street+psc combination
   const buildAdresaXml = (ulice: string | undefined, psc: string | undefined): string => {
@@ -231,7 +220,7 @@ export async function POST(req: NextRequest) {
       </ns:Context>
       <ns:Data i:type="ns:ObjednavkaTerminInput">
         <ns:Objednatel i:type="ns:KlientDataInput">
-          ${adresaXml}
+          ${adresaXml || '<ns:Adresa i:nil="true"/>'}
           <ns:Email>${ex(input.email!)}</ns:Email>
           <ns:Jmeno>${ex(input.jmeno!)}</ns:Jmeno>
           <ns:Prijmeni>${ex(input.prijmeni!)}</ns:Prijmeni>
