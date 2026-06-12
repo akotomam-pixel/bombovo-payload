@@ -78,6 +78,57 @@ function MerchPageInner() {
 
   return (
     <>
+      {/* Sale ended overlay — blocks all interaction */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.55)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+        }}
+      >
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.97)',
+            borderRadius: '24px',
+            padding: '48px 40px',
+            maxWidth: '480px',
+            width: '100%',
+            textAlign: 'center',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.15)',
+          }}
+        >
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛍️</div>
+          <h2
+            style={{
+              fontSize: '22px',
+              fontWeight: 800,
+              color: '#1a1a1a',
+              lineHeight: 1.3,
+              marginBottom: '12px',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Ďakujeme za záujem!
+          </h2>
+          <p
+            style={{
+              fontSize: '17px',
+              color: '#555',
+              lineHeight: 1.6,
+            }}
+          >
+            Predaj je ukončený.
+          </p>
+        </div>
+      </div>
+
       <Header />
       <CountdownBanner />
 
