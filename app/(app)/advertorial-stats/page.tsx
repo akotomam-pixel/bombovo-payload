@@ -76,9 +76,9 @@ function AdvertorialBlock({
 }) {
   const funnelWidth      = Math.max(4, Math.min(ctr, 100))
   const funnelWidthTotal = Math.max(4, Math.min(ctrTotal, 100))
-  const maxDaily = Math.max(...daily.map(d => parseInt(d.views)), 1)
-  const maxRef   = Math.max(...referrers.map(r => parseInt(r.cnt)), 1)
-  const maxUtm   = Math.max(...utmSources.map(u => parseInt(u.cnt)), 1)
+  const maxDaily = daily.length > 0 ? Math.max(...daily.map(d => parseInt(d.views)), 1) : 1
+  const maxRef   = referrers.length > 0 ? Math.max(...referrers.map(r => parseInt(r.cnt)), 1) : 1
+  const maxUtm   = utmSources.length > 0 ? Math.max(...utmSources.map(u => parseInt(u.cnt)), 1) : 1
 
   return (
     <section className="mb-16">
