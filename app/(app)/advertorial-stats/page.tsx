@@ -10,14 +10,10 @@ async function fetchStatsFor(pool: Pool, advertorial: string) {
     pool.query(`SELECT COUNT(*) FROM ad_events WHERE type = 'click' AND advertorial = $1`, [advertorial]),
     pool.query(`SELECT COUNT(DISTINCT ip) FROM ad_events WHERE type = 'view' AND advertorial = $1 AND ip IS NOT NULL`, [advertorial]),
     pool.query(`SELECT COUNT(DISTINCT ip) FROM ad_events WHERE type = 'click' AND advertorial = $1 AND ip IS NOT NULL`, [advertorial]),
-    // views per day last 30 days
-    pool.query(`SELECT DATE(created_at) AS day, COUNT(*) AS views FROM ad_events WHERE type = 'view' AND advertorial = $1 AND created_at >= NOW() - INTERVAL '30 days' GROUP BY day ORDER BY day DESC`, [advertorial]),
-    // top referrers
-    pool.query(`SELECT COALESCE(NULLIF(referrer,''), '(direct)') AS ref, COUNT(*) AS cnt FROM ad_events WHERE type = 'view' AND advertorial = $1 GROUP BY ref ORDER BY cnt DESC LIMIT 8`, [advertorial]),
-    // top utm_source
-    pool.query(`SELECT COALESCE(NULLIF(utm_source,''), '(none)') AS src, COUNT(*) AS cnt FROM ad_events WHERE type = 'view' AND advertorial = $1 GROUP BY src ORDER BY cnt DESC LIMIT 6`, [advertorial]),
-    // IPs with suspiciously many hits (>10)
-    pool.query(`SELECT ip, COUNT(*) AS hits FROM ad_events WHERE type = 'view' AND advertorial = $1 AND ip IS NOT NULL GROUP BY ip HAVING COUNT(*) > 10 ORDER BY hits DESC LIMIT 10`, [advertorial]),
+    pool.query(`SELECT TO_CHAR(DATE(created_at), 'YYYY-MM-DD') AS day, COUNT(*)::int AS views FROM ad_events WHERE type = 'view' AND advertorial = $1 AND created_at >= NOW() - INTERVAL '30 days' GROUP BY day ORDER BY day DESC`, [advertorial]),
+    pool.query(`SELECT COALESCE(NULLIF(referrer,''), '(direct)') AS ref, COUNT(*)::int AS cnt FROM ad_events WHERE type = 'view' AND advertorial = $1 GROUP BY ref ORDER BY cnt DESC LIMIT 8`, [advertorial]),
+    pool.query(`SELECT COALESCE(NULLIF(utm_source,''), '(none)') AS src, COUNT(*)::int AS cnt FROM ad_events WHERE type = 'view' AND advertorial = $1 GROUP BY src ORDER BY cnt DESC LIMIT 6`, [advertorial]),
+    pool.query(`SELECT ip, COUNT(*)::int AS hits FROM ad_events WHERE type = 'view' AND advertorial = $1 AND ip IS NOT NULL GROUP BY ip HAVING COUNT(*) > 10 ORDER BY hits DESC LIMIT 10`, [advertorial]),
   ])
   const views        = parseInt(viewsRes.rows[0].count, 10)
   const clicks       = parseInt(clicksRes.rows[0].count, 10)
@@ -27,10 +23,10 @@ async function fetchStatsFor(pool: Pool, advertorial: string) {
   const ctrTotal     = views === 0 ? 0 : Math.round((clicks / views) * 1000) / 10
   return {
     views, clicks, uniqueViews, uniqueClicks, ctr, ctrTotal,
-    daily: dailyRes.rows as { day: string; views: string }[],
-    referrers: referrersRes.rows as { ref: string; cnt: string }[],
-    utmSources: utmRes.rows as { src: string; cnt: string }[],
-    suspiciousIps: suspiciousRes.rows as { ip: string; hits: string }[],
+    daily:         dailyRes.rows     as { day: string; views: number }[],
+    referrers:     referrersRes.rows as { ref: string; cnt: number }[],
+    utmSources:    utmRes.rows       as { src: string; cnt: number }[],
+    suspiciousIps: suspiciousRes.rows as { ip: string; hits: number }[],
   }
 }
 
@@ -47,38 +43,15 @@ async function fetchStats() {
   }
 }
 
-function AdvertorialBlock({
-  title,
-  note,
-  views,
-  clicks,
-  uniqueViews,
-  uniqueClicks,
-  ctr,
-  ctrTotal,
-  daily,
-  referrers,
-  utmSources,
-  suspiciousIps,
-}: {
-  title: string
-  note?: string
-  views: number
-  clicks: number
-  uniqueViews: number
-  uniqueClicks: number
-  ctr: number
-  ctrTotal: number
-  daily: { day: string; views: string }[]
-  referrers: { ref: string; cnt: string }[]
-  utmSources: { src: string; cnt: string }[]
-  suspiciousIps: { ip: string; hits: string }[]
-}) {
+type Stats = Awaited<ReturnType<typeof fetchStatsFor>>
+
+function AdvertorialBlock({ title, note, stats }: { title: string; note?: string; stats: Stats }) {
+  const { views, clicks, uniqueViews, uniqueClicks, ctr, ctrTotal, daily, referrers, utmSources, suspiciousIps } = stats
   const funnelWidth      = Math.max(4, Math.min(ctr, 100))
   const funnelWidthTotal = Math.max(4, Math.min(ctrTotal, 100))
-  const maxDaily = daily.length > 0 ? Math.max(...daily.map(d => parseInt(d.views)), 1) : 1
-  const maxRef   = referrers.length > 0 ? Math.max(...referrers.map(r => parseInt(r.cnt)), 1) : 1
-  const maxUtm   = utmSources.length > 0 ? Math.max(...utmSources.map(u => parseInt(u.cnt)), 1) : 1
+  const maxDaily = daily.reduce((m, d) => Math.max(m, d.views), 1)
+  const maxRef   = referrers.reduce((m, r) => Math.max(m, r.cnt), 1)
+  const maxUtm   = utmSources.reduce((m, u) => Math.max(m, u.cnt), 1)
 
   return (
     <section className="mb-16">
@@ -86,11 +59,7 @@ function AdvertorialBlock({
       {note && <p className="text-xs text-amber-600 mb-2">{note}</p>}
       <p className="text-gray-500 mb-8 text-sm">Dáta sa aktualizujú pri každom načítaní stránky.</p>
 
-      <div className="mb-2">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-          Unikátni návštevníci — reálne čísla
-        </h2>
-      </div>
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Unikátni návštevníci — reálne čísla</h2>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-3xl p-6 text-center shadow-sm">
@@ -112,28 +81,22 @@ function AdvertorialBlock({
         <div className="space-y-5">
           <div>
             <div className="flex justify-between text-sm font-medium text-bombovo-dark mb-2">
-              <span>Navštívili advertoriál</span>
-              <span>{uniqueViews.toLocaleString('sk-SK')}</span>
+              <span>Navštívili advertoriál</span><span>{uniqueViews.toLocaleString('sk-SK')}</span>
             </div>
             <div className="h-10 bg-bombovo-dark rounded-xl w-full" />
           </div>
           <div>
             <div className="flex justify-between text-sm font-medium text-bombovo-dark mb-2">
-              <span>Klikli na web</span>
-              <span>{uniqueClicks.toLocaleString('sk-SK')}</span>
+              <span>Klikli na web</span><span>{uniqueClicks.toLocaleString('sk-SK')}</span>
             </div>
             <div className="h-10 bg-gray-100 rounded-xl w-full overflow-hidden">
-              <div className="h-full bg-bombovo-blue rounded-xl transition-all" style={{ width: `${funnelWidth}%` }} />
+              <div className="h-full bg-bombovo-blue rounded-xl" style={{ width: `${funnelWidth}%` }} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-2">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
-          Všetky hity — vrátane duplicít
-        </h2>
-      </div>
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Všetky hity — vrátane duplicít</h2>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-3xl p-6 text-center shadow-sm opacity-70">
@@ -150,23 +113,21 @@ function AdvertorialBlock({
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl p-8 shadow-sm opacity-70 mb-4">
+      <div className="bg-white rounded-3xl p-8 shadow-sm opacity-70 mb-8">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-6">Lievik — všetky hity</h2>
         <div className="space-y-5">
           <div>
             <div className="flex justify-between text-sm font-medium text-gray-400 mb-2">
-              <span>Navštívili advertoriál</span>
-              <span>{views.toLocaleString('sk-SK')}</span>
+              <span>Navštívili advertoriál</span><span>{views.toLocaleString('sk-SK')}</span>
             </div>
             <div className="h-10 bg-gray-300 rounded-xl w-full" />
           </div>
           <div>
             <div className="flex justify-between text-sm font-medium text-gray-400 mb-2">
-              <span>Klikli na web</span>
-              <span>{clicks.toLocaleString('sk-SK')}</span>
+              <span>Klikli na web</span><span>{clicks.toLocaleString('sk-SK')}</span>
             </div>
             <div className="h-10 bg-gray-100 rounded-xl w-full overflow-hidden">
-              <div className="h-full bg-gray-300 rounded-xl transition-all" style={{ width: `${funnelWidthTotal}%` }} />
+              <div className="h-full bg-gray-300 rounded-xl" style={{ width: `${funnelWidthTotal}%` }} />
             </div>
           </div>
         </div>
@@ -177,40 +138,38 @@ function AdvertorialBlock({
         Duplicity = rovnaká osoba otvorila stránku alebo klikla viackrát.
       </p>
 
-      {/* ── AUDIT SECTION ── */}
+      {/* AUDIT */}
       <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Audit — je tracking reálny?</h2>
 
-      {/* Daily breakdown */}
       {daily.length > 0 && (
         <div className="bg-white rounded-3xl p-8 shadow-sm mb-4">
           <h3 className="text-sm font-semibold text-gray-500 mb-5">Návštevy po dňoch (posledných 30 dní)</h3>
           <div className="space-y-2">
             {daily.map(d => (
-              <div key={d.day} className="flex items-center gap-3 text-sm">
+              <div key={d.day} className="flex items-center gap-3">
                 <span className="text-gray-400 w-24 shrink-0 font-mono text-xs">{d.day}</span>
                 <div className="flex-1 bg-gray-100 rounded h-6 overflow-hidden">
-                  <div className="h-full bg-bombovo-dark rounded" style={{ width: `${Math.round((parseInt(d.views) / maxDaily) * 100)}%` }} />
+                  <div className="h-full bg-bombovo-dark rounded" style={{ width: `${Math.round((d.views / maxDaily) * 100)}%` }} />
                 </div>
-                <span className="text-gray-700 font-semibold w-10 text-right">{parseInt(d.views).toLocaleString('sk-SK')}</span>
+                <span className="text-gray-700 font-semibold w-10 text-right text-sm">{d.views.toLocaleString('sk-SK')}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Referrers + UTM side by side */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-white rounded-3xl p-6 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-500 mb-4">Odkiaľ prišli (referrer)</h3>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {referrers.map(r => (
               <div key={r.ref} className="text-xs">
                 <div className="flex justify-between text-gray-600 mb-1">
                   <span className="truncate max-w-[140px]" title={r.ref}>{r.ref}</span>
-                  <span className="font-semibold ml-2">{parseInt(r.cnt).toLocaleString('sk-SK')}</span>
+                  <span className="font-semibold ml-2">{r.cnt.toLocaleString('sk-SK')}</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-bombovo-blue rounded-full" style={{ width: `${Math.round((parseInt(r.cnt) / maxRef) * 100)}%` }} />
+                  <div className="h-full bg-bombovo-blue rounded-full" style={{ width: `${Math.round((r.cnt / maxRef) * 100)}%` }} />
                 </div>
               </div>
             ))}
@@ -219,15 +178,15 @@ function AdvertorialBlock({
 
         <div className="bg-white rounded-3xl p-6 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-500 mb-4">UTM source</h3>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {utmSources.map(u => (
               <div key={u.src} className="text-xs">
                 <div className="flex justify-between text-gray-600 mb-1">
                   <span className="truncate max-w-[140px]" title={u.src}>{u.src}</span>
-                  <span className="font-semibold ml-2">{parseInt(u.cnt).toLocaleString('sk-SK')}</span>
+                  <span className="font-semibold ml-2">{u.cnt.toLocaleString('sk-SK')}</span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-400 rounded-full" style={{ width: `${Math.round((parseInt(u.cnt) / maxUtm) * 100)}%` }} />
+                  <div className="h-full bg-green-400 rounded-full" style={{ width: `${Math.round((u.cnt / maxUtm) * 100)}%` }} />
                 </div>
               </div>
             ))}
@@ -235,7 +194,6 @@ function AdvertorialBlock({
         </div>
       </div>
 
-      {/* Suspicious IPs */}
       {suspiciousIps.length > 0 ? (
         <div className="bg-red-50 border border-red-200 rounded-3xl p-6 shadow-sm mb-4">
           <h3 className="text-sm font-semibold text-red-500 mb-3">⚠️ Podozrivé IP adresy (&gt;10 hitov)</h3>
@@ -243,7 +201,7 @@ function AdvertorialBlock({
             {suspiciousIps.map(s => (
               <div key={s.ip} className="flex justify-between text-xs text-red-700 font-mono">
                 <span>{s.ip}</span>
-                <span>{parseInt(s.hits).toLocaleString('sk-SK')} hitov</span>
+                <span>{s.hits.toLocaleString('sk-SK')} hitov</span>
               </div>
             ))}
           </div>
@@ -266,21 +224,20 @@ export default async function AdvertorialStatsPage() {
     <>
       <TopBar />
       <Header />
-
       <main className="min-h-screen bg-gray-50 py-12 px-6">
         <div className="max-w-3xl mx-auto">
 
           <AdvertorialBlock
             title="Advertorial-2 — Vojna sociálnym sieťam"
             note="Sledovanie návštev začalo 13. 6. 2026. Staršie dáta nie sú v databáze (stránka bola predtým statická)."
-            {...adv2}
+            stats={adv2}
           />
 
           <div className="border-t border-gray-200 mb-16" />
 
           <AdvertorialBlock
             title="Advertorial-3 — Tábor na poslednú chvíľu"
-            {...adv3}
+            stats={adv3}
           />
 
         </div>
