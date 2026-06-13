@@ -687,7 +687,7 @@ export default async function Advertorial3Page({
         />
       </noscript>
 
-      <div className="top-bar">Propagovaný článok</div>
+      <div className="top-bar">Propagačný článok</div>
 
       <header className="site-header">
         <img className="logo" src="/advertorial-2/images/logo.png" alt="Lepší Rodič — Rodičovský Blog" />
