@@ -1,6 +1,7 @@
 import { Pool } from 'pg'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
+import AdvertorialDateCalendar from '@/components/AdvertorialDateCalendar'
 
 export const metadata = { title: 'Advertorial štatistiky | Bombovo' }
 
@@ -45,7 +46,7 @@ async function fetchStats() {
 
 type Stats = Awaited<ReturnType<typeof fetchStatsFor>>
 
-function AdvertorialBlock({ title, note, stats }: { title: string; note?: string; stats: Stats }) {
+function AdvertorialBlock({ title, note, stats, slug }: { title: string; note?: string; stats: Stats; slug: string }) {
   const { views, clicks, uniqueViews, uniqueClicks, ctr, ctrTotal, daily, referrers, utmSources, suspiciousIps } = stats
   const funnelWidth      = Math.max(4, Math.min(ctr, 100))
   const funnelWidthTotal = Math.max(4, Math.min(ctrTotal, 100))
@@ -138,8 +139,12 @@ function AdvertorialBlock({ title, note, stats }: { title: string; note?: string
         Duplicity = rovnaká osoba otvorila stránku alebo klikla viackrát.
       </p>
 
+      {/* CALENDAR */}
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Štatistiky podľa dní (testovanie reklám)</h2>
+      <AdvertorialDateCalendar advertorial={slug} />
+
       {/* AUDIT */}
-      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Audit — je tracking reálny?</h2>
+      <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4 mt-10">Audit — je tracking reálny?</h2>
 
       {daily.length > 0 && (
         <div className="bg-white rounded-3xl p-8 shadow-sm mb-4">
@@ -231,6 +236,7 @@ export default async function AdvertorialStatsPage() {
             title="Advertorial-2 — Vojna sociálnym sieťam"
             note="Sledovanie návštev začalo 13. 6. 2026. Staršie dáta nie sú v databáze (stránka bola predtým statická)."
             stats={adv2}
+            slug="advertorial-2"
           />
 
           <div className="border-t border-gray-200 mb-16" />
@@ -238,6 +244,7 @@ export default async function AdvertorialStatsPage() {
           <AdvertorialBlock
             title="Advertorial-3 — Tábor na poslednú chvíľu"
             stats={adv3}
+            slug="advertorial-3"
           />
 
         </div>

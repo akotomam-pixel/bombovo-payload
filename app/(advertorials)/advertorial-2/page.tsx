@@ -436,7 +436,7 @@ export default async function Advertorial2Page({
 
           <p>Kvôli digitálnemu svetu nevedia nadviazať skutočné vzťahy s kamarátmi, nevedia sa hrať vonku v prírode. A čo je najhoršie, ani si to neuvedomujú.</p>
 
-          <video autoPlay loop muted playsInline loading="lazy" style={{ width: '100%', display: 'block', margin: '20px 0 6px' }}>
+          <video autoPlay loop muted playsInline style={{ width: '100%', display: 'block', margin: '20px 0 6px' }}>
             <source src="/advertorial-2/images/photo-2.mp4" type="video/mp4" />
           </video>
 
