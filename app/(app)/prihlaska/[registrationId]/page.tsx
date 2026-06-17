@@ -1,11 +1,14 @@
 import { getPayloadClient } from "@/lib/payload";
 import Link from "next/link";
+import { after } from "next/server";
+import { cookies, headers } from "next/headers";
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getCampDetails } from "@/data/camps";
 import { camps as allCamps } from "@/lib/campsData";
 import RegistrationClient from "./RegistrationClient";
+import { TRACK_COOKIE, parseTrackCookie, logTrackEvent } from "@/lib/trackEvents";
 
 interface MatchedData {
   campName: string;
@@ -110,6 +113,20 @@ export default async function RegistrationPage({
         <Footer />
       </div>
     );
+  }
+
+  // Attribution funnel: log "opened_registration" if this visitor carries a
+  // first-touch wristband from an advertorial/ad click.
+  const cookieStore = await cookies();
+  const track = parseTrackCookie(cookieStore.get(TRACK_COOKIE)?.value);
+  if (track) {
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
+    const userAgent = headersList.get("user-agent") ?? "";
+    const referrer = headersList.get("referer") ?? "";
+    after(async () => {
+      await logTrackEvent(track, "opened_registration", { registrationId, ip, userAgent, referrer });
+    });
   }
 
   return (

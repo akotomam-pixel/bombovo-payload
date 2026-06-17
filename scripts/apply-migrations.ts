@@ -80,6 +80,28 @@ async function run() {
     `)
     console.log('✓ ad_events table created')
 
+    // Migration 20260617_000000 — create track_events table for full-funnel tracking
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS "track_events" (
+        "id"              serial PRIMARY KEY,
+        "visitor_id"      varchar NOT NULL,
+        "event_name"      varchar NOT NULL,
+        "source"          varchar,
+        "utm_source"      varchar,
+        "utm_medium"      varchar,
+        "utm_campaign"    varchar,
+        "utm_content"     varchar,
+        "fbclid"          varchar,
+        "camp_id"         varchar,
+        "registration_id" varchar,
+        "ip"              varchar,
+        "user_agent"      text,
+        "referrer"        varchar,
+        "created_at"      timestamp(3) with time zone NOT NULL DEFAULT now()
+      );
+    `)
+    console.log('✓ track_events table created')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

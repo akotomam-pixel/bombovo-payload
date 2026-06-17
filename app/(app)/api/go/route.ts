@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Pool } from 'pg'
+import { randomUUID } from 'crypto'
+import { TRACK_COOKIE, TRACK_COOKIE_MAX_AGE } from '@/lib/trackEvents'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://bombovo.sk'
 
@@ -71,5 +73,28 @@ export async function GET(req: NextRequest) {
     console.error('[/api/go] DB write failed:', err)
   })
 
-  return NextResponse.redirect(finalUrl, { status: 307 })
+  const response = NextResponse.redirect(finalUrl, { status: 307 })
+
+  // First-touch attribution wristband: only set it if the visitor doesn't
+  // already have one, so a later click never overwrites their original source.
+  if (!req.cookies.get(TRACK_COOKIE)) {
+    const trackData = {
+      vid: randomUUID(),
+      source,
+      utm_source: utmSource || null,
+      utm_medium: utmMedium || null,
+      utm_campaign: utmCampaign || null,
+      utm_content: utmContent || null,
+      fbclid: fbclid || null,
+    }
+    response.cookies.set(TRACK_COOKIE, JSON.stringify(trackData), {
+      maxAge: TRACK_COOKIE_MAX_AGE,
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    })
+  }
+
+  return response
 }

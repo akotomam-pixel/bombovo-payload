@@ -523,6 +523,14 @@ export default function RegistrationClient({
 
       posthog.identify(formData.email);
       posthog.capture('booking_submitted');
+
+      // Attribution funnel — fire-and-forget, never blocks/breaks a real booking.
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event: 'registration_completed', registrationId, campName }),
+      }).catch(() => {});
+
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
 

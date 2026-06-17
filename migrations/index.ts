@@ -2,3 +2,4 @@ export * as m20260402_000000_add_strediska_map_coords from './20260402_000000_ad
 export * as m20260516_000000_add_teacher_reviews_questions from './20260516_000000_add_teacher_reviews_questions'
 export * as m20260526_000000_add_strediska_vypredane from './20260526_000000_add_strediska_vypredane'
 export * as m20260607_000000_create_ad_events from './20260607_000000_create_ad_events'
+export * as m20260617_000000_create_track_events from './20260617_000000_create_track_events'
