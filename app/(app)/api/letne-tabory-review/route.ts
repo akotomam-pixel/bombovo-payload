@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { reviewerName, reviewerType, stars, reviewText } = body
+    const { reviewerName, reviewerType, campName, stars, reviewText } = body
 
     if (!reviewerName?.trim()) return NextResponse.json({ error: 'Prosím zadajte meno.' }, { status: 400 })
     if (!['tabornik', 'rodic'].includes(reviewerType)) return NextResponse.json({ error: 'Prosím vyberte typ.' }, { status: 400 })
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!reviewText?.trim() || reviewText.trim().length < 10) return NextResponse.json({ error: 'Prosím napíšte recenziu (min. 10 znakov).' }, { status: 400 })
 
     // Save to DB (auto-published, no approval needed)
-    await insertReview({ reviewerName: reviewerName.trim(), reviewerType, stars, reviewText: reviewText.trim() })
+    await insertReview({ reviewerName: reviewerName.trim(), reviewerType, campName: campName?.trim(), stars, reviewText: reviewText.trim() })
 
     // Email notification
     const typeLabel = reviewerType === 'tabornik' ? 'Taborník' : 'Rodič taborníka'

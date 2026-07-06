@@ -135,7 +135,16 @@ function ReviewCard({ review }: { review: CampReview }) {
         <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0 select-none">
           {initials(review.reviewer_name)}
         </div>
-        <p className="font-bold text-[#080708] text-sm leading-tight pt-1">{review.reviewer_name}</p>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <p className="font-bold text-[#080708] text-sm leading-tight">{review.reviewer_name}</p>
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+            <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="5.5" fill="#16a34a" />
+              <path d="M3.5 6l1.8 1.8 3.2-3.6" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Overená recenzia
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -168,6 +177,7 @@ function ReviewCard({ review }: { review: CampReview }) {
 const emptyForm = {
   reviewerName: '',
   reviewerType: '' as '' | 'tabornik' | 'rodic',
+  campName: '',
   stars: 0,
   reviewText: '',
 }
@@ -198,6 +208,7 @@ function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: ()
         body: JSON.stringify({
           reviewerName: form.reviewerName.trim(),
           reviewerType: form.reviewerType,
+          campName: form.campName.trim(),
           stars: form.stars,
           reviewText: form.reviewText.trim(),
         }),
@@ -258,6 +269,22 @@ function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: ()
             ))}
           </div>
         </div>
+
+        {form.reviewerType === 'tabornik' && (
+          <div className="mb-5">
+            <label htmlFor="campName" className={labelCls}>
+              Na kom tábore si bol/bola?
+            </label>
+            <input
+              id="campName"
+              type="text"
+              placeholder="Napr. Tábor Turiec, leto 2024"
+              value={form.campName}
+              onChange={(e) => setField('campName', e.target.value)}
+              className={inputCls}
+            />
+          </div>
+        )}
 
         <div className="mb-5">
           <label htmlFor="reviewerName" className={labelCls}>
@@ -366,9 +393,6 @@ export default function RecenzieLetneTaboryClient({ reviews }: { reviews: CampRe
 
       <section className="bg-bombovo-gray pt-10 pb-8 px-4 text-center">
         <h1 className="font-bold text-3xl md:text-4xl text-[#080708]">Recenzie</h1>
-        <p className="text-gray-500 mt-2 text-sm">
-          Čo hovoria taborníci a rodičia o letných táboroch Bombovo
-        </p>
       </section>
 
       <div className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
