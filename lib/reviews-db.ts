@@ -4,7 +4,9 @@ let pool: Pool | null = null
 
 function getPool() {
   if (!pool) {
-    pool = new Pool({ connectionString: process.env.DATABASE_URI })
+    // Strip channel_binding param — not supported by node-postgres
+    const uri = (process.env.DATABASE_URI ?? '').replace(/[?&]channel_binding=[^&]*/g, '').replace(/\?&/, '?')
+    pool = new Pool({ connectionString: uri, ssl: { rejectUnauthorized: false } })
   }
   return pool
 }
