@@ -258,8 +258,28 @@ export default function Header() {
 
               {/* Right menu items */}
               <nav className="flex items-center gap-4 flex-wrap justify-center">
-                <Link 
-                  href="/faq" 
+                <Link
+                  href="/recenzie"
+                  className="relative inline-flex flex-col items-center text-bombovo-dark font-normal text-base group"
+                >
+                  <span>Recenzie</span>
+                  <svg
+                    className="absolute -bottom-1 left-0 w-full"
+                    height="8"
+                    viewBox="0 0 90 8"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M 0,4 Q 22.5,2 45,4 T 90,4"
+                      stroke="#080708"
+                      strokeWidth="1.5"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </Link>
+                <Link
+                  href="/faq"
                   className="relative inline-flex flex-col items-center text-bombovo-dark font-normal text-base group"
                 >
                   <span>Otázky</span>
@@ -508,7 +528,14 @@ export default function Header() {
                   >
                     Naša Misia
                   </Link>
-                  <Link 
+                  <Link
+                    href="/recenzie"
+                    onClick={closeMenu}
+                    className="block px-6 py-4 text-lg font-semibold text-bombovo-dark hover:bg-bombovo-gray transition-colors"
+                  >
+                    Recenzie
+                  </Link>
+                  <Link
                     href="/faq"
                     onClick={closeMenu}
                     className="block px-6 py-4 text-lg font-semibold text-bombovo-dark hover:bg-bombovo-gray transition-colors"
