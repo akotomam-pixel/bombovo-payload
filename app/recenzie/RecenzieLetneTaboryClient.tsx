@@ -391,10 +391,6 @@ export default function RecenzieLetneTaboryClient({ reviews }: { reviews: CampRe
       </div>
       <Header />
 
-      <section className="bg-bombovo-gray pt-10 pb-8 px-4 text-center">
-        <h1 className="font-bold text-3xl md:text-4xl text-[#080708]">Recenzie</h1>
-      </section>
-
       <div className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
         <AggregateStats reviews={reviews} onWriteReview={openForm} />
 
