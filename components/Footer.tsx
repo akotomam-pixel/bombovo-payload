@@ -90,7 +90,7 @@ export default function Footer() {
                 ['/prihlaska-animator', 'Pridaj sa do tímu'],
                 ['/kontakt', 'Kontaktujte nás'],
                 ['/pre-firmy', 'Pre Firmy'],
-                ['/sutaz', 'Súťaž'],
+                ['/recenzie', 'Recenzie'],
                 ['/test-tabor', 'Test Page'],
               ].map(([href, label]) => (
                 <li key={href}>
