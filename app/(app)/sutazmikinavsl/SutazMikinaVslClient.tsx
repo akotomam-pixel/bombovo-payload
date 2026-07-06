@@ -39,50 +39,27 @@ function StarRatingInput({ value, onChange }: { value: number; onChange: (v: num
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             onClick={() => onChange(star)}
-            className={`text-[2.2rem] leading-none transition-transform duration-100 hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/50 focus-visible:rounded-md ${
-              star <= active ? 'text-bombovo-yellow' : 'text-white/30'
+            className={`text-[2.2rem] leading-none transition-transform duration-100 hover:scale-110 focus-visible:outline-2 focus-visible:outline-bombovo-blue ${
+              star <= active ? 'text-bombovo-yellow' : 'text-gray-200'
             }`}
           >
             ★
           </button>
         ))}
       </div>
-      {active > 0 && <p className="mt-1 text-sm font-medium text-white/70">{STAR_HINTS[active]}</p>}
-    </div>
-  )
-}
-
-function GrainOverlay() {
-  return (
-    <svg
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-[0.05] mix-blend-overlay"
-      aria-hidden="true"
-    >
-      <filter id="grain">
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" />
-      </filter>
-      <rect width="100%" height="100%" filter="url(#grain)" />
-    </svg>
-  )
-}
-
-function TripleBadge() {
-  return (
-    <div className="relative z-10 mx-auto -mb-7 flex h-20 w-20 -rotate-6 flex-col items-center justify-center rounded-full border-[3px] border-dashed border-bombovo-dark/60 bg-bombovo-yellow shadow-[0_10px_28px_-6px_rgba(8,7,8,0.55)]">
-      <span className="text-2xl font-black leading-none text-bombovo-dark">×3</span>
-      <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-bombovo-dark/70">šance</span>
+      {active > 0 && <p className="mt-1 text-sm font-medium text-gray-400">{STAR_HINTS[active]}</p>}
     </div>
   )
 }
 
 const fieldBoxClass =
-  'w-full rounded-2xl bg-white px-5 py-4 text-base text-bombovo-dark placeholder:text-bombovo-dark/40 outline-none shadow-[0_10px_30px_-12px_rgba(8,7,8,0.45)] ring-2 ring-transparent transition-colors duration-150 focus:ring-bombovo-yellow'
+  'w-full rounded-2xl border-2 border-bombovo-gray bg-white px-5 py-4 text-base text-bombovo-dark placeholder:text-bombovo-dark/40 outline-none transition-colors duration-150 focus:border-bombovo-blue'
 
 function FieldLabel({ children, optional }: { children: React.ReactNode; optional?: boolean }) {
   return (
-    <label className="mb-2 block text-sm font-semibold text-white">
+    <label className="mb-2 block text-sm font-semibold text-bombovo-dark">
       {children}
-      {optional && <span className="ml-1 font-normal text-white/60">(nepovinné)</span>}
+      {optional && <span className="ml-1 font-normal text-bombovo-dark/50">(nepovinné)</span>}
     </label>
   )
 }
@@ -152,51 +129,34 @@ export default function SutazMikinaVslClient({ camps }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-bombovo-blue">
-      {/* Layered depth: radial glows + grain, purely decorative */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background:
-            'radial-gradient(120% 60% at 100% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 55%), radial-gradient(120% 70% at 0% 100%, rgba(8,7,8,0.30) 0%, rgba(8,7,8,0) 60%)',
-        }}
-      />
-      <GrainOverlay />
-
+    <div className="min-h-screen bg-white">
       {/* Logo — fixed corner mark */}
-      <div className="fixed right-4 top-4 z-50 h-14 w-14 overflow-hidden rounded-full ring-2 ring-white/70 shadow-[0_6px_20px_-4px_rgba(8,7,8,0.5)]">
-        <Image src="/images/hat1.jpg" alt="Bombovo Logo" width={64} height={64} priority className="h-full w-full object-cover" />
+      <div className="fixed right-4 top-4 z-50 h-16 w-16">
+        <Image src="/images/hat1.jpg" alt="Bombovo Logo" width={64} height={64} priority className="h-full w-full object-contain" />
       </div>
 
-      <main className="relative z-10 mx-auto flex max-w-md flex-col items-center px-5 pb-16 pt-24 text-center">
+      <main className="mx-auto flex max-w-md flex-col items-center px-5 pb-16 pt-16 text-center">
         {/* Headline block */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: easeOut }}
-        >
-          <h1 className="text-3xl font-bold leading-tight tracking-[-0.03em] text-white">
-            Zisti, ako si 3X zvýšiš šance na výhru{' '}
-            <span className="font-amatic text-5xl leading-none">BOMBOVO mikiny</span>.
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}>
+          <h1 className="text-[28px] font-extrabold leading-tight text-bombovo-dark md:text-[34px]">
+            Zisti, ako si <span className="text-bombovo-blue">3X zvýšiš šance</span> na výhru{' '}
+            <span className="text-bombovo-blue">BOMBOVO mikiny</span>.
           </h1>
-          <p className="mt-4 text-base leading-[1.7] text-white/80">Pozri si video nižšie.</p>
+          <p className="mt-3 text-base text-bombovo-dark/60">Pozri si video nižšie.</p>
         </motion.div>
 
-        {/* Signature patch badge, overlapping the video card */}
+        {/* VSL video, 9:16 */}
         <motion.div
-          className="mt-10 w-full"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.15, ease: easeOut }}
+          className="mt-6 w-full"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: easeOut }}
         >
-          <TripleBadge />
-
-          {/* VSL video, 9:16 */}
-          <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-[28px] bg-bombovo-dark shadow-[0_24px_48px_-16px_rgba(8,7,8,0.6)] ring-4 ring-white/15">
+          <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-2xl shadow-lg">
             <video
               controls
               playsInline
-              poster="https://placehold.co/720x1280/2a4fc4/ffffff?text=BOMBOVO+VSL"
+              poster="https://placehold.co/720x1280/3772FF/ffffff?text=BOMBOVO+VSL"
               className="h-full w-full object-cover"
             >
               {/* TODO: swap in the real VSL file once it's produced, e.g. <source src="/videos/mikina-vsl.mp4" type="video/mp4" /> */}
@@ -205,30 +165,19 @@ export default function SutazMikinaVslClient({ camps }: Props) {
         </motion.div>
 
         {/* Second headline, directly above the form */}
-        <motion.h2
-          className="mt-12 text-2xl font-bold leading-snug tracking-[-0.02em] text-white"
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5, ease: easeOut }}
-        >
+        <h2 className="mt-10 text-2xl font-bold leading-snug text-bombovo-dark">
           Napíš nám o tvojom tábore a zvýš si šancu na výhru mikiny.
-        </motion.h2>
+        </h2>
 
         {submitted ? (
-          <motion.div
-            className="mt-8 w-full rounded-2xl bg-white/10 px-6 py-10 shadow-[0_10px_30px_-12px_rgba(8,7,8,0.45)]"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: easeOut }}
-          >
+          <div className="mt-8 w-full rounded-2xl bg-bombovo-gray/50 px-6 py-10">
             <div className="text-5xl">🎉</div>
-            <h3 className="mt-4 text-xl font-bold text-white">Ďakujeme za tvoj príbeh!</h3>
-            <p className="mt-2 text-base leading-[1.7] text-white/80">
+            <h3 className="mt-4 text-xl font-bold text-bombovo-dark">Ďakujeme za tvoj príbeh!</h3>
+            <p className="mt-2 text-base leading-[1.7] text-bombovo-dark/70">
               Tvoja odpoveď bola úspešne zaznamenaná a tvoje šance na výhru BOMBOVO mikiny sú teraz 3X vyššie.
               Držíme palce!
             </p>
-          </motion.div>
+          </div>
         ) : (
           <form
             className="mt-8 flex w-full flex-col gap-5 text-left"
@@ -267,7 +216,7 @@ export default function SutazMikinaVslClient({ camps }: Props) {
                 <button
                   type="button"
                   onClick={() => setTaborDropdownOpen((o) => !o)}
-                  className={`${fieldBoxClass} flex items-center justify-between text-left ${taborDropdownOpen ? 'ring-bombovo-yellow' : ''}`}
+                  className={`${fieldBoxClass} flex items-center justify-between text-left ${taborDropdownOpen ? 'border-bombovo-blue' : ''}`}
                 >
                   <span className={tabor ? '' : 'text-bombovo-dark/40'}>{tabor || taborDefaultLabel}</span>
                   <FiChevronDown
@@ -332,7 +281,7 @@ export default function SutazMikinaVslClient({ camps }: Props) {
             </div>
 
             <label className="flex cursor-pointer items-start gap-3">
-              <span className="relative mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-white shadow-[0_4px_12px_-4px_rgba(8,7,8,0.4)]">
+              <span className="relative mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md border-2 border-bombovo-gray bg-white">
                 <input
                   type="checkbox"
                   checked={suhlas}
@@ -343,18 +292,18 @@ export default function SutazMikinaVslClient({ camps }: Props) {
                   className={`pointer-events-none h-4 w-4 text-bombovo-blue transition-opacity duration-150 ${suhlas ? 'opacity-100' : 'opacity-0'}`}
                 />
               </span>
-              <span className="text-sm leading-[1.6] text-white/90">
-                Súhlasím, že toto meno a odpoveď môžu byť použité ako príbeh na webe Bombovo (za seba alebo svoje
+              <span className="text-sm leading-[1.6] text-bombovo-dark/80">
+                Súhlasím, že toto meno a odpoveď môžu byť použité ako recenzia na webe Bombovo (za seba alebo svoje
                 dieťa).
               </span>
             </label>
 
-            {error && <p className="text-sm text-bombovo-yellow">{error}</p>}
+            {error && <p className="text-sm text-bombovo-red">{error}</p>}
 
             <button
               type="submit"
               disabled={!isValid || loading}
-              className="mt-1 w-full rounded-2xl border-2 border-bombovo-dark bg-bombovo-yellow px-6 py-4 text-lg font-bold text-bombovo-dark shadow-[0_14px_30px_-10px_rgba(8,7,8,0.55)] transition-transform duration-150 hover:brightness-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
+              className="mt-1 w-full rounded-2xl border-2 border-bombovo-dark bg-bombovo-yellow px-6 py-4 text-lg font-bold text-bombovo-dark shadow-md transition-transform duration-150 hover:brightness-95 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-bombovo-blue/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
             >
               {loading ? 'Odosielam…' : 'Odoslať príbeh'}
             </button>
