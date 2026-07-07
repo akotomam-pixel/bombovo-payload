@@ -110,6 +110,19 @@ async function run() {
     `)
     console.log('✓ letne_tabory_reviews.updated_at / status / photo_id')
 
+    // Migration 20260707_000001 — payload_locked_documents_rels needs a column per
+    // registered collection; adding letne-tabory-reviews without this breaks /admin
+    // (locked-documents queries reference the missing column and 500).
+    await client.query(`
+      ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "letne_tabory_reviews_id" integer;
+      DO $$ BEGIN
+        ALTER TABLE "payload_locked_documents_rels"
+        ADD CONSTRAINT "payload_locked_documents_rels_letne_tabory_reviews_fk"
+        FOREIGN KEY ("letne_tabory_reviews_id") REFERENCES "letne_tabory_reviews"("id") ON DELETE CASCADE;
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    `)
+    console.log('✓ payload_locked_documents_rels.letne_tabory_reviews_id')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
