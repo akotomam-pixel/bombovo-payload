@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { insertReview } from '@/lib/reviews-db'
 
 const VELKOSTI = ['S', 'M', 'L', 'XL']
+
+const QUESTIONS = {
+  odpoved1: 'Opíš, ako sa ti na tábore páčilo.',
+  odpoved2: 'Aký jeden moment z tábora si budeš pamätať najdlhšie?',
+  odpoved3: 'Čo by si povedal kamarátovi, ktorý na tábore ešte nebol?',
+}
+
+function buildReviewText(odpoved1: string, odpoved2: string, odpoved3: string): string {
+  const pairs = [
+    [QUESTIONS.odpoved1, odpoved1],
+    [QUESTIONS.odpoved2, odpoved2],
+    [QUESTIONS.odpoved3, odpoved3],
+  ].filter(([, answer]) => answer.trim().length > 0)
+
+  return pairs.map(([question, answer]) => `${question}\n${answer}`).join('\n\n')
+}
 
 function generateKod(): string {
   return Math.random().toString(36).slice(2, 10).toUpperCase()
@@ -71,6 +88,19 @@ export async function POST(req: NextRequest) {
     if (!sheetsRes.ok) {
       console.error('[sutazmikinavsl] Sheets webhook returned', sheetsRes.status, await sheetsRes.text().catch(() => ''))
       return NextResponse.json({ error: 'Nepodarilo sa uložiť príbeh. Skúste to prosím znova.' }, { status: 502 })
+    }
+
+    // Auto-publish to /recenzie — best-effort, does not block the response
+    try {
+      await insertReview({
+        reviewerName: `${payload.meno} ${payload.priezvisko}`,
+        reviewerType: 'tabornik',
+        campName: payload.tabor,
+        stars: payload.hodnotenie,
+        reviewText: buildReviewText(payload.odpoved1, payload.odpoved2, payload.odpoved3),
+      })
+    } catch (reviewErr) {
+      console.error('[sutazmikinavsl] insertReview error (non-blocking):', reviewErr)
     }
 
     return NextResponse.json({ success: true })

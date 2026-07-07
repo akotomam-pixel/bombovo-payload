@@ -167,7 +167,7 @@ function ReviewCard({ review }: { review: CampReview }) {
         )}
       </div>
 
-      <p className="text-gray-700 text-sm leading-relaxed">&ldquo;{review.review_text}&rdquo;</p>
+      <p className="whitespace-pre-line text-gray-700 text-sm leading-relaxed">&ldquo;{review.review_text}&rdquo;</p>
     </div>
   )
 }
