@@ -104,12 +104,12 @@ function LetterSection() {
       </p>
 
       <p className="mt-4">
-        Nájdeš tu pár otázok o tvojom zážitku z nášho FEST Animátor Festu. Chceme od teba, aby si úprimne odpovedal
-        na tieto otázky a povedal nám reálne, čo si myslíš.
+        Nájdeš tu pár otázok o tvojom zážitku z táboru &quot;Fest Animátor Fest&quot;. Chceme od teba, aby si
+        úprimne odpovedal na tieto otázky a povedal nám reálne, čo si myslíš.
       </p>
 
       <p className="mt-4">
-        Ja, Baran a Laco si potom tieto odpovede prečítame a vyberieme 10 víťazov, ktorí mikinu dostanú. Takže ti
+        Ja, Baran a Laco si potom tieto odpovede prečítame a vyberieme 10 víťazov, ktorí mikinu dostanú. Taktiež ti
         musím povedať, že táto správa bude zaznamenaná na našej stránke ako recenzia, takže píš veci s rozumom 😉.
       </p>
 
