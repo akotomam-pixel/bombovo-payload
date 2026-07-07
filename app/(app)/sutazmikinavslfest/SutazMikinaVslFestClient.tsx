@@ -61,19 +61,21 @@ const typewriter = { fontFamily: "'Courier New', Courier, monospace" }
 function LetterSection() {
   return (
     <section
-      className="mt-8 w-full rounded-2xl border-2 border-bombovo-gray bg-white px-6 py-8 text-left leading-relaxed text-bombovo-dark sm:px-8"
+      className="mt-8 w-full rounded-2xl border-2 border-bombovo-gray bg-white px-6 py-8 text-left leading-relaxed text-bombovo-dark shadow-[0_24px_50px_-28px_rgba(8,7,8,0.35)] sm:px-8 md:-rotate-[0.35deg] md:px-16 md:py-14 md:text-[17px] md:leading-[1.85]"
       style={typewriter}
     >
-      <p>
-        Od: Uliho
-        <br />
-        (lepšieho animátora ako baran)
-      </p>
-      <p className="mt-4">
-        Z: Horského hotela Lomy
-        <br />
-        Streda, 8:37 ráno
-      </p>
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-8">
+        <p>
+          Od: Uliho
+          <br />
+          (lepšieho animátora ako baran)
+        </p>
+        <p className="md:text-right">
+          Z: Horského hotela Lomy
+          <br />
+          Streda, 8:37 ráno
+        </p>
+      </div>
 
       <p className="mt-6">Najdrahší festák, počúvaj…</p>
 
@@ -194,9 +196,14 @@ export default function SutazMikinaVslFestClient() {
         <Image src="/images/hat1.jpg" alt="Bombovo Logo" width={64} height={64} priority className="h-full w-full object-contain" />
       </div>
 
-      <main className="mx-auto flex max-w-md flex-col items-center px-5 pb-16 pt-16 text-center">
+      <main className="mx-auto flex w-full flex-col items-center px-5 pb-16 pt-16 text-center">
         {/* Headline block */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}>
+        <motion.div
+          className="mx-auto w-full max-w-md"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: easeOut }}
+        >
           <h1 className="text-[28px] font-extrabold leading-tight text-bombovo-dark md:text-[34px]">
             Napíš nám úprimne, aký bol tvoj FEST Animátor Fest, a zapoj sa do súťaže o mikinu.
           </h1>
@@ -204,7 +211,7 @@ export default function SutazMikinaVslFestClient() {
 
         {/* Letter section — Gary Halbert style direct-response letter */}
         <motion.div
-          className="w-full"
+          className="mx-auto w-full max-w-md md:max-w-2xl"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: easeOut }}
@@ -213,7 +220,7 @@ export default function SutazMikinaVslFestClient() {
         </motion.div>
 
         {submitted ? (
-          <div className="mt-8 w-full rounded-2xl bg-bombovo-gray/50 px-6 py-10">
+          <div className="mx-auto mt-8 w-full max-w-md rounded-2xl bg-bombovo-gray/50 px-6 py-10">
             <div className="text-5xl">🎉</div>
             <h3 className="mt-4 text-xl font-bold text-bombovo-dark">Ďakujeme za úprimnú odpoveď!</h3>
             <p className="mt-2 text-base leading-[1.7] text-bombovo-dark/70">
@@ -222,7 +229,7 @@ export default function SutazMikinaVslFestClient() {
           </div>
         ) : (
           <form
-            className="mt-8 flex w-full flex-col gap-5 text-left"
+            className="mx-auto mt-8 flex w-full max-w-md flex-col gap-5 text-left"
             onSubmit={(e) => {
               e.preventDefault()
               handleSubmit()
