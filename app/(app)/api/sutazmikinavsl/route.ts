@@ -3,20 +3,8 @@ import { getPayloadClient } from '@/lib/payload'
 
 const VELKOSTI = ['S', 'M', 'L', 'XL']
 
-const QUESTIONS = {
-  odpoved1: 'Opíš, ako sa ti na tábore páčilo.',
-  odpoved2: 'Aký jeden moment z tábora si budeš pamätať najdlhšie?',
-  odpoved3: 'Čo by si povedal kamarátovi, ktorý na tábore ešte nebol?',
-}
-
 function buildReviewText(odpoved1: string, odpoved2: string, odpoved3: string): string {
-  const pairs = [
-    [QUESTIONS.odpoved1, odpoved1],
-    [QUESTIONS.odpoved2, odpoved2],
-    [QUESTIONS.odpoved3, odpoved3],
-  ].filter(([, answer]) => answer.trim().length > 0)
-
-  return pairs.map(([question, answer]) => `${question}\n${answer}`).join('\n\n')
+  return [odpoved1, odpoved2, odpoved3].filter((a) => a.trim().length > 0).join('\n\n')
 }
 
 function generateKod(): string {

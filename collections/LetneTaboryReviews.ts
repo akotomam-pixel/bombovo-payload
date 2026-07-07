@@ -31,8 +31,8 @@ export const LetneTaboryReviews: CollectionConfig = {
       label: 'Typ recenzenta',
       required: true,
       options: [
-        { label: 'Taborník', value: 'tabornik' },
-        { label: 'Rodič taborníka', value: 'rodic' },
+        { label: 'Dieťa z tábora', value: 'tabornik' },
+        { label: 'Rodič dieťaťa', value: 'rodic' },
       ],
     },
     {

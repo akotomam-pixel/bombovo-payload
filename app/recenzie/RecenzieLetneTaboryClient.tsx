@@ -166,8 +166,14 @@ function ReviewCard({ review }: { review: CampReview }) {
               : 'bg-[#3772FF]/10 text-[#3772FF]'
           }`}
         >
-          {review.reviewer_type === 'tabornik' ? 'Taborník' : 'Rodič taborníka'}
+          {review.reviewer_type === 'tabornik' ? 'Dieťa z tábora' : 'Rodič dieťaťa'}
         </span>
+        {review.camp_name && (
+          <>
+            <span className="text-gray-400 text-xs">·</span>
+            <span className="text-xs font-medium text-gray-500">{review.camp_name}</span>
+          </>
+        )}
         {review.created_at && (
           <>
             <span className="text-gray-400 text-xs">·</span>
@@ -191,7 +197,15 @@ const emptyForm = {
   reviewText: '',
 }
 
-function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+function ReviewForm({
+  camps,
+  onClose,
+  onSuccess,
+}: {
+  camps: { id: string; name: string }[]
+  onClose: () => void
+  onSuccess: () => void
+}) {
   const [form, setForm] = useState(emptyForm)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -273,7 +287,7 @@ function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: ()
                     : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400'
                 }`}
               >
-                {type === 'tabornik' ? '🏕️ Taborník' : '👨‍👩‍👧 Rodič taborníka'}
+                {type === 'tabornik' ? '🏕️ Dieťa z tábora' : '👨‍👩‍👧 Rodič dieťaťa'}
               </button>
             ))}
           </div>
@@ -282,16 +296,21 @@ function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: ()
         {form.reviewerType === 'tabornik' && (
           <div className="mb-5">
             <label htmlFor="campName" className={labelCls}>
-              Na kom tábore si bol/bola?
+              Na akom tábore si bol/bola?
             </label>
-            <input
+            <select
               id="campName"
-              type="text"
-              placeholder="Napr. Tábor Turiec, leto 2024"
               value={form.campName}
               onChange={(e) => setField('campName', e.target.value)}
               className={inputCls}
-            />
+            >
+              <option value="">Vyber tábor</option>
+              {camps.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
@@ -352,7 +371,13 @@ function ReviewForm({ onClose, onSuccess }: { onClose: () => void; onSuccess: ()
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function RecenzieLetneTaboryClient({ reviews }: { reviews: CampReview[] }) {
+export default function RecenzieLetneTaboryClient({
+  reviews,
+  camps,
+}: {
+  reviews: CampReview[]
+  camps: { id: string; name: string }[]
+}) {
   const [formOpen, setFormOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const formRef = useRef<HTMLDivElement>(null)
@@ -405,7 +430,7 @@ export default function RecenzieLetneTaboryClient({ reviews }: { reviews: CampRe
 
         <div ref={formRef}>
           {formOpen && (
-            <ReviewForm onClose={() => setFormOpen(false)} onSuccess={() => setSubmitted(true)} />
+            <ReviewForm camps={camps} onClose={() => setFormOpen(false)} onSuccess={() => setSubmitted(true)} />
           )}
         </div>
 
