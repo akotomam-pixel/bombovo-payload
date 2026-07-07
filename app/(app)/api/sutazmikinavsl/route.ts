@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const VELKOSTI = ['S', 'M', 'L', 'XL']
+
 function generateKod(): string {
   return Math.random().toString(36).slice(2, 10).toUpperCase()
 }
@@ -7,7 +9,7 @@ function generateKod(): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { meno, priezvisko, tabor, hodnotenie, odpoved1, odpoved2, odpoved3, suhlas } = body
+    const { meno, priezvisko, tabor, velkost, hodnotenie, odpoved1, odpoved2, odpoved3, suhlas } = body
 
     if (!meno || String(meno).trim().length === 0) {
       return NextResponse.json({ error: 'Meno je povinné.' }, { status: 400 })
@@ -17,6 +19,9 @@ export async function POST(req: NextRequest) {
     }
     if (!tabor || String(tabor).trim().length === 0) {
       return NextResponse.json({ error: 'Vyber prosím tábor.' }, { status: 400 })
+    }
+    if (!velkost || !VELKOSTI.includes(String(velkost))) {
+      return NextResponse.json({ error: 'Vyber prosím veľkosť mikiny.' }, { status: 400 })
     }
     const hodnotenieNum = Number(hodnotenie)
     if (!Number.isInteger(hodnotenieNum) || hodnotenieNum < 1 || hodnotenieNum > 5) {
@@ -37,6 +42,7 @@ export async function POST(req: NextRequest) {
       meno: String(meno).trim(),
       priezvisko: String(priezvisko).trim(),
       tabor: String(tabor).trim(),
+      velkost: String(velkost),
       hodnotenie: hodnotenieNum,
       odpoved1: String(odpoved1).trim(),
       odpoved2: String(odpoved2).trim(),

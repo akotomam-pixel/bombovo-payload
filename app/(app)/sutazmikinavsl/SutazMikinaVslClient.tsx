@@ -16,6 +16,8 @@ interface Props {
 
 const easeOut = [0.16, 1, 0.3, 1] as const
 
+const VELKOSTI = ['S', 'M', 'L', 'XL'] as const
+
 const STAR_HINTS: Record<number, string> = {
   1: 'Mohlo byť lepšie',
   2: 'Ujde to',
@@ -68,6 +70,8 @@ export default function SutazMikinaVslClient({ camps }: Props) {
   const [priezvisko, setPriezvisko] = useState('')
   const [tabor, setTabor] = useState('')
   const [taborDropdownOpen, setTaborDropdownOpen] = useState(false)
+  const [velkost, setVelkost] = useState('')
+  const [velkostDropdownOpen, setVelkostDropdownOpen] = useState(false)
   const [hodnotenie, setHodnotenie] = useState(0)
   const [odpoved1, setOdpoved1] = useState('')
   const [odpoved2, setOdpoved2] = useState('')
@@ -84,12 +88,13 @@ export default function SutazMikinaVslClient({ camps }: Props) {
       meno.trim().length > 0 &&
       priezvisko.trim().length > 0 &&
       tabor.trim().length > 0 &&
+      velkost.trim().length > 0 &&
       hodnotenie > 0 &&
       odpoved1.trim().length > 0 &&
       odpoved2.trim().length > 0 &&
       suhlas
     )
-  }, [meno, priezvisko, tabor, hodnotenie, odpoved1, odpoved2, suhlas])
+  }, [meno, priezvisko, tabor, velkost, hodnotenie, odpoved1, odpoved2, suhlas])
 
   async function handleSubmit() {
     if (!isValid || loading) return
@@ -103,6 +108,7 @@ export default function SutazMikinaVslClient({ camps }: Props) {
           meno: meno.trim(),
           priezvisko: priezvisko.trim(),
           tabor,
+          velkost,
           hodnotenie,
           odpoved1: odpoved1.trim(),
           odpoved2: odpoved2.trim(),
@@ -230,6 +236,41 @@ export default function SutazMikinaVslClient({ camps }: Props) {
                         }`}
                       >
                         {c.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <FieldLabel>Akú veľkosť mikiny chceš vyhrať?</FieldLabel>
+              <div className="relative w-full">
+                <button
+                  type="button"
+                  onClick={() => setVelkostDropdownOpen((o) => !o)}
+                  className={`${fieldBoxClass} flex items-center justify-between text-left ${velkostDropdownOpen ? 'border-bombovo-blue' : ''}`}
+                >
+                  <span className={velkost ? '' : 'text-bombovo-dark/40'}>{velkost || 'Vyber veľkosť'}</span>
+                  <FiChevronDown
+                    className={`ml-4 flex-shrink-0 transition-transform duration-200 ${velkostDropdownOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {velkostDropdownOpen && (
+                  <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+                    {VELKOSTI.map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => {
+                          setVelkost(v)
+                          setVelkostDropdownOpen(false)
+                        }}
+                        className={`w-full px-5 py-3 text-left transition-colors duration-150 hover:bg-bombovo-gray ${
+                          velkost === v ? 'bg-bombovo-gray font-semibold' : ''
+                        }`}
+                      >
+                        {v}
                       </button>
                     ))}
                   </div>
