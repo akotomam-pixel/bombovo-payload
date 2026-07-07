@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { insertReview } from '@/lib/reviews-db'
+import { getPayloadClient } from '@/lib/payload'
 
 const VELKOSTI = ['S', 'M', 'L', 'XL']
 
@@ -92,12 +92,16 @@ export async function POST(req: NextRequest) {
 
     // Auto-publish to /recenzie — best-effort, does not block the response
     try {
-      await insertReview({
-        reviewerName: `${payload.meno} ${payload.priezvisko}`,
-        reviewerType: 'tabornik',
-        campName: payload.tabor,
-        stars: payload.hodnotenie,
-        reviewText: buildReviewText(payload.odpoved1, payload.odpoved2, payload.odpoved3),
+      const cms = await getPayloadClient()
+      await cms.create({
+        collection: 'letne-tabory-reviews',
+        data: {
+          reviewerName: `${payload.meno} ${payload.priezvisko}`,
+          reviewerType: 'tabornik',
+          campName: payload.tabor,
+          stars: payload.hodnotenie,
+          reviewText: buildReviewText(payload.odpoved1, payload.odpoved2, payload.odpoved3),
+        },
       })
     } catch (reviewErr) {
       console.error('[sutazmikinavsl] insertReview error (non-blocking):', reviewErr)

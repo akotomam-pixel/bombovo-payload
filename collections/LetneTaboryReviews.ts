@@ -9,7 +9,7 @@ export const LetneTaboryReviews: CollectionConfig = {
   admin: {
     group: 'Letné Tábory',
     useAsTitle: 'reviewerName',
-    defaultColumns: ['reviewerName', 'reviewerType', 'stars', 'status', 'createdAt'],
+    defaultColumns: ['reviewerName', 'campName', 'stars', 'status', 'createdAt'],
   },
   access: {
     create: () => true,
@@ -36,6 +36,11 @@ export const LetneTaboryReviews: CollectionConfig = {
       ],
     },
     {
+      name: 'campName',
+      type: 'text',
+      label: 'Tábor (nepovinné)',
+    },
+    {
       name: 'stars',
       type: 'number',
       label: 'Hodnotenie (1–5 hviezdičiek)',
@@ -60,7 +65,7 @@ export const LetneTaboryReviews: CollectionConfig = {
       type: 'select',
       label: 'Stav',
       required: true,
-      defaultValue: 'pending',
+      defaultValue: 'approved',
       options: [
         { label: 'Čaká na schválenie', value: 'pending' },
         { label: 'Schválená', value: 'approved' },

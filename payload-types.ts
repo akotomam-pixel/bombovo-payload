@@ -73,6 +73,7 @@ export interface Config {
     strediska: Strediska;
     'giveaway-entries': GiveawayEntry;
     'teacher-reviews': TeacherReview;
+    'letne-tabory-reviews': LetneTaboryReview;
     'ad-events': AdEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +88,7 @@ export interface Config {
     strediska: StrediskaSelect<false> | StrediskaSelect<true>;
     'giveaway-entries': GiveawayEntriesSelect<false> | GiveawayEntriesSelect<true>;
     'teacher-reviews': TeacherReviewsSelect<false> | TeacherReviewsSelect<true>;
+    'letne-tabory-reviews': LetneTaboryReviewsSelect<false> | LetneTaboryReviewsSelect<true>;
     'ad-events': AdEventsSelect<false> | AdEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -620,6 +622,22 @@ export interface TeacherReview {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "letne-tabory-reviews".
+ */
+export interface LetneTaboryReview {
+  id: number;
+  reviewerName: string;
+  reviewerType: 'tabornik' | 'rodic';
+  campName?: string | null;
+  stars: number;
+  reviewText: string;
+  photo?: (number | null) | Media;
+  status: 'pending' | 'approved' | 'rejected';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ad-events".
  */
 export interface AdEvent {
@@ -1054,6 +1072,21 @@ export interface TeacherReviewsSelect<T extends boolean = true> {
   q4?: T;
   stredisko?: T;
   kidCount?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "letne-tabory-reviews_select".
+ */
+export interface LetneTaboryReviewsSelect<T extends boolean = true> {
+  reviewerName?: T;
+  reviewerType?: T;
+  campName?: T;
+  stars?: T;
+  reviewText?: T;
+  photo?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;

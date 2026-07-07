@@ -102,6 +102,14 @@ async function run() {
     `)
     console.log('✓ track_events table created')
 
+    // Migration 20260707_000000 — bring letne_tabory_reviews under Payload management
+    await client.query(`
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "updated_at" timestamp(3) with time zone NOT NULL DEFAULT now();
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "status" varchar NOT NULL DEFAULT 'approved';
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "photo_id" integer;
+    `)
+    console.log('✓ letne_tabory_reviews.updated_at / status / photo_id')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

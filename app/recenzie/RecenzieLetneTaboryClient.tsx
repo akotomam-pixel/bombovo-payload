@@ -4,7 +4,16 @@ import { useRef, useState } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import type { CampReview } from '@/lib/reviews-db'
+
+export type CampReview = {
+  id: number
+  reviewer_name: string
+  reviewer_type: 'tabornik' | 'rodic'
+  camp_name: string | null
+  stars: number
+  review_text: string
+  created_at: string
+}
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 

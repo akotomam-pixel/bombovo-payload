@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { insertReview } from '@/lib/reviews-db'
+import { getPayloadClient } from '@/lib/payload'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -15,7 +15,17 @@ export async function POST(req: NextRequest) {
     if (!reviewText?.trim() || reviewText.trim().length < 10) return NextResponse.json({ error: 'Prosím napíšte recenziu (min. 10 znakov).' }, { status: 400 })
 
     // Save to DB (auto-published, no approval needed)
-    await insertReview({ reviewerName: reviewerName.trim(), reviewerType, campName: campName?.trim(), stars, reviewText: reviewText.trim() })
+    const payload = await getPayloadClient()
+    await payload.create({
+      collection: 'letne-tabory-reviews',
+      data: {
+        reviewerName: reviewerName.trim(),
+        reviewerType,
+        campName: campName?.trim(),
+        stars,
+        reviewText: reviewText.trim(),
+      },
+    })
 
     // Email notification
     const typeLabel = reviewerType === 'tabornik' ? 'Taborník' : 'Rodič taborníka'
