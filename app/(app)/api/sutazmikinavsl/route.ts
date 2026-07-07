@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+function generateKod(): string {
+  return Math.random().toString(36).slice(2, 10).toUpperCase()
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { kod, meno, priezvisko, tabor, hodnotenie, odpoved1, odpoved2, odpoved3, suhlas } = body
+    const { meno, priezvisko, tabor, hodnotenie, odpoved1, odpoved2, odpoved3, suhlas } = body
 
     if (!meno || String(meno).trim().length === 0) {
       return NextResponse.json({ error: 'Meno je povinné.' }, { status: 400 })
@@ -29,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = {
-      kod: kod ? String(kod).trim() : '',
+      kod: generateKod(),
       meno: String(meno).trim(),
       priezvisko: String(priezvisko).trim(),
       tabor: String(tabor).trim(),

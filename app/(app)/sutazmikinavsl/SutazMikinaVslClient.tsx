@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { FiChevronDown, FiCheck } from 'react-icons/fi'
@@ -65,9 +64,6 @@ function FieldLabel({ children, optional }: { children: React.ReactNode; optiona
 }
 
 export default function SutazMikinaVslClient({ camps }: Props) {
-  const searchParams = useSearchParams()
-  const kod = searchParams.get('kod') ?? ''
-
   const [meno, setMeno] = useState('')
   const [priezvisko, setPriezvisko] = useState('')
   const [tabor, setTabor] = useState('')
@@ -104,7 +100,6 @@ export default function SutazMikinaVslClient({ camps }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          kod,
           meno: meno.trim(),
           priezvisko: priezvisko.trim(),
           tabor,
@@ -185,8 +180,6 @@ export default function SutazMikinaVslClient({ camps }: Props) {
               handleSubmit()
             }}
           >
-            <input type="hidden" name="kod" value={kod} readOnly />
-
             <div>
               <FieldLabel>Meno</FieldLabel>
               <input

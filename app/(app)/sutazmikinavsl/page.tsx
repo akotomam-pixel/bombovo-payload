@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { camps as fallbackCamps } from '@/lib/campsData'
@@ -27,9 +26,5 @@ export default async function SutazMikinaVslPage() {
     console.error('SutazMikinaVslPage: failed to fetch Payload data', err)
   }
 
-  return (
-    <Suspense fallback={null}>
-      <SutazMikinaVslClient camps={camps} />
-    </Suspense>
-  )
+  return <SutazMikinaVslClient camps={camps} />
 }
