@@ -139,8 +139,7 @@ export default function SutazMikinaVslClient({ camps }: Props) {
         {/* Headline block */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}>
           <h1 className="text-[28px] font-extrabold leading-tight text-bombovo-dark md:text-[34px]">
-            Zisti, ako si <span className="text-bombovo-blue">3X zvýšiš šance</span> na výhru{' '}
-            <span className="text-bombovo-blue">BOMBOVO mikiny</span>.
+            Zisti, ako si 3X zvýšiš šance na výhru BOMBOVO mikiny.
           </h1>
           <p className="mt-3 text-base text-bombovo-dark/60">Pozri si video nižšie.</p>
         </motion.div>
