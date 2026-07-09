@@ -141,6 +141,11 @@ export default function RegistrationClient({
   const m2Ref = useRef<HTMLInputElement>(null);
   const y2Ref = useRef<HTMLInputElement>(null);
 
+  // Set once the Profis reservation (Objednat) has actually been created, so a
+  // customer retrying after a later, non-critical step fails (extras/finalize)
+  // can't accidentally create a second real reservation for the same term.
+  const orderCreatedRef = useRef(false);
+
   // Accept 1-2 digit day/month so single-digit entries like "5" still assemble correctly
   const makeDateISO = (d: string, m: string, y: string) =>
     d.length >= 1 && m.length >= 1 && y.length === 4
@@ -309,6 +314,14 @@ export default function RegistrationClient({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // A Profis reservation for this session already exists (Objednat succeeded on
+    // a prior attempt) — don't create a second one even if that attempt appeared
+    // to fail later (e.g. the non-blocking finalize step). Just show success.
+    if (orderCreatedRef.current) {
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setSubmitError(null);
     setSubmitErrorNode(null);
     setBirthDateError(false);
@@ -462,6 +475,12 @@ export default function RegistrationClient({
         // ObjednatResult returns ID, Klic, plus id_Klient + cestujiciIds from ObjednavkaDetail
         const { id_Objednavka, klic, id_Klient, cestujiciIds, cestujiciKlientIds, souhlasKlic, klientEmail } = orderData;
 
+        // The reservation now exists in Profis and occupies a seat. Everything past this
+        // point (extras, finalize) is non-blocking — a failure there must never make the
+        // customer think the booking didn't happen and resubmit, which would create a
+        // second real reservation for the same term.
+        orderCreatedRef.current = true;
+
         // ── Step 3: Extra fields (t-shirt + intolerances) ─────────────────────
         // Non-blocking — failure must not prevent order finalization
         try {
@@ -506,17 +525,28 @@ export default function RegistrationClient({
         }
 
         // ── Step 4: Finalize order ────────────────────────────────────────────
-        await fetch('/api/profitour/order/complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id_Objednavka,
-            klic,
-            email: formData.email,
-            name: `${formData.parentFirstName} ${formData.parentLastName}`.trim(),
-            campName,
-          }),
-        });
+        // Non-blocking, same as Step 3 — the reservation already exists in Profis
+        // (orderCreatedRef is already set), so a network failure here must not be
+        // treated as a failed booking.
+        try {
+          const completeRes = await fetch('/api/profitour/order/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id_Objednavka,
+              klic,
+              email: formData.email,
+              name: `${formData.parentFirstName} ${formData.parentLastName}`.trim(),
+              campName,
+            }),
+          });
+          const completeData = await completeRes.json();
+          if (!completeData?.success) {
+            console.error('[prihlaska] order/complete did not finalize the reservation:', completeData?.error, { id_Objednavka });
+          }
+        } catch (completeErr) {
+          console.warn('[prihlaska] order/complete non-blocking error:', completeErr, { id_Objednavka });
+        }
       }
       // If profisTerminId is not set yet, the form still submits but without Profis
       // (legacy flow — useful until all camps have profisTerminId populated)
