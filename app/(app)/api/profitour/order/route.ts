@@ -102,9 +102,24 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // PSČ not found in ObecList means a foreign or non-standard address — allow the order through
-  // without a Profis address (AdresaDomaciInput requires id_Obec which only exists for SK municipalities).
-  // buildAdresaXml returns '' for unknown PSČ and the SOAP call sends i:nil="true" in that case.
+  // A PSČ that LOOKS Slovak (5 digits) but isn't in ObecList is almost always a typo —
+  // block and ask the customer to double check it, but only when ObecList itself actually
+  // returned data (if the lookup service failed, we can't blame the user for a mismatch).
+  // Non-Slovak-format PSČ (CZ/AT/DE/HU etc.) are allowed through without a Profis address.
+  const looksSlovakPsc = (psc: string | undefined): boolean => !!psc && /^\d{3}\s?\d{2}$/.test(psc.trim())
+
+  if (obecListReturnedData) {
+    const parentPsc = input.psc?.replace(/\s/g, '')
+    if (parentPsc && looksSlovakPsc(input.psc) && !pscToObec[parentPsc]) {
+      return NextResponse.json({ error: 'PSC_NOT_FOUND:parent' }, { status: 400 })
+    }
+    for (let i = 0; i < input.cestujici!.length; i++) {
+      const childPsc = input.cestujici![i].psc?.replace(/\s/g, '')
+      if (childPsc && looksSlovakPsc(input.cestujici![i].psc) && !pscToObec[childPsc]) {
+        return NextResponse.json({ error: `PSC_NOT_FOUND:child${i}` }, { status: 400 })
+      }
+    }
+  }
 
   // Build address XML for a given street+psc combination
   const buildAdresaXml = (ulice: string | undefined, psc: string | undefined): string => {
@@ -194,6 +209,16 @@ export async function POST(req: NextRequest) {
   // Build orderer address using the unified PSČ → id_Obec map
   const adresaXml = buildAdresaXml(input.ulice, input.psc)
 
+  // If the structured address couldn't be attached (foreign PSČ, or ObecList lookup
+  // failed outright) but the customer did type an address, keep it from being lost
+  // entirely by writing it into the notes as a backup.
+  let poznamkaFinal = input.poznamka ?? ''
+  if (!adresaXml && (input.ulice || input.mesto || input.psc)) {
+    const backupAddress = `Adresa objednávateľa (nespárovaná s PSČ): ${[input.ulice, input.mesto, input.psc].filter(Boolean).join(', ')}`
+    poznamkaFinal = [poznamkaFinal, backupAddress].filter(Boolean).join(' | ')
+    console.warn('[order] Orderer address could not be matched to a Profis obec, using notes backup:', { ulice: input.ulice, mesto: input.mesto, psc: input.psc })
+  }
+
   try {
     console.log('[order] Calling Profis Objednat with id_Termin:', input.id_Termin, 'id_ZajezdHotel:', input.id_ZajezdHotel, 'id_SkupinaSlevaKombinace:', input.id_SkupinaSlevaKombinace, 'svozTam:', input.svozTamId, 'svozZpet:', input.svozZpetId)
     // Objednat: Context + Data (ObjednavkaTerminInput)
@@ -227,7 +252,7 @@ export async function POST(req: NextRequest) {
           <ns:Telefon>${ex(normalizePhone(input.telefon!))}</ns:Telefon>
           <ns:id_Pohlavi>F</ns:id_Pohlavi>
         </ns:Objednatel>
-        <ns:PoznamkaKlient>${ex(input.poznamka ?? '')}</ns:PoznamkaKlient>
+        <ns:PoznamkaKlient>${ex(poznamkaFinal)}</ns:PoznamkaKlient>
         <ns:Produkt i:type="ns:VlastniProduktTerminInput">
           <ns:Cestujici>
             ${cestujiciXml}

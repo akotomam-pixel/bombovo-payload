@@ -455,17 +455,17 @@ export default function RegistrationClient({
 
         if (!orderRes.ok || orderData.error) {
           if (orderData.error === 'PSC_NOT_FOUND:parent') {
-            setFieldErrors({ zip: 'Prosím zadajte správne PSČ.' });
+            setFieldErrors({ zip: 'Prosím skontrolujte si svoje PSČ.' });
             document.getElementById('field-zip')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
           if (orderData.error === 'PSC_NOT_FOUND:child0') {
-            setFieldErrors({ childZip: 'Prosím zadajte správne PSČ.' });
+            setFieldErrors({ childZip: 'Prosím skontrolujte si svoje PSČ.' });
             document.getElementById('field-childZip')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
           if (orderData.error === 'PSC_NOT_FOUND:child1') {
-            setFieldErrors({ childZip2: 'Prosím zadajte správne PSČ.' });
+            setFieldErrors({ childZip2: 'Prosím skontrolujte si svoje PSČ.' });
             document.getElementById('field-childZip2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
@@ -642,11 +642,14 @@ export default function RegistrationClient({
         setFieldErrors({ email: 'Zadali ste nesprávnu emailovú adresu.' });
         document.getElementById('field-email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else if (msg.includes('Nelze rezervovat') || msg.includes('TerminOvereniDostupnosti')) {
+        // Profis rejects online bookings once a term starts very soon (a lead-time
+        // cutoff on their side, unrelated to remaining capacity) — do not tell the
+        // customer the camp is full, since it usually isn't.
         setSubmitErrorNode(
           <>
-            Tento termín je už plne obsadený, skúste si vybrať iný tábor z našej ponuky táborov, alebo nás kontaktujte na{' '}
+            Tento termín sa začína už veľmi skoro, a online prihlásenie preto nie je možné dokončiť automaticky. Prosím dokončite prihlásenie priamo s nami na{' '}
             <a href="mailto:bombovo@bombovo.sk" className="underline text-blue-600">bombovo@bombovo.sk</a>
-            {' '}alebo telefonicky na číslo{' '}
+            {' '}alebo telefonicky na čísle{' '}
             <a href="tel:+421915774213" className="underline text-blue-600">+421 915 774 213</a>.
           </>
         );
