@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { soapCall, extractTag, escapeXml } from '@/lib/profis'
+import { claimCampSlot, releaseCampSlot, markTermSoldOut } from '@/lib/campCapacity'
 
 export async function POST(req: NextRequest) {
   let input: {
@@ -37,6 +38,20 @@ export async function POST(req: NextRequest) {
   }
   if (!input.cestujici?.length) {
     return NextResponse.json({ error: 'cestujici (travelers) array is required' }, { status: 400 })
+  }
+
+  // Local capacity gate — independent of Profis. Only active for terms that have a
+  // capacityLimit configured in Payload; everything else is unaffected ('no-limit').
+  const claim = await claimCampSlot(input.id_Termin!)
+  if (claim === 'full') {
+    return NextResponse.json({ error: 'TERM_FULL' }, { status: 409 })
+  }
+  let slotClaimed = claim === 'claimed' || claim === 'claimed-fills-term'
+  const releaseIfClaimed = async () => {
+    if (slotClaimed) {
+      slotClaimed = false
+      await releaseCampSlot(input.id_Termin!)
+    }
   }
 
   const ex = escapeXml
@@ -111,11 +126,13 @@ export async function POST(req: NextRequest) {
   if (obecListReturnedData) {
     const parentPsc = input.psc?.replace(/\s/g, '')
     if (parentPsc && looksSlovakPsc(input.psc) && !pscToObec[parentPsc]) {
+      await releaseIfClaimed()
       return NextResponse.json({ error: 'PSC_NOT_FOUND:parent' }, { status: 400 })
     }
     for (let i = 0; i < input.cestujici!.length; i++) {
       const childPsc = input.cestujici![i].psc?.replace(/\s/g, '')
       if (childPsc && looksSlovakPsc(input.cestujici![i].psc) && !pscToObec[childPsc]) {
+        await releaseIfClaimed()
         return NextResponse.json({ error: `PSC_NOT_FOUND:child${i}` }, { status: 400 })
       }
     }
@@ -398,8 +415,20 @@ export async function POST(req: NextRequest) {
       console.warn('[order] ObjednavkaDetail fetch failed (non-blocking):', e)
     }
 
+    // The booking went through — if this was the reservation that filled the local
+    // limit, flip the existing manual "vypredané" flag so the site closes the term
+    // everywhere it's already shown (listing, detail page, registration form).
+    if (claim === 'claimed-fills-term') {
+      try {
+        await markTermSoldOut(input.id_Termin!)
+      } catch (e) {
+        console.error('[order] Failed to auto-mark term sold out:', e)
+      }
+    }
+
     return NextResponse.json({ id_Objednavka, klic, id_Klient, cestujiciIds, cestujiciKlientIds, souhlasKlic, klientEmail })
   } catch (err) {
+    await releaseIfClaimed()
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[profitour/order] Error:', message)
     return NextResponse.json({ error: 'Objednat failed: ' + message }, { status: 500 })

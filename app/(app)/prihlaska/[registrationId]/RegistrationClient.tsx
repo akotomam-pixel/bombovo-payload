@@ -469,6 +469,10 @@ export default function RegistrationClient({
             document.getElementById('field-childZip2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
+          if (orderData.error === 'TERM_FULL') {
+            setSubmitError(`Ľutujeme, tento termín na tábore ${campName} je práve vypredaný. Skúste prosím iný termín, alebo nás kontaktujte na bombovo@bombovo.sk.`);
+            return;
+          }
           throw new Error(orderData.error ?? 'Chyba pri odosielaní objednávky.');
         }
 

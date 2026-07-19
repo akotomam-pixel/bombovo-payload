@@ -376,6 +376,23 @@ export const Camps: CollectionConfig = {
             description: 'Zaškrtnite ak je termín vypredaný — tlačidlo sa zmení na "Vypredané" a prihlásenie bude zablokované.',
           },
         },
+        {
+          name: 'capacityLimit',
+          type: 'number',
+          label: 'Limit rezervácií (voliteľné)',
+          admin: {
+            description: 'Ak vyplnené, systém automaticky ráta úspešné rezervácie tohto termínu a po dosiahnutí tohto počtu termín sám zaškrtne "Vypredané". Nechajte prázdne pre bežné termíny (bez lokálneho limitu).',
+          },
+        },
+        {
+          name: 'reservationsCount',
+          type: 'number',
+          label: 'Počet rezervácií (automaticky)',
+          defaultValue: 0,
+          admin: {
+            description: 'Počíta systém automaticky pri každej úspešnej rezervácii — needitovať ručne, iba na kontrolu alebo reset.',
+          },
+        },
       ],
     },
   ],

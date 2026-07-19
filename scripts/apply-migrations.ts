@@ -123,6 +123,14 @@ async function run() {
     `)
     console.log('✓ payload_locked_documents_rels.letne_tabory_reviews_id')
 
+    // Migration 20260719_000000 — per-term local capacity counter (independent of Profis),
+    // used to auto-close a term after a fixed number of successful reservations.
+    await client.query(`
+      ALTER TABLE "camps_dates" ADD COLUMN IF NOT EXISTS "capacity_limit" numeric;
+      ALTER TABLE "camps_dates" ADD COLUMN IF NOT EXISTS "reservations_count" numeric DEFAULT 0;
+    `)
+    console.log('✓ camps_dates.capacity_limit / reservations_count')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
