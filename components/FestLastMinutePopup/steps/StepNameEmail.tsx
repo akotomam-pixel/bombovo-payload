@@ -4,28 +4,34 @@ import { useState } from 'react'
 
 interface Props {
   headline: string
+  namePlaceholder: string
   emailPlaceholder: string
   submitLabel: string
-  name: string
-  onSuccess: () => void
+  onSuccess: (name: string) => void
   onBack: () => void
 }
 
-export default function StepEmail({
+export default function StepNameEmail({
   headline,
+  namePlaceholder,
   emailPlaceholder,
   submitLabel,
-  name,
   onSuccess,
   onBack,
 }: Props) {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit() {
-    const trimmed = email.trim()
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    const trimmedName = name.trim()
+    const trimmedEmail = email.trim()
+    if (!trimmedName) {
+      setError('Prosím zadaj svoje meno.')
+      return
+    }
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setError('Prosím zadaj platný email.')
       return
     }
@@ -35,7 +41,7 @@ export default function StepEmail({
       const res = await fetch('/api/fest-last-minute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmed, name }),
+        body: JSON.stringify({ email: trimmedEmail, name: trimmedName }),
       })
       const data = await res.json()
       if (!res.ok || data.error) {
@@ -45,7 +51,7 @@ export default function StepEmail({
           window.dataLayer = window.dataLayer || []
           window.dataLayer.push({ event: 'fest_last_minute_lead_submitted' })
         }
-        onSuccess()
+        onSuccess(trimmedName)
       }
     } catch {
       setError('Nastala chyba. Skúste to prosím znova.')
@@ -76,6 +82,15 @@ export default function StepEmail({
         </span>
       </h2>
       <div className="flex flex-col gap-3 w-full">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          placeholder={namePlaceholder}
+          className="border-2 border-bombovo-blue rounded-xl px-4 py-3 w-full focus:outline-none text-bombovo-dark"
+          disabled={loading}
+        />
         <input
           type="email"
           value={email}

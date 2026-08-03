@@ -2,22 +2,20 @@
 
 import { useState } from 'react'
 import StepYesNo from './steps/StepYesNo'
-import StepName from './steps/StepName'
-import StepEmail from './steps/StepEmail'
+import StepNameEmail from './steps/StepNameEmail'
 import StepSuccess from './steps/StepSuccess'
 
 export interface PopupContent {
   photoUrl: string | null
   discountCode: string
   step0Headline: string
+  step0SubHeadline: string
   step0YesLabel: string
   step0NoLabel: string
   step1Headline: string
   step1NamePlaceholder: string
-  step1NextLabel: string
-  step2Headline: string
-  step2EmailPlaceholder: string
-  step2SubmitLabel: string
+  step1EmailPlaceholder: string
+  step1SubmitLabel: string
   step3Headline: string
   step3Body: string
 }
@@ -29,24 +27,20 @@ interface Props extends PopupContent {
 
 export default function PopupModal({ onClose, photoUrl, maxSize, ...content }: Props) {
   const [step, setStep] = useState(0)
-  const [entryName, setEntryName] = useState('')
 
   function handleYes() { setStep(1) }
-  function handleNameNext(name: string) {
-    setEntryName(name)
-    setStep(2)
-  }
   function handleSuccess() {
     localStorage.setItem('bombovo_fest_last_minute_submitted', String(Date.now()))
-    setStep(3)
+    setStep(2)
   }
-  function handleBack() { setStep(1) }
+  function handleBack() { setStep(0) }
 
   const stepContent = (
     <div className="w-full">
       {step === 0 && (
         <StepYesNo
           headline={content.step0Headline}
+          subHeadline={content.step0SubHeadline}
           yesLabel={content.step0YesLabel}
           noLabel={content.step0NoLabel}
           onYes={handleYes}
@@ -54,24 +48,16 @@ export default function PopupModal({ onClose, photoUrl, maxSize, ...content }: P
         />
       )}
       {step === 1 && (
-        <StepName
+        <StepNameEmail
           headline={content.step1Headline}
           namePlaceholder={content.step1NamePlaceholder}
-          nextLabel={content.step1NextLabel}
-          onNext={handleNameNext}
-        />
-      )}
-      {step === 2 && (
-        <StepEmail
-          headline={content.step2Headline}
-          emailPlaceholder={content.step2EmailPlaceholder}
-          submitLabel={content.step2SubmitLabel}
-          name={entryName}
+          emailPlaceholder={content.step1EmailPlaceholder}
+          submitLabel={content.step1SubmitLabel}
           onSuccess={handleSuccess}
           onBack={handleBack}
         />
       )}
-      {step === 3 && (
+      {step === 2 && (
         <StepSuccess
           headline={content.step3Headline}
           body={content.step3Body}

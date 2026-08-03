@@ -37,64 +37,69 @@ export const FestLastMinutePopupGlobal: GlobalConfig = {
       label: 'Zľavový kód',
       defaultValue: 'BOMBOVO',
     },
-    // Step 0
+    // Step 0 — Yes/No
     {
       name: 'step0Headline',
       type: 'text',
       label: 'Krok 0 – Headline',
+      defaultValue: 'Získaj Last Minute zľavu 20 € na Fest animátor fest',
+    },
+    {
+      name: 'step0SubHeadline',
+      type: 'text',
+      label: 'Krok 0 – Podnadpis',
+      defaultValue: 'Chceš túto zľavu?',
     },
     {
       name: 'step0YesLabel',
       type: 'text',
       label: 'Krok 0 – Tlačidlo ÁNO',
+      defaultValue: 'Áno, chcem zľavu!',
     },
     {
       name: 'step0NoLabel',
       type: 'text',
       label: 'Krok 0 – Tlačidlo NIE',
+      defaultValue: 'Nie, ďakujem',
     },
-    // Step 1
+    // Step 1 — Name + Email (single combined step)
     {
       name: 'step1Headline',
       type: 'text',
       label: 'Krok 1 – Headline',
+      defaultValue: 'Zadaj svoje meno a email a získaj zľavu',
     },
     {
       name: 'step1NamePlaceholder',
       type: 'text',
       label: 'Krok 1 – Placeholder mena',
+      defaultValue: 'Tvoje meno',
     },
     {
-      name: 'step1NextLabel',
+      name: 'step1EmailPlaceholder',
       type: 'text',
-      label: 'Krok 1 – Tlačidlo Ďalej',
-    },
-    // Step 2
-    {
-      name: 'step2Headline',
-      type: 'text',
-      label: 'Krok 2 – Headline',
+      label: 'Krok 1 – Placeholder emailu',
+      defaultValue: 'tvoj@email.sk',
     },
     {
-      name: 'step2EmailPlaceholder',
+      name: 'step1SubmitLabel',
       type: 'text',
-      label: 'Krok 2 – Placeholder emailu',
+      label: 'Krok 1 – Tlačidlo Odoslať',
+      defaultValue: 'Získať zľavu',
     },
-    {
-      name: 'step2SubmitLabel',
-      type: 'text',
-      label: 'Krok 2 – Tlačidlo Odoslať',
-    },
-    // Step 3
+    // Step 2 — Success (discount code)
     {
       name: 'step3Headline',
       type: 'text',
-      label: 'Krok 3 – Headline',
+      label: 'Krok 2 – Headline',
+      defaultValue: 'Tvoj zľavový kód je pripravený!',
     },
     {
       name: 'step3Body',
       type: 'textarea',
-      label: 'Krok 3 – Text',
+      label: 'Krok 2 – Text',
+      defaultValue:
+        'Skopíruj si kód nižšie a použi ho pri prihláške na Fest animátor fest. Na tomto termíne ostáva už len posledných pár voľných miest.',
     },
   ],
 }

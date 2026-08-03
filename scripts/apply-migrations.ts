@@ -162,6 +162,15 @@ async function run() {
     `)
     console.log('✓ fest_last_minute_popup table created')
 
+    // Migration 20260803_000001 — collapse fest_last_minute_popup's separate
+    // name/email steps into a single combined step.
+    await client.query(`
+      ALTER TABLE "fest_last_minute_popup" ADD COLUMN IF NOT EXISTS "step0_sub_headline" varchar;
+      ALTER TABLE "fest_last_minute_popup" ADD COLUMN IF NOT EXISTS "step1_email_placeholder" varchar;
+      ALTER TABLE "fest_last_minute_popup" ADD COLUMN IF NOT EXISTS "step1_submit_label" varchar;
+    `)
+    console.log('✓ fest_last_minute_popup.step0_sub_headline / step1_email_placeholder / step1_submit_label')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
