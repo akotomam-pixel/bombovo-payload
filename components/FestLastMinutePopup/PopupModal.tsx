@@ -62,7 +62,6 @@ export default function PopupModal({ onClose, photoUrl, maxSize, ...content }: P
           headline={content.step3Headline}
           body={content.step3Body}
           discountCode={content.discountCode}
-          onClose={onClose}
         />
       )}
     </div>

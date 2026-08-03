@@ -1,21 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-
-// The 9-day term (15.–23.8.2026, 449€, Horský hotel Lomy) — registrationId 1118
-// in Payload's camps_dates table. The static data/camps/fest-animator-fest.ts
-// file lists this term under the wrong id (5); the CTA must point at the real one.
-const CTA_REGISTRATION_ID = '1118'
 
 interface Props {
   headline: string
   body: string
   discountCode: string
-  onClose: () => void
 }
 
-export default function StepSuccess({ headline, body, discountCode, onClose }: Props) {
+export default function StepSuccess({ headline, body, discountCode }: Props) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
@@ -86,12 +79,6 @@ export default function StepSuccess({ headline, body, discountCode, onClose }: P
           )}
         </span>
       </button>
-
-      <Link href={`/prihlaska/${CTA_REGISTRATION_ID}`} className="w-full" onClick={onClose}>
-        <button className="w-full py-4 px-6 bg-bombovo-yellow border-2 border-bombovo-dark text-bombovo-dark font-bold text-lg rounded-xl hover:brightness-95 transition-all duration-150">
-          Prihlásiť sa na tábor
-        </button>
-      </Link>
     </div>
   )
 }
