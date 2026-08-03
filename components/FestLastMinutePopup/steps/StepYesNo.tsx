@@ -1,5 +1,7 @@
 'use client'
 
+import type { ReactNode } from 'react'
+
 interface Props {
   headline: string
   subHeadline: string
@@ -9,28 +11,48 @@ interface Props {
   onNo: () => void
 }
 
+// Highlights any "<number> €" amount inside a headline line as a red badge.
+function renderLineWithAmount(line: string, keyPrefix: string): ReactNode[] {
+  const amountRegex = /(\d+\s?€)/g
+  const nodes: ReactNode[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+  let i = 0
+
+  while ((match = amountRegex.exec(line)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(line.slice(lastIndex, match.index))
+    }
+    nodes.push(
+      <span
+        key={`${keyPrefix}-amount-${i}`}
+        className="inline-block px-2 py-0.5 mx-1 rounded-md bg-bombovo-red text-white"
+      >
+        {match[0]}
+      </span>,
+    )
+    lastIndex = match.index + match[0].length
+    i += 1
+  }
+  if (lastIndex < line.length) {
+    nodes.push(line.slice(lastIndex))
+  }
+  return nodes
+}
+
 export default function StepYesNo({ headline, subHeadline, yesLabel, noLabel, onYes, onNo }: Props) {
+  // "|" in the CMS headline text is a manual line-break marker.
+  const lines = headline.split('|').map((l) => l.trim())
+
   return (
     <div className="flex flex-col items-center gap-6 w-full">
       <div className="flex flex-col items-center gap-3">
         <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight">
-          <span className="relative inline-block text-bombovo-dark">
-            {headline}
-            <svg
-              className="absolute left-0 -bottom-2 w-full"
-              viewBox="0 0 200 12"
-              preserveAspectRatio="none"
-              style={{ height: '10px' }}
-            >
-              <path
-                d="M 0 8 Q 25 2, 50 6 T 100 6 T 150 6 T 200 8"
-                stroke="#DF2935"
-                strokeWidth="3"
-                fill="none"
-                strokeLinecap="round"
-              />
-            </svg>
-          </span>
+          {lines.map((line, i) => (
+            <span key={i} className="block">
+              {renderLineWithAmount(line, `line-${i}`)}
+            </span>
+          ))}
         </h2>
         <p className="text-bombovo-dark/60 font-medium text-base text-center">{subHeadline}</p>
       </div>

@@ -171,6 +171,15 @@ async function run() {
     `)
     console.log('✓ fest_last_minute_popup.step0_sub_headline / step1_email_placeholder / step1_submit_label')
 
+    // Migration 20260803_000002 — giveaway_entries.source is a real Postgres
+    // enum; adding the option to GiveawayEntries.ts alone doesn't add the DB
+    // label, so /api/fest-last-minute's payload.create() 500ed on every
+    // submit until this ran.
+    await client.query(`
+      ALTER TYPE "enum_giveaway_entries_source" ADD VALUE IF NOT EXISTS 'fest-last-minute-popup';
+    `)
+    console.log('✓ enum_giveaway_entries_source + fest-last-minute-popup')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

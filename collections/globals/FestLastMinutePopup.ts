@@ -42,7 +42,10 @@ export const FestLastMinutePopupGlobal: GlobalConfig = {
       name: 'step0Headline',
       type: 'text',
       label: 'Krok 0 – Headline',
-      defaultValue: 'Získaj Last Minute zľavu 20 € na Fest animátor fest',
+      defaultValue: 'Získaj Last Minute zľavu 20 € na|Fest animátor fest',
+      admin: {
+        description: 'Použi "|" na vynútenie zalomenia riadku. Sumy v tvare "20 €" sa automaticky zvýraznia červeným boxom.',
+      },
     },
     {
       name: 'step0SubHeadline',
