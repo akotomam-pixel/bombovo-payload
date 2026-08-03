@@ -588,7 +588,7 @@ export interface GiveawayEntry {
   email: string;
   name: string;
   selectedCamp?: string | null;
-  source?: ('popup' | 'landing-page' | 'homepage' | 'other') | null;
+  source?: ('popup' | 'landing-page' | 'homepage' | 'fest-last-minute-popup' | 'other') | null;
   /**
    * Automaticky sa aktualizuje po úspešnom odoslaní do Ecomail.
    */

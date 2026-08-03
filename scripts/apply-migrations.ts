@@ -131,6 +131,37 @@ async function run() {
     `)
     console.log('✓ camps_dates.capacity_limit / reservations_count')
 
+    // Migration 20260803_000000 — create fest_last_minute_popup table for the
+    // new "Popup: Fest Last Minute" global (mirrors giveaway_popup's shape).
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS "fest_last_minute_popup" (
+        "id" serial PRIMARY KEY,
+        "is_enabled" boolean DEFAULT false,
+        "delay_seconds" numeric DEFAULT 5,
+        "photo_id" integer,
+        "discount_code" varchar DEFAULT 'BOMBOVO',
+        "step0_headline" varchar,
+        "step0_yes_label" varchar,
+        "step0_no_label" varchar,
+        "step1_headline" varchar,
+        "step1_name_placeholder" varchar,
+        "step1_next_label" varchar,
+        "step2_headline" varchar,
+        "step2_email_placeholder" varchar,
+        "step2_submit_label" varchar,
+        "step3_headline" varchar,
+        "step3_body" varchar,
+        "updated_at" timestamp(3) with time zone,
+        "created_at" timestamp(3) with time zone
+      );
+      DO $$ BEGIN
+        ALTER TABLE "fest_last_minute_popup"
+        ADD CONSTRAINT "fest_last_minute_popup_photo_id_media_id_fk"
+        FOREIGN KEY ("photo_id") REFERENCES "media"("id") ON DELETE SET NULL;
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    `)
+    console.log('✓ fest_last_minute_popup table created')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

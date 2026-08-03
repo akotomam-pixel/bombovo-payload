@@ -8,7 +8,46 @@ import Footer from '@/components/Footer'
 import { getCampDetails } from '@/data/camps'
 import type { CampDetailData } from '@/data/camps/types'
 import CampDetailClient from './CampDetailClient'
+import FestLastMinutePopup from '@/components/FestLastMinutePopup'
 import { TRACK_COOKIE, parseTrackCookie, logTrackEvent } from '@/lib/trackEvents'
+
+const FEST_LAST_MINUTE_CAMP_ID = 'fest-animator-fest'
+
+// Fetches the "fest-last-minute-popup" global — only rendered on the
+// /letne-tabory/fest-animator-fest route.
+async function getFestLastMinutePopupProps() {
+  try {
+    const payload = await getPayloadClient()
+    const g = (await payload.findGlobal({ slug: 'fest-last-minute-popup', depth: 1 })) as any
+
+    if (!g?.isEnabled) return null
+
+    let photoUrl: string | null = null
+    if (g?.photo && typeof g.photo === 'object' && g.photo.url) {
+      photoUrl = g.photo.url
+    }
+
+    return {
+      delaySeconds: g?.delaySeconds ?? 5,
+      photoUrl,
+      discountCode: g?.discountCode ?? 'BOMBOVO',
+      step0Headline: g?.step0Headline ?? '',
+      step0YesLabel: g?.step0YesLabel ?? '',
+      step0NoLabel: g?.step0NoLabel ?? '',
+      step1Headline: g?.step1Headline ?? '',
+      step1NamePlaceholder: g?.step1NamePlaceholder ?? '',
+      step1NextLabel: g?.step1NextLabel ?? '',
+      step2Headline: g?.step2Headline ?? '',
+      step2EmailPlaceholder: g?.step2EmailPlaceholder ?? '',
+      step2SubmitLabel: g?.step2SubmitLabel ?? '',
+      step3Headline: g?.step3Headline ?? '',
+      step3Body: g?.step3Body ?? '',
+    }
+  } catch (err) {
+    console.error('FestLastMinutePopup: failed to fetch Payload global', err)
+    return null
+  }
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -136,6 +175,10 @@ export default async function CampDetailPage({
     campDetails = getCampDetails(campId)
   }
 
+  // Route-scoped popup: only fetched/rendered on /letne-tabory/fest-animator-fest
+  const festLastMinutePopupProps =
+    campId === FEST_LAST_MINUTE_CAMP_ID ? await getFestLastMinutePopupProps() : null
+
   // Attribution funnel: log a "viewed_camp" event if this visitor carries
   // a first-touch wristband from an advertorial/ad click.
   if (campDetails) {
@@ -234,6 +277,7 @@ export default async function CampDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <CampDetailClient campDetails={campDetails} campId={campId} />
+      {festLastMinutePopupProps && <FestLastMinutePopup {...festLastMinutePopupProps} />}
     </>
   )
 }

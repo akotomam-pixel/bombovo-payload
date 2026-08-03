@@ -134,7 +134,7 @@ export const festAnimatorFestData: CampDetailData = {
         discountedPrice: '359.00 €',
       },
       {
-        registrationId: 5,
+        registrationId: 1118,
         start: '15.08.2026',
         end: '23.08.2026',
         days: 9,
