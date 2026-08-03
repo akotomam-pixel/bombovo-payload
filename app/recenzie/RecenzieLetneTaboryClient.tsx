@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -134,6 +134,31 @@ function AggregateStats({ reviews, onWriteReview }: { reviews: CampReview[]; onW
         </button>
       </div>
     </div>
+  )
+}
+
+function CampFilter({
+  options,
+  value,
+  onChange,
+}: {
+  options: { name: string; count: number }[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-[#080708] bg-white focus:outline-none focus:border-[#3772FF] focus:ring-2 focus:ring-[#3772FF]/20 transition-colors duration-150"
+    >
+      <option value="">Všetky tábory ({options.reduce((s, o) => s + o.count, 0)})</option>
+      {options.map((o) => (
+        <option key={o.name} value={o.name}>
+          {o.name} ({o.count})
+        </option>
+      ))}
+    </select>
   )
 }
 
@@ -380,7 +405,23 @@ export default function RecenzieLetneTaboryClient({
 }) {
   const [formOpen, setFormOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [selectedCamp, setSelectedCamp] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
+
+  const campOptions = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const r of reviews) {
+      if (r.camp_name) counts.set(r.camp_name, (counts.get(r.camp_name) ?? 0) + 1)
+    }
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+  }, [reviews])
+
+  const filteredReviews = useMemo(
+    () => (selectedCamp ? reviews.filter((r) => r.camp_name === selectedCamp) : reviews),
+    [reviews, selectedCamp]
+  )
 
   function openForm() {
     setFormOpen(true)
@@ -426,7 +467,16 @@ export default function RecenzieLetneTaboryClient({
       <Header />
 
       <div className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
-        <AggregateStats reviews={reviews} onWriteReview={openForm} />
+        {campOptions.length > 0 && (
+          <div className="flex items-center gap-3 mb-6">
+            <label htmlFor="campFilter" className="text-sm font-semibold text-[#080708] shrink-0">
+              Filtrovať podľa tábora
+            </label>
+            <CampFilter options={campOptions} value={selectedCamp} onChange={setSelectedCamp} />
+          </div>
+        )}
+
+        <AggregateStats reviews={filteredReviews} onWriteReview={openForm} />
 
         <div ref={formRef}>
           {formOpen && (
@@ -445,11 +495,18 @@ export default function RecenzieLetneTaboryClient({
               Napísať recenziu
             </button>
           </div>
+        ) : filteredReviews.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-4xl mb-4">🔍</p>
+            <p className="text-gray-500 text-base">Pre tento tábor zatiaľ nemáme žiadne recenzie.</p>
+          </div>
         ) : (
           <div>
-            <h2 className="font-bold text-lg text-[#080708] mb-2">Top recenzie od taborníkov</h2>
+            <h2 className="font-bold text-lg text-[#080708] mb-2">
+              {selectedCamp ? `Recenzie: ${selectedCamp}` : 'Top recenzie od taborníkov'}
+            </h2>
             <div className="divide-y divide-gray-100">
-              {reviews.map((review) => (
+              {filteredReviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
             </div>
