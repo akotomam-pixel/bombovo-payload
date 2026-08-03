@@ -11,24 +11,24 @@ interface Props {
   onNo: () => void
 }
 
-// Highlights any "<number> €" amount inside a headline line as a red badge.
-function renderLineWithAmount(line: string, keyPrefix: string): ReactNode[] {
-  const amountRegex = /(\d+\s?€)/g
+// "*word*" in a headline line highlights that word as a red badge.
+function renderLineWithHighlight(line: string, keyPrefix: string): ReactNode[] {
+  const highlightRegex = /\*([^*]+)\*/g
   const nodes: ReactNode[] = []
   let lastIndex = 0
   let match: RegExpExecArray | null
   let i = 0
 
-  while ((match = amountRegex.exec(line)) !== null) {
+  while ((match = highlightRegex.exec(line)) !== null) {
     if (match.index > lastIndex) {
       nodes.push(line.slice(lastIndex, match.index))
     }
     nodes.push(
       <span
-        key={`${keyPrefix}-amount-${i}`}
+        key={`${keyPrefix}-highlight-${i}`}
         className="inline-block px-2 py-0.5 mx-1 rounded-md bg-bombovo-red text-white"
       >
-        {match[0]}
+        {match[1]}
       </span>,
     )
     lastIndex = match.index + match[0].length
@@ -50,7 +50,7 @@ export default function StepYesNo({ headline, subHeadline, yesLabel, noLabel, on
         <h2 className="text-2xl md:text-3xl font-bold text-bombovo-dark text-center leading-tight">
           {lines.map((line, i) => (
             <span key={i} className="block">
-              {renderLineWithAmount(line, `line-${i}`)}
+              {renderLineWithHighlight(line, `line-${i}`)}
             </span>
           ))}
         </h2>

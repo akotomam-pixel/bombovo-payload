@@ -1321,7 +1321,7 @@ export interface FestLastMinutePopup {
   photo?: (number | null) | Media;
   discountCode?: string | null;
   /**
-   * Použi "|" na vynútenie zalomenia riadku. Sumy v tvare "20 €" sa automaticky zvýraznia červeným boxom.
+   * Použi "|" na vynútenie zalomenia riadku. Text obalený hviezdičkami, napr. "*zľavu*", sa zvýrazní červeným boxom.
    */
   step0Headline?: string | null;
   step0SubHeadline?: string | null;
