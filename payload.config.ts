@@ -14,6 +14,7 @@ import { TeacherReviews } from './collections/TeacherReviews'
 import { LetneTaboryReviews } from './collections/LetneTaboryReviews'
 import { SkolyVPrirode } from './collections/globals/SkolyVPrirode'
 import { GiveawayPopupGlobal } from './collections/globals/GiveawayPopup'
+import { FestLastMinutePopupGlobal } from './collections/globals/FestLastMinutePopup'
 import { FooterGlobal } from './collections/globals/Footer'
 import { HomepageGlobal } from './collections/globals/Homepage'
 import { LetneTaboryHlavna } from './collections/globals/LetneTaboryHlavna'
@@ -30,7 +31,15 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Camps, Strediska, GiveawayEntries, TeacherReviews, LetneTaboryReviews],
-  globals: [HomepageGlobal, LetneTaboryHlavna, SkolyVPrirode, GiveawayPopupGlobal, FooterGlobal, NasaMisiaGlobal],
+  globals: [
+    HomepageGlobal,
+    LetneTaboryHlavna,
+    SkolyVPrirode,
+    GiveawayPopupGlobal,
+    FestLastMinutePopupGlobal,
+    FooterGlobal,
+    NasaMisiaGlobal,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

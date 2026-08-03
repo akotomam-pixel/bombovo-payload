@@ -74,7 +74,6 @@ export interface Config {
     'giveaway-entries': GiveawayEntry;
     'teacher-reviews': TeacherReview;
     'letne-tabory-reviews': LetneTaboryReview;
-    'ad-events': AdEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -89,7 +88,6 @@ export interface Config {
     'giveaway-entries': GiveawayEntriesSelect<false> | GiveawayEntriesSelect<true>;
     'teacher-reviews': TeacherReviewsSelect<false> | TeacherReviewsSelect<true>;
     'letne-tabory-reviews': LetneTaboryReviewsSelect<false> | LetneTaboryReviewsSelect<true>;
-    'ad-events': AdEventsSelect<false> | AdEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -104,6 +102,7 @@ export interface Config {
     'letne-tabory-hlavna': LetneTaboryHlavna;
     'skoly-v-prirode': SkolyVPrirode;
     'giveaway-popup': GiveawayPopup;
+    'fest-last-minute-popup': FestLastMinutePopup;
     footer: Footer;
     'nasa-misia': NasaMisia;
   };
@@ -112,6 +111,7 @@ export interface Config {
     'letne-tabory-hlavna': LetneTaboryHlavnaSelect<false> | LetneTaboryHlavnaSelect<true>;
     'skoly-v-prirode': SkolyVPrirodeSelect<false> | SkolyVPrirodeSelect<true>;
     'giveaway-popup': GiveawayPopupSelect<false> | GiveawayPopupSelect<true>;
+    'fest-last-minute-popup': FestLastMinutePopupSelect<false> | FestLastMinutePopupSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     'nasa-misia': NasaMisiaSelect<false> | NasaMisiaSelect<true>;
   };
@@ -416,6 +416,14 @@ export interface Camp {
          * Zaškrtnite ak je termín vypredaný — tlačidlo sa zmení na "Vypredané" a prihlásenie bude zablokované.
          */
         vypredane?: boolean | null;
+        /**
+         * Ak vyplnené, systém automaticky ráta úspešné rezervácie tohto termínu a po dosiahnutí tohto počtu termín sám zaškrtne "Vypredané". Nechajte prázdne pre bežné termíny (bez lokálneho limitu).
+         */
+        capacityLimit?: number | null;
+        /**
+         * Počíta systém automaticky pri každej úspešnej rezervácii — needitovať ručne, iba na kontrolu alebo reset.
+         */
+        reservationsCount?: number | null;
         id?: string | null;
       }[]
     | null;
@@ -638,32 +646,6 @@ export interface LetneTaboryReview {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ad-events".
- */
-export interface AdEvent {
-  id: number;
-  type: 'view' | 'click';
-  /**
-   * Which advertorial page sent this event, e.g. advertorial-3
-   */
-  advertorial?: string | null;
-  /**
-   * Where the user was redirected (clicks only), e.g. /letne-tabory
-   */
-  destination?: string | null;
-  utmSource?: string | null;
-  utmMedium?: string | null;
-  utmCampaign?: string | null;
-  utmContent?: string | null;
-  fbclid?: string | null;
-  ip?: string | null;
-  userAgent?: string | null;
-  referrer?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -711,8 +693,8 @@ export interface PayloadLockedDocument {
         value: number | TeacherReview;
       } | null)
     | ({
-        relationTo: 'ad-events';
-        value: number | AdEvent;
+        relationTo: 'letne-tabory-reviews';
+        value: number | LetneTaboryReview;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -942,6 +924,8 @@ export interface CampsSelect<T extends boolean = true> {
         profisTerminId?: T;
         id_ZajezdHotel?: T;
         vypredane?: T;
+        capacityLimit?: T;
+        reservationsCount?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -1088,25 +1072,6 @@ export interface LetneTaboryReviewsSelect<T extends boolean = true> {
   reviewText?: T;
   photo?: T;
   status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ad-events_select".
- */
-export interface AdEventsSelect<T extends boolean = true> {
-  type?: T;
-  advertorial?: T;
-  destination?: T;
-  utmSource?: T;
-  utmMedium?: T;
-  utmCampaign?: T;
-  utmContent?: T;
-  fbclid?: T;
-  ip?: T;
-  userAgent?: T;
-  referrer?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1344,6 +1309,33 @@ export interface GiveawayPopup {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fest-last-minute-popup".
+ */
+export interface FestLastMinutePopup {
+  id: number;
+  /**
+   * Vypni pre skrytie popupu na tejto route.
+   */
+  isEnabled?: boolean | null;
+  delaySeconds?: number | null;
+  photo?: (number | null) | Media;
+  discountCode?: string | null;
+  step0Headline?: string | null;
+  step0YesLabel?: string | null;
+  step0NoLabel?: string | null;
+  step1Headline?: string | null;
+  step1NamePlaceholder?: string | null;
+  step1NextLabel?: string | null;
+  step2Headline?: string | null;
+  step2EmailPlaceholder?: string | null;
+  step2SubmitLabel?: string | null;
+  step3Headline?: string | null;
+  step3Body?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
 export interface Footer {
@@ -1558,6 +1550,30 @@ export interface GiveawayPopupSelect<T extends boolean = true> {
   step2SubmitLabel?: T;
   step3SuccessHeadline?: T;
   step3SuccessBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fest-last-minute-popup_select".
+ */
+export interface FestLastMinutePopupSelect<T extends boolean = true> {
+  isEnabled?: T;
+  delaySeconds?: T;
+  photo?: T;
+  discountCode?: T;
+  step0Headline?: T;
+  step0YesLabel?: T;
+  step0NoLabel?: T;
+  step1Headline?: T;
+  step1NamePlaceholder?: T;
+  step1NextLabel?: T;
+  step2Headline?: T;
+  step2EmailPlaceholder?: T;
+  step2SubmitLabel?: T;
+  step3Headline?: T;
+  step3Body?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
