@@ -2,6 +2,13 @@ import { getPayloadClient } from '@/lib/payload'
 import { getStrediskoById } from '@/data/strediska'
 import StrediskoDetailClient from './StrediskoDetailClient'
 import type { StrediskoDetailData } from './StrediskoDetailClient'
+import LomyClient from './LomyClient'
+import { lomyContent } from '@/data/lomy/content'
+
+// Horský hotel Lomy is being rebuilt from scratch for the 2027 season. It renders
+// its own client from a dedicated content file (`data/lomy/`), while the other
+// five strediská keep the original Payload-backed detail page below untouched.
+const REBUILT_SLUG = 'horsky-hotel-lomy'
 
 // ─── Default hardcoded accordion content (shared across all strediska) ────────
 const DEFAULT_ZLAVA = [
@@ -172,6 +179,10 @@ export default async function StrediskoDetailPage({
   params: Promise<{ strediskoId: string }>
 }) {
   const { strediskoId } = await params
+
+  if (strediskoId === REBUILT_SLUG) {
+    return <LomyClient content={lomyContent} />
+  }
 
   let detailData: StrediskoDetailData | null = null
 
