@@ -217,11 +217,11 @@ export default function SutazMikinaVslClient({ camps }: Props) {
   return (
     <div className="min-h-screen bg-white">
       {/* Logo — fixed corner mark */}
-      <div className="fixed right-4 top-4 z-50 h-16 w-16">
+      <div className="fixed right-3 top-3 z-50 h-11 w-11 md:right-4 md:top-4 md:h-16 md:w-16">
         <Image src="/images/hat1.jpg" alt="Bombovo Logo" width={64} height={64} priority className="h-full w-full object-contain" />
       </div>
 
-      <main className="mx-auto flex w-full flex-col items-center px-5 pb-16 pt-16 text-center">
+      <main className="mx-auto flex w-full flex-col items-center px-5 pb-16 pt-24 text-center md:pt-16">
         {/* Headline block */}
         <motion.div
           className="mx-auto w-full max-w-md"
