@@ -417,22 +417,18 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             {/* ── Info box (desktop) ── */}
             <aside className="rise hidden lg:col-span-5 lg:block" style={{ animationDelay: '240ms' }}>
               {/*
-                The second discount star is gone: the price box now states the
-                discount as arithmetic (205 € struck through → 175 €, −30 € chip),
-                which says the same thing more precisely than a badge repeating a
-                figure already on the photo. The deadline moves into this block so
-                the time limit stays attached to the price.
-              */}
-              {/*
                 Built as a field card rather than a pricing card: a dark slab
                 carrying the money, cut from the pale body by the Vtáčnik ridgeline
                 the hotel sits under. The uppercase micro-labels are gone — the
                 facts read as plain sentences with drawn icons, which suits a
                 teacher scanning for facts more than a SaaS tier does.
+
+                The discount lives on the photo seal only; the slab states the
+                price and nothing else.
               */}
               <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
                 {/* ── Price slab ── */}
-                <div className="relative bg-[#080708] px-7 pb-9 pt-6">
+                <div className="relative bg-[#080708] px-7 pb-10 pt-6">
                   <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
 
                   {/* Discounted figure leads; the original sits beside it, struck through. */}
@@ -447,18 +443,11 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   </p>
 
                   {/*
-                    The deadline sentence is gone from here: the seal on the photo
-                    already states the amount and the date. What this card needs is
-                    only the figure that explains the strikethrough, so the saving
-                    stays as a chip and nothing else is repeated.
+                    Nothing follows the figures here. The seal on the photo carries
+                    the discount and its deadline, and the strikethrough already
+                    shows the saving — so the chip, the deadline sentence and the
+                    programme note are all removed rather than restating it.
                   */}
-                  <p className="mt-3">
-                    <span className="inline-flex items-center rounded-[5px] bg-[#DF2935] px-2.5 py-1 text-[12.5px] font-bold text-white tabular-nums">
-                      {discount.amount} {discount.unit}
-                    </span>
-                  </p>
-
-                  <p className="mt-2.5 text-[12.5px] text-[#E6E8E6]/45">({price.note})</p>
 
                   {/* Ridgeline: the slab's lower edge is a skyline, not a straight cut. */}
                   <svg
