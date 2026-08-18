@@ -54,6 +54,19 @@ export interface HeroCta {
   href: string
 }
 
+/**
+ * The one review shown in the hero. The draft carries this same quote in its
+ * proof strip (section 2); showing it here is a deliberate preview, and both
+ * places should read from this one field rather than duplicating the string.
+ */
+export interface HeroReview {
+  quote: string
+  author: string
+  school: string
+  /** Whole stars, 1–5, as recorded in the draft. */
+  stars: number
+}
+
 export interface LomyHero {
   /** Small line above the venue name inside the h1. */
   kicker: string
@@ -76,6 +89,7 @@ export interface LomyHero {
     note: string
   }
   facts: HeroFact[]
+  review: HeroReview
   discount: Discount
   ctas: {
     primary: HeroCta

@@ -180,7 +180,7 @@ function FactIcon({ label }: { label: string }) {
 
 export default function LomyClient({ content }: { content: LomyContent }) {
   const { hero } = content
-  const { photos, price, facts, discount, ctas, rating } = hero
+  const { photos, price, facts, discount, ctas, rating, review } = hero
 
   const lgRef = useRef<any>(null)
   const [mobileIndex, setMobileIndex] = useState(0)
@@ -448,7 +448,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             </div>
 
             {/* ── Info box (desktop) ── */}
-            <aside className="rise hidden lg:col-span-5 lg:block" style={{ animationDelay: '240ms' }}>
+            {/*
+              A flex column so the review below can absorb the leftover height:
+              the price card keeps its natural size and the review stretches, so
+              this column bottoms out level with the photo + thumbnail strip.
+            */}
+            <aside className="rise hidden lg:col-span-5 lg:flex lg:flex-col" style={{ animationDelay: '240ms' }}>
               {/*
                 Built as a field card rather than a pricing card: a dark slab
                 carrying the money, cut from the pale body by the Vtáčnik ridgeline
@@ -532,6 +537,46 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   </div>
                 </div>
               </div>
+
+              {/*
+                Review, filling the gap left beside the thumbnail strip. `flex-1`
+                takes exactly the height the price card doesn't use, so this
+                column ends level with the photo and thumbnails opposite.
+
+                The quote is the draft's proof-strip review (section 2), shown
+                here as a preview. The oversized blue quote mark carries the
+                block on its own — no star badge or card chrome around it.
+              */}
+              <figure className="mt-6 flex flex-1 flex-col justify-center rounded-[14px] bg-[#EFF1EF] px-6 py-5">
+                {/*
+                  The one place a serif appears. It is a punctuation glyph used
+                  as a graphic, not a typeface change — the page's copy stays
+                  Poppins throughout.
+                */}
+                <span
+                  aria-hidden
+                  className="block text-[52px] font-bold leading-[0.62] text-bombovo-blue"
+                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                >
+                  &ldquo;
+                </span>
+
+                <blockquote className="mt-2.5 text-[14.5px] font-medium leading-[1.45] text-[#22251F]">
+                  {review.quote}
+                </blockquote>
+
+                <figcaption className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                  <span className="text-[13px] font-bold text-[#080708]">{review.author}</span>
+                  <span className="text-[12.5px] text-[#6C726C]">{review.school}</span>
+                  <span className="flex items-center gap-[3px]" aria-label={`${review.stars} z 5 hviezdičiek`}>
+                    {Array.from({ length: review.stars }, (_, i) => (
+                      <svg key={i} viewBox="0 0 24 24" className="h-[13px] w-[13px] text-bombovo-yellow" fill="currentColor" aria-hidden>
+                        <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
+                      </svg>
+                    ))}
+                  </span>
+                </figcaption>
+              </figure>
             </aside>
           </div>
         </div>

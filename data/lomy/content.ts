@@ -64,6 +64,16 @@ export const lomyContent: LomyContent = {
       { label: 'Dostupné termíny', value: 'apríl – jún', icon: '📅' },
     ],
 
+    // Transcribed from the draft's proof strip (section 2). Section 2 will show
+    // the same review; when it is built it should read this field rather than
+    // repeat the string, so the quote only ever lives in one place.
+    review: {
+      quote: 'Máme veľmi krásne zážitky a spomienky. Ďakujeme.',
+      author: 'Mgr. Lucia Paločková',
+      school: 'ZŠ Sama Cambela (82 detí)',
+      stars: 5,
+    },
+
     discount: {
       amount: '−30 €',
       unit: '/ dieťa',
