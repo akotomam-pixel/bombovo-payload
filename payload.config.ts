@@ -3,6 +3,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { uploadthingStorage } from '@payloadcms/storage-uploadthing'
 import path from 'path'
 import { buildConfig } from 'payload'
+import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Users } from './collections/Users'
@@ -41,6 +42,11 @@ export default buildConfig({
     NasaMisiaGlobal,
   ],
   editor: lexicalEditor(),
+  // Required for the imageSizes defined on the Media collection (thumbnail /
+  // card / hero, all WebP). Payload does not pick sharp up automatically —
+  // without this it logs "Image resizing is enabled ... but sharp not
+  // installed" and stores every upload at full size.
+  sharp,
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
