@@ -16,6 +16,38 @@ import type { LomyContent } from '@/data/lomy/types'
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
 /**
+ * A consistent wave edge, generated rather than hand-plotted.
+ *
+ * Every crest is the same height and every wavelength the same width, joined by
+ * smooth cubic curves whose control points sit at quarter-wavelengths — so the
+ * curve leaves each peak and arrives at the next with matching tangents and the
+ * seam never kinks. Earlier hand-written paths used arbitrary points and read as
+ * a torn edge; this cannot, because the geometry is periodic by construction.
+ */
+const WAVE_PATH = (() => {
+  const width = 400
+  const halfWaves = 10 // 5 full waves across the card
+  const amplitude = 4.5
+  const mid = 9
+  const half = width / halfWaves
+
+  // Each half-wave is one cubic from crest to trough (or back). Placing both
+  // control points at the horizontal midpoint of the segment — one level with
+  // the start, one level with the end — makes the tangent flat at every turning
+  // point, so consecutive segments meet smoothly.
+  let d = `M0 ${mid - amplitude}`
+  for (let i = 0; i < halfWaves; i++) {
+    const from = i % 2 === 0 ? mid - amplitude : mid + amplitude
+    const to = i % 2 === 0 ? mid + amplitude : mid - amplitude
+    const x0 = half * i
+    const x1 = half * (i + 1)
+    const cx = x0 + half / 2
+    d += ` C ${cx} ${from}, ${cx} ${to}, ${x1} ${to}`
+  }
+  return `${d} L ${width} 18 L 0 18 Z`
+})()
+
+/**
  * Discount badge, drawn as the venue's amphitheatre seen from above.
  *
  * The areál's defining structure is a ring of timber benches stepping down to a
@@ -428,18 +460,19 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               */}
               <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
                 {/* ── Price slab ── */}
-                <div className="relative bg-[#3E443E] px-7 pb-10 pt-6">
-                  <p className="text-[12px] font-medium text-[#E6E8E6]/70">Cena {price.prefix}</p>
+                {/* Brand grey #E6E8E6 — the same surface the site header uses, dark text on it. */}
+                <div className="relative bg-bombovo-gray px-7 pb-10 pt-6">
+                  <p className="text-[12px] font-medium text-[#5C625C]">Cena {price.prefix}</p>
 
                   {/* Discounted figure leads; the original sits beside it, struck through. */}
                   <p className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-white tabular-nums">
+                    <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-bombovo-dark tabular-nums">
                       {price.discounted}
                     </span>
-                    <span className="text-[19px] font-medium text-[#E6E8E6]/60 line-through decoration-[#FF6670] decoration-2 tabular-nums">
+                    <span className="text-[19px] font-medium text-[#8A908A] line-through decoration-bombovo-red decoration-2 tabular-nums">
                       {price.amount}
                     </span>
-                    <span className="text-[15px] text-[#E6E8E6]/75">{price.unit}</span>
+                    <span className="text-[15px] text-[#5C625C]">{price.unit}</span>
                   </p>
 
                   {/*
@@ -449,23 +482,14 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     programme note are all removed rather than restating it.
                   */}
 
-                  {/*
-                    Ridgeline: a low skyline with one dominant summit, drawn with
-                    shallow slopes and rounded joins. The earlier version alternated
-                    steep spikes at an even pitch, which read as a torn edge rather
-                    than a horizon.
-                  */}
+                  {/* Even wave edge, generated from WAVE_PATH — see its comment. */}
                   <svg
                     viewBox="0 0 400 18"
                     preserveAspectRatio="none"
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[18px] w-full"
+                    className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[16px] w-full"
                   >
-                    <path
-                      d="M0 18V12.8l52-4.1 40 2.6 46-7.4 38 5.9 44-3.2 40 4.6 48-6.1 44 5.3 48-2.9V18Z"
-                      fill="#FBFCFB"
-                      strokeLinejoin="round"
-                    />
+                    <path d={WAVE_PATH} fill="#FBFCFB" />
                   </svg>
                 </div>
 
