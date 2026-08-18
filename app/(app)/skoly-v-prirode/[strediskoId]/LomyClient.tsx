@@ -465,14 +465,18 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 <div className="relative bg-bombovo-dark px-7 pb-10 pt-6">
                   <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
 
-                  {/* Discounted figure leads; the original sits beside it, struck through. */}
+                  {/*
+                    Struck price first, then the price actually charged — the
+                    reading order of the saving. Both are set at the same size so
+                    the comparison is like-for-like; the discounted figure carries
+                    the emphasis through weight and full-strength white instead.
+                  */}
                   <p className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-medium leading-none tracking-[-0.035em] text-[#E6E8E6]/50 line-through decoration-bombovo-red decoration-[3px] tabular-nums">
+                      {price.amount}
+                    </span>
                     <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-white tabular-nums">
                       {price.discounted}
-                    </span>
-                    {/* Red reads cleanly against the dark, so the strike keeps it. */}
-                    <span className="text-[19px] font-medium text-[#E6E8E6]/50 line-through decoration-bombovo-red decoration-2 tabular-nums">
-                      {price.amount}
                     </span>
                     <span className="text-[15px] text-[#E6E8E6]/70">{price.unit}</span>
                   </p>

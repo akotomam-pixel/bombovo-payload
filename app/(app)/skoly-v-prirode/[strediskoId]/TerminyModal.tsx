@@ -42,6 +42,28 @@ const MONTHS: Record<string, string> = {
 }
 const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 
+/**
+ * Inert by design: the enquiry form is a later piece. Styled as a real control
+ * and stating that it is not yet active, rather than looking broken or failing
+ * on click.
+ */
+function BookButton({ content, className = '' }: { content: LomyTerminy; className?: string }) {
+  return (
+    <button
+      type="button"
+      disabled
+      aria-disabled="true"
+      title={`${content.bookLabel} — ${content.bookNote}`}
+      className={`flex shrink-0 cursor-not-allowed flex-col items-center rounded-[8px] bg-bombovo-red/90 px-3.5 py-2 text-white ${className}`}
+    >
+      <span className="text-[11px] font-bold leading-none tracking-[0.04em]">{content.bookLabel}</span>
+      <span className="mt-1 text-[9.5px] font-semibold uppercase leading-none tracking-[0.08em] text-white/75">
+        {content.bookNote}
+      </span>
+    </button>
+  )
+}
+
 export default function TerminyModal({
   content,
   open,
@@ -123,7 +145,10 @@ export default function TerminyModal({
 
   if (!mounted || (!open && !visible)) return null
 
+  // Separate trackers: the desktop table and the mobile list each walk the
+  // items once, so one shared counter would suppress the mobile headings.
   let lastMonth = ''
+  let lastMobileMonth = ''
 
   return ReactDOM.createPortal(
     <div
@@ -145,7 +170,7 @@ export default function TerminyModal({
       <div
         ref={panelRef}
         onClick={stop}
-        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[86vh] sm:max-w-[560px] sm:rounded-[18px] ${
+        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[86vh] sm:max-w-[560px] sm:rounded-[18px] md:max-w-[840px] ${
           open ? 'translate-y-0 opacity-100 sm:scale-100' : 'translate-y-3 opacity-0 sm:translate-y-0 sm:scale-[0.97]'
         }`}
       >
@@ -183,93 +208,141 @@ export default function TerminyModal({
         </div>
 
         {/* ── Dates ── */}
-        <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-5 pt-2 sm:px-5">
-          {content.items.map((t) => {
-            const month = monthOf(t.range)
-            const showMonth = month !== lastMonth
-            lastMonth = month
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {/*
+            Desktop: a real table on the same four-column structure the original
+            stredisko page uses (termín / dĺžka / cena / action), with a status
+            column added and this page's dark-and-yellow treatment in place of
+            the old plain yellow header.
+          */}
+          <div className="hidden md:block">
+            <div className="sticky top-0 z-10 grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 border-b border-[#E6E8E6] bg-bombovo-dark px-7 py-3">
+              {['Termín', 'Dostupnosť', 'Cena', ''].map((h, i) => (
+                <p
+                  key={h || i}
+                  className={`text-[11px] font-bold uppercase tracking-[0.14em] text-bombovo-yellow ${
+                    i === 2 ? 'text-right' : ''
+                  } ${i === 3 ? 'w-[124px]' : ''}`}
+                >
+                  {h}
+                </p>
+              ))}
+            </div>
 
-            return (
-              <li key={t.range}>
-                {showMonth && (
-                  <p className="px-2 pb-1.5 pt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#8A908A] first:pt-1">
-                    {month}
-                  </p>
-                )}
+            <div className="px-3 pb-4">
+              {content.items.map((t) => {
+                const month = monthOf(t.range)
+                const showMonth = month !== lastMonth
+                lastMonth = month
 
-                <div className="flex items-center gap-3 rounded-[12px] px-2 py-2.5 transition-colors duration-150 hover:bg-[#F7F8F7] sm:gap-4 sm:px-3">
-                  {/* Drawn calendar-leaf glyph, yellow on the brand dark. */}
-                  <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] bg-bombovo-dark">
-                    <svg viewBox="0 0 24 24" className="h-[19px] w-[19px] text-bombovo-yellow" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <rect x="3.4" y="5.6" width="17.2" height="15" rx="2.2" />
-                      <path d="M3.4 10.2h17.2" />
-                      <path d="M8.2 3.4v3.6M15.8 3.4v3.6" />
-                    </svg>
-                  </span>
+                return (
+                  <div key={t.range}>
+                    {showMonth && (
+                      <p className="px-4 pb-1 pt-4 text-[10.5px] font-bold uppercase tracking-[0.16em] text-[#A2A8A2]">
+                        {month}
+                      </p>
+                    )}
 
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-semibold leading-snug text-bombovo-dark tabular-nums sm:text-[15px]">
-                      {t.range}
-                    </p>
-                    <p className="mt-1 flex items-center gap-2 text-[12px] text-[#8A908A]">
-                      <span>{content.duration}</span>
-                      <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
+                    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 rounded-[10px] px-4 py-2.5 transition-colors duration-150 hover:bg-[#F7F8F7]">
+                      <div className="min-w-0">
+                        <p className="text-[14.5px] font-semibold leading-snug text-bombovo-dark tabular-nums">
+                          {t.range}
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-[#8A908A]">{content.duration}</p>
+                      </div>
+
                       {/*
                         Status is hand-maintained content, not derived state. The
-                        marker is brand yellow rather than the usual green — the
-                        palette has no green, and inventing one for a single dot
-                        would break it.
+                        marker is brand yellow — the palette has no green, and
+                        inventing one for a single dot would break it.
                       */}
-                      <span className="inline-flex items-center gap-1.5 font-semibold text-[#5C625C]">
-                        <span aria-hidden className="h-[6px] w-[6px] rounded-full bg-bombovo-yellow" />
+                      <p className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#5C625C]">
+                        <span aria-hidden className="h-[7px] w-[7px] rounded-full bg-bombovo-yellow" />
                         {t.status}
-                      </span>
-                    </p>
-                  </div>
+                      </p>
 
-                  <div className="shrink-0 text-right">
-                    <p className="flex items-baseline justify-end gap-1.5">
-                      <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
-                        {t.price}
-                      </span>
-                      <span className="text-[17px] font-bold leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums">
-                        {t.discounted}
-                      </span>
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-[#8A908A]">{content.deadline}</p>
-                  </div>
+                      <div className="text-right">
+                        <p className="flex items-baseline justify-end gap-2">
+                          <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
+                            {t.price}
+                          </span>
+                          <span className="text-[17px] font-bold leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums">
+                            {t.discounted}
+                          </span>
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-[#8A908A]">{content.deadline}</p>
+                      </div>
 
-                  {/*
-                    Inert by design: the enquiry form is a later piece. It is
-                    styled as a real control and announces itself as not yet
-                    active rather than looking broken or failing on click.
-                  */}
-                  <button
-                    type="button"
-                    disabled
-                    aria-disabled="true"
-                    title={`${content.bookLabel} — ${content.bookNote}`}
-                    className="hidden shrink-0 cursor-not-allowed flex-col items-center rounded-[8px] bg-bombovo-red/90 px-3.5 py-2 text-white sm:flex"
-                  >
-                    <span className="text-[11px] font-bold leading-none tracking-[0.04em]">
-                      {content.bookLabel}
+                      <BookButton content={content} className="w-[124px]" />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Mobile: the stacked cards stay — the right pattern on a narrow screen. */}
+          <ul className="px-4 pb-5 pt-2 md:hidden">
+            {content.items.map((t) => {
+              const month = monthOf(t.range)
+              const showMonth = month !== lastMobileMonth
+              lastMobileMonth = month
+
+              return (
+                <li key={t.range}>
+                  {showMonth && (
+                    <p className="px-2 pb-1.5 pt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#8A908A] first:pt-1">
+                      {month}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-3 rounded-[12px] px-2 py-2.5">
+                    <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] bg-bombovo-dark">
+                      <svg viewBox="0 0 24 24" className="h-[19px] w-[19px] text-bombovo-yellow" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <rect x="3.4" y="5.6" width="17.2" height="15" rx="2.2" />
+                        <path d="M3.4 10.2h17.2" />
+                        <path d="M8.2 3.4v3.6M15.8 3.4v3.6" />
+                      </svg>
                     </span>
-                    <span className="mt-1 text-[9.5px] font-semibold uppercase leading-none tracking-[0.08em] text-white/75">
-                      {content.bookNote}
-                    </span>
-                  </button>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[14px] font-semibold leading-snug text-bombovo-dark tabular-nums">
+                        {t.range}
+                      </p>
+                      <p className="mt-1 flex items-center gap-2 text-[12px] text-[#8A908A]">
+                        <span>{content.duration}</span>
+                        <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
+                        <span className="inline-flex items-center gap-1.5 font-semibold text-[#5C625C]">
+                          <span aria-hidden className="h-[6px] w-[6px] rounded-full bg-bombovo-yellow" />
+                          {t.status}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <p className="flex items-baseline justify-end gap-1.5">
+                        <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
+                          {t.price}
+                        </span>
+                        <span className="text-[17px] font-bold leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums">
+                          {t.discounted}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-[#8A908A]">{content.deadline}</p>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
 
         {/*
           On mobile the per-row button is dropped — twelve red buttons in a
           narrow sheet crowds the dates themselves — and the same message is
           given once at the foot instead.
         */}
-        <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))] sm:hidden">
+        <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))] md:hidden">
           <p className="text-center text-[12px] text-[#5C625C]">
             Rezervácia termínu bude dostupná čoskoro.
           </p>
