@@ -15,18 +15,17 @@ import type { LomyContent } from '@/data/lomy/types'
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
-/** Points for the sale-star burst, drawn in a 0–100 viewBox. */
-const BURST = (() => {
-  const spikes = 14
-  const [outer, inner, c] = [50, 41.5, 50]
-  return Array.from({ length: spikes * 2 }, (_, i) => {
-    const r = i % 2 === 0 ? outer : inner
-    const a = (Math.PI / spikes) * i - Math.PI / 2
-    return `${(c + r * Math.cos(a)).toFixed(2)},${(c + r * Math.sin(a)).toFixed(2)}`
-  }).join(' ')
-})()
-
-function DiscountStar({
+/**
+ * Discount badge, drawn as the venue's amphitheatre seen from above.
+ *
+ * The areál's defining structure is a ring of timber benches stepping down to a
+ * stone fire pit (see `/images/Skoly v Prirode/lomy.png`), so the badge is built
+ * from concentric arcs around a centre rather than the clip-art starburst it
+ * replaces. The rings are broken by small gaps the way the real seating is
+ * broken by its access steps, which keeps it reading as drawn rather than
+ * generated.
+ */
+function DiscountSeal({
   amount,
   deadline,
   size,
@@ -37,23 +36,107 @@ function DiscountStar({
   size: number
   className?: string
 }) {
+  // Tiered seating: outer rings are the benches, each notched by a stepped aisle.
+  const tiers = [
+    { r: 47, gap: 7, rot: -14 },
+    { r: 42, gap: 9, rot: 24 },
+    { r: 37, gap: 8, rot: -62 },
+  ]
+
   return (
     <svg
       viewBox="0 0 100 100"
       width={size}
       height={size}
       role="img"
-      aria-label={`Zľava ${amount} ${deadline}`}
+      aria-label={`Zľava ${amount}, ${deadline}`}
       className={className}
-      style={{ fontFamily: 'inherit', filter: 'drop-shadow(0 6px 16px rgba(223,41,53,0.32))' }}
+      style={{ fontFamily: 'inherit', filter: 'drop-shadow(0 8px 20px rgba(223,41,53,0.34))' }}
     >
-      <polygon points={BURST} fill="#DF2935" />
-      <text x="50" y="49" textAnchor="middle" fill="#FFFFFF" fontSize="21" fontWeight="700" letterSpacing="-1">
+      {/* Fire-pit centre — the solid ground the figure sits on. */}
+      <circle cx="50" cy="50" r="33" fill="#DF2935" />
+
+      {/* Bench tiers, each an arc left open at its aisle. */}
+      {tiers.map((t) => {
+        const circumference = 2 * Math.PI * t.r
+        return (
+          <circle
+            key={t.r}
+            cx="50"
+            cy="50"
+            r={t.r}
+            fill="none"
+            stroke="#DF2935"
+            strokeWidth="3.1"
+            strokeLinecap="round"
+            strokeDasharray={`${circumference - t.gap} ${t.gap}`}
+            transform={`rotate(${t.rot} 50 50)`}
+            opacity={0.92}
+          />
+        )
+      })}
+
+      <text x="50" y="48" textAnchor="middle" fill="#FFFFFF" fontSize="20" fontWeight="700" letterSpacing="-1">
         {amount}
       </text>
-      <text x="50" y="64" textAnchor="middle" fill="#FFFFFF" fontSize="9.5" fontWeight="600" opacity="0.9">
+      {/* Hairline rule under the figure, echoing the tier lines. */}
+      <line x1="37" y1="54.5" x2="63" y2="54.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.45" />
+      <text x="50" y="65" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="600" opacity="0.92">
         {deadline}
       </text>
+    </svg>
+  )
+}
+
+/**
+ * Icons for the info-box rows, drawn to this venue rather than pulled from a set.
+ *
+ * Each is built from the same vocabulary as the photo: the ridgeline behind the
+ * hotel, the A-frame chalet roofs, the season the place is open. Consistent
+ * 24-unit box, 1.7 stroke, round caps — so they read as one hand.
+ */
+const FACT_ICONS: Record<string, JSX.Element> = {
+  // Peak with a marked summit — the Vtáčnik valley the hotel sits in.
+  Lokalita: (
+    <>
+      <path d="M3 19.5h18L14.2 7.4 11 12.6 8.7 9.3 3 19.5Z" />
+      <circle cx="14.2" cy="7.4" r="1.4" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // Two A-frame chalets side by side — beds for a whole class.
+  Kapacita: (
+    <>
+      <path d="M2.6 19.5 8 8.4l5.4 11.1" />
+      <path d="M5.4 14.2h5.2" />
+      <path d="M13.5 19.5 17.8 10l4.3 9.5" />
+      <path d="M15.7 15.2h4.2" />
+    </>
+  ),
+  // Sun arc over a horizon — the spring-to-summer window the venue runs.
+  'Dostupné termíny': (
+    <>
+      <path d="M2.5 18.6h19" />
+      <path d="M6.2 18.6a5.8 5.8 0 0 1 11.6 0" />
+      <path d="M12 4.4v2.1M5.1 7.3l1.5 1.5M18.9 7.3l-1.5 1.5" />
+    </>
+  ),
+}
+
+function FactIcon({ label }: { label: string }) {
+  const glyph = FACT_ICONS[label]
+  if (!glyph) return null
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-[18px] w-[18px] shrink-0 text-[#3772FF]"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      {glyph}
     </svg>
   )
 }
@@ -91,15 +174,23 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
   // Focus rings switch from yellow to blue on the light ground: #FDCA40 has too
   // little contrast against white to read as a focus state.
+  /*
+    The primary sits on a physical base: a darker blue edge under the face gives
+    it depth, and pressing it travels down onto that edge rather than just
+    dimming. The secondary is deliberately quieter — an outline that fills in on
+    hover — so the pair reads as one decision, not two competing buttons. Focus
+    rings are blue: #FDCA40 has too little contrast against white to register.
+  */
   const ctaPrimary =
-    'inline-flex items-center justify-center rounded-[10px] bg-[#3772FF] px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.02em] text-white ' +
-    'shadow-[0_6px_18px_-6px_rgba(55,114,255,0.55)] transition-[background-color,box-shadow,transform] duration-200 ease-out ' +
-    'hover:bg-[#2A5CE0] hover:shadow-[0_10px_24px_-8px_rgba(55,114,255,0.6)] active:translate-y-px ' +
+    'group/cta relative inline-flex items-center justify-center rounded-[9px] bg-[#3772FF] px-6 py-3.5 text-center text-[13.5px] font-bold leading-tight tracking-[0.045em] text-white ' +
+    'shadow-[0_3px_0_0_#1E49B8,0_10px_22px_-10px_rgba(55,114,255,0.75)] transition-[background-color,box-shadow,transform] duration-150 ease-out ' +
+    'hover:bg-[#2F66EE] hover:shadow-[0_3px_0_0_#1E49B8,0_16px_28px_-12px_rgba(55,114,255,0.85)] ' +
+    'active:translate-y-[3px] active:shadow-[0_0_0_0_#1E49B8,0_6px_14px_-10px_rgba(55,114,255,0.7)] ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   const ctaSecondary =
-    'inline-flex items-center justify-center rounded-[10px] border border-[#D6DAD6] bg-white px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.01em] text-[#2B2E2B] ' +
-    'transition-[background-color,border-color,transform] duration-200 ease-out hover:border-[#B9BFB9] hover:bg-[#F4F6F4] active:translate-y-px ' +
+    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.02em] text-[#2B2E2B] ' +
+    'transition-[background-color,border-color,color,transform] duration-150 ease-out hover:border-[#080708] hover:bg-[#080708] hover:text-white active:translate-y-px ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   return (
@@ -199,43 +290,24 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       style={{ background: 'linear-gradient(180deg, rgba(8,7,8,0) 40%, rgba(8,7,8,0.5) 100%)' }}
                     />
 
-                    {/* Site markers keyed to the legend below — they name what's in this frame */}
-                    {main.markers?.map((m, i) => (
-                      <span
-                        key={m.label}
-                        aria-hidden
-                        className="pointer-events-none absolute flex h-[26px] w-[26px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#FDCA40]/80 bg-[#080708]/75 text-[11px] font-semibold text-[#FDCA40] backdrop-blur-[2px]"
-                        style={{ left: `${m.x}%`, top: `${m.y}%` }}
-                      >
-                        {i + 1}
-                      </span>
-                    ))}
-
+                    {/*
+                      The numbered pins and their legend are gone: the facilities
+                      are things you'd find in the areál, not steps in an order,
+                      so numbering them implied a sequence that doesn't exist. The
+                      captioned thumbnail strip below already names each one.
+                    */}
                     <span className="pointer-events-none absolute bottom-3 left-3 rounded-[6px] bg-[#080708]/70 px-2.5 py-1.5 text-[11px] font-medium text-[#E6E8E6] backdrop-blur-[2px]">
                       Zobraziť všetkých {photos.length} fotiek
                     </span>
                   </button>
 
-                  {/* Discount star, placement 1 of 2: on the primary photo */}
-                  <DiscountStar
+                  {/* Amphitheatre seal, placement 1 of 1: on the primary photo. */}
+                  <DiscountSeal
                     amount={discount.amount}
                     deadline={discount.deadline}
                     size={118}
                     className="pointer-events-none absolute -right-3 -top-4 -rotate-[9deg]"
                   />
-
-                  {main.markers && (
-                    <figcaption className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                      {main.markers.map((m, i) => (
-                        <span key={m.label} className="inline-flex items-center gap-2 text-[12.5px] text-[#4A4F4A]">
-                          <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#080708] text-[10px] font-semibold text-[#FDCA40]">
-                            {i + 1}
-                          </span>
-                          {m.label}
-                        </span>
-                      ))}
-                    </figcaption>
-                  )}
                 </figure>
 
                 <div className="mt-4 grid grid-cols-4 gap-3">
@@ -287,9 +359,9 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
                   />
 
-                  {/* Discount star rides the primary photo, matching desktop */}
+                  {/* Seal rides the primary photo, matching desktop */}
                   {mobileIndex === 0 && (
-                    <DiscountStar
+                    <DiscountSeal
                       amount={discount.amount}
                       deadline={discount.deadline}
                       size={86}
@@ -331,56 +403,85 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 figure already on the photo. The deadline moves into this block so
                 the time limit stays attached to the price.
               */}
-              <div className="relative rounded-[14px] bg-white p-7 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_20px_44px_-28px_rgba(8,7,8,0.28)] ring-1 ring-[#E6E8E6]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8A908A]">
-                  Cena {price.prefix}
-                </p>
+              {/*
+                Built as a field card rather than a pricing card: a dark slab
+                carrying the money, cut from the pale body by the Vtáčnik ridgeline
+                the hotel sits under. The uppercase micro-labels are gone — the
+                facts read as plain sentences with drawn icons, which suits a
+                teacher scanning for facts more than a SaaS tier does.
+              */}
+              <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
+                {/* ── Price slab ── */}
+                <div className="relative bg-[#080708] px-7 pb-9 pt-6">
+                  <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
 
-                {/* Discounted figure leads; the original sits beside it, struck through. */}
-                <p className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="text-[clamp(2rem,3vw,2.6rem)] font-bold leading-none tracking-[-0.03em] text-[#080708] tabular-nums">
-                    {price.discounted}
-                  </span>
-                  <span className="text-[19px] font-medium text-[#9AA09A] line-through decoration-[#DF2935] decoration-2 tabular-nums">
-                    {price.amount}
-                  </span>
-                  <span className="text-[15px] text-[#4A4F4A]">{price.unit}</span>
-                </p>
+                  {/* Discounted figure leads; the original sits beside it, struck through. */}
+                  <p className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-white tabular-nums">
+                      {price.discounted}
+                    </span>
+                    <span className="text-[19px] font-medium text-[#E6E8E6]/45 line-through decoration-[#DF2935] decoration-2 tabular-nums">
+                      {price.amount}
+                    </span>
+                    <span className="text-[15px] text-[#E6E8E6]/70">{price.unit}</span>
+                  </p>
 
-                <p className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                  <span className="inline-flex items-center rounded-[6px] bg-[#DF2935] px-2.5 py-1 text-[12.5px] font-bold text-white tabular-nums">
-                    {discount.amount} {discount.unit}
-                  </span>
-                  <span className="text-[12.5px] font-medium text-[#4A4F4A]">
-                    pri rezervácii {discount.deadline}
-                  </span>
-                </p>
+                  <p className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                    <span className="inline-flex items-center rounded-[5px] bg-[#DF2935] px-2.5 py-1 text-[12.5px] font-bold text-white tabular-nums">
+                      {discount.amount} {discount.unit}
+                    </span>
+                    <span className="text-[12.5px] font-medium text-[#E6E8E6]/75">
+                      pri rezervácii {discount.deadline}
+                    </span>
+                  </p>
 
-                <p className="mt-2.5 text-[12.5px] text-[#8A908A]">({price.note})</p>
+                  <p className="mt-2.5 text-[12.5px] text-[#E6E8E6]/45">({price.note})</p>
 
-                <dl className="mt-6 border-y border-[#E6E8E6]">
-                  {facts.map((f, i) => (
-                    <div
-                      key={f.label}
-                      className={`flex items-baseline justify-between gap-4 py-3.5 ${
-                        i > 0 ? 'border-t border-[#E6E8E6]' : ''
-                      }`}
-                    >
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A908A]">
-                        {f.label}
-                      </dt>
-                      <dd className="text-right text-[15px] font-medium text-[#080708]">{f.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+                  {/* Ridgeline: the slab's lower edge is a skyline, not a straight cut. */}
+                  <svg
+                    viewBox="0 0 400 26"
+                    preserveAspectRatio="none"
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[26px] w-full"
+                  >
+                    <path
+                      d="M0 26V15.5l38-8.2 31 6.4 27-9.1 34 11.3 30-5.6 26 8.9 33-12.4 29 9.7 31-6.1 25 7.4 34-9.8 32 10.6V26Z"
+                      fill="#FBFCFB"
+                    />
+                  </svg>
+                </div>
 
-                <div className="mt-6 flex flex-col gap-2.5">
-                  <a href={ctas.primary.href} className={ctaPrimary}>
-                    {ctas.primary.label}
-                  </a>
-                  <a href={ctas.secondary.href} className={ctaSecondary}>
-                    {ctas.secondary.label}
-                  </a>
+                {/* ── Facts ── */}
+                <div className="px-7 pb-7 pt-5">
+                  <dl>
+                    {facts.map((f, i) => (
+                      <div
+                        key={f.label}
+                        className={`flex items-start gap-3 py-3 ${
+                          i > 0 ? 'border-t border-[#EAECEA]' : ''
+                        }`}
+                      >
+                        <span className="mt-[3px]">
+                          <FactIcon label={f.label} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <dt className="text-[12px] font-medium text-[#8A908A]">{f.label}</dt>
+                          <dd className="mt-0.5 text-[15px] font-semibold leading-snug text-[#080708]">
+                            {f.value}
+                          </dd>
+                        </div>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <div className="mt-6 flex flex-col gap-2.5">
+                    <a href={ctas.primary.href} className={ctaPrimary}>
+                      {ctas.primary.label}
+                    </a>
+                    <a href={ctas.secondary.href} className={ctaSecondary}>
+                      {ctas.secondary.label}
+                    </a>
+                  </div>
                 </div>
               </div>
             </aside>
