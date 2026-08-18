@@ -72,12 +72,19 @@ design and code work.
 
 ---
 
-## Also outstanding (unrelated, both pre-existing)
+## Also outstanding (unrelated, pre-existing)
 
-- **`sharp` not installed** — image resizing is disabled. Log says:
-  *"Image resizing is enabled for one or more collections, but sharp not
-  installed."* Its npm install script was skipped by npm's default script
-  blocking.
 - **React version mismatch in the admin panel** — Payload wants React >= 19,
-  project has 18.3.1. `/admin` returns HTTP 200, but the log shows an
-  unhandled rejection. Pre-existing; worth watching if admin misbehaves.
+  project has 18.3.1. `/admin` returns HTTP 200 and works in practice, but the
+  log shows an unhandled rejection, so parts of the admin UI may misbehave or
+  silently fail to save. Fixing means upgrading React across the whole site —
+  a deliberate project with testing, not a quick change. Pre-existing, not
+  caused by the 2026-08-18 machine rebuild.
+
+## Resolved
+
+- ~~**`sharp` not installed**~~ — misdiagnosed. sharp was installed and loading
+  fine; `payload.config.ts` simply never passed it to `buildConfig`, so the
+  imageSizes in `collections/Media.ts` were ignored and uploads were stored at
+  full size. Fixed in commit `4afc58d`. Existing media is unchanged; only new
+  uploads are resized.
