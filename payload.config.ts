@@ -49,6 +49,11 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
+    // NEVER auto-sync the schema. DATABASE_URI points at the live production
+    // database, so Payload's default dev-mode "push" would diff the code
+    // against real data and interactively offer to alter/drop columns.
+    // Schema changes go through migrations/ + scripts/apply-migrations.ts only.
+    push: false,
   }),
   plugins: [
     uploadthingStorage({
