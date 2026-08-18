@@ -83,7 +83,39 @@ export interface LomyHero {
   }
 }
 
+/** One bookable session. */
+export interface Termin {
+  /** Range as shown, e.g. "05.04. – 09.04.2027". */
+  range: string
+  /** Undiscounted price for this date, e.g. "205 €". */
+  price: string
+  /** Price after the standing discount, e.g. "175 €". */
+  discounted: string
+  /**
+   * Booking status, e.g. "Voľné". Maintained by hand — confirmed directly by the
+   * client. If a capacity system is wired up later it should write this field
+   * rather than a new one.
+   */
+  status: string
+}
+
+export interface LomyTerminy {
+  title: string
+  /** Names the venue, so the dialog is unambiguous with several tabs open. */
+  subtitle: string
+  /** Trip length shared by every session in the list, e.g. "5 dní". */
+  duration: string
+  /** Repeated under each price, e.g. "do 31.10". */
+  deadline: string
+  /** Label on the per-row button. */
+  bookLabel: string
+  /** Why that button does nothing yet. */
+  bookNote: string
+  items: Termin[]
+}
+
 export interface LomyContent {
   slug: string
   hero: LomyHero
+  terminy: LomyTerminy
 }

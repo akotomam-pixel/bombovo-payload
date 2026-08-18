@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import LightGallery from 'lightgallery/react'
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
@@ -10,6 +10,7 @@ import 'lightgallery/css/lg-thumbnail.css'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import TerminyModal from './TerminyModal'
 import type { LomyContent } from '@/data/lomy/types'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
@@ -155,16 +156,12 @@ const FACT_ICONS: Record<string, JSX.Element> = {
   ),
 }
 
-/**
- * Brand yellow on a grey disc. #FDCA40 needs a dark ground to stay legible on
- * the pale card, but full black read too heavy beside the rest of the box, so
- * the disc is the brand grey pushed dark enough to carry the yellow.
- */
+/** Brand yellow on the brand dark — the strongest contrast the palette allows. */
 function FactIcon({ label }: { label: string }) {
   const glyph = FACT_ICONS[label]
   if (!glyph) return null
   return (
-    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-[#575E57]">
+    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-bombovo-dark">
       <svg
         viewBox="0 0 24 24"
         className="h-[17px] w-[17px] text-[#FDCA40]"
@@ -188,6 +185,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const lgRef = useRef<any>(null)
   const [mobileIndex, setMobileIndex] = useState(0)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  // Both hero CTAs open the termíny dialog; neither scrolls to an anchor.
+  const [terminyOpen, setTerminyOpen] = useState(false)
+  const openTerminy = useCallback(() => setTerminyOpen(true), [])
+  const closeTerminy = useCallback(() => setTerminyOpen(false), [])
 
   const galleryDynamicEl = useMemo(
     () => photos.map((p) => ({ src: p.src, thumb: opt(p.src, 400), subHtml: `<h4>${p.alt}</h4>` })),
@@ -507,7 +508,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                           <FactIcon label={f.label} />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <dt className="text-[12px] font-medium text-[#8A908A]">{f.label}</dt>
+                          <dt className="text-[12px] font-semibold text-bombovo-blue">{f.label}</dt>
                           <dd className="mt-0.5 text-[15px] font-semibold leading-snug text-[#080708]">
                             {f.value}
                           </dd>
@@ -517,12 +518,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   </dl>
 
                   <div className="mt-6 flex flex-col gap-2.5">
-                    <a href={ctas.primary.href} className={ctaPrimary}>
+                    <button type="button" onClick={openTerminy} className={ctaPrimary}>
                       {ctas.primary.label}
-                    </a>
-                    <a href={ctas.secondary.href} className={ctaSecondary}>
+                    </button>
+                    <button type="button" onClick={openTerminy} className={ctaSecondary}>
                       {ctas.secondary.label}
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -552,9 +553,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 <span className="text-[#8A908A]">{discount.deadline}</span>
               </p>
             </div>
-            <a href={ctas.primary.href} className={`${ctaPrimary} shrink-0 px-4 py-3 text-[12px]`}>
+            <button
+              type="button"
+              onClick={openTerminy}
+              className={`${ctaPrimary} shrink-0 px-4 py-3 text-[12px]`}
+            >
               {ctas.primary.label}
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -563,6 +568,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
       <div aria-hidden className="h-[76px] lg:hidden" />
 
       <Footer />
+
+      <TerminyModal content={content.terminy} open={terminyOpen} onClose={closeTerminy} />
 
       <LightGallery
         onInit={(detail) => {
