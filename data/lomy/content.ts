@@ -45,9 +45,13 @@ export const lomyContent: LomyContent = {
       { src: placeholder('lomy-bazen'), alt: 'Vonkajší bazén', isPlaceholder: true },
     ],
 
+    // 205 € základná cena − 30 € zľava = 175 €. `discounted` is stored rather
+    // than computed: both figures are copy, and the arithmetic must stay visible
+    // to whoever edits the price so the two never drift apart.
     price: {
       prefix: 'od',
       amount: '205 €',
+      discounted: '175 €',
       unit: '/ 5 dní',
       note: 'bez animačného programu',
     },
@@ -69,7 +73,8 @@ export const lomyContent: LomyContent = {
     // Both CTAs point at the termíny + kontakt block (draft section 7), which is
     // a later prompt. The anchor resolves once that section exists.
     ctas: {
-      primary: { label: 'Vybrať termín', href: '#terminy' },
+      // All caps is deliberate copy, not a CSS transform — confirmed with the client.
+      primary: { label: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY', href: '#terminy' },
       secondary: { label: 'Kontaktujte nás', href: '#terminy' },
     },
   },

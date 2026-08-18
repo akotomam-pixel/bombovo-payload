@@ -89,15 +89,18 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const strip = photos.slice(1, 5)
   const remaining = photos.length - 5
 
+  // Focus rings switch from yellow to blue on the light ground: #FDCA40 has too
+  // little contrast against white to read as a focus state.
   const ctaPrimary =
-    'inline-flex items-center justify-center rounded-[3px] bg-[#3772FF] px-6 py-3.5 text-[14px] font-semibold tracking-[0.01em] text-white ' +
-    'transition-[background-color,transform] duration-200 ease-out hover:bg-[#2A5CE0] active:translate-y-px ' +
-    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDCA40]'
+    'inline-flex items-center justify-center rounded-[10px] bg-[#3772FF] px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.02em] text-white ' +
+    'shadow-[0_6px_18px_-6px_rgba(55,114,255,0.55)] transition-[background-color,box-shadow,transform] duration-200 ease-out ' +
+    'hover:bg-[#2A5CE0] hover:shadow-[0_10px_24px_-8px_rgba(55,114,255,0.6)] active:translate-y-px ' +
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   const ctaSecondary =
-    'inline-flex items-center justify-center rounded-[3px] border border-[#E6E8E6]/25 px-6 py-3.5 text-[14px] font-semibold tracking-[0.01em] text-[#E6E8E6] ' +
-    'transition-[background-color,border-color,transform] duration-200 ease-out hover:border-[#E6E8E6]/55 hover:bg-white/[0.06] active:translate-y-px ' +
-    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDCA40]'
+    'inline-flex items-center justify-center rounded-[10px] border border-[#D6DAD6] bg-white px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.01em] text-[#2B2E2B] ' +
+    'transition-[background-color,border-color,transform] duration-200 ease-out hover:border-[#B9BFB9] hover:bg-[#F4F6F4] active:translate-y-px ' +
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   return (
     <main className="min-h-screen bg-white">
@@ -107,52 +110,44 @@ export default function LomyClient({ content }: { content: LomyContent }) {
       <Header />
 
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#080708]">
-        {/* Ambient depth: two low-opacity washes drawn from the brand palette. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              'radial-gradient(120% 80% at 8% -10%, rgba(55,114,255,0.16), transparent 62%), radial-gradient(90% 70% at 100% 110%, rgba(253,202,64,0.09), transparent 60%)',
-          }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.045] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          }}
-        />
+      {/*
+        Clean light ground: a single faint tint (#F7F8F7, derived from the brand
+        gray #E6E8E6) marks the hero as its own plane, with the info card in pure
+        white lifted above it. Depth comes from tone and shadow only — the
+        gradients, noise and tinted washes of the dark version are gone.
+      */}
+      <section className="relative overflow-hidden bg-[#F7F8F7]">
+        {/* Hairline seam against the white page below. */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[#E6E8E6]" />
 
         <div className="relative mx-auto max-w-7xl px-4 pb-14 pt-9 sm:px-6 md:pt-12 lg:px-8 lg:pb-20">
           {/* Title block */}
           <div className="rise" style={{ animationDelay: '40ms' }}>
             <h1 className="max-w-3xl">
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#E6E8E6]/55 md:text-[12px]">
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#3772FF] md:text-[12px]">
                 {hero.kicker}
               </span>
-              <span className="mt-2.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-white md:mt-3">
+              <span className="mt-2.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[#080708] md:mt-3">
                 {hero.name}
               </span>
             </h1>
 
             {/* Location + understated Google rating */}
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 md:mt-5">
-              <span className="inline-flex items-center gap-2 text-[14px] text-[#E6E8E6]/75">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#E6E8E6]/45" fill="currentColor" aria-hidden>
+              <span className="inline-flex items-center gap-2 text-[14px] text-[#4A4F4A]">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#8A908A]" fill="currentColor" aria-hidden>
                   <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
                 </svg>
                 {hero.location}
               </span>
-              <span aria-hidden className="hidden h-3 w-px bg-[#E6E8E6]/20 sm:block" />
-              <span className="inline-flex items-center gap-1.5 text-[13px] text-[#E6E8E6]/60">
+              <span aria-hidden className="hidden h-3 w-px bg-[#D6DAD6] sm:block" />
+              {/* One star only, then the figure and its source — kept deliberately quiet. */}
+              <span className="inline-flex items-center gap-1.5 text-[13px] text-[#4A4F4A]">
                 <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-[#FDCA40]" fill="currentColor" aria-hidden>
                   <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
                 </svg>
-                {rating.value}
-                <span className="text-[#E6E8E6]/40">{rating.source}</span>
+                <span className="font-medium tabular-nums text-[#080708]">{rating.value}</span>
+                <span className="text-[#8A908A]">({rating.source})</span>
               </span>
             </div>
 
@@ -163,12 +158,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 .map((f) => (
                   <span
                     key={f.label}
-                    className="inline-flex items-center gap-2 rounded-[3px] border border-[#E6E8E6]/12 bg-white/[0.04] px-3 py-2"
+                    className="inline-flex items-center gap-2 rounded-[8px] border border-[#E6E8E6] bg-white px-3 py-2"
                   >
                     <span aria-hidden className="text-[13px] leading-none">
                       {f.icon}
                     </span>
-                    <span className="text-[13px] font-medium text-[#E6E8E6]">{f.value}</span>
+                    <span className="text-[13px] font-medium text-[#2B2E2B]">{f.value}</span>
                     <span className="sr-only">{f.label}</span>
                   </span>
                 ))}
@@ -186,7 +181,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     type="button"
                     onClick={() => openGallery(0)}
                     aria-label={`Otvoriť galériu — ${main.alt}`}
-                    className="group relative block w-full overflow-hidden rounded-[4px] border border-[#E6E8E6]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDCA40]"
+                    className="group relative block w-full overflow-hidden rounded-[12px] shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]"
                     style={{ aspectRatio: '3 / 2' }}
                   >
                     <img
@@ -216,7 +211,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       </span>
                     ))}
 
-                    <span className="pointer-events-none absolute bottom-3 left-3 rounded-[2px] bg-[#080708]/70 px-2.5 py-1.5 text-[11px] font-medium text-[#E6E8E6] backdrop-blur-[2px]">
+                    <span className="pointer-events-none absolute bottom-3 left-3 rounded-[6px] bg-[#080708]/70 px-2.5 py-1.5 text-[11px] font-medium text-[#E6E8E6] backdrop-blur-[2px]">
                       Zobraziť všetkých {photos.length} fotiek
                     </span>
                   </button>
@@ -232,8 +227,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   {main.markers && (
                     <figcaption className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-2">
                       {main.markers.map((m, i) => (
-                        <span key={m.label} className="inline-flex items-center gap-2 text-[12.5px] text-[#E6E8E6]/60">
-                          <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full border border-[#FDCA40]/45 text-[10px] font-semibold text-[#FDCA40]">
+                        <span key={m.label} className="inline-flex items-center gap-2 text-[12.5px] text-[#4A4F4A]">
+                          <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#080708] text-[10px] font-semibold text-[#FDCA40]">
                             {i + 1}
                           </span>
                           {m.label}
@@ -253,17 +248,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                         type="button"
                         onClick={() => openGallery(index)}
                         aria-label={`Otvoriť galériu — ${p.alt}`}
-                        className="group relative overflow-hidden rounded-[3px] border border-[#E6E8E6]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDCA40]"
+                        className="group relative overflow-hidden rounded-[9px] shadow-[0_8px_20px_-14px_rgba(8,7,8,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]"
                         style={{ aspectRatio: '4 / 3' }}
                       >
                         <img
                           src={opt(p.src, 400)}
                           alt={p.alt}
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                        />
-                        <span
-                          aria-hidden
-                          className="absolute inset-0 bg-[#080708]/25 transition-opacity duration-300 group-hover:opacity-0"
                         />
                         {isLast && (
                           <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/72 text-[13px] font-semibold text-white">
@@ -279,7 +270,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               {/* Mobile: swipeable carousel */}
               <div className="lg:hidden">
                 <div
-                  className="relative w-full overflow-hidden rounded-[4px] border border-[#E6E8E6]/10"
+                  className="relative w-full overflow-hidden rounded-[12px] shadow-[0_14px_32px_-20px_rgba(8,7,8,0.45)]"
                   style={{ aspectRatio: '4 / 3' }}
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
@@ -309,7 +300,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   <span className="pointer-events-none absolute bottom-3 left-3 text-[12px] font-medium text-white/90">
                     {photos[mobileIndex].alt}
                   </span>
-                  <span className="pointer-events-none absolute bottom-3 right-3 rounded-[2px] bg-[#080708]/70 px-2 py-1 text-[11px] font-semibold text-white tabular-nums">
+                  <span className="pointer-events-none absolute bottom-3 right-3 rounded-[6px] bg-[#080708]/70 px-2 py-1 text-[11px] font-semibold text-white tabular-nums">
                     {mobileIndex + 1}/{photos.length}
                   </span>
                 </div>
@@ -322,8 +313,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       onClick={() => setMobileIndex(i)}
                       aria-label={`Fotka ${i + 1}`}
                       aria-current={i === mobileIndex}
-                      className={`h-[3px] rounded-full transition-[width,background-color] duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FDCA40] ${
-                        i === mobileIndex ? 'w-6 bg-[#FDCA40]' : 'w-3 bg-[#E6E8E6]/25'
+                      className={`h-[3px] rounded-full transition-[width,background-color] duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF] ${
+                        i === mobileIndex ? 'w-6 bg-[#3772FF]' : 'w-3 bg-[#C9CEC9]'
                       }`}
                     />
                   ))}
@@ -333,38 +324,52 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
             {/* ── Info box (desktop) ── */}
             <aside className="rise hidden lg:col-span-5 lg:block" style={{ animationDelay: '240ms' }}>
-              <div className="relative rounded-[4px] border border-[#E6E8E6]/12 bg-white/[0.045] p-7 backdrop-blur-[2px]">
-                {/* Discount star, placement 2 of 2: beside the price, so it survives scrolling */}
-                <DiscountStar
-                  amount={discount.amount}
-                  deadline={discount.deadline}
-                  size={92}
-                  className="absolute -right-5 -top-6 rotate-[7deg]"
-                />
-
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#E6E8E6]/50">
+              {/*
+                The second discount star is gone: the price box now states the
+                discount as arithmetic (205 € struck through → 175 €, −30 € chip),
+                which says the same thing more precisely than a badge repeating a
+                figure already on the photo. The deadline moves into this block so
+                the time limit stays attached to the price.
+              */}
+              <div className="relative rounded-[14px] bg-white p-7 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_20px_44px_-28px_rgba(8,7,8,0.28)] ring-1 ring-[#E6E8E6]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8A908A]">
                   Cena {price.prefix}
                 </p>
-                <p className="mt-2 flex items-baseline gap-2.5">
-                  <span className="text-[clamp(2rem,3vw,2.6rem)] font-semibold tracking-[-0.03em] text-white tabular-nums">
+
+                {/* Discounted figure leads; the original sits beside it, struck through. */}
+                <p className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="text-[clamp(2rem,3vw,2.6rem)] font-bold leading-none tracking-[-0.03em] text-[#080708] tabular-nums">
+                    {price.discounted}
+                  </span>
+                  <span className="text-[19px] font-medium text-[#9AA09A] line-through decoration-[#DF2935] decoration-2 tabular-nums">
                     {price.amount}
                   </span>
-                  <span className="text-[15px] text-[#E6E8E6]/60">{price.unit}</span>
+                  <span className="text-[15px] text-[#4A4F4A]">{price.unit}</span>
                 </p>
-                <p className="mt-1.5 text-[12.5px] text-[#E6E8E6]/45">({price.note})</p>
 
-                <dl className="mt-6 border-y border-[#E6E8E6]/12">
+                <p className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  <span className="inline-flex items-center rounded-[6px] bg-[#DF2935] px-2.5 py-1 text-[12.5px] font-bold text-white tabular-nums">
+                    {discount.amount} {discount.unit}
+                  </span>
+                  <span className="text-[12.5px] font-medium text-[#4A4F4A]">
+                    pri rezervácii {discount.deadline}
+                  </span>
+                </p>
+
+                <p className="mt-2.5 text-[12.5px] text-[#8A908A]">({price.note})</p>
+
+                <dl className="mt-6 border-y border-[#E6E8E6]">
                   {facts.map((f, i) => (
                     <div
                       key={f.label}
                       className={`flex items-baseline justify-between gap-4 py-3.5 ${
-                        i > 0 ? 'border-t border-[#E6E8E6]/10' : ''
+                        i > 0 ? 'border-t border-[#E6E8E6]' : ''
                       }`}
                     >
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#E6E8E6]/50">
+                      <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8A908A]">
                         {f.label}
                       </dt>
-                      <dd className="text-right text-[15px] font-medium text-[#E6E8E6]">{f.value}</dd>
+                      <dd className="text-right text-[15px] font-medium text-[#080708]">{f.value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -383,25 +388,28 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         </div>
 
         {/* Mobile sticky action bar */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6]/12 bg-[#080708]/95 backdrop-blur-md lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md lg:hidden">
           <div className="flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
             <div className="min-w-0">
+              {/* Same arithmetic as the desktop box, compressed to one line. */}
               <p className="flex items-baseline gap-1.5">
-                <span className="text-[11px] text-[#E6E8E6]/50">{price.prefix}</span>
-                <span className="text-[21px] font-semibold leading-none tracking-[-0.02em] text-white tabular-nums">
+                <span className="text-[11px] text-[#8A908A]">{price.prefix}</span>
+                <span className="text-[21px] font-bold leading-none tracking-[-0.02em] text-[#080708] tabular-nums">
+                  {price.discounted}
+                </span>
+                <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-[#DF2935] tabular-nums">
                   {price.amount}
                 </span>
-                <span className="text-[12px] text-[#E6E8E6]/55">{price.unit}</span>
+                <span className="text-[12px] text-[#4A4F4A]">{price.unit}</span>
               </p>
-              <p className="mt-1 flex items-center gap-1.5 text-[11.5px] text-[#E6E8E6]/70">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#DF2935]" aria-hidden />
-                <span className="font-semibold text-white">
+              <p className="mt-1 text-[11.5px] text-[#4A4F4A]">
+                <span className="font-semibold text-[#DF2935]">
                   {discount.amount} {discount.unit}
-                </span>
-                <span className="text-[#E6E8E6]/45">{discount.deadline}</span>
+                </span>{' '}
+                <span className="text-[#8A908A]">{discount.deadline}</span>
               </p>
             </div>
-            <a href={ctas.primary.href} className={`${ctaPrimary} shrink-0 px-5 py-3`}>
+            <a href={ctas.primary.href} className={`${ctaPrimary} shrink-0 px-4 py-3 text-[12px]`}>
               {ctas.primary.label}
             </a>
           </div>

@@ -67,7 +67,10 @@ export interface LomyHero {
   photos: GalleryPhoto[]
   price: {
     prefix: string
+    /** Undiscounted price, struck through beside the discounted figure, e.g. "205 €". */
     amount: string
+    /** Price once the discount is applied, e.g. "175 €" — the figure the box leads with. */
+    discounted: string
     unit: string
     /** Fine print, e.g. "bez animačného programu". */
     note: string
