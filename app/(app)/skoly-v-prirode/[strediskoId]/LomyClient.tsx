@@ -231,12 +231,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
           <div className="rise" style={{ animationDelay: '40ms' }}>
             <h1 className="max-w-3xl">
               {/*
-                Sized up and set in red so it groups with the venue name as one
-                title block rather than floating above it as a stray label. Red
-                is used here and on the primary CTA in this pass — deliberate, and
-                not to be spread further across the page.
+                Sized up so it groups with the venue name as one title block
+                rather than floating above it as a stray label. Blue, not red:
+                with the primary CTA now red, a red eyebrow made the column read
+                as mostly red. Red stays on the seal and that one button.
               */}
-              <span className="block text-[clamp(0.95rem,1.9vw,1.35rem)] font-bold uppercase leading-none tracking-[0.06em] text-[#DF2935]">
+              <span className="block text-[clamp(0.95rem,1.9vw,1.35rem)] font-bold uppercase leading-none tracking-[0.06em] text-[#3772FF]">
                 {hero.kicker}
               </span>
               <span className="mt-1.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[#080708] md:mt-2">
