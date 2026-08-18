@@ -19,7 +19,9 @@ export const lomyContent: LomyContent = {
     kicker: 'Škola v prírode',
     name: 'Horský hotel Lomy',
     location: 'Prievidza (Horná Ves)',
-    rating: { value: '4,2', source: 'Google' },
+    // `source` is retained on the model but no longer rendered — the attribution
+    // text was dropped from the hero badge.
+    rating: { value: '4,8', source: 'Google' },
 
     // Stredisko/areál photos only. Animačný program photography belongs to its
     // own gallery further down the page (draft section 6), not here.
@@ -74,8 +76,9 @@ export const lomyContent: LomyContent = {
     // a later prompt. The anchor resolves once that section exists.
     ctas: {
       // All caps is deliberate copy, not a CSS transform — confirmed with the client.
-      primary: { label: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY', href: '#terminy' },
-      secondary: { label: 'Kontaktujte nás', href: '#terminy' },
+      // The quote request leads; browsing terms is the lighter second option.
+      primary: { label: 'ZÍSKAŤ CENOVÚ PONUKU', href: '#terminy' },
+      secondary: { label: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY', href: '#terminy' },
     },
   },
 }

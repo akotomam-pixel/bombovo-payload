@@ -96,48 +96,56 @@ function DiscountSeal({
  * 24-unit box, 1.7 stroke, round caps — so they read as one hand.
  */
 const FACT_ICONS: Record<string, JSX.Element> = {
-  // Peak with a marked summit — the Vtáčnik valley the hotel sits in.
+  // Map pin — a place on a map, distinct in silhouette from the other two.
   Lokalita: (
     <>
-      <path d="M3 19.5h18L14.2 7.4 11 12.6 8.7 9.3 3 19.5Z" />
-      <circle cx="14.2" cy="7.4" r="1.4" fill="currentColor" stroke="none" />
+      <path d="M12 21c4.2-4.6 6.3-7.9 6.3-10.6a6.3 6.3 0 1 0-12.6 0C5.7 13.1 7.8 16.4 12 21Z" />
+      <circle cx="12" cy="10.2" r="2.3" />
     </>
   ),
-  // Two A-frame chalets side by side — beds for a whole class.
+  // A bed, seen from the side — beds are literally what capacity counts here.
   Kapacita: (
     <>
-      <path d="M2.6 19.5 8 8.4l5.4 11.1" />
-      <path d="M5.4 14.2h5.2" />
-      <path d="M13.5 19.5 17.8 10l4.3 9.5" />
-      <path d="M15.7 15.2h4.2" />
+      <path d="M3 18.5v-9" />
+      <path d="M3 12.8h18v5.7" />
+      <path d="M3 15.6h18" />
+      <path d="M6.6 12.8v-2.4h4.2v2.4" />
     </>
   ),
-  // Sun arc over a horizon — the spring-to-summer window the venue runs.
+  // Calendar — a range of dates, rectangular against the pin and the bed.
   'Dostupné termíny': (
     <>
-      <path d="M2.5 18.6h19" />
-      <path d="M6.2 18.6a5.8 5.8 0 0 1 11.6 0" />
-      <path d="M12 4.4v2.1M5.1 7.3l1.5 1.5M18.9 7.3l-1.5 1.5" />
+      <rect x="3.4" y="5.6" width="17.2" height="15" rx="2.2" />
+      <path d="M3.4 10.2h17.2" />
+      <path d="M8.2 3.4v3.6M15.8 3.4v3.6" />
+      <path d="M7.6 14h3M13.4 14h3" />
     </>
   ),
 }
 
+/**
+ * Brand yellow on a dark disc: #FDCA40 alone on the pale card sits at roughly
+ * 1.6:1 and disappears, so the glyph keeps the yellow while the disc supplies
+ * the contrast it needs to be legible.
+ */
 function FactIcon({ label }: { label: string }) {
   const glyph = FACT_ICONS[label]
   if (!glyph) return null
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-[18px] w-[18px] shrink-0 text-[#3772FF]"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {glyph}
-    </svg>
+    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-[#080708]">
+      <svg
+        viewBox="0 0 24 24"
+        className="h-[17px] w-[17px] text-[#FDCA40]"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        {glyph}
+      </svg>
+    </span>
   )
 }
 
@@ -181,15 +189,22 @@ export default function LomyClient({ content }: { content: LomyContent }) {
     hover — so the pair reads as one decision, not two competing buttons. Focus
     rings are blue: #FDCA40 has too little contrast against white to register.
   */
+  /*
+    The quote request leads in red — a deliberate exception to red-for-the-badge,
+    made on instruction and confined to this button. It keeps the physical base
+    edge: pressing travels down onto it rather than just dimming. The secondary
+    stays an outline that fills to near-black, so the pair reads as one decision.
+    Focus rings are blue — it carries against both white and red.
+  */
   const ctaPrimary =
-    'group/cta relative inline-flex items-center justify-center rounded-[9px] bg-[#3772FF] px-6 py-3.5 text-center text-[13.5px] font-bold leading-tight tracking-[0.045em] text-white ' +
-    'shadow-[0_3px_0_0_#1E49B8,0_10px_22px_-10px_rgba(55,114,255,0.75)] transition-[background-color,box-shadow,transform] duration-150 ease-out ' +
-    'hover:bg-[#2F66EE] hover:shadow-[0_3px_0_0_#1E49B8,0_16px_28px_-12px_rgba(55,114,255,0.85)] ' +
-    'active:translate-y-[3px] active:shadow-[0_0_0_0_#1E49B8,0_6px_14px_-10px_rgba(55,114,255,0.7)] ' +
+    'relative inline-flex items-center justify-center rounded-[9px] bg-[#DF2935] px-6 py-3.5 text-center text-[13.5px] font-bold leading-tight tracking-[0.045em] text-white ' +
+    'shadow-[0_3px_0_0_#A81B24,0_10px_22px_-10px_rgba(223,41,53,0.7)] transition-[background-color,box-shadow,transform] duration-150 ease-out ' +
+    'hover:bg-[#CC2430] hover:shadow-[0_3px_0_0_#A81B24,0_16px_28px_-12px_rgba(223,41,53,0.8)] ' +
+    'active:translate-y-[3px] active:shadow-[0_0_0_0_#A81B24,0_6px_14px_-10px_rgba(223,41,53,0.65)] ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   const ctaSecondary =
-    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[13.5px] font-semibold leading-tight tracking-[0.02em] text-[#2B2E2B] ' +
+    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[13px] font-semibold uppercase leading-tight tracking-[0.045em] text-[#2B2E2B] ' +
     'transition-[background-color,border-color,color,transform] duration-150 ease-out hover:border-[#080708] hover:bg-[#080708] hover:text-white active:translate-y-px ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
@@ -215,10 +230,16 @@ export default function LomyClient({ content }: { content: LomyContent }) {
           {/* Title block */}
           <div className="rise" style={{ animationDelay: '40ms' }}>
             <h1 className="max-w-3xl">
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[#3772FF] md:text-[12px]">
+              {/*
+                Sized up and set in red so it groups with the venue name as one
+                title block rather than floating above it as a stray label. Red
+                is used here and on the primary CTA in this pass — deliberate, and
+                not to be spread further across the page.
+              */}
+              <span className="block text-[clamp(0.95rem,1.9vw,1.35rem)] font-bold uppercase leading-none tracking-[0.06em] text-[#DF2935]">
                 {hero.kicker}
               </span>
-              <span className="mt-2.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[#080708] md:mt-3">
+              <span className="mt-1.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[#080708] md:mt-2">
                 {hero.name}
               </span>
             </h1>
@@ -232,13 +253,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 {hero.location}
               </span>
               <span aria-hidden className="hidden h-3 w-px bg-[#D6DAD6] sm:block" />
-              {/* One star only, then the figure and its source — kept deliberately quiet. */}
-              <span className="inline-flex items-center gap-1.5 text-[13px] text-[#4A4F4A]">
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-[#FDCA40]" fill="currentColor" aria-hidden>
+              {/* One star, one figure — the attribution text is dropped. */}
+              <span className="inline-flex items-center gap-1.5 text-[13px]">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#FDCA40]" fill="currentColor" aria-hidden>
                   <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
                 </svg>
-                <span className="font-medium tabular-nums text-[#080708]">{rating.value}</span>
-                <span className="text-[#8A908A]">({rating.source})</span>
+                <span className="text-[14px] font-semibold tabular-nums text-[#080708]">{rating.value}</span>
               </span>
             </div>
 
@@ -426,12 +446,15 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     <span className="text-[15px] text-[#E6E8E6]/70">{price.unit}</span>
                   </p>
 
-                  <p className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  {/*
+                    The deadline sentence is gone from here: the seal on the photo
+                    already states the amount and the date. What this card needs is
+                    only the figure that explains the strikethrough, so the saving
+                    stays as a chip and nothing else is repeated.
+                  */}
+                  <p className="mt-3">
                     <span className="inline-flex items-center rounded-[5px] bg-[#DF2935] px-2.5 py-1 text-[12.5px] font-bold text-white tabular-nums">
                       {discount.amount} {discount.unit}
-                    </span>
-                    <span className="text-[12.5px] font-medium text-[#E6E8E6]/75">
-                      pri rezervácii {discount.deadline}
                     </span>
                   </p>
 
@@ -461,7 +484,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                           i > 0 ? 'border-t border-[#EAECEA]' : ''
                         }`}
                       >
-                        <span className="mt-[3px]">
+                        <span className="mt-[1px]">
                           <FactIcon label={f.label} />
                         </span>
                         <div className="min-w-0 flex-1">
