@@ -428,18 +428,18 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               */}
               <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
                 {/* ── Price slab ── */}
-                <div className="relative bg-[#080708] px-7 pb-10 pt-6">
-                  <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
+                <div className="relative bg-[#3E443E] px-7 pb-10 pt-6">
+                  <p className="text-[12px] font-medium text-[#E6E8E6]/70">Cena {price.prefix}</p>
 
                   {/* Discounted figure leads; the original sits beside it, struck through. */}
                   <p className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-white tabular-nums">
                       {price.discounted}
                     </span>
-                    <span className="text-[19px] font-medium text-[#E6E8E6]/45 line-through decoration-[#DF2935] decoration-2 tabular-nums">
+                    <span className="text-[19px] font-medium text-[#E6E8E6]/60 line-through decoration-[#FF6670] decoration-2 tabular-nums">
                       {price.amount}
                     </span>
-                    <span className="text-[15px] text-[#E6E8E6]/70">{price.unit}</span>
+                    <span className="text-[15px] text-[#E6E8E6]/75">{price.unit}</span>
                   </p>
 
                   {/*
@@ -449,16 +449,22 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     programme note are all removed rather than restating it.
                   */}
 
-                  {/* Ridgeline: the slab's lower edge is a skyline, not a straight cut. */}
+                  {/*
+                    Ridgeline: a low skyline with one dominant summit, drawn with
+                    shallow slopes and rounded joins. The earlier version alternated
+                    steep spikes at an even pitch, which read as a torn edge rather
+                    than a horizon.
+                  */}
                   <svg
-                    viewBox="0 0 400 26"
+                    viewBox="0 0 400 18"
                     preserveAspectRatio="none"
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[26px] w-full"
+                    className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[18px] w-full"
                   >
                     <path
-                      d="M0 26V15.5l38-8.2 31 6.4 27-9.1 34 11.3 30-5.6 26 8.9 33-12.4 29 9.7 31-6.1 25 7.4 34-9.8 32 10.6V26Z"
+                      d="M0 18V12.8l52-4.1 40 2.6 46-7.4 38 5.9 44-3.2 40 4.6 48-6.1 44 5.3 48-2.9V18Z"
                       fill="#FBFCFB"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </div>
