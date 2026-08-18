@@ -124,15 +124,15 @@ const FACT_ICONS: Record<string, JSX.Element> = {
 }
 
 /**
- * Brand yellow on a dark disc: #FDCA40 alone on the pale card sits at roughly
- * 1.6:1 and disappears, so the glyph keeps the yellow while the disc supplies
- * the contrast it needs to be legible.
+ * Brand yellow on a grey disc. #FDCA40 needs a dark ground to stay legible on
+ * the pale card, but full black read too heavy beside the rest of the box, so
+ * the disc is the brand grey pushed dark enough to carry the yellow.
  */
 function FactIcon({ label }: { label: string }) {
   const glyph = FACT_ICONS[label]
   if (!glyph) return null
   return (
-    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-[#080708]">
+    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-[#575E57]">
       <svg
         viewBox="0 0 24 24"
         className="h-[17px] w-[17px] text-[#FDCA40]"
