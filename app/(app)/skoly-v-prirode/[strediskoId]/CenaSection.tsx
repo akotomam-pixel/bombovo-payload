@@ -41,23 +41,13 @@ function Price({ price, tone = 'dark' }: { price: PriceTag; tone?: 'dark' | 'lig
  * drawn larger than its circle and clipped, which trims that padding without
  * editing the files. Renders a marked empty slot while artwork is outstanding.
  */
-function IconSlot({
-  src,
-  label,
-  onDark = false,
-}: {
-  src?: string
-  label: string
-  onDark?: boolean
-}) {
+function IconSlot({ src, label }: { src?: string; label: string }) {
   if (!src) {
     return (
       <span
         aria-hidden
         title="Miesto pre ikonu"
-        className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full border border-dashed ${
-          onDark ? 'border-[#E6E8E6]/35 bg-white/[0.06]' : 'border-[#C9CEC9] bg-[#EFF1EF]'
-        }`}
+        className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full border border-dashed border-[#C9CEC9] bg-[#EFF1EF]"
       />
     )
   }
@@ -126,43 +116,51 @@ export default function CenaSection({ content }: { content: LomyCena }) {
 
         <div className="mt-7 grid gap-5 md:mt-9 lg:grid-cols-2 lg:gap-6">
           {/*
-            Základná cena carries the brand dark, so the block describing what a
-            school already pays for is the one that holds the eye. The list is
-            numbered because it is a definite, countable set of inclusions.
+            A light card, like the one beside it and like the way this kind of
+            "what's included" block is conventionally handled. The dark version
+            fought the section: it was the heaviest thing on a grey ground and
+            pulled attention away from the prices, which are the actual decision.
+            It carries a green tick per line — the one place a colour outside the
+            palette earns its keep, because "included" is what a tick means, and
+            a "+0 €" tag stating what each line costs.
           */}
-          <div className="rounded-[14px] bg-bombovo-dark p-6 shadow-[0_18px_40px_-28px_rgba(8,7,8,0.55)] sm:p-7">
-            <div className="flex items-center gap-3">
-              <IconSlot src={zakladna.icon} label={zakladna.title} onDark />
-              <h3
-                className="text-[24px] leading-none text-white md:text-[27px]"
-                style={{ fontFamily: SUBHEAD }}
-              >
-                {zakladna.title}
-              </h3>
+          <div className="rounded-[14px] bg-white p-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD] sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <IconSlot src={zakladna.icon} label={zakladna.title} />
+                <h3
+                  className="text-[24px] leading-none text-bombovo-dark md:text-[27px]"
+                  style={{ fontFamily: SUBHEAD }}
+                >
+                  {zakladna.title}
+                </h3>
+              </div>
+              {/* Mirrors the price on the card opposite: this side costs nothing. */}
+              <span className="shrink-0 rounded-[7px] bg-[#E8F3EA] px-3 py-1.5 text-[12.5px] font-bold text-[#2A7038]">
+                v cene
+              </span>
             </div>
 
-            <p className="mt-4 text-[14px] leading-[1.7] text-[#E6E8E6]/80 md:text-[14.5px]">
+            <p className="mt-4 text-[14px] leading-[1.7] text-[#2B2E2B] md:text-[14.5px]">
               {zakladna.intro}
             </p>
 
-            {/*
-              Numbers, not yellow discs. Yellow on black is the palette's loudest
-              pairing and reads as warning — wrong signal for the block whose
-              point is that everything is already covered. Blue is the brand's
-              primary and sits quietly here. The figures are set open rather than
-              in filled circles so six of them stop competing as six focal
-              points, and hairlines carry the separation instead.
-            */}
-            <ol className="mt-5 border-t border-white/10">
-              {zakladna.items.map((item, i) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-3.5 border-b border-white/10 py-3"
-                >
-                  <span className="mt-[1px] w-[18px] shrink-0 text-[13px] font-bold leading-[1.5] text-[#7FA5FF] tabular-nums">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span className="text-[13.5px] leading-[1.55] text-[#E6E8E6] md:text-[14px]">
+            <ol className="mt-4 flex flex-col gap-2.5">
+              {zakladna.items.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="mt-[3px] h-[15px] w-[15px] shrink-0 text-[#2F7D42]"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="m5 12.5 4.6 4.5L19 7.5" />
+                  </svg>
+                  <span className="text-[13.5px] leading-[1.55] text-[#2B2E2B] md:text-[14px]">
                     {item}
                   </span>
                 </li>
