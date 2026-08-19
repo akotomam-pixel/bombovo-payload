@@ -173,7 +173,7 @@ export default function TerminyModal({
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center sm:p-6 lg:p-10"
       role="dialog"
       aria-modal="true"
       aria-label={`${content.title}, ${content.subtitle}`}
@@ -191,18 +191,20 @@ export default function TerminyModal({
       <div
         ref={panelRef}
         onClick={stop}
-        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[86vh] sm:max-w-[560px] sm:rounded-[18px] md:max-w-[1000px] ${
+        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[88vh] sm:max-w-[560px] sm:rounded-[18px] md:h-[88vh] md:max-w-[1500px] ${
           open ? 'translate-y-0 opacity-100 sm:scale-100' : 'translate-y-3 opacity-0 sm:translate-y-0 sm:scale-[0.97]'
         }`}
       >
         {/* ── Header ── */}
-        <div className="relative shrink-0 bg-bombovo-gray px-6 pb-9 pt-6 sm:px-7">
+        <div className="relative shrink-0 bg-bombovo-gray px-6 pb-9 pt-6 sm:px-7 md:px-9 md:pt-8">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-[21px] font-bold leading-tight tracking-[-0.02em] text-bombovo-dark sm:text-[23px]">
+              <h2 className="text-[21px] font-bold leading-tight tracking-[-0.02em] text-bombovo-dark sm:text-[23px] md:text-[30px]">
                 {content.title}
               </h2>
-              <p className="mt-1 text-[13px] font-medium text-[#5C625C]">{content.subtitle}</p>
+              <p className="mt-1 text-[13px] font-medium text-[#5C625C] md:text-[15px]">
+                {content.subtitle}
+              </p>
             </div>
 
             <button
@@ -240,11 +242,11 @@ export default function TerminyModal({
             the hero seal and in the pricing section. "5 dní" moves into the
             Počet dní column instead of trailing the date.
           */}
-          <div className="hidden md:block px-6 pb-6 pt-2">
+          <div className="hidden md:block px-8 pb-8 pt-3">
             <div className="overflow-hidden rounded-3xl border-4 border-bombovo-blue">
-              <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_170px] items-center gap-5 bg-bombovo-yellow px-7 py-5">
+              <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_190px] items-center gap-6 bg-bombovo-yellow px-9 py-6">
                 {['Termín', 'Počet dní', 'Dostupnosť', 'Cena', ''].map((h, i) => (
-                  <h3 key={h || i} className="text-center text-[17px] font-black text-bombovo-dark">
+                  <h3 key={h || i} className="text-center text-[19px] font-black text-bombovo-dark">
                     {h}
                   </h3>
                 ))}
@@ -260,17 +262,17 @@ export default function TerminyModal({
                   return (
                     <div key={t.range}>
                       {showMonth && (
-                        <p className="bg-bombovo-gray/60 px-7 py-2.5 text-[12px] font-black uppercase tracking-[0.14em] text-bombovo-dark">
+                        <p className="bg-bombovo-gray/60 px-9 py-3 text-[13px] font-black uppercase tracking-[0.14em] text-bombovo-dark">
                           {month}
                         </p>
                       )}
 
                       <div
-                        className={`grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_170px] items-center gap-5 border-t border-[#EDEFED] px-7 py-4 ${
+                        className={`grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_190px] items-center gap-6 border-t border-[#EDEFED] px-9 py-5 ${
                           soldOut ? 'opacity-50' : ''
                         }`}
                       >
-                        <p className="text-center text-[17px] font-semibold text-bombovo-dark tabular-nums">
+                        <p className="text-center text-[19px] font-semibold text-bombovo-dark tabular-nums">
                           {t.range}
                         </p>
 
@@ -279,23 +281,23 @@ export default function TerminyModal({
                         </p>
 
                         {/* Hand-maintained in content.ts — change the word to change the row. */}
-                        <p className="text-center text-[15px] font-semibold text-bombovo-dark">
+                        <p className="text-center text-[16px] font-semibold text-bombovo-dark">
                           {t.status}
                         </p>
 
                         {/* Price underlined in red, as on the original table. */}
                         <p className="text-center">
                           <span className="inline-block border-b-4 border-bombovo-red pb-1">
-                            <span className="text-[15px] font-medium text-[#9AA09A] line-through tabular-nums">
+                            <span className="text-[16px] font-medium text-[#9AA09A] line-through tabular-nums">
                               {t.price}
                             </span>{' '}
-                            <span className="text-[22px] font-black text-bombovo-dark tabular-nums">
+                            <span className="text-[25px] font-black text-bombovo-dark tabular-nums">
                               {t.discounted}
                             </span>
                           </span>
                         </p>
 
-                        <BookButton content={content} status={t.status} className="w-[170px]" />
+                        <BookButton content={content} status={t.status} className="w-[190px]" />
                       </div>
                     </div>
                   )
