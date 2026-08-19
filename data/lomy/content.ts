@@ -133,58 +133,72 @@ export const lomyContent: LomyContent = {
     },
   },
 
-  // ─── Section 4: Cena a čo je v nej zahrnuté ────────────────────────────────
-  // The draft's italic asides ("Zostáva bez zmeny…", "(zbalené/rozbaliteľné)")
-  // are instructions to the builder, not copy, so they are not here — they are
-  // reflected in the structure instead.
+  // ─── Section 4: Čo je v nej zahrnuté v cene a doplnkové služby ─────────────
+  // The blocks are written as prose rather than the old spec list, but every
+  // figure from the draft is still here and unchanged.
   //
-  // Prices are the Lomy figures, which differ from the old shared constants in
-  // `page.tsx`: the balíček is 35 € (not 30 €) and goes to ZOO Bojnice or
-  // sklárne Valaská Belá (not Kremnica), and the zdravotník is 590 € (not
-  // 550 €). Those constants never reach this page — `horsky-hotel-lomy` routes
-  // to LomyClient before they are read — so there is nothing to reconcile.
+  // Prices are the Lomy ones. The old shared constants in `page.tsx` still say
+  // 30 €, Kremnica and 550 €; they never reach this page, so they are left for
+  // whenever the other five strediská are rebuilt.
+  //
+  // Three services were dropped on instruction: pobytový deň naviac, pobyt
+  // dospelej osoby naviac, and pobyt pedagogického dieťaťa.
   cena: {
-    heading: 'Cena a čo je v nej zahrnuté',
-    blocks: [
-      {
-        title: 'V základnej cene',
-        items: [
-          '4× ubytovanie, 4× plná penzia, strava 5× denne, pitný režim',
-          '1 dospelý pedagóg zdarma na každých 10 detí',
-          'Opekačka (pri priaznivom počasí, výmenou za olovrant)',
-          'Divadelné predstavenie pre deti NA TRAKY (len pri objednanom animačnom programe)',
-          'Cena pevného lôžka = cena prístelky',
-          'Príplatok pre 2. stupeň ZŠ: 8 € / pobyt / osoba',
-        ],
-      },
-      {
-        title: 'Animačný program',
-        items: [
-          'Poobedný program: +55 € / dieťa (7 h denne okrem dňa odchodu, spolu 28 h/pobyt)',
-          'Celodenný program: +65 € / dieťa',
-          'ZŠ: 1 animátor na 15 detí. MŠ: 1 animátor na 10 detí',
-          'Animačný a športový materiál, hry, kvízy, darčeky pre každého účastníka',
-          'Animačný program je pripravený pre skupiny od 20 platiacich detí, pri nižšom počte vám radi pripravíme individuálnu ponuku',
-        ],
-      },
-    ],
+    heading: 'Čo je v nej zahrnuté v cene a doplnkové služby',
+
+    zakladna: {
+      title: 'V základnej cene',
+      paragraph:
+        'Keď si vyberiete školu v prírode s nami, v základnej cene máte už všetko, čo potrebujete. Ubytovanie, plnú penziu so stravou päťkrát denne a neobmedzený pitný režim počas celého pobytu. Jeden dospelý pedagóg je zdarma na každých 10 detí. Za priaznivého počasia si užijete aj opekačku výmenou za olovrant, a ak si k pobytu objednáte animačný program, deti čaká aj divadelné predstavenie NA TRAKY. Cena pevného lôžka je rovnaká ako cena prístelky, žiakom 2. stupňa ZŠ účtujeme príplatok 8 € na pobyt a osobu.',
+    },
+
+    animacny: {
+      title: 'Animačný program',
+      paragraph:
+        'Vyberte si animačný program a vaša škola v prírode získa úplne iný rozmer, pre učiteľov aj žiakov. Postaráme sa o poobedný alebo celodenný program, ktorý vedie skúsený animačný tím: na základnej škole pripadá jeden animátor na 15 detí, v materskej škole jeden na 10 detí. Súčasťou je kompletný animačný aj športový materiál, hry, kvízy a darček pre každého účastníka. Program pripravujeme pre skupiny od 20 platiacich detí, pri nižšom počte vám radi pripravíme individuálnu ponuku.',
+      options: [
+        {
+          label: 'Poobedný program',
+          amount: '+55 €',
+          unit: '/ dieťa',
+          note: '7 h denne okrem dňa odchodu, spolu 28 h/pobyt',
+        },
+        { label: 'Celodenný program', amount: '+65 €', unit: '/ dieťa' },
+      ],
+    },
+
     doplnkove: {
       title: 'Doplnkové služby',
       items: [
         {
           label: 'Bombový balíček',
-          price: '35 € / dieťa',
-          note: 'Len ak máte animačný program. Odmena 100 € na každých 10 platiacich detí, autobusová doprava a vstup do ZOO Bojnice alebo sklárne Valaská Belá (odporúčané pre skupiny do 50 osôb).',
+          price: { amount: '35 €', unit: '/ dieťa' },
+          icon: '/images/section-4-icon-bombovo-balicek.png',
+          description:
+            'Ako poďakovanie za objednaný animačný program získa vaša škola odmenu 100 € za každých 10 platiacich detí. K tomu si môžete za príplatok 35 € na dieťa pripočítať autobusový výlet so vstupom do ZOO Bojnice alebo do sklární Valaská Belá (odporúčame pre skupiny do 50 detí), a darček na pamiatku pre každého účastníka.',
+          note: 'Balíček je dostupný len pri objednanom animačnom programe.',
         },
-        { label: 'Zdravotník CK Bombovo s lekárničkou', price: '590 € / pobyt' },
-        { label: 'Pobytový deň naviac', price: '40 € / dieťa' },
-        { label: 'Pobyt dospelej osoby naviac', price: '150 € / pobyt' },
-        { label: 'Pobyt pedagogického dieťaťa (s animačným programom)', price: '150 € / pobyt' },
-        { label: 'Komplexné cestovné poistenie ECP', price: '4,50 € / dieťa / pobyt' },
-        { label: 'Obed naviac (v deň odchodu)', price: '8 € / osoba' },
+        {
+          label: 'Zdravotník CK Bombovo s lekárničkou',
+          price: { amount: '590 €', unit: '/ pobyt' },
+          icon: '/images/section-4-icon-zdravotnik.png',
+          description:
+            'Zabezpečiť kvalifikovaného zdravotníka na pobyt vie byť pre školu časovo aj organizačne náročné, my sa o to postaráme za vás. Na váš pobyt vám zabezpečíme zdravotníka priamo od CK Bombovo, vybaveného kompletnou lekárničkou, ktorý bude k dispozícii počas celého pobytu.',
+        },
+        {
+          label: 'Komplexné cestovné poistenie ECP',
+          price: { amount: '4,50 €', unit: '/ dieťa / pobyt' },
+          icon: '/images/section-4-icon-poitenie.png',
+          // Coverage is not invented: the same product is described across the
+          // camp data files (e.g. data/camps/neverfort.ts) as covering storno,
+          // prerušenie cesty, úraz and zodpovednosť za škodu.
+          description:
+            'Komplexné cestovné poistenie kryje storno pobytu, prerušenie cesty, úraz aj zodpovednosť za škodu. Pripoistiť sa dá ku ktorémukoľvek termínu a vybavíme ho za vás spolu s prihláškou, takže rodičia nemusia riešiť nič navyše.',
+        },
       ],
     },
-    // Stated as numbers here; the sale star stays on the hero photo only.
+
+    // Stated as figures; the sale star stays on the hero photo only.
     discount: {
       amount: '−30 €',
       unit: '/ dieťa',

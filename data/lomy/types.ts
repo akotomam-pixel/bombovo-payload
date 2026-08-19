@@ -155,15 +155,43 @@ export interface LomyVynimocny {
   }
 }
 
-/** Section: "Cena a čo je v nej zahrnuté". */
+/** A price shown as a bold figure over a smaller unit. */
+export interface PriceTag {
+  amount: string
+  unit: string
+  /** Fine print under the price, e.g. the hours a programme covers. */
+  note?: string
+}
+
+/** One optional service, expandable. */
+export interface DoplnkovaSluzba {
+  label: string
+  price: PriceTag
+  description: string
+  /** Conditions worth stating separately, e.g. that it needs the animation programme. */
+  note?: string
+  /**
+   * Real artwork is being produced separately. Until a path lands here the card
+   * renders a marked empty slot rather than a stand-in glyph.
+   */
+  icon?: string
+}
+
+/** Section: "Čo je v nej zahrnuté v cene a doplnkové služby". */
 export interface LomyCena {
   heading: string
-  /** The two blocks that stay open. */
-  blocks: { title: string; items: string[] }[]
-  /** Collapsed by default; each entry is a name, its price and the detail. */
+  zakladna: {
+    title: string
+    paragraph: string
+  }
+  animacny: {
+    title: string
+    paragraph: string
+    options: (PriceTag & { label: string })[]
+  }
   doplnkove: {
     title: string
-    items: { label: string; price: string; note?: string }[]
+    items: DoplnkovaSluzba[]
   }
   discount: {
     amount: string

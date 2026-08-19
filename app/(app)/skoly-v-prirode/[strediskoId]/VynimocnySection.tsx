@@ -12,6 +12,9 @@ import type { LomyVynimocny } from '@/data/lomy/types'
  * reference list of places and stays a plain, scannable column.
  */
 
+/** Sub-headings across the page are set in this face by explicit instruction. */
+const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+
 /** Glyphs for the Výhody rows, in the same hand as the hero's fact icons. */
 const VYHODY_ICONS: Record<string, JSX.Element> = {
   // Tiered seating around a fire — the amphitheatre, as on the discount seal.
@@ -60,7 +63,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
         <div className="mt-9 grid gap-6 lg:mt-11 lg:grid-cols-12 lg:gap-8">
           {/* Výhody — the practical case, so it leads and carries the weight. */}
           <div className="lg:col-span-7">
-            <h3 className="font-amatic text-[26px] leading-none text-bombovo-blue md:text-[30px]">
+            <h3 className="text-[24px] leading-none text-bombovo-blue md:text-[27px]" style={{ fontFamily: SUBHEAD }}>
               {vyhody.title}
             </h3>
 
@@ -94,7 +97,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
 
           {/* Okolie — reference material, deliberately quieter. */}
           <div className="lg:col-span-5">
-            <h3 className="font-amatic text-[26px] leading-none text-bombovo-blue md:text-[30px]">
+            <h3 className="text-[24px] leading-none text-bombovo-blue md:text-[27px]" style={{ fontFamily: SUBHEAD }}>
               {okolie.title}
             </h3>
 
