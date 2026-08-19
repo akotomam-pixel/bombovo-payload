@@ -64,10 +64,12 @@ export const lomyContent: LomyContent = {
       { label: 'Dostupné termíny', value: 'apríl – jún', icon: '📅' },
     ],
 
+    // Icons are the client's own artwork, used in the file order they gave
+    // (1→3, left to right). Note icons 2 and 3 are double-suffixed on disk.
     proof: [
-      { label: 'Garancia vrátenia peňazí' },
-      { label: 'Promptné jednanie a serióznosť' },
-      { label: '50 000+ detí odanimovaných' },
+      { label: 'Garancia vrátenia peňazí', icon: '/images/skoly-v-prirode-icon-1.png' },
+      { label: 'Promptné jednanie a serióznosť', icon: '/images/skoly-v-prirode-icon-2.png.png' },
+      { label: '50 000+ detí odanimovaných', icon: '/images/skoly-v-prirode-icon-3.png.png' },
     ],
 
     // Supplied by the client. Note this is not the review in the draft's proof

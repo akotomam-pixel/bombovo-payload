@@ -178,13 +178,18 @@ function FactIcon({ label }: { label: string }) {
   )
 }
 
-/** Filled blue disc with a white tick — the proof strip's only ornament. */
-function CheckMark() {
+/**
+ * Proof-strip icon: the client's own artwork, already in brand blue and yellow.
+ *
+ * The files carry a wide white margin around the glyph, so the image is drawn
+ * larger than its box and clipped — that trims the built-in padding and lets the
+ * three glyphs sit at a consistent optical size without editing the assets.
+ */
+function ProofIcon({ src, label }: { src: string; label: string }) {
   return (
-    <span className="flex h-[25px] w-[25px] shrink-0 items-center justify-center rounded-full bg-bombovo-blue">
-      <svg viewBox="0 0 24 24" className="h-[13px] w-[13px] text-white" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="m5 12.5 4.6 4.5L19 7.5" />
-      </svg>
+    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center overflow-hidden">
+      <img src={opt(src, 96)} alt="" aria-hidden className="h-[46px] w-[46px] max-w-none object-contain" />
+      <span className="sr-only">{label}</span>
     </span>
   )
 }
@@ -491,7 +496,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
                 {/* ── Price slab ── */}
                 {/* Brand dark slab, white text on it. */}
-                <div className="relative bg-bombovo-dark px-7 pb-10 pt-6">
+                <div className="relative bg-bombovo-dark px-7 pb-8 pt-5">
                   <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
 
                   {/*
@@ -529,12 +534,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 </div>
 
                 {/* ── Facts ── */}
-                <div className="px-7 pb-7 pt-5">
+                <div className="px-7 pb-5 pt-3">
                   <dl>
                     {facts.map((f, i) => (
                       <div
                         key={f.label}
-                        className={`flex items-start gap-3 py-3 ${
+                        className={`flex items-start gap-3 py-2.5 ${
                           i > 0 ? 'border-t border-[#EAECEA]' : ''
                         }`}
                       >
@@ -551,7 +556,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     ))}
                   </dl>
 
-                  <div className="mt-6 flex flex-col gap-2.5">
+                  <div className="mt-4 flex flex-col gap-2">
                     <button type="button" onClick={openTerminy} className={ctaPrimary}>
                       {ctas.primary.label}
                     </button>
@@ -568,15 +573,15 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 height a lone review did. Stacks to one column on narrow screens,
                 where three columns of wrapped text would be unreadable.
               */}
-              <ul className="mt-6 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-4 sm:grid-cols-3 sm:gap-0">
+              <ul className="mt-3 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-3 sm:grid-cols-3 sm:gap-0">
                 {proof.map((p, i) => (
                   <li
                     key={p.label}
-                    className={`flex flex-col items-center gap-2 px-2.5 text-center ${
+                    className={`flex flex-col items-center gap-1.5 px-2.5 text-center ${
                       i > 0 ? 'sm:border-l sm:border-[#D7DBD6]' : ''
                     }`}
                   >
-                    <CheckMark />
+                    <ProofIcon src={p.icon} label={p.label} />
                     <span className="text-[11.5px] font-bold leading-[1.3] text-[#080708]">
                       {p.label}
                     </span>

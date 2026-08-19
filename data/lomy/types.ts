@@ -76,6 +76,8 @@ export interface HeroReview {
 /** One claim in the proof strip beneath the price card. */
 export interface ProofPoint {
   label: string
+  /** Supplied artwork, already in brand blue and yellow. */
+  icon: string
 }
 
 export interface LomyHero {
