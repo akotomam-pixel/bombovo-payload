@@ -30,7 +30,7 @@ export const lomyContent: LomyContent = {
         // The one real asset we have. Low resolution (384×256) — flagged as a
         // gap; swap in the high-res original when it arrives.
         src: '/images/Skoly v Prirode/lomy.png',
-        alt: 'Areál Horského hotela Lomy — amfiteáter s ohniskom, hlavná budova a zrubové chatky',
+        alt: 'Areál Horského hotela Lomy: amfiteáter s ohniskom, hlavná budova a zrubové chatky',
         isPlaceholder: false,
         // Coordinates are keyed to this exact frame. They must be re-checked
         // whenever this photo is replaced.
@@ -108,7 +108,7 @@ export const lomyContent: LomyContent = {
   vynimocny: {
     heading: 'V čom je Horský hotel Lomy výnimočný',
     paragraph:
-      'Hotel Lomy sa nachádza v doline pohoria Vtáčnik neďaleko Partizánskeho, obklopený lesom a tichou prírodou, mimo hlavného ruchu. Stredisko je kompletne zrekonštruované — od izieb v hlavnej budove až po zrubové chatky — a vlastný amfiteáter s krytým pódiom priamo v areáli znamená, že sa skupina počas pobytu nemusí nikam presúvať. Večerné opekačky pri ohnisku (za priaznivého počasia) sú tu bežnou súčasťou programu, nie výnimkou.',
+      'Hotel Lomy sa nachádza v doline pohoria Vtáčnik neďaleko Partizánskeho, obklopený lesom a tichou prírodou, mimo hlavného ruchu. Stredisko je kompletne zrekonštruované, od izieb v hlavnej budove až po zrubové chatky. Vlastný amfiteáter s krytým pódiom priamo v areáli znamená, že sa skupina počas pobytu nemusí nikam presúvať. Večerné opekačky pri ohnisku (za priaznivého počasia) sú tu bežnou súčasťou programu, nie výnimkou.',
     okolie: {
       title: 'Zaujímavosti v okolí',
       items: [
@@ -123,7 +123,7 @@ export const lomyContent: LomyContent = {
       title: 'Výhody lokality',
       items: [
         {
-          text: 'Vlastný amfiteáter s krytým pódiom a ohniskom priamo v areáli — netreba nikam presúvať skupinu',
+          text: 'Vlastný amfiteáter s krytým pódiom a ohniskom priamo v areáli, netreba nikam presúvať skupinu',
           icon: 'amfiteater',
         },
         { text: 'Multifunkčné aj trávnaté ihrisko na mieste', icon: 'ihrisko' },

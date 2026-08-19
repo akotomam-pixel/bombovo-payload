@@ -53,7 +53,7 @@ function BookButton({ content, className = '' }: { content: LomyTerminy; classNa
       type="button"
       disabled
       aria-disabled="true"
-      title={`${content.bookLabel} — ${content.bookNote}`}
+      title={`${content.bookLabel}: ${content.bookNote}`}
       className={`flex shrink-0 cursor-not-allowed flex-col items-center rounded-[8px] bg-bombovo-red/90 px-3.5 py-2 text-white ${className}`}
     >
       <span className="text-[11px] font-bold leading-none tracking-[0.04em]">{content.bookLabel}</span>
@@ -155,7 +155,7 @@ export default function TerminyModal({
       className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={`${content.title} — ${content.subtitle}`}
+      aria-label={`${content.title}, ${content.subtitle}`}
     >
       {/* Backdrop */}
       <div
