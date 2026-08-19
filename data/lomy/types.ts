@@ -222,11 +222,25 @@ export interface LomyUbytovanie {
   }
 }
 
+/** Section: "Overený animačný program". */
+export interface LomyProgram {
+  heading: string
+  paragraph: string
+  cta: { label: string; href: string }
+  /**
+   * The programme gallery, the same across every stredisko rather than shot at
+   * this venue. Empty until the photos are supplied; the section shows marked
+   * placeholders in the meantime.
+   */
+  gallery: { src: string; alt: string }[]
+}
+
 export interface LomyContent {
   slug: string
   hero: LomyHero
   vynimocny: LomyVynimocny
   cena: LomyCena
   ubytovanie: LomyUbytovanie
+  program: LomyProgram
   terminy: LomyTerminy
 }

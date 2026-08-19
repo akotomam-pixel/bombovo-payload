@@ -244,6 +244,25 @@ export const lomyContent: LomyContent = {
     },
   },
 
+  // ─── Section 6: Overený animačný program ───────────────────────────────────
+  // The draft's copy, with its em dash replaced by a comma. Deliberately short:
+  // the draft calls for a paragraph, not a full presentation of the programme —
+  // that is what the linked page is for.
+  //
+  // The gallery is the same across every stredisko rather than shot at Lomy. The
+  // photos have not been supplied, so it is empty and the section renders marked
+  // placeholders. Add entries here when they arrive.
+  program: {
+    heading: 'Overený animačný program',
+    paragraph:
+      'Náš animačný tím tvoria vyškolení animátori, ktorí sa tejto práci venujú sezónu čo sezónu. Už 30 sezón v rade pripravujeme animačný program pre základné školy, na sezónu 2027 sme pripravili programy pre materské školy, prvý aj druhý stupeň základných škôl. Zistite viac o programe kliknutím na tlačidlo nižšie.',
+    // Verified: app/(app)/program-skoly-v-prirode/page.tsx is a real 289-line
+    // page with no data dependencies, already linked from the strediská listing
+    // and the original detail page.
+    cta: { label: 'Zistiť viac o programe', href: '/program-skoly-v-prirode' },
+    gallery: [],
+  },
+
   // ─── Section 7 (partial): termíny modal ────────────────────────────────────
   // Dates and prices are transcribed exactly from the draft's section 7 table.
   // Every session is 205 €, so the hero's standing −30 € discount applies
