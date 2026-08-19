@@ -182,21 +182,22 @@ export interface LomyCena {
   heading: string
   zakladna: {
     title: string
-    paragraph: string
+    /** One line above the list; the list itself carries the detail. */
+    intro: string
+    items: string[]
+    /** Awaiting custom artwork — renders a marked slot until a path lands here. */
+    icon?: string
   }
   animacny: {
     title: string
+    /** Sits on the heading's line, right-aligned. */
+    price: PriceTag
     paragraph: string
-    options: (PriceTag & { label: string })[]
+    items: string[]
   }
   doplnkove: {
     title: string
     items: DoplnkovaSluzba[]
-  }
-  discount: {
-    amount: string
-    unit: string
-    text: string
   }
 }
 

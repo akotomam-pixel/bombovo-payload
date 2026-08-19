@@ -148,22 +148,30 @@ export const lomyContent: LomyContent = {
 
     zakladna: {
       title: 'V základnej cene',
-      paragraph:
-        'Keď si vyberiete školu v prírode s nami, v základnej cene máte už všetko, čo potrebujete. Ubytovanie, plnú penziu so stravou päťkrát denne a neobmedzený pitný režim počas celého pobytu. Jeden dospelý pedagóg je zdarma na každých 10 detí. Za priaznivého počasia si užijete aj opekačku výmenou za olovrant, a ak si k pobytu objednáte animačný program, deti čaká aj divadelné predstavenie NA TRAKY. Cena pevného lôžka je rovnaká ako cena prístelky, žiakom 2. stupňa ZŠ účtujeme príplatok 8 € na pobyt a osobu.',
+      intro:
+        'Keď si vyberiete školu v prírode s nami, v základnej cene máte už všetko, čo potrebujete.',
+      items: [
+        '4× ubytovanie, 4× plná penzia, strava 5× denne, pitný režim',
+        '1 dospelý pedagóg zdarma na každých 10 detí',
+        'Opekačka (pri priaznivom počasí, výmenou za olovrant)',
+        'Divadelné predstavenie pre deti NA TRAKY (len pri objednanom animačnom programe)',
+        'Cena pevného lôžka = cena prístelky',
+        'Príplatok pre 2. stupeň ZŠ: 8 € / pobyt / osoba',
+      ],
+      // Custom artwork pending; the card renders a marked slot until it lands.
     },
 
     animacny: {
       title: 'Animačný program',
+      price: { amount: '+55 €', unit: '/ dieťa' },
       paragraph:
-        'Vyberte si animačný program a vaša škola v prírode získa úplne iný rozmer, pre učiteľov aj žiakov. Postaráme sa o poobedný alebo celodenný program, ktorý vedie skúsený animačný tím: na základnej škole pripadá jeden animátor na 15 detí, v materskej škole jeden na 10 detí. Súčasťou je kompletný animačný aj športový materiál, hry, kvízy a darček pre každého účastníka. Program pripravujeme pre skupiny od 20 platiacich detí, pri nižšom počte vám radi pripravíme individuálnu ponuku.',
-      options: [
-        {
-          label: 'Poobedný program',
-          amount: '+55 €',
-          unit: '/ dieťa',
-          note: '7 h denne okrem dňa odchodu, spolu 28 h/pobyt',
-        },
-        { label: 'Celodenný program', amount: '+65 €', unit: '/ dieťa' },
+        'Vyberte si animačný program a vaša škola v prírode získa úplne iný rozmer, pre učiteľov aj žiakov. Naši skúsení a školení animátori sa postarajú o to, aby bol každý deň pre deti bezpečným dobrodružstvom, pri ktorom si vy môžete plne oddýchnuť od povinností.',
+      items: [
+        '7 h denne okrem dňa odchodu, spolu 28 h/pobyt',
+        'ZŠ: 1 animátor na 15 detí. MŠ: 1 animátor na 10 detí',
+        'Animačný a športový materiál, hry, kvízy, darček pre každého účastníka',
+        'Možnosť celodenného programu za príplatok +65 € / dieťa',
+        'Pripravené pre skupiny od 20 platiacich detí, pri nižšom počte vám radi pripravíme individuálnu ponuku',
       ],
     },
 
@@ -196,13 +204,6 @@ export const lomyContent: LomyContent = {
             'Komplexné cestovné poistenie kryje storno pobytu, prerušenie cesty, úraz aj zodpovednosť za škodu. Pripoistiť sa dá ku ktorémukoľvek termínu a vybavíme ho za vás spolu s prihláškou, takže rodičia nemusia riešiť nič navyše.',
         },
       ],
-    },
-
-    // Stated as figures; the sale star stays on the hero photo only.
-    discount: {
-      amount: '−30 €',
-      unit: '/ dieťa',
-      text: 'zo základnej ceny, platí do 31.10.2026',
     },
   },
 

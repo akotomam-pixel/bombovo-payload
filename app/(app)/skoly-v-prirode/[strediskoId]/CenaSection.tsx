@@ -1,19 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { FaChevronDown } from 'react-icons/fa'
 import type { DoplnkovaSluzba, LomyCena, PriceTag } from '@/data/lomy/types'
 
 /**
  * "Čo je v nej zahrnuté v cene a doplnkové služby".
  *
- * Each block explains what a school actually gets in sentences rather than
- * listing specs, and every price is a bold figure over a smaller unit set at the
- * top right of its card, so the numbers can be compared down the column.
- *
- * The optional services expand one at a time. The collapse reuses the pattern
- * from components/FAQ.tsx — a header button carrying aria-expanded with a
- * chevron that rotates 180° — rather than adding a second interaction style.
+ * Every price is a bold figure over a smaller unit at the top right of its card,
+ * so the numbers can be compared down the column. Nothing here collapses: a
+ * teacher comparing venues should be able to read the whole cost picture without
+ * clicking anything.
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
@@ -42,18 +37,27 @@ function Price({ price, tone = 'dark' }: { price: PriceTag; tone?: 'dark' | 'lig
 }
 
 /**
- * The card's icon. The supplied artwork carries a wide white margin, so the
- * image is drawn larger than its circle and clipped — that trims the padding
- * without editing the files. Falls back to a marked empty slot if a card has no
- * artwork yet.
+ * The card's icon. Supplied artwork carries a wide white margin, so the image is
+ * drawn larger than its circle and clipped, which trims that padding without
+ * editing the files. Renders a marked empty slot while artwork is outstanding.
  */
-function IconSlot({ src, label }: { src?: string; label: string }) {
+function IconSlot({
+  src,
+  label,
+  onDark = false,
+}: {
+  src?: string
+  label: string
+  onDark?: boolean
+}) {
   if (!src) {
     return (
       <span
         aria-hidden
         title="Miesto pre ikonu"
-        className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full border border-dashed border-[#C9CEC9] bg-[#EFF1EF]"
+        className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full border border-dashed ${
+          onDark ? 'border-[#E6E8E6]/35 bg-white/[0.06]' : 'border-[#C9CEC9] bg-[#EFF1EF]'
+        }`}
       />
     )
   }
@@ -65,58 +69,53 @@ function IconSlot({ src, label }: { src?: string; label: string }) {
   )
 }
 
-function SluzbaCard({ item }: { item: DoplnkovaSluzba }) {
-  const [open, setOpen] = useState(false)
-
+/** Yellow tick used by the animačný program list. */
+function Tick() {
   return (
-    <div className="overflow-hidden rounded-[14px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD]">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors duration-200 hover:bg-[#FAFBFA] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-bombovo-blue sm:px-6 sm:py-5"
-      >
-        {/*
-          Shown whether or not the card is open: now that the artwork is real,
-          hiding it while collapsed removes the one cue that distinguishes the
-          three rows at a glance.
-        */}
+    <svg
+      viewBox="0 0 24 24"
+      className="mt-[3px] h-[15px] w-[15px] shrink-0 text-bombovo-yellow"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="m5 12.5 4.6 4.5L19 7.5" />
+    </svg>
+  )
+}
+
+/** One optional service. Always open — nothing here is hidden behind a click. */
+function SluzbaCard({ item }: { item: DoplnkovaSluzba }) {
+  return (
+    <div className="rounded-[14px] bg-white p-5 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD] sm:p-6">
+      <div className="flex items-start gap-4">
         <IconSlot src={item.icon} label={item.label} />
 
-        <span className="min-w-0 flex-1">
-          <span className="block text-[15px] font-semibold leading-snug text-bombovo-dark md:text-[16px]">
-            {item.label}
-          </span>
+        <span className="min-w-0 flex-1 pt-1 text-[15px] font-semibold leading-snug text-bombovo-dark md:text-[16px]">
+          {item.label}
         </span>
 
         <Price price={item.price} />
+      </div>
 
-        <FaChevronDown
-          className={`ml-1 shrink-0 text-[14px] text-[#6C726C] transition-transform duration-200 ${
-            open ? 'rotate-180' : ''
-          }`}
-          aria-hidden
-        />
-      </button>
+      <p className="mt-3.5 max-w-[74ch] text-[14px] leading-[1.65] text-[#2B2E2B] md:text-[14.5px]">
+        {item.description}
+      </p>
 
-      {open && (
-        <div className="border-t border-[#EDEFED] px-5 py-4 sm:px-6 sm:py-5">
-          <p className="max-w-[70ch] text-[14px] leading-[1.65] text-[#2B2E2B] md:text-[14.5px]">
-            {item.description}
-          </p>
-          {item.note && (
-            <p className="mt-3 inline-flex rounded-[6px] bg-[#EFF1EF] px-3 py-1.5 text-[12.5px] font-medium text-[#4A4F4A]">
-              {item.note}
-            </p>
-          )}
-        </div>
+      {item.note && (
+        <p className="mt-3 inline-flex rounded-[6px] bg-[#EFF1EF] px-3 py-1.5 text-[12.5px] font-medium text-[#4A4F4A]">
+          {item.note}
+        </p>
       )}
     </div>
   )
 }
 
 export default function CenaSection({ content }: { content: LomyCena }) {
-  const { heading, zakladna, animacny, doplnkove, discount } = content
+  const { heading, zakladna, animacny, doplnkove } = content
 
   return (
     <section className="bg-bombovo-gray">
@@ -128,63 +127,69 @@ export default function CenaSection({ content }: { content: LomyCena }) {
         <div className="mt-7 grid gap-5 md:mt-9 lg:grid-cols-2 lg:gap-6">
           {/*
             Základná cena carries the brand dark, so the block describing what a
-            school already pays for is the one that holds the eye.
+            school already pays for is the one that holds the eye. The list is
+            numbered because it is a definite, countable set of inclusions.
           */}
           <div className="rounded-[14px] bg-bombovo-dark p-6 shadow-[0_18px_40px_-28px_rgba(8,7,8,0.55)] sm:p-7">
             <div className="flex items-center gap-3">
-              <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-bombovo-yellow">
-                <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] text-bombovo-dark" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="m5 12.5 4.6 4.5L19 7.5" />
-                </svg>
-              </span>
-              <h3 className="text-[24px] leading-none text-bombovo-yellow md:text-[27px]" style={{ fontFamily: SUBHEAD }}>
+              <IconSlot src={zakladna.icon} label={zakladna.title} onDark />
+              <h3
+                className="text-[24px] leading-none text-bombovo-yellow md:text-[27px]"
+                style={{ fontFamily: SUBHEAD }}
+              >
                 {zakladna.title}
               </h3>
             </div>
 
             <p className="mt-4 text-[14px] leading-[1.7] text-[#E6E8E6] md:text-[14.5px]">
-              {zakladna.paragraph}
+              {zakladna.intro}
             </p>
+
+            <ol className="mt-4 flex flex-col gap-2.5">
+              {zakladna.items.map((item, i) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-[1px] flex h-[21px] w-[21px] shrink-0 items-center justify-center rounded-full bg-bombovo-yellow text-[11.5px] font-bold text-bombovo-dark tabular-nums">
+                    {i + 1}
+                  </span>
+                  <span className="text-[13.5px] leading-[1.55] text-[#E6E8E6] md:text-[14px]">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </div>
 
-          {/* Animačný program — an add-on, so it sits on white with its two prices. */}
+          {/* Animačný program — an add-on, so it sits on white with its price inline. */}
           <div className="rounded-[14px] bg-white p-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD] sm:p-7">
-            <div className="flex items-center gap-3">
-              <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-bombovo-blue">
-                <svg viewBox="0 0 24 24" className="h-[21px] w-[21px] text-white" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M4 19.5V8.2l4.4-3.4 4.4 3.4v11.3" />
-                  <path d="m13.4 12.4 6.6-2.2v6.4l-6.6 2.2" />
-                  <circle cx="8.4" cy="12.6" r="1.5" />
-                </svg>
-              </span>
-              <h3 className="text-[24px] leading-none text-bombovo-blue md:text-[27px]" style={{ fontFamily: SUBHEAD }}>
+            {/* Heading and price share one row. */}
+            <div className="flex items-start justify-between gap-4">
+              <h3
+                className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+                style={{ fontFamily: SUBHEAD }}
+              >
                 {animacny.title}
               </h3>
+              <Price price={animacny.price} />
             </div>
 
             <p className="mt-4 text-[14px] leading-[1.7] text-[#2B2E2B] md:text-[14.5px]">
               {animacny.paragraph}
             </p>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {animacny.options.map((o) => (
-                <div key={o.label} className="rounded-[10px] bg-[#F4F6F4] px-4 py-3.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[13.5px] font-semibold leading-snug text-bombovo-dark">
-                      {o.label}
-                    </span>
-                    <Price price={o} />
-                  </div>
-                  {o.note && (
-                    <p className="mt-2 text-[11.5px] leading-[1.5] text-[#6C726C]">{o.note}</p>
-                  )}
-                </div>
+            <ul className="mt-4 flex flex-col gap-2.5">
+              {animacny.items.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <Tick />
+                  <span className="text-[13.5px] leading-[1.55] text-[#2B2E2B] md:text-[14px]">
+                    {item}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
 
-        {/* Optional services */}
+        {/* Optional services — all open. */}
         <h3
           className="mt-9 text-[24px] leading-none text-bombovo-dark md:mt-11 md:text-[27px]"
           style={{ fontFamily: SUBHEAD }}
@@ -192,20 +197,11 @@ export default function CenaSection({ content }: { content: LomyCena }) {
           {doplnkove.title}
         </h3>
 
-        <div className="mt-4 flex flex-col gap-3">
+        <div className="mt-4 flex flex-col gap-4">
           {doplnkove.items.map((item) => (
             <SluzbaCard key={item.label} item={item} />
           ))}
         </div>
-
-        {/* The discount as figures; the sale star belongs to the hero photo. */}
-        <p className="mt-6 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 rounded-[12px] bg-white px-6 py-4 ring-1 ring-[#DDE0DD] sm:px-7">
-          <span className="text-[19px] font-bold text-bombovo-red md:text-[21px]">
-            {discount.amount}
-          </span>
-          <span className="text-[14px] font-semibold text-bombovo-dark">{discount.unit}</span>
-          <span className="text-[13.5px] text-[#4A4F4A]">{discount.text}</span>
-        </p>
       </div>
     </section>
   )
