@@ -642,20 +642,18 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
             <span aria-hidden className="hidden h-11 w-px shrink-0 bg-[#E6E8E6] md:block" />
 
-            <figcaption className="flex shrink-0 items-center gap-3">
-              {/* Initials, not a photo — we have no permission to use one. */}
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bombovo-blue text-[12px] font-bold text-white">
-                {review.initials}
+            {/*
+              No avatar: we have no photograph of the reviewer, and an initials
+              disc in its place just reads as a slot waiting for one.
+            */}
+            <figcaption className="min-w-0 shrink-0">
+              <p className="text-[12.5px] font-bold leading-tight text-[#080708]">{review.author}</p>
+              <p className="mt-0.5 text-[11.5px] leading-tight text-[#6C726C]">
+                {review.school} · {review.groupSize}
+              </p>
+              <span className="mt-1 block">
+                <Stars count={review.stars} />
               </span>
-              <div className="min-w-0">
-                <p className="text-[12.5px] font-bold leading-tight text-[#080708]">{review.author}</p>
-                <p className="mt-0.5 text-[11.5px] leading-tight text-[#6C726C]">
-                  {review.school} · {review.groupSize}
-                </p>
-                <span className="mt-1 block">
-                  <Stars count={review.stars} />
-                </span>
-              </div>
             </figcaption>
           </figure>
         </div>

@@ -77,11 +77,10 @@ export const lomyContent: LomyContent = {
     // 2 when it gets built.
     review: {
       quote:
-        'Veľmi oceňujeme vybudovanie strediska Lomy — umožňuje veľa exteriérových aktivít, ubytovanie aj animačný program boli na výbornej úrovni.',
+        'Veľmi oceňujeme vybudovanie strediska Lomy. Umožňuje veľa exteriérových aktivít. Zároveň bolo výborné aj ubytovanie a priestory jednak hotela i chatiek. Vybrali sme si celodenný animačný program, ktorý bol na výbornej úrovni.',
       author: 'Mgr. Pavol Halák',
       school: 'ZŠ Fatranská 14, Nitra',
       groupSize: '106 detí',
-      initials: 'PH',
       stars: 5,
     },
 

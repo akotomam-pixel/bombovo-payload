@@ -67,8 +67,6 @@ export interface HeroReview {
   school: string
   /** Group size, e.g. "106 detí". */
   groupSize: string
-  /** Shown in the avatar; we have no photo and no permission to use one. */
-  initials: string
   /** Whole stars, 1–5. */
   stars: number
 }
