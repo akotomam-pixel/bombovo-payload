@@ -125,6 +125,25 @@ export interface Termin {
   status: string
 }
 
+/** The enquiry form below the dates list. */
+export interface LomyForm {
+  title: string
+  intro: string
+  labels: {
+    skola: string
+    pocetDeti: string
+    termin: string
+    animacny: string
+    email: string
+    telefon: string
+    poznamka: string
+  }
+  submitLabel: string
+  /** Shown in place of the form once it has been sent. */
+  successTitle: string
+  successBody: string
+}
+
 export interface LomyTerminy {
   title: string
   /** Names the venue, so the dialog is unambiguous with several tabs open. */
@@ -138,6 +157,7 @@ export interface LomyTerminy {
   /** Why that button does nothing yet. */
   bookNote: string
   items: Termin[]
+  form: LomyForm
 }
 
 /** Section: "V čom je Horský hotel Lomy výnimočný". */
