@@ -47,16 +47,40 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
  * and stating that it is not yet active, rather than looking broken or failing
  * on click.
  */
-function BookButton({ content, className = '' }: { content: LomyTerminy; className?: string }) {
+/**
+ * The row's action.
+ *
+ * A term counts as sold out when its `status` says so, which is the one field
+ * that drives both the Dostupnosť column and this button: set a term's status to
+ * "Vypredané" in content.ts and the row shows it and the button changes with it.
+ *
+ * Both states are inert for now — the enquiry form is a later piece — so the
+ * button announces itself rather than failing on click.
+ */
+function BookButton({
+  content,
+  status,
+  className = '',
+}: {
+  content: LomyTerminy
+  status: string
+  className?: string
+}) {
+  const soldOut = /vypredan/i.test(status)
+
   return (
     <button
       type="button"
       disabled
       aria-disabled="true"
-      title={`${content.bookLabel}: ${content.bookNote}`}
-      className={`shrink-0 cursor-not-allowed rounded-full bg-bombovo-red px-5 py-2.5 text-[12px] font-bold tracking-[0.03em] text-white opacity-90 ${className}`}
+      title={soldOut ? 'Termín je vypredaný' : `${content.bookLabel}: ${content.bookNote}`}
+      className={`shrink-0 cursor-not-allowed rounded-full px-5 py-2.5 text-[12px] font-bold tracking-[0.03em] ${
+        soldOut
+          ? 'bg-[#E6E8E6] text-[#8A908A]'
+          : 'bg-bombovo-red text-white opacity-90'
+      } ${className}`}
     >
-      {content.bookLabel}
+      {soldOut ? 'VYPREDANÉ' : content.bookLabel}
     </button>
   )
 }
@@ -218,8 +242,8 @@ export default function TerminyModal({
           */}
           <div className="hidden md:block px-5 pb-5 pt-1">
             <div className="overflow-hidden rounded-[14px] ring-1 ring-[#E1E4E1]">
-              <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_150px] items-center gap-4 bg-bombovo-yellow px-6 py-3.5">
-                {['Termín', 'Počet dní', 'Cena', ''].map((h, i) => (
+              <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_150px] items-center gap-4 bg-bombovo-yellow px-6 py-3.5">
+                {['Termín', 'Počet dní', 'Dostupnosť', 'Cena', ''].map((h, i) => (
                   <p
                     key={h || i}
                     className={`text-[13px] font-black text-bombovo-dark ${i === 0 ? '' : 'text-center'}`}
@@ -243,13 +267,18 @@ export default function TerminyModal({
                         </p>
                       )}
 
-                      <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_150px] items-center gap-4 border-t border-[#EDEFED] px-6 py-3 transition-colors duration-150 hover:bg-[#FAFBFA]">
+                      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_150px] items-center gap-4 border-t border-[#EDEFED] px-6 py-3 transition-colors duration-150 hover:bg-[#FAFBFA]">
                         <p className="text-[14.5px] font-semibold text-bombovo-dark tabular-nums">
                           {t.range}
                         </p>
 
                         <p className="text-center text-[14px] font-semibold text-bombovo-dark">
                           {content.duration}
+                        </p>
+
+                        {/* Hand-maintained in content.ts — change the word to change the row. */}
+                        <p className="text-center text-[13.5px] font-semibold text-[#5C625C]">
+                          {t.status}
                         </p>
 
                         <p className="flex items-baseline justify-center gap-2">
@@ -261,7 +290,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} className="w-[150px]" />
+                        <BookButton content={content} status={t.status} className="w-[150px]" />
                       </div>
                     </div>
                   )
