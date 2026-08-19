@@ -280,16 +280,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       {/*
-        Clean light ground: a single faint tint (#F7F8F7, derived from the brand
-        gray #E6E8E6) marks the hero as its own plane, with the info card in pure
-        white lifted above it. Depth comes from tone and shadow only — the
+        The hero sits on bombovo-gray — the same #E6E8E6 the header and the
+        homepage sections use — so the page alternates grey and white the way the
+        rest of the site does. The white cards on top supply the depth; the
         gradients, noise and tinted washes of the dark version are gone.
       */}
-      <section className="relative overflow-hidden bg-[#F7F8F7]">
-        {/* Hairline seam against the white page below. */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[#E6E8E6]" />
-
-        <div className="relative mx-auto max-w-7xl px-4 pb-14 pt-9 sm:px-6 md:pt-12 lg:px-8 lg:pb-20">
+      <section className="relative overflow-hidden bg-bombovo-gray">
+        <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-9 sm:px-6 md:pt-12 lg:px-8 lg:pb-10">
           {/* Title block */}
           <div className="rise" style={{ animationDelay: '40ms' }}>
             <h1 className="max-w-3xl">

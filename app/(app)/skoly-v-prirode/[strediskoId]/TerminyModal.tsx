@@ -243,7 +243,7 @@ export default function TerminyModal({
                       </p>
                     )}
 
-                    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 rounded-[10px] px-4 py-2.5 transition-colors duration-150 hover:bg-[#F7F8F7]">
+                    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 rounded-[10px] px-4 py-2.5 transition-colors duration-150 hover:bg-bombovo-gray/40">
                       <div className="min-w-0">
                         <p className="text-[14.5px] font-semibold leading-snug text-bombovo-dark tabular-nums">
                           {t.range}

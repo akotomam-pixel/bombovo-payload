@@ -48,7 +48,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
 
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
         <h2 className="max-w-3xl text-[clamp(1.5rem,3vw,2.15rem)] font-bold leading-[1.12] tracking-[-0.03em] text-bombovo-dark">
           {heading}
         </h2>
@@ -98,7 +98,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
               {okolie.title}
             </h3>
 
-            <ul className="mt-4 rounded-[10px] bg-[#F7F8F7] px-4 py-1">
+            <ul className="mt-4 rounded-[10px] bg-bombovo-gray/45 px-4 py-1">
               {okolie.items.map((item, i) => (
                 <li
                   key={item}
