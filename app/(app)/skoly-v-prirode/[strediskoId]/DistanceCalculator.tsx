@@ -2,8 +2,6 @@
 
 import { useState, useCallback } from 'react'
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'
-
 const LOADING_STEPS: { progress: number; label: string }[] = [
   { progress: 15, label: 'Hľadám lokalitu...' },
   { progress: 35, label: 'Spájam sa s mapami...' },
@@ -232,17 +230,23 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
         )}
       </div>
 
-      {/* Right column / bottom on mobile — Google Maps iframe (untouched) */}
+      {/*
+        Right column / bottom on mobile — OpenStreetMap.
+
+        This was a Google Maps embed carrying a hardcoded API key in client
+        source, which the move to Nominatim + ORS (commit 7a80709) left behind.
+        OSM's own embed needs no key and no extra dependency, so the whole
+        component now uses one mapping provider.
+      */}
       <div className="w-full lg:w-1/2">
         {coordinates ? (
           <iframe
-            src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${coordinates.lat},${coordinates.lng}&zoom=14`}
+            title={`Mapa — ${strediskoName}`}
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${coordinates.lng - 0.035}%2C${coordinates.lat - 0.018}%2C${coordinates.lng + 0.035}%2C${coordinates.lat + 0.018}&layer=mapnik&marker=${coordinates.lat}%2C${coordinates.lng}`}
             width="100%"
             height="450"
             style={{ border: 0, borderRadius: '16px' }}
-            allowFullScreen
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
           />
         ) : (
           <div className="w-full h-[450px] rounded-2xl bg-bombovo-gray flex items-center justify-center">

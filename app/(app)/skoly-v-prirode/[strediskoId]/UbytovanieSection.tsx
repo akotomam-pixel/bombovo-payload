@@ -1,0 +1,167 @@
+'use client'
+
+import DistanceCalculator from './DistanceCalculator'
+import type { LomyUbytovanie } from '@/data/lomy/types'
+
+/**
+ * "Ubytovanie a lokalita" — the full spec for the venue, where section 3 gave
+ * the highlights. The repetition between them is intended.
+ *
+ * The distance module is the existing DistanceCalculator, which already pairs
+ * the lookup with a map side by side, matching the draft's "modul … vedľa mapy".
+ */
+
+/** Sub-headings across the page are set in this face by explicit instruction. */
+const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+
+/** Amenity glyphs, drawn in the same hand as the other sections' icons. */
+const VYBAVENIE_ICONS: JSX.Element[] = [
+  // Tiered seating around a fire — the amphitheatre.
+  (
+    <>
+      <path d="M5.6 15.4a6.4 6.4 0 0 1 12.8 0" />
+      <path d="M2.8 15.4a9.2 9.2 0 0 1 18.4 0" />
+      <path d="M12 11.6V6.4M9.9 8.2 12 6.1l2.1 2.1" />
+    </>
+  ),
+  // A pitch with a centre circle.
+  (
+    <>
+      <rect x="2.8" y="5.6" width="18.4" height="12.8" rx="1.8" />
+      <path d="M12 5.6v12.8" />
+      <circle cx="12" cy="12" r="2.4" />
+    </>
+  ),
+  // A gazebo roof over a bench.
+  (
+    <>
+      <path d="M2.8 10.4 12 4.6l9.2 5.8" />
+      <path d="M5.4 10.4v9M18.6 10.4v9" />
+      <path d="M8 15.4h8M8 15.4v3.6M16 15.4v3.6" />
+    </>
+  ),
+  // A room with a swing — common rooms and the playground.
+  (
+    <>
+      <rect x="3" y="5.4" width="18" height="13.2" rx="2" />
+      <path d="M7.2 9.4v5.2M16.8 9.4v5.2" />
+      <path d="M7.2 11.4h9.6" />
+      <path d="M10.4 14.6v4M13.6 14.6v4" />
+    </>
+  ),
+  // A screen on a stand — projector and TV.
+  (
+    <>
+      <rect x="3" y="4.8" width="18" height="11.4" rx="1.8" />
+      <path d="M12 16.2v3M8.4 19.2h7.2" />
+      <path d="M7.6 8.6h5.2M7.6 11.8h8.8" />
+    </>
+  ),
+  // Water — the outdoor pool.
+  (
+    <>
+      <path d="M2.6 16.4c1.6 0 1.6 1.4 3.1 1.4s1.6-1.4 3.1-1.4 1.6 1.4 3.2 1.4 1.6-1.4 3.1-1.4 1.6 1.4 3.1 1.4 1.6-1.4 3.2-1.4" />
+      <path d="M2.6 12.2c1.6 0 1.6 1.4 3.1 1.4s1.6-1.4 3.1-1.4 1.6 1.4 3.2 1.4 1.6-1.4 3.1-1.4 1.6 1.4 3.1 1.4 1.6-1.4 3.2-1.4" />
+      <path d="M7.4 9.6V6.2a1.8 1.8 0 0 1 3.6 0M14.2 9.6V6.2a1.8 1.8 0 0 1 3.6 0" />
+    </>
+  ),
+]
+
+export default function UbytovanieSection({ content }: { content: LomyUbytovanie }) {
+  const { heading, ubytovanie, vybavenie, mapa } = content
+
+  return (
+    <section className="bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+        <h2 className="text-[clamp(1.5rem,3vw,2.15rem)] font-bold leading-[1.12] tracking-[-0.03em] text-bombovo-dark">
+          {heading}
+        </h2>
+
+        <div className="mt-7 grid gap-5 md:mt-9 lg:grid-cols-12 lg:gap-6">
+          {/* Rooms */}
+          <div className="lg:col-span-5">
+            <h3
+              className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+              style={{ fontFamily: SUBHEAD }}
+            >
+              {ubytovanie.title}
+            </h3>
+
+            <div className="mt-4 flex flex-col gap-3">
+              {ubytovanie.rooms.map((room) => (
+                <div
+                  key={room.label}
+                  className="rounded-[12px] bg-white p-5 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD]"
+                >
+                  <p className="text-[15px] font-bold text-bombovo-dark">{room.label}</p>
+                  <p className="mt-1 text-[13.5px] leading-[1.55] text-[#4A4F4A]">{room.detail}</p>
+                </div>
+              ))}
+
+              {/* Capacity reads as a figure, not another bullet. */}
+              <div className="flex items-baseline justify-between gap-4 rounded-[12px] bg-bombovo-dark px-5 py-4">
+                <span className="text-[13px] font-medium text-[#E6E8E6]/75">
+                  {ubytovanie.capacity.label}
+                </span>
+                <span className="text-[20px] font-bold leading-none text-bombovo-yellow tabular-nums">
+                  {ubytovanie.capacity.value}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Amenities */}
+          <div className="lg:col-span-7">
+            <h3
+              className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+              style={{ fontFamily: SUBHEAD }}
+            >
+              {vybavenie.title}
+            </h3>
+
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {vybavenie.items.map((item, i) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 rounded-[12px] bg-[#EFF1EF] px-4 py-3.5"
+                >
+                  <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-white">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-[18px] w-[18px] text-bombovo-blue"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      {VYBAVENIE_ICONS[i]}
+                    </svg>
+                  </span>
+                  <span className="text-[13.5px] font-medium leading-[1.45] text-bombovo-dark">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Distance + map */}
+        <div className="mt-10 md:mt-12">
+          <h3
+            className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+            style={{ fontFamily: SUBHEAD }}
+          >
+            {mapa.title}
+          </h3>
+
+          <div className="mt-4">
+            <DistanceCalculator strediskoName="Horský hotel Lomy" coordinates={mapa.coordinates} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

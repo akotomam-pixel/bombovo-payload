@@ -13,6 +13,7 @@ import Footer from '@/components/Footer'
 import TerminyModal from './TerminyModal'
 import VynimocnySection from './VynimocnySection'
 import CenaSection from './CenaSection'
+import UbytovanieSection from './UbytovanieSection'
 import type { LomyContent } from '@/data/lomy/types'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
@@ -700,6 +701,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
       <VynimocnySection content={content.vynimocny} />
 
       <CenaSection content={content.cena} />
+
+      <UbytovanieSection content={content.ubytovanie} />
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
       <div aria-hidden className="h-[76px] lg:hidden" />

@@ -206,6 +206,41 @@ export const lomyContent: LomyContent = {
     },
   },
 
+  // ─── Section 5: Ubytovanie a lokalita ──────────────────────────────────────
+  // The draft's own lines, verbatim. Its six-item vybavenie list keeps the
+  // amfiteáter and both ihriská, which section 3 also names — that repetition is
+  // intended: section 3 is the highlights, this is the full spec.
+  //
+  // The "Zistite, ako ďaleko…" line is the only copy in the map block; the rest
+  // of that draft line describes where the module goes, not what it says.
+  ubytovanie: {
+    heading: 'Ubytovanie a lokalita',
+    ubytovanie: {
+      title: 'Ubytovanie',
+      rooms: [
+        { label: 'Hlavná budova', detail: '2–7 lôžkové izby s možnosťou prísteliek, WC, sprcha' },
+        { label: 'Zrubové chatky', detail: '7-lôžkové, WC, sprcha' },
+      ],
+      capacity: { label: 'Celková kapacita', value: '200 lôžok' },
+    },
+    vybavenie: {
+      title: 'Vybavenie strediska',
+      items: [
+        'Amfiteáter s krytým pódiom a ohniskom',
+        'Multifunkčné ihrisko, trávnaté ihrisko',
+        '2× altánok s posedením',
+        'Spoločenské miestnosti, detské ihrisko',
+        'Bufet, dataprojektor, TV',
+        'Vonkajší bazén (nevyhrievaný)',
+      ],
+    },
+    mapa: {
+      title: 'Zistite, ako ďaleko je Horský hotel Lomy od vás',
+      // Same coordinates the original stredisko data carries.
+      coordinates: { lat: 48.58064084310827, lng: 18.56727918359109 },
+    },
+  },
+
   // ─── Section 7 (partial): termíny modal ────────────────────────────────────
   // Dates and prices are transcribed exactly from the draft's section 7 table.
   // Every session is 205 €, so the hero's standing −30 € discount applies

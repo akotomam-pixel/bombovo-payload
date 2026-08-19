@@ -200,10 +200,30 @@ export interface LomyCena {
   }
 }
 
+/** Section: "Ubytovanie a lokalita". */
+export interface LomyUbytovanie {
+  heading: string
+  ubytovanie: {
+    title: string
+    /** Room types; `capacity` is the summary line shown apart from them. */
+    rooms: { label: string; detail: string }[]
+    capacity: { label: string; value: string }
+  }
+  vybavenie: {
+    title: string
+    items: string[]
+  }
+  mapa: {
+    title: string
+    coordinates: { lat: number; lng: number }
+  }
+}
+
 export interface LomyContent {
   slug: string
   hero: LomyHero
   vynimocny: LomyVynimocny
   cena: LomyCena
+  ubytovanie: LomyUbytovanie
   terminy: LomyTerminy
 }
