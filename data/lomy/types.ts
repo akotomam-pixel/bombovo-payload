@@ -155,9 +155,27 @@ export interface LomyVynimocny {
   }
 }
 
+/** Section: "Cena a čo je v nej zahrnuté". */
+export interface LomyCena {
+  heading: string
+  /** The two blocks that stay open. */
+  blocks: { title: string; items: string[] }[]
+  /** Collapsed by default; each entry is a name, its price and the detail. */
+  doplnkove: {
+    title: string
+    items: { label: string; price: string; note?: string }[]
+  }
+  discount: {
+    amount: string
+    unit: string
+    text: string
+  }
+}
+
 export interface LomyContent {
   slug: string
   hero: LomyHero
   vynimocny: LomyVynimocny
+  cena: LomyCena
   terminy: LomyTerminy
 }

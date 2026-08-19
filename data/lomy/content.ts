@@ -87,8 +87,9 @@ export const lomyContent: LomyContent = {
     discount: {
       amount: '−30 €',
       unit: '/ dieťa',
-      // [CHÝBA] Draft open question #1: katalóg says 31.10.2026, but 31.10.2027
-      // was also mentioned. Year deliberately omitted until confirmed.
+      // The year is confirmed as 2026. It stays off the badge because the seal
+      // is small and the pricing section states the full date; if the badge ever
+      // needs it, change this to 'do 31.10.2026'.
       deadline: 'do 31.10',
     },
 
@@ -129,6 +130,65 @@ export const lomyContent: LomyContent = {
         { text: 'Multifunkčné aj trávnaté ihrisko na mieste', icon: 'ihrisko' },
         { text: 'Kompletne zrekonštruované ubytovanie (hlavná budova aj chatky)', icon: 'ubytovanie' },
       ],
+    },
+  },
+
+  // ─── Section 4: Cena a čo je v nej zahrnuté ────────────────────────────────
+  // The draft's italic asides ("Zostáva bez zmeny…", "(zbalené/rozbaliteľné)")
+  // are instructions to the builder, not copy, so they are not here — they are
+  // reflected in the structure instead.
+  //
+  // Prices are the Lomy figures, which differ from the old shared constants in
+  // `page.tsx`: the balíček is 35 € (not 30 €) and goes to ZOO Bojnice or
+  // sklárne Valaská Belá (not Kremnica), and the zdravotník is 590 € (not
+  // 550 €). Those constants never reach this page — `horsky-hotel-lomy` routes
+  // to LomyClient before they are read — so there is nothing to reconcile.
+  cena: {
+    heading: 'Cena a čo je v nej zahrnuté',
+    blocks: [
+      {
+        title: 'V základnej cene',
+        items: [
+          '4× ubytovanie, 4× plná penzia, strava 5× denne, pitný režim',
+          '1 dospelý pedagóg zdarma na každých 10 detí',
+          'Opekačka (pri priaznivom počasí, výmenou za olovrant)',
+          'Divadelné predstavenie pre deti NA TRAKY (len pri objednanom animačnom programe)',
+          'Cena pevného lôžka = cena prístelky',
+          'Príplatok pre 2. stupeň ZŠ: 8 € / pobyt / osoba',
+        ],
+      },
+      {
+        title: 'Animačný program',
+        items: [
+          'Poobedný program: +55 € / dieťa (7 h denne okrem dňa odchodu, spolu 28 h/pobyt)',
+          'Celodenný program: +65 € / dieťa',
+          'ZŠ: 1 animátor na 15 detí. MŠ: 1 animátor na 10 detí',
+          'Animačný a športový materiál, hry, kvízy, darčeky pre každého účastníka',
+          'Animačný program je pripravený pre skupiny od 20 platiacich detí, pri nižšom počte vám radi pripravíme individuálnu ponuku',
+        ],
+      },
+    ],
+    doplnkove: {
+      title: 'Doplnkové služby',
+      items: [
+        {
+          label: 'Bombový balíček',
+          price: '35 € / dieťa',
+          note: 'Len ak máte animačný program. Odmena 100 € na každých 10 platiacich detí, autobusová doprava a vstup do ZOO Bojnice alebo sklárne Valaská Belá (odporúčané pre skupiny do 50 osôb).',
+        },
+        { label: 'Zdravotník CK Bombovo s lekárničkou', price: '590 € / pobyt' },
+        { label: 'Pobytový deň naviac', price: '40 € / dieťa' },
+        { label: 'Pobyt dospelej osoby naviac', price: '150 € / pobyt' },
+        { label: 'Pobyt pedagogického dieťaťa (s animačným programom)', price: '150 € / pobyt' },
+        { label: 'Komplexné cestovné poistenie ECP', price: '4,50 € / dieťa / pobyt' },
+        { label: 'Obed naviac (v deň odchodu)', price: '8 € / osoba' },
+      ],
+    },
+    // Stated as numbers here; the sale star stays on the hero photo only.
+    discount: {
+      amount: '−30 €',
+      unit: '/ dieťa',
+      text: 'zo základnej ceny, platí do 31.10.2026',
     },
   },
 
