@@ -54,12 +54,9 @@ function BookButton({ content, className = '' }: { content: LomyTerminy; classNa
       disabled
       aria-disabled="true"
       title={`${content.bookLabel}: ${content.bookNote}`}
-      className={`flex shrink-0 cursor-not-allowed flex-col items-center rounded-[8px] bg-bombovo-red/90 px-3.5 py-2 text-white ${className}`}
+      className={`shrink-0 cursor-not-allowed rounded-full bg-bombovo-red px-5 py-2.5 text-[12px] font-bold tracking-[0.03em] text-white opacity-90 ${className}`}
     >
-      <span className="text-[11px] font-bold leading-none tracking-[0.04em]">{content.bookLabel}</span>
-      <span className="mt-1 text-[9.5px] font-semibold uppercase leading-none tracking-[0.08em] text-white/75">
-        {content.bookNote}
-      </span>
+      {content.bookLabel}
     </button>
   )
 }
@@ -210,74 +207,66 @@ export default function TerminyModal({
         {/* ── Dates ── */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {/*
-            Desktop: a real table on the same four-column structure the original
-            stredisko page uses (termín / dĺžka / cena / action), with a status
-            column added and this page's dark-and-yellow treatment in place of
-            the old plain yellow header.
+            Desktop: the site's own table — a yellow header bar over centred
+            columns, as on the original stredisko page.
+
+            Each row says one thing per column and stops. The "do 31.10"
+            deadline that used to repeat under all twelve prices is gone: fine
+            print restated on every line is noise, and the deadline is already on
+            the hero seal and in the pricing section. "5 dní" moves into the
+            Počet dní column instead of trailing the date.
           */}
-          <div className="hidden md:block">
-            <div className="sticky top-0 z-10 grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 border-b border-[#E6E8E6] bg-bombovo-dark px-7 py-3">
-              {['Termín', 'Dostupnosť', 'Cena', ''].map((h, i) => (
-                <p
-                  key={h || i}
-                  className={`text-[11px] font-bold uppercase tracking-[0.14em] text-bombovo-yellow ${
-                    i === 2 ? 'text-right' : ''
-                  } ${i === 3 ? 'w-[124px]' : ''}`}
-                >
-                  {h}
-                </p>
-              ))}
-            </div>
+          <div className="hidden md:block px-5 pb-5 pt-1">
+            <div className="overflow-hidden rounded-[14px] ring-1 ring-[#E1E4E1]">
+              <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_150px] items-center gap-4 bg-bombovo-yellow px-6 py-3.5">
+                {['Termín', 'Počet dní', 'Cena', ''].map((h, i) => (
+                  <p
+                    key={h || i}
+                    className={`text-[13px] font-black text-bombovo-dark ${i === 0 ? '' : 'text-center'}`}
+                  >
+                    {h}
+                  </p>
+                ))}
+              </div>
 
-            <div className="px-3 pb-4">
-              {content.items.map((t) => {
-                const month = monthOf(t.range)
-                const showMonth = month !== lastMonth
-                lastMonth = month
+              <div className="bg-white">
+                {content.items.map((t) => {
+                  const month = monthOf(t.range)
+                  const showMonth = month !== lastMonth
+                  lastMonth = month
 
-                return (
-                  <div key={t.range}>
-                    {showMonth && (
-                      <p className="px-4 pb-1 pt-4 text-[10.5px] font-bold uppercase tracking-[0.16em] text-[#A2A8A2]">
-                        {month}
-                      </p>
-                    )}
+                  return (
+                    <div key={t.range}>
+                      {showMonth && (
+                        <p className="border-t border-[#EDEFED] bg-[#FAFBFA] px-6 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A908A] first:border-t-0">
+                          {month}
+                        </p>
+                      )}
 
-                    <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.8fr)_minmax(0,1.1fr)_auto] items-center gap-4 rounded-[10px] px-4 py-2.5 transition-colors duration-150 hover:bg-bombovo-gray/40">
-                      <div className="min-w-0">
-                        <p className="text-[14.5px] font-semibold leading-snug text-bombovo-dark tabular-nums">
+                      <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.7fr)_minmax(0,0.9fr)_150px] items-center gap-4 border-t border-[#EDEFED] px-6 py-3 transition-colors duration-150 hover:bg-[#FAFBFA]">
+                        <p className="text-[14.5px] font-semibold text-bombovo-dark tabular-nums">
                           {t.range}
                         </p>
-                        <p className="mt-0.5 text-[12px] text-[#8A908A]">{content.duration}</p>
-                      </div>
 
-                      {/*
-                        Status is hand-maintained content, not derived state. The
-                        marker is brand yellow — the palette has no green, and
-                        inventing one for a single dot would break it.
-                      */}
-                      <p className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#5C625C]">
-                        <span aria-hidden className="h-[7px] w-[7px] rounded-full bg-bombovo-yellow" />
-                        {t.status}
-                      </p>
+                        <p className="text-center text-[14px] font-semibold text-bombovo-dark">
+                          {content.duration}
+                        </p>
 
-                      <div className="text-right">
-                        <p className="flex items-baseline justify-end gap-2">
+                        <p className="flex items-baseline justify-center gap-2">
                           <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
                             {t.price}
                           </span>
-                          <span className="text-[17px] font-bold leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums">
+                          <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
                             {t.discounted}
                           </span>
                         </p>
-                        <p className="mt-0.5 text-[11px] text-[#8A908A]">{content.deadline}</p>
-                      </div>
 
-                      <BookButton content={content} className="w-[124px]" />
+                        <BookButton content={content} className="w-[150px]" />
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
 
@@ -309,27 +298,22 @@ export default function TerminyModal({
                       <p className="text-[14px] font-semibold leading-snug text-bombovo-dark tabular-nums">
                         {t.range}
                       </p>
+                      {/* One line: length and status, no repeated fine print. */}
                       <p className="mt-1 flex items-center gap-2 text-[12px] text-[#8A908A]">
                         <span>{content.duration}</span>
                         <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
-                        <span className="inline-flex items-center gap-1.5 font-semibold text-[#5C625C]">
-                          <span aria-hidden className="h-[6px] w-[6px] rounded-full bg-bombovo-yellow" />
-                          {t.status}
-                        </span>
+                        <span className="font-semibold text-[#5C625C]">{t.status}</span>
                       </p>
                     </div>
 
-                    <div className="shrink-0 text-right">
-                      <p className="flex items-baseline justify-end gap-1.5">
-                        <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
-                          {t.price}
-                        </span>
-                        <span className="text-[17px] font-bold leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums">
-                          {t.discounted}
-                        </span>
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-[#8A908A]">{content.deadline}</p>
-                    </div>
+                    <p className="flex shrink-0 items-baseline gap-1.5">
+                      <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
+                        {t.price}
+                      </span>
+                      <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
+                        {t.discounted}
+                      </span>
+                    </p>
                   </div>
                 </li>
               )
@@ -338,11 +322,12 @@ export default function TerminyModal({
         </div>
 
         {/*
-          On mobile the per-row button is dropped — twelve red buttons in a
-          narrow sheet crowds the dates themselves — and the same message is
-          given once at the foot instead.
+          Mobile has no per-row button — twelve red buttons in a narrow sheet
+          crowds the dates themselves — and on desktop the buttons no longer
+          carry their own "čoskoro" line, so the message is given once here for
+          both.
         */}
-        <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))] md:hidden">
+        <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))]">
           <p className="text-center text-[12px] text-[#5C625C]">
             Rezervácia termínu bude dostupná čoskoro.
           </p>

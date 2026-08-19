@@ -634,33 +634,35 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             photography. Quote and attribution stack below md, where the row plus
             divider would be too cramped to scan.
           */}
-          <figure className="mt-2.5 flex flex-col gap-4 rounded-[10px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.04),0_10px_24px_-18px_rgba(8,7,8,0.22)] ring-1 ring-[#E6E8E6] px-5 py-4 md:flex-row md:items-center md:gap-5">
-            <div className="flex min-w-0 flex-1 items-start gap-3">
+          <figure className="mt-4 flex flex-col gap-5 rounded-[14px] bg-white px-7 py-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-24px_rgba(8,7,8,0.28)] ring-1 ring-[#E6E8E6] md:flex-row md:items-center md:gap-8 md:px-8 md:py-7">
+            <div className="flex min-w-0 flex-1 items-start gap-4">
               <span
                 aria-hidden
-                className="shrink-0 text-[30px] font-bold leading-[0.8] text-bombovo-blue"
+                className="shrink-0 text-[48px] font-bold leading-[0.72] text-bombovo-blue md:text-[56px]"
                 style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
                 &ldquo;
               </span>
-              <blockquote className="text-[13px] font-medium leading-[1.5] text-[#080708]">
+              <blockquote className="text-[15px] font-medium leading-[1.6] text-[#080708] md:text-[16.5px]">
                 {review.quote}
               </blockquote>
             </div>
 
-            <span aria-hidden className="hidden h-11 w-px shrink-0 bg-[#E6E8E6] md:block" />
+            <span aria-hidden className="hidden h-16 w-px shrink-0 bg-[#E6E8E6] md:block" />
 
             {/*
               No avatar: we have no photograph of the reviewer, and an initials
               disc in its place just reads as a slot waiting for one.
             */}
             <figcaption className="min-w-0 shrink-0">
-              <p className="text-[12.5px] font-bold leading-tight text-[#080708]">{review.author}</p>
-              <p className="mt-0.5 text-[11.5px] leading-tight text-[#6C726C]">
+              <p className="text-[15px] font-bold leading-tight text-[#080708] md:text-[16px]">
+                {review.author}
+              </p>
+              <p className="mt-1 text-[13px] leading-tight text-[#6C726C] md:text-[13.5px]">
                 {review.school} · {review.groupSize}
               </p>
-              <span className="mt-1 block">
-                <Stars count={review.stars} />
+              <span className="mt-2 block">
+                <Stars count={review.stars} size={16} />
               </span>
             </figcaption>
           </figure>
