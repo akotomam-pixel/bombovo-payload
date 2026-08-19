@@ -60,7 +60,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
         <div className="mt-9 grid gap-6 lg:mt-11 lg:grid-cols-12 lg:gap-8">
           {/* Výhody — the practical case, so it leads and carries the weight. */}
           <div className="lg:col-span-7">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-bombovo-blue">
+            <h3 className="font-amatic text-[26px] leading-none text-bombovo-blue md:text-[30px]">
               {vyhody.title}
             </h3>
 
@@ -94,7 +94,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
 
           {/* Okolie — reference material, deliberately quieter. */}
           <div className="lg:col-span-5">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-bombovo-blue">
+            <h3 className="font-amatic text-[26px] leading-none text-bombovo-blue md:text-[30px]">
               {okolie.title}
             </h3>
 

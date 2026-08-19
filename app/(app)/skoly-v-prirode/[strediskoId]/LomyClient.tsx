@@ -296,7 +296,14 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 with the primary CTA now red, a red eyebrow made the column read
                 as mostly red. Red stays on the seal and that one button.
               */}
-              <span className="block text-[clamp(0.95rem,1.9vw,1.35rem)] font-bold uppercase leading-none tracking-[0.06em] text-[#3772FF]">
+              {/*
+                The brand's display face (loaded as --font-amatic in the root
+                layout, though the family is actually The Girl Next Door). It is
+                handwritten, so the uppercase and letter-spacing that suited
+                Poppins here are dropped — they fight the letterforms. Size band
+                is unchanged.
+              */}
+              <span className="block font-amatic text-[clamp(1.15rem,2.2vw,1.6rem)] leading-none text-[#3772FF]">
                 {hero.kicker}
               </span>
               <span className="mt-1.5 block text-[clamp(2.1rem,5.4vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[#080708] md:mt-2">
