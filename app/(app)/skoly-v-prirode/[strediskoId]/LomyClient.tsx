@@ -187,8 +187,8 @@ function FactIcon({ label }: { label: string }) {
  */
 function ProofIcon({ src, label }: { src: string; label: string }) {
   return (
-    <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center overflow-hidden">
-      <img src={opt(src, 96)} alt="" aria-hidden className="h-[46px] w-[46px] max-w-none object-contain" />
+    <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center overflow-hidden">
+      <img src={opt(src, 128)} alt="" aria-hidden className="h-[58px] w-[58px] max-w-none object-contain" />
       <span className="sr-only">{label}</span>
     </span>
   )
@@ -482,7 +482,29 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               the price card keeps its natural size and the review stretches, so
               this column bottoms out level with the photo + thumbnail strip.
             */}
-            <aside className="rise hidden lg:col-span-5 lg:flex lg:flex-col" style={{ animationDelay: '240ms' }}>
+            {/*
+              The two columns are locked together by arithmetic, not by eye.
+
+              In this 12-col grid with 32px gaps the left column spans 7 units
+              and the right 5, so the left width follows from the right one:
+                leftW = (rightW - 4*32) * 7/5 + 6*32
+              The photo is 3:2, so it is leftW*2/3 tall. The thumbnail strip is
+              4 columns at 4:3 with three 12px gaps, so each thumb is
+              (leftW - 36)/4 wide and 3/4 of that tall. Verified at 1440px:
+              leftW 696 -> photo 464, thumb 123.75, which is what the price card
+              and the proof strip below are set to.
+            */}
+            <aside
+              className="rise hidden lg:col-span-5 lg:flex lg:flex-col lg:self-start"
+              style={
+                {
+                  animationDelay: '240ms',
+                  '--left-w': 'calc((100% - 128px) * 1.4 + 192px)',
+                  '--photo-h': 'calc(var(--left-w) * 2 / 3)',
+                  '--thumb-h': 'calc((var(--left-w) - 36px) * 3 / 16)',
+                } as React.CSSProperties
+              }
+            >
               {/*
                 Built as a field card rather than a pricing card: a dark slab
                 carrying the money, cut from the pale body by the Vtáčnik ridgeline
@@ -493,7 +515,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 The discount lives on the photo seal only; the slab states the
                 price and nothing else.
               */}
-              <div className="relative overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1]">
+              <div className="relative flex flex-col overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1] lg:h-[var(--photo-h)]">
                 {/* ── Price slab ── */}
                 {/* Brand dark slab, white text on it. */}
                 <div className="relative bg-bombovo-dark px-7 pb-8 pt-5">
@@ -534,7 +556,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 </div>
 
                 {/* ── Facts ── */}
-                <div className="px-7 pb-5 pt-3">
+                <div className="flex flex-1 flex-col px-7 pb-5 pt-3">
                   <dl>
                     {facts.map((f, i) => (
                       <div
@@ -556,7 +578,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     ))}
                   </dl>
 
-                  <div className="mt-4 flex flex-col gap-2">
+                  <div className="mt-auto flex flex-col gap-2 pt-4">
                     <button type="button" onClick={openTerminy} className={ctaPrimary}>
                       {ctas.primary.label}
                     </button>
@@ -573,7 +595,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 height a lone review did. Stacks to one column on narrow screens,
                 where three columns of wrapped text would be unreadable.
               */}
-              <ul className="mt-3 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-3 sm:grid-cols-3 sm:gap-0">
+              <ul className="mt-3 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-3 sm:grid-cols-3 sm:gap-0 lg:mt-[16px] lg:h-[var(--thumb-h)] lg:items-center lg:py-0">
                 {proof.map((p, i) => (
                   <li
                     key={p.label}
