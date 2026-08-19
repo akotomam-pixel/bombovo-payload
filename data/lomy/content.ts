@@ -297,24 +297,5 @@ export const lomyContent: LomyContent = {
       { range: '14.06. – 18.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
       { range: '21.06. – 25.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
     ],
-
-    // Fields are the draft's, which it marks as provisional.
-    form: {
-      title: 'Nezáväzná objednávka',
-      intro:
-        'Vyplňte formulár a ozveme sa vám s konkrétnou ponukou. Nie je to záväzná rezervácia.',
-      labels: {
-        skola: 'Meno školy',
-        pocetDeti: 'Počet detí (približne)',
-        termin: 'Preferovaný mesiac alebo termín',
-        animacny: 'Máte záujem o animačný program?',
-        email: 'E-mail',
-        telefon: 'Telefón',
-        poznamka: 'Poznámka',
-      },
-      submitLabel: 'ODOSLAŤ DOPYT',
-      successTitle: 'Ďakujeme, ozveme sa vám čo najskôr.',
-      successBody: 'Váš dopyt sme prijali. Ozveme sa vám na uvedený kontakt.',
-    },
   },
 }

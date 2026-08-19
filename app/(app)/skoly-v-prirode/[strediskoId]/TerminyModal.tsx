@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
-import TerminyForm from './TerminyForm'
 import type { LomyTerminy } from '@/data/lomy/types'
 
 /**
@@ -61,12 +60,10 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 function BookButton({
   content,
   status,
-  onSelect,
   className = '',
 }: {
   content: LomyTerminy
   status: string
-  onSelect: () => void
   className?: string
 }) {
   const soldOut = /vypredan/i.test(status)
@@ -74,13 +71,13 @@ function BookButton({
   return (
     <button
       type="button"
-      disabled={soldOut}
-      onClick={onSelect}
-      title={soldOut ? 'Termín je vypredaný' : undefined}
-      className={`shrink-0 rounded-full border-2 px-6 py-3 text-[15px] font-bold transition-transform duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${
+      disabled
+      aria-disabled="true"
+      title={soldOut ? 'Termín je vypredaný' : `${content.bookLabel}: ${content.bookNote}`}
+      className={`shrink-0 cursor-not-allowed rounded-full border-2 px-6 py-3 text-[15px] font-bold ${
         soldOut
-          ? 'cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600'
-          : 'border-white bg-bombovo-red text-white active:translate-y-px'
+          ? 'border-gray-300 bg-bombovo-red/30 text-gray-600'
+          : 'border-white bg-bombovo-red text-white'
       } ${className}`}
     >
       {soldOut ? 'VYPREDANÉ' : content.bookLabel}
@@ -102,10 +99,6 @@ export default function TerminyModal({
   const [visible, setVisible] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
-  const formRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
-  // Set when a date row is chosen; pre-fills the form and scrolls to it.
-  const [selectedTerm, setSelectedTerm] = useState('')
 
   useEffect(() => setMounted(true), [])
 
@@ -170,12 +163,6 @@ export default function TerminyModal({
   }, [open])
 
   const stop = useCallback((e: React.MouseEvent) => e.stopPropagation(), [])
-
-  // Choosing a date is not a booking: it fills the form and brings it into view.
-  const selectTerm = useCallback((range: string) => {
-    setSelectedTerm(range)
-    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
-  }, [])
 
   if (!mounted || (!open && !visible)) return null
 
@@ -308,7 +295,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} status={t.status} onSelect={() => selectTerm(t.range)} className="w-[190px]" />
+                        <BookButton content={content} status={t.status} className="w-[190px]" />
                       </div>
                     </div>
                   )
@@ -366,18 +353,18 @@ export default function TerminyModal({
               )
             })}
           </ul>
+        </div>
 
-          {/*
-            The form sits inside the scroll area, below the dates, as the draft
-            describes — one window, no separate form section on the page.
-            Choosing a date scrolls here and fills the termín field.
-          */}
-          <TerminyForm
-            ref={formRef}
-            content={content.form}
-            selectedTerm={selectedTerm}
-            onTermChange={setSelectedTerm}
-          />
+        {/*
+          Mobile has no per-row button — twelve red buttons in a narrow sheet
+          crowds the dates themselves — and on desktop the buttons no longer
+          carry their own "čoskoro" line, so the message is given once here for
+          both.
+        */}
+        <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))]">
+          <p className="text-center text-[12px] text-[#5C625C]">
+            Rezervácia termínu bude dostupná čoskoro.
+          </p>
         </div>
       </div>
     </div>,
