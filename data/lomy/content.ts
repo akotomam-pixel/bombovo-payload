@@ -120,16 +120,11 @@ export const lomyContent: LomyContent = {
         'Baňa Cígeľ',
       ],
     },
-    vyhody: {
-      title: 'Výhody lokality',
-      items: [
-        {
-          text: 'Vlastný amfiteáter s krytým pódiom a ohniskom priamo v areáli, netreba nikam presúvať skupinu',
-          icon: 'amfiteater',
-        },
-        { text: 'Multifunkčné aj trávnaté ihrisko na mieste', icon: 'ihrisko' },
-        { text: 'Kompletne zrekonštruované ubytovanie (hlavná budova aj chatky)', icon: 'ubytovanie' },
-      ],
+    // The same frame the hero leads with — the amfiteáter, hlavná budova and
+    // chatky are all in it, so it shows what the paragraph describes.
+    photo: {
+      src: '/images/Skoly v Prirode/lomy.png',
+      alt: 'Areál Horského hotela Lomy: amfiteáter s ohniskom, hlavná budova a zrubové chatky',
     },
   },
 
@@ -233,6 +228,8 @@ export const lomyContent: LomyContent = {
         'Spoločenské miestnosti, detské ihrisko',
         'Bufet, dataprojektor, TV',
         'Vonkajší bazén (nevyhrievaný)',
+        // Added on instruction; not part of the draft's original six.
+        'Široké materiálne vybavenie',
       ],
     },
     mapa: {

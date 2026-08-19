@@ -148,11 +148,8 @@ export interface LomyVynimocny {
     title: string
     items: string[]
   }
-  vyhody: {
-    title: string
-    /** `icon` keys into the section's own glyph set. */
-    items: { text: string; icon: string }[]
-  }
+  /** A real photo of the areál, shown instead of restating the paragraph as cards. */
+  photo: { src: string; alt: string }
 }
 
 /** A price shown as a bold figure over a smaller unit. */

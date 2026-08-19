@@ -22,6 +22,12 @@ interface DistanceResult {
 interface Props {
   strediskoName: string
   coordinates?: { lat: number; lng: number }
+  /**
+   * Hides the built-in map and the component's own headline so a caller can
+   * place them itself. The Lomy page stacks the map above the calculator in one
+   * column, rather than side by side.
+   */
+  hideMap?: boolean
 }
 
 function formatDistance(meters: number): string {
@@ -35,7 +41,7 @@ function formatDuration(seconds: number): string {
   return `${h} hodín ${m} minút`
 }
 
-export default function DistanceCalculator({ strediskoName, coordinates }: Props) {
+export default function DistanceCalculator({ strediskoName, coordinates, hideMap = false }: Props) {
   const [inputValue, setInputValue] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [progress, setProgress] = useState(0)
@@ -146,17 +152,20 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
   }, [])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
+    <div className={hideMap ? 'w-full' : 'flex flex-col lg:flex-row gap-10 lg:gap-16 items-start'}>
       {/* Left column — calculator */}
-      <div className="w-full lg:w-1/2">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark mb-6 leading-tight">
-          <span className="block">Zistite, ako ďaleko je</span>
-          <span className="block mt-1 md:mt-2">
-            <span className="font-handwritten text-bombovo-red">{strediskoName}</span>
-            {' '}
-            <span className="font-bold text-bombovo-dark">od vás</span>
-          </span>
-        </h2>
+      <div className={hideMap ? 'w-full' : 'w-full lg:w-1/2'}>
+        {/* The Lomy page supplies its own heading above this block. */}
+        {!hideMap && (
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-bombovo-dark mb-6 leading-tight">
+            <span className="block">Zistite, ako ďaleko je</span>
+            <span className="block mt-1 md:mt-2">
+              <span className="font-handwritten text-bombovo-red">{strediskoName}</span>
+              {' '}
+              <span className="font-bold text-bombovo-dark">od vás</span>
+            </span>
+          </h2>
+        )}
 
         {/* Input */}
         <div className="mb-4">
@@ -238,7 +247,7 @@ export default function DistanceCalculator({ strediskoName, coordinates }: Props
         OSM's own embed needs no key and no extra dependency, so the whole
         component now uses one mapping provider.
       */}
-      <div className="w-full lg:w-1/2">
+      <div className={hideMap ? 'hidden' : 'w-full lg:w-1/2'}>
         {coordinates ? (
           <iframe
             title={`Mapa — ${strediskoName}`}

@@ -65,6 +65,14 @@ const VYBAVENIE_ICONS: JSX.Element[] = [
       <path d="M7.4 9.6V6.2a1.8 1.8 0 0 1 3.6 0M14.2 9.6V6.2a1.8 1.8 0 0 1 3.6 0" />
     </>
   ),
+  // Stacked crates — the materials store.
+  (
+    <>
+      <rect x="3.2" y="12.6" width="7.4" height="6.2" rx="1.2" />
+      <rect x="13.4" y="12.6" width="7.4" height="6.2" rx="1.2" />
+      <rect x="8.3" y="5.4" width="7.4" height="6.2" rx="1.2" />
+    </>
+  ),
 ]
 
 export default function UbytovanieSection({ content }: { content: LomyUbytovanie }) {
@@ -77,11 +85,16 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
           {heading}
         </h2>
 
-        <div className="mt-7 grid gap-5 md:mt-9 lg:grid-cols-12 lg:gap-6">
-          {/* Rooms */}
-          <div className="lg:col-span-5">
+        {/*
+          Two columns: everything the section has to say on the left, the map
+          and the distance lookup stacked together on the right.
+        */}
+        <div className="mt-7 grid gap-8 md:mt-9 lg:grid-cols-12 lg:gap-10">
+          {/* Left column — ubytovanie above vybavenie, as plain content. */}
+          <div className="flex flex-col gap-8 lg:col-span-7">
+            <div>
             <h3
-              className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+              className="text-[24px] leading-none text-bombovo-dark md:text-[27px]"
               style={{ fontFamily: SUBHEAD }}
             >
               {ubytovanie.title}
@@ -108,10 +121,10 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                 </span>
               </div>
             </div>
-          </div>
+            </div>
 
-          {/* Amenities */}
-          <div className="lg:col-span-7">
+            {/* Amenities, directly below in the same column. */}
+            <div>
             <h3
               className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
               style={{ fontFamily: SUBHEAD }}
@@ -119,7 +132,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
               {vybavenie.title}
             </h3>
 
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               {vybavenie.items.map((item, i) => (
                 <li
                   key={item}
@@ -145,20 +158,33 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                 </li>
               ))}
             </ul>
+            </div>
           </div>
-        </div>
 
-        {/* Distance + map */}
-        <div className="mt-10 md:mt-12">
-          <h3
-            className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
-            style={{ fontFamily: SUBHEAD }}
-          >
-            {mapa.title}
-          </h3>
+          {/* Right column — map on top, the distance lookup directly under it. */}
+          <div className="lg:col-span-5">
+            <iframe
+              title="Mapa — Horský hotel Lomy"
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapa.coordinates.lng - 0.035}%2C${mapa.coordinates.lat - 0.018}%2C${mapa.coordinates.lng + 0.035}%2C${mapa.coordinates.lat + 0.018}&layer=mapnik&marker=${mapa.coordinates.lat}%2C${mapa.coordinates.lng}`}
+              className="h-[280px] w-full rounded-[12px] ring-1 ring-[#DDE0DD] md:h-[320px]"
+              style={{ border: 0 }}
+              loading="lazy"
+            />
 
-          <div className="mt-4">
-            <DistanceCalculator strediskoName="Horský hotel Lomy" coordinates={mapa.coordinates} />
+            <h3
+              className="mt-6 text-[24px] leading-[1.15] text-bombovo-red md:text-[27px]"
+              style={{ fontFamily: SUBHEAD }}
+            >
+              {mapa.title}
+            </h3>
+
+            <div className="mt-4">
+              <DistanceCalculator
+                strediskoName="Horský hotel Lomy"
+                coordinates={mapa.coordinates}
+                hideMap
+              />
+            </div>
           </div>
         </div>
       </div>

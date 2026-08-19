@@ -129,15 +129,24 @@ export default function CenaSection({ content }: { content: LomyCena }) {
               <div className="flex items-center gap-3">
                 <IconSlot src={zakladna.icon} label={zakladna.title} />
                 <h3
-                  className="text-[24px] leading-none text-bombovo-dark md:text-[27px]"
+                  className="text-[24px] leading-none text-[#2A7038] md:text-[27px]"
                   style={{ fontFamily: SUBHEAD }}
                 >
                   {zakladna.title}
                 </h3>
               </div>
-              {/* Mirrors the price on the card opposite: this side costs nothing. */}
-              <span className="shrink-0 rounded-[7px] bg-[#E8F3EA] px-3 py-1.5 text-[12.5px] font-bold text-[#2A7038]">
-                v cene
+              {/*
+                Set exactly like the +55 € opposite — same figure-over-unit
+                shape — so the two cards read as one comparison and the zero is
+                unmistakably a price.
+              */}
+              <span className="shrink-0 text-right">
+                <span className="block text-[22px] font-bold leading-none tracking-[-0.02em] text-[#2A7038] tabular-nums md:text-[25px]">
+                  +0 €
+                </span>
+                <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-[#6C726C]">
+                  / dieťa
+                </span>
               </span>
             </div>
 
