@@ -102,6 +102,36 @@ export const lomyContent: LomyContent = {
     },
   },
 
+  // ─── Section 3: V čom je výnimočný ─────────────────────────────────────────
+  // Copy is the draft's section 3, verbatim. The distances that once sat beside
+  // the okolie entries were removed there deliberately and stay out.
+  vynimocny: {
+    heading: 'V čom je Horský hotel Lomy výnimočný',
+    paragraph:
+      'Hotel Lomy sa nachádza v doline pohoria Vtáčnik neďaleko Partizánskeho, obklopený lesom a tichou prírodou, mimo hlavného ruchu. Stredisko je kompletne zrekonštruované — od izieb v hlavnej budove až po zrubové chatky — a vlastný amfiteáter s krytým pódiom priamo v areáli znamená, že sa skupina počas pobytu nemusí nikam presúvať. Večerné opekačky pri ohnisku (za priaznivého počasia) sú tu bežnou súčasťou programu, nie výnimkou.',
+    okolie: {
+      title: 'Zaujímavosti v okolí',
+      items: [
+        'Hvezdáreň v Partizánskom',
+        'Termálne kúpele Malé Bielice',
+        'Zveropark Žarnovica',
+        'Zámok a ZOO Bojnice',
+        'Baňa Cígeľ',
+      ],
+    },
+    vyhody: {
+      title: 'Výhody lokality',
+      items: [
+        {
+          text: 'Vlastný amfiteáter s krytým pódiom a ohniskom priamo v areáli — netreba nikam presúvať skupinu',
+          icon: 'amfiteater',
+        },
+        { text: 'Multifunkčné aj trávnaté ihrisko na mieste', icon: 'ihrisko' },
+        { text: 'Kompletne zrekonštruované ubytovanie (hlavná budova aj chatky)', icon: 'ubytovanie' },
+      ],
+    },
+  },
+
   // ─── Section 7 (partial): termíny modal ────────────────────────────────────
   // Dates and prices are transcribed exactly from the draft's section 7 table.
   // Every session is 205 €, so the hero's standing −30 € discount applies

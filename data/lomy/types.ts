@@ -140,8 +140,24 @@ export interface LomyTerminy {
   items: Termin[]
 }
 
+/** Section: "V čom je Horský hotel Lomy výnimočný". */
+export interface LomyVynimocny {
+  heading: string
+  paragraph: string
+  okolie: {
+    title: string
+    items: string[]
+  }
+  vyhody: {
+    title: string
+    /** `icon` keys into the section's own glyph set. */
+    items: { text: string; icon: string }[]
+  }
+}
+
 export interface LomyContent {
   slug: string
   hero: LomyHero
+  vynimocny: LomyVynimocny
   terminy: LomyTerminy
 }

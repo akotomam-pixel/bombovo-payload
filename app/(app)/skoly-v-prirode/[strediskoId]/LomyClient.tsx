@@ -11,6 +11,7 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import TerminyModal from './TerminyModal'
+import VynimocnySection from './VynimocnySection'
 import type { LomyContent } from '@/data/lomy/types'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
@@ -690,6 +691,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
           </div>
         </div>
       </section>
+
+      <VynimocnySection content={content.vynimocny} />
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
       <div aria-hidden className="h-[76px] lg:hidden" />
