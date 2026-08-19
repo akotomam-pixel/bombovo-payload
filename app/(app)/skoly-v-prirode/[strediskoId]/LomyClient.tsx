@@ -178,9 +178,33 @@ function FactIcon({ label }: { label: string }) {
   )
 }
 
+/** Filled blue disc with a white tick — the proof strip's only ornament. */
+function CheckMark() {
+  return (
+    <span className="flex h-[25px] w-[25px] shrink-0 items-center justify-center rounded-full bg-bombovo-blue">
+      <svg viewBox="0 0 24 24" className="h-[13px] w-[13px] text-white" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="m5 12.5 4.6 4.5L19 7.5" />
+      </svg>
+    </span>
+  )
+}
+
+/** Five brand-yellow stars, used by the review. */
+function Stars({ count, size = 12 }: { count: number; size?: number }) {
+  return (
+    <span className="flex items-center gap-[2px]" aria-label={`${count} z 5 hviezdičiek`}>
+      {Array.from({ length: count }, (_, i) => (
+        <svg key={i} viewBox="0 0 24 24" style={{ width: size, height: size }} className="text-bombovo-yellow" fill="currentColor" aria-hidden>
+          <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
+        </svg>
+      ))}
+    </span>
+  )
+}
+
 export default function LomyClient({ content }: { content: LomyContent }) {
   const { hero } = content
-  const { photos, price, facts, discount, ctas, rating, review } = hero
+  const { photos, price, facts, proof, discount, ctas, rating, review } = hero
 
   const lgRef = useRef<any>(null)
   const [mobileIndex, setMobileIndex] = useState(0)
@@ -539,46 +563,69 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               </div>
 
               {/*
-                Review, filling the gap left beside the thumbnail strip. `flex-1`
-                takes exactly the height the price card doesn't use, so this
-                column ends level with the photo and thumbnails opposite.
-
-                The quote is the draft's proof-strip review (section 2), shown
-                here as a preview. The oversized blue quote mark carries the
-                block on its own — no star badge or card chrome around it.
+                Proof strip. Sized to its own content — it no longer stretches to
+                match the left column, since three short claims do not need the
+                height a lone review did. Stacks to one column on narrow screens,
+                where three columns of wrapped text would be unreadable.
               */}
-              <figure className="mt-6 flex flex-1 flex-col justify-center rounded-[14px] bg-[#EFF1EF] px-6 py-5">
-                {/*
-                  The one place a serif appears. It is a punctuation glyph used
-                  as a graphic, not a typeface change — the page's copy stays
-                  Poppins throughout.
-                */}
-                <span
-                  aria-hidden
-                  className="block text-[52px] font-bold leading-[0.62] text-bombovo-blue"
-                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
-                >
-                  &ldquo;
-                </span>
-
-                <blockquote className="mt-2.5 text-[14.5px] font-medium leading-[1.45] text-[#22251F]">
-                  {review.quote}
-                </blockquote>
-
-                <figcaption className="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                  <span className="text-[13px] font-bold text-[#080708]">{review.author}</span>
-                  <span className="text-[12.5px] text-[#6C726C]">{review.school}</span>
-                  <span className="flex items-center gap-[3px]" aria-label={`${review.stars} z 5 hviezdičiek`}>
-                    {Array.from({ length: review.stars }, (_, i) => (
-                      <svg key={i} viewBox="0 0 24 24" className="h-[13px] w-[13px] text-bombovo-yellow" fill="currentColor" aria-hidden>
-                        <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
-                      </svg>
-                    ))}
-                  </span>
-                </figcaption>
-              </figure>
+              <ul className="mt-6 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-4 sm:grid-cols-3 sm:gap-0">
+                {proof.map((p, i) => (
+                  <li
+                    key={p.label}
+                    className={`flex flex-col items-center gap-2 px-2.5 text-center ${
+                      i > 0 ? 'sm:border-l sm:border-[#D7DBD6]' : ''
+                    }`}
+                  >
+                    <CheckMark />
+                    <span className="text-[11.5px] font-bold leading-[1.3] text-[#080708]">
+                      {p.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </aside>
           </div>
+
+          {/*
+            Review, directly beneath the whole hero row and inside the same
+            container, so it spans the hero's width exactly. The 10px gap keeps
+            it reading as part of the hero rather than as a section of its own,
+            and it sits after the grid in normal flow — nothing overlaps the
+            photography. Quote and attribution stack below md, where the row plus
+            divider would be too cramped to scan.
+          */}
+          <figure className="mt-2.5 flex flex-col gap-4 rounded-[10px] bg-[#EFF1EF] px-5 py-4 md:flex-row md:items-center md:gap-5">
+            <div className="flex min-w-0 flex-1 items-start gap-3">
+              <span
+                aria-hidden
+                className="shrink-0 text-[30px] font-bold leading-[0.8] text-bombovo-blue"
+                style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+              >
+                &ldquo;
+              </span>
+              <blockquote className="text-[13px] font-medium leading-[1.5] text-[#080708]">
+                {review.quote}
+              </blockquote>
+            </div>
+
+            <span aria-hidden className="hidden h-11 w-px shrink-0 bg-[#D7DBD6] md:block" />
+
+            <figcaption className="flex shrink-0 items-center gap-3">
+              {/* Initials, not a photo — we have no permission to use one. */}
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bombovo-blue text-[12px] font-bold text-white">
+                {review.initials}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[12.5px] font-bold leading-tight text-[#080708]">{review.author}</p>
+                <p className="mt-0.5 text-[11.5px] leading-tight text-[#6C726C]">
+                  {review.school} · {review.groupSize}
+                </p>
+                <span className="mt-1 block">
+                  <Stars count={review.stars} />
+                </span>
+              </div>
+            </figcaption>
+          </figure>
         </div>
 
         {/* Mobile sticky action bar */}

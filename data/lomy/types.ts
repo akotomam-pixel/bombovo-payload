@@ -55,16 +55,27 @@ export interface HeroCta {
 }
 
 /**
- * The one review shown in the hero. The draft carries this same quote in its
- * proof strip (section 2); showing it here is a deliberate preview, and both
- * places should read from this one field rather than duplicating the string.
+ * The review shown directly under the hero.
+ *
+ * Supplied by the client rather than taken from the draft — the draft's proof
+ * strip (section 2) carries a different review (Paločková), which section 2
+ * will handle when it is built.
  */
 export interface HeroReview {
   quote: string
   author: string
   school: string
-  /** Whole stars, 1–5, as recorded in the draft. */
+  /** Group size, e.g. "106 detí". */
+  groupSize: string
+  /** Shown in the avatar; we have no photo and no permission to use one. */
+  initials: string
+  /** Whole stars, 1–5. */
   stars: number
+}
+
+/** One claim in the proof strip beneath the price card. */
+export interface ProofPoint {
+  label: string
 }
 
 export interface LomyHero {
@@ -89,6 +100,7 @@ export interface LomyHero {
     note: string
   }
   facts: HeroFact[]
+  proof: ProofPoint[]
   review: HeroReview
   discount: Discount
   ctas: {

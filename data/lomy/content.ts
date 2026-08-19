@@ -64,13 +64,22 @@ export const lomyContent: LomyContent = {
       { label: 'Dostupné termíny', value: 'apríl – jún', icon: '📅' },
     ],
 
-    // Transcribed from the draft's proof strip (section 2). Section 2 will show
-    // the same review; when it is built it should read this field rather than
-    // repeat the string, so the quote only ever lives in one place.
+    proof: [
+      { label: 'Garancia vrátenia peňazí' },
+      { label: 'Promptné jednanie a serióznosť' },
+      { label: '50 000+ detí odanimovaných' },
+    ],
+
+    // Supplied by the client. Note this is not the review in the draft's proof
+    // strip (section 2) — that one is from Mgr. Paločková and belongs to section
+    // 2 when it gets built.
     review: {
-      quote: 'Máme veľmi krásne zážitky a spomienky. Ďakujeme.',
-      author: 'Mgr. Lucia Paločková',
-      school: 'ZŠ Sama Cambela (82 detí)',
+      quote:
+        'Veľmi oceňujeme vybudovanie strediska Lomy — umožňuje veľa exteriérových aktivít, ubytovanie aj animačný program boli na výbornej úrovni.',
+      author: 'Mgr. Pavol Halák',
+      school: 'ZŠ Fatranská 14, Nitra',
+      groupSize: '106 detí',
+      initials: 'PH',
       stars: 5,
     },
 
