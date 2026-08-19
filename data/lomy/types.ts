@@ -191,6 +191,8 @@ export interface LomyCena {
     price: PriceTag
     paragraph: string
     items: string[]
+    /** Swap the path to change which artwork this heading uses. */
+    icon?: string
   }
   doplnkove: {
     title: string

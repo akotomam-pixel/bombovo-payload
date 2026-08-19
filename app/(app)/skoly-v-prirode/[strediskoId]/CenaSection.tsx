@@ -179,14 +179,17 @@ export default function CenaSection({ content }: { content: LomyCena }) {
 
           {/* Animačný program — an add-on, so it sits on white with its price inline. */}
           <div className="rounded-[14px] bg-white p-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD] sm:p-7">
-            {/* Heading and price share one row. */}
+            {/* Heading and price share one row; the icon matches the card opposite. */}
             <div className="flex items-start justify-between gap-4">
-              <h3
-                className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
-                style={{ fontFamily: SUBHEAD }}
-              >
-                {animacny.title}
-              </h3>
+              <div className="flex items-center gap-3">
+                <IconSlot src={animacny.icon} label={animacny.title} />
+                <h3
+                  className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+                  style={{ fontFamily: SUBHEAD }}
+                >
+                  {animacny.title}
+                </h3>
+              </div>
               <Price price={animacny.price} />
             </div>
 

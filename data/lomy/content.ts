@@ -153,16 +153,20 @@ export const lomyContent: LomyContent = {
         'Cena pevného lôžka = cena prístelky',
         'Príplatok pre 2. stupeň ZŠ: 8 € / pobyt / osoba',
       ],
-      // Custom artwork pending; the card renders a marked slot until it lands.
+      // Green seal with a tick, matching this card's green treatment. Change the
+      // path to swap which artwork this heading uses.
+      icon: '/images/section-4-icon-vsetko-v-cene.png',
     },
 
     animacny: {
       title: 'Animačný program',
       price: { amount: '+55 €', unit: '/ dieťa' },
+      // Blue star with a yellow sparkle — brand blue and yellow together.
+      icon: '/images/section-4-icon-animacny-program.png',
       paragraph:
         'Vyberte si animačný program a vaša škola v prírode získa úplne iný rozmer, pre učiteľov aj žiakov. Naši skúsení a školení animátori sa postarajú o to, aby bol každý deň pre deti bezpečným dobrodružstvom, pri ktorom si vy môžete plne oddýchnuť od povinností.',
       items: [
-        '7 h denne okrem dňa odchodu, spolu 28 h/pobyt',
+        'od 14:00 do 21:00, spolu 28 h/pobyt',
         'ZŠ: 1 animátor na 15 detí. MŠ: 1 animátor na 10 detí',
         'Animačný a športový materiál, hry, kvízy, darček pre každého účastníka',
         'Možnosť celodenného programu za príplatok +65 € / dieťa',
