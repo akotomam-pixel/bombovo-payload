@@ -120,11 +120,12 @@ export const lomyContent: LomyContent = {
         'Baňa Cígeľ',
       ],
     },
-    // The same frame the hero leads with — the amfiteáter, hlavná budova and
-    // chatky are all in it, so it shows what the paragraph describes.
+    // A portrait 9:16 shot is being sourced. Left empty on purpose: the section
+    // shows a marked placeholder rather than cropping the wide hero photo into
+    // a tall frame it was never composed for. Set `src` when the real one lands.
     photo: {
-      src: '/images/Skoly v Prirode/lomy.png',
-      alt: 'Areál Horského hotela Lomy: amfiteáter s ohniskom, hlavná budova a zrubové chatky',
+      src: '',
+      alt: 'Areál Horského hotela Lomy',
     },
   },
 

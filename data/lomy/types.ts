@@ -148,7 +148,10 @@ export interface LomyVynimocny {
     title: string
     items: string[]
   }
-  /** A real photo of the areál, shown instead of restating the paragraph as cards. */
+  /**
+   * The tall photo beside the text. `src` is empty while the real 9:16 shot is
+   * being sourced — the section renders a marked placeholder until it lands.
+   */
   photo: { src: string; alt: string }
 }
 
