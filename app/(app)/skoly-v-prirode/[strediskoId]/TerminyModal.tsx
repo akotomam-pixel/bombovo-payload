@@ -74,10 +74,10 @@ function BookButton({
       disabled
       aria-disabled="true"
       title={soldOut ? 'Termín je vypredaný' : `${content.bookLabel}: ${content.bookNote}`}
-      className={`shrink-0 cursor-not-allowed rounded-full px-5 py-2.5 text-[12px] font-bold tracking-[0.03em] ${
+      className={`shrink-0 cursor-not-allowed rounded-full border-2 px-6 py-3 text-[15px] font-bold ${
         soldOut
-          ? 'bg-[#E6E8E6] text-[#8A908A]'
-          : 'bg-bombovo-red text-white opacity-90'
+          ? 'border-gray-300 bg-bombovo-red/30 text-gray-600'
+          : 'border-white bg-bombovo-red text-white'
       } ${className}`}
     >
       {soldOut ? 'VYPREDANÉ' : content.bookLabel}
@@ -191,7 +191,7 @@ export default function TerminyModal({
       <div
         ref={panelRef}
         onClick={stop}
-        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[86vh] sm:max-w-[560px] sm:rounded-[18px] md:max-w-[840px] ${
+        className={`relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[18px] bg-white shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] transition-[opacity,transform] duration-200 ease-out sm:max-h-[86vh] sm:max-w-[560px] sm:rounded-[18px] md:max-w-[1000px] ${
           open ? 'translate-y-0 opacity-100 sm:scale-100' : 'translate-y-3 opacity-0 sm:translate-y-0 sm:scale-[0.97]'
         }`}
       >
@@ -240,16 +240,13 @@ export default function TerminyModal({
             the hero seal and in the pricing section. "5 dní" moves into the
             Počet dní column instead of trailing the date.
           */}
-          <div className="hidden md:block px-5 pb-5 pt-1">
-            <div className="overflow-hidden rounded-[14px] ring-1 ring-[#E1E4E1]">
-              <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_150px] items-center gap-4 bg-bombovo-yellow px-6 py-3.5">
+          <div className="hidden md:block px-6 pb-6 pt-2">
+            <div className="overflow-hidden rounded-3xl border-4 border-bombovo-blue">
+              <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_170px] items-center gap-5 bg-bombovo-yellow px-7 py-5">
                 {['Termín', 'Počet dní', 'Dostupnosť', 'Cena', ''].map((h, i) => (
-                  <p
-                    key={h || i}
-                    className={`text-[13px] font-black text-bombovo-dark ${i === 0 ? '' : 'text-center'}`}
-                  >
+                  <h3 key={h || i} className="text-center text-[17px] font-black text-bombovo-dark">
                     {h}
-                  </p>
+                  </h3>
                 ))}
               </div>
 
@@ -258,39 +255,47 @@ export default function TerminyModal({
                   const month = monthOf(t.range)
                   const showMonth = month !== lastMonth
                   lastMonth = month
+                  const soldOut = /vypredan/i.test(t.status)
 
                   return (
                     <div key={t.range}>
                       {showMonth && (
-                        <p className="border-t border-[#EDEFED] bg-[#FAFBFA] px-6 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A908A] first:border-t-0">
+                        <p className="bg-bombovo-gray/60 px-7 py-2.5 text-[12px] font-black uppercase tracking-[0.14em] text-bombovo-dark">
                           {month}
                         </p>
                       )}
 
-                      <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.6fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_150px] items-center gap-4 border-t border-[#EDEFED] px-6 py-3 transition-colors duration-150 hover:bg-[#FAFBFA]">
-                        <p className="text-[14.5px] font-semibold text-bombovo-dark tabular-nums">
+                      <div
+                        className={`grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_170px] items-center gap-5 border-t border-[#EDEFED] px-7 py-4 ${
+                          soldOut ? 'opacity-50' : ''
+                        }`}
+                      >
+                        <p className="text-center text-[17px] font-semibold text-bombovo-dark tabular-nums">
                           {t.range}
                         </p>
 
-                        <p className="text-center text-[14px] font-semibold text-bombovo-dark">
+                        <p className="text-center text-[17px] font-semibold text-bombovo-dark">
                           {content.duration}
                         </p>
 
                         {/* Hand-maintained in content.ts — change the word to change the row. */}
-                        <p className="text-center text-[13.5px] font-semibold text-[#5C625C]">
+                        <p className="text-center text-[15px] font-semibold text-bombovo-dark">
                           {t.status}
                         </p>
 
-                        <p className="flex items-baseline justify-center gap-2">
-                          <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
-                            {t.price}
-                          </span>
-                          <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
-                            {t.discounted}
+                        {/* Price underlined in red, as on the original table. */}
+                        <p className="text-center">
+                          <span className="inline-block border-b-4 border-bombovo-red pb-1">
+                            <span className="text-[15px] font-medium text-[#9AA09A] line-through tabular-nums">
+                              {t.price}
+                            </span>{' '}
+                            <span className="text-[22px] font-black text-bombovo-dark tabular-nums">
+                              {t.discounted}
+                            </span>
                           </span>
                         </p>
 
-                        <BookButton content={content} status={t.status} className="w-[150px]" />
+                        <BookButton content={content} status={t.status} className="w-[170px]" />
                       </div>
                     </div>
                   )
