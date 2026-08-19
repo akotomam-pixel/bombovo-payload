@@ -15,6 +15,13 @@ export type CampReview = {
   created_at: string
 }
 
+// Totals computed across the whole database, not just the reviews rendered below.
+export type ReviewStats = {
+  total: number
+  average: number
+  starCounts: Record<1 | 2 | 3 | 4 | 5, number>
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 const STAR_HINTS: Record<number, string> = {
@@ -94,10 +101,24 @@ function RatingBar({ label, count, total }: { label: string; count: number; tota
   )
 }
 
-function AggregateStats({ reviews, onWriteReview }: { reviews: CampReview[]; onWriteReview: () => void }) {
-  const total = reviews.length
-  const avg = total > 0 ? reviews.reduce((s, r) => s + r.stars, 0) / total : 0
-  const countFor = (s: number) => reviews.filter((r) => r.stars === s).length
+function AggregateStats({
+  reviews,
+  stats,
+  onWriteReview,
+}: {
+  reviews: CampReview[]
+  stats: ReviewStats | null
+  onWriteReview: () => void
+}) {
+  // Prefer database-wide totals; fall back to the loaded page if the count query failed.
+  const total = stats ? stats.total : reviews.length
+  const avg = stats
+    ? stats.average
+    : total > 0
+      ? reviews.reduce((s, r) => s + r.stars, 0) / total
+      : 0
+  const countFor = (s: number) =>
+    stats ? (stats.starCounts[s as 1 | 2 | 3 | 4 | 5] ?? 0) : reviews.filter((r) => r.stars === s).length
 
   return (
     <div className="flex flex-col md:flex-row gap-8 items-start border-b-2 border-gray-100 pb-8 mb-8">
@@ -399,9 +420,11 @@ function ReviewForm({
 export default function RecenzieLetneTaboryClient({
   reviews,
   camps,
+  stats,
 }: {
   reviews: CampReview[]
   camps: { id: string; name: string }[]
+  stats?: ReviewStats | null
 }) {
   const [formOpen, setFormOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -476,7 +499,11 @@ export default function RecenzieLetneTaboryClient({
           </div>
         )}
 
-        <AggregateStats reviews={filteredReviews} onWriteReview={openForm} />
+        <AggregateStats
+          reviews={filteredReviews}
+          stats={selectedCamp ? null : (stats ?? null)}
+          onWriteReview={openForm}
+        />
 
         <div ref={formRef}>
           {formOpen && (
