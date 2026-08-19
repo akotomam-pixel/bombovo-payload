@@ -196,15 +196,13 @@ export default function TerminyModal({
         }`}
       >
         {/* ── Header ── */}
-        <div className="relative shrink-0 bg-bombovo-gray px-6 pb-9 pt-6 sm:px-7 md:px-9 md:pt-8">
+        <div className="relative shrink-0 bg-bombovo-gray px-6 pb-8 pt-5 sm:px-7 md:px-9 md:pt-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
+              {/* Subtitle removed on instruction; `subtitle` still labels the dialog. */}
               <h2 className="text-[21px] font-bold leading-tight tracking-[-0.02em] text-bombovo-dark sm:text-[23px] md:text-[30px]">
                 {content.title}
               </h2>
-              <p className="mt-1 text-[13px] font-medium text-[#5C625C] md:text-[15px]">
-                {content.subtitle}
-              </p>
             </div>
 
             <button
