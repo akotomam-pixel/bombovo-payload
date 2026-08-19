@@ -504,9 +504,9 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 {
                   animationDelay: '240ms',
                   '--container': 'calc(min(100vw, 1280px) - 64px)',
-                  '--left-w': 'calc((var(--container) - 352px) * 0.58333 + 192px)',
+                  '--left-w': 'calc((var(--container) - 352px) * 7 / 12 + 192px)',
                   '--photo-h': 'calc(var(--left-w) * 2 / 3)',
-                  '--thumb-h': 'calc((var(--left-w) - 36px) * 0.1875)',
+                  '--thumb-h': 'calc((var(--left-w) - 36px) * 3 / 16)',
                 } as React.CSSProperties
               }
             >
