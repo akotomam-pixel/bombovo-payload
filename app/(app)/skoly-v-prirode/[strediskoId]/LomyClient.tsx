@@ -485,9 +485,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             {/*
               The two columns are locked together by arithmetic, not by eye.
 
-              In this 12-col grid with 32px gaps the left column spans 7 units
-              and the right 5, so the left width follows from the right one:
-                leftW = (rightW - 4*32) * 7/5 + 6*32
+              The container is min(100vw,1280px) - 64px of padding. In this
+              12-col grid with 32px gaps the left column spans 7 units plus 6
+              gaps:
+                leftW = (container - 352) * 7/12 + 192
+              These use vw, not %: a percentage in a height context resolves
+              against the parent's height, which silently broke the first
+              attempt at this.
               The photo is 3:2, so it is leftW*2/3 tall. The thumbnail strip is
               4 columns at 4:3 with three 12px gaps, so each thumb is
               (leftW - 36)/4 wide and 3/4 of that tall. Verified at 1440px:
@@ -499,9 +503,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               style={
                 {
                   animationDelay: '240ms',
-                  '--left-w': 'calc((100% - 128px) * 1.4 + 192px)',
+                  '--container': 'calc(min(100vw, 1280px) - 64px)',
+                  '--left-w': 'calc((var(--container) - 352px) * 0.58333 + 192px)',
                   '--photo-h': 'calc(var(--left-w) * 2 / 3)',
-                  '--thumb-h': 'calc((var(--left-w) - 36px) * 3 / 16)',
+                  '--thumb-h': 'calc((var(--left-w) - 36px) * 0.1875)',
                 } as React.CSSProperties
               }
             >
