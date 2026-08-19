@@ -134,22 +134,33 @@ export default function CenaSection({ content }: { content: LomyCena }) {
             <div className="flex items-center gap-3">
               <IconSlot src={zakladna.icon} label={zakladna.title} onDark />
               <h3
-                className="text-[24px] leading-none text-bombovo-yellow md:text-[27px]"
+                className="text-[24px] leading-none text-white md:text-[27px]"
                 style={{ fontFamily: SUBHEAD }}
               >
                 {zakladna.title}
               </h3>
             </div>
 
-            <p className="mt-4 text-[14px] leading-[1.7] text-[#E6E8E6] md:text-[14.5px]">
+            <p className="mt-4 text-[14px] leading-[1.7] text-[#E6E8E6]/80 md:text-[14.5px]">
               {zakladna.intro}
             </p>
 
-            <ol className="mt-4 flex flex-col gap-2.5">
+            {/*
+              Numbers, not yellow discs. Yellow on black is the palette's loudest
+              pairing and reads as warning — wrong signal for the block whose
+              point is that everything is already covered. Blue is the brand's
+              primary and sits quietly here. The figures are set open rather than
+              in filled circles so six of them stop competing as six focal
+              points, and hairlines carry the separation instead.
+            */}
+            <ol className="mt-5 border-t border-white/10">
               {zakladna.items.map((item, i) => (
-                <li key={item} className="flex items-start gap-3">
-                  <span className="mt-[1px] flex h-[21px] w-[21px] shrink-0 items-center justify-center rounded-full bg-bombovo-yellow text-[11.5px] font-bold text-bombovo-dark tabular-nums">
-                    {i + 1}
+                <li
+                  key={item}
+                  className="flex items-start gap-3.5 border-b border-white/10 py-3"
+                >
+                  <span className="mt-[1px] w-[18px] shrink-0 text-[13px] font-bold leading-[1.5] text-[#7FA5FF] tabular-nums">
+                    {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="text-[13.5px] leading-[1.55] text-[#E6E8E6] md:text-[14px]">
                     {item}
