@@ -600,12 +600,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 height a lone review did. Stacks to one column on narrow screens,
                 where three columns of wrapped text would be unreadable.
               */}
-              <ul className="mt-3 grid grid-cols-1 gap-3 rounded-[10px] bg-[#EFF1EF] px-3 py-3 sm:grid-cols-3 sm:gap-0 lg:mt-[16px] lg:h-[var(--thumb-h)] lg:items-center lg:py-0">
+              <ul className="mt-3 grid grid-cols-1 gap-3 rounded-[10px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.04),0_10px_24px_-18px_rgba(8,7,8,0.22)] ring-1 ring-[#E6E8E6] px-3 py-3 sm:grid-cols-3 sm:gap-0 lg:mt-[16px] lg:h-[var(--thumb-h)] lg:items-center lg:py-0">
                 {proof.map((p, i) => (
                   <li
                     key={p.label}
                     className={`flex flex-col items-center gap-1.5 px-2.5 text-center ${
-                      i > 0 ? 'sm:border-l sm:border-[#D7DBD6]' : ''
+                      i > 0 ? 'sm:border-l sm:border-[#E6E8E6]' : ''
                     }`}
                   >
                     <ProofIcon src={p.icon} label={p.label} />
@@ -626,7 +626,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             photography. Quote and attribution stack below md, where the row plus
             divider would be too cramped to scan.
           */}
-          <figure className="mt-2.5 flex flex-col gap-4 rounded-[10px] bg-[#EFF1EF] px-5 py-4 md:flex-row md:items-center md:gap-5">
+          <figure className="mt-2.5 flex flex-col gap-4 rounded-[10px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.04),0_10px_24px_-18px_rgba(8,7,8,0.22)] ring-1 ring-[#E6E8E6] px-5 py-4 md:flex-row md:items-center md:gap-5">
             <div className="flex min-w-0 flex-1 items-start gap-3">
               <span
                 aria-hidden
@@ -640,7 +640,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               </blockquote>
             </div>
 
-            <span aria-hidden className="hidden h-11 w-px shrink-0 bg-[#D7DBD6] md:block" />
+            <span aria-hidden className="hidden h-11 w-px shrink-0 bg-[#E6E8E6] md:block" />
 
             <figcaption className="flex shrink-0 items-center gap-3">
               {/* Initials, not a photo — we have no permission to use one. */}
