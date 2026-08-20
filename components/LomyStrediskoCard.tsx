@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { lomyContent } from '@/data/lomy/content'
+import DiscountSeal from '@/components/DiscountSeal'
 
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
@@ -59,29 +60,12 @@ export default function LomyStrediskoCard({
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
           {!vypredane && (
-            <div className="absolute left-4 top-4 h-[86px] w-[86px] rounded-full bg-white shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
-              <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  stroke="#DF2935"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray="3 5.2"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[17px] font-black leading-none tracking-tight text-bombovo-red">
-                  {discount.amount}
-                </span>
-                <span className="my-[5px] h-px w-6 bg-bombovo-red/60" />
-                <span className="text-[10px] font-bold leading-none tracking-tight text-bombovo-red">
-                  {discount.deadline}
-                </span>
-              </div>
-            </div>
+            <DiscountSeal
+              amount={discount.amount}
+              deadline={discount.deadline}
+              size={92}
+              className="pointer-events-none absolute left-3 top-3 -rotate-[9deg]"
+            />
           )}
         </div>
 
@@ -100,19 +84,15 @@ export default function LomyStrediskoCard({
             </div>
           ) : (
             <>
-              <div className="mt-4 flex flex-col gap-1.5">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
-                  <span className="text-xl font-semibold tabular-nums text-[#6B726B] line-through decoration-2 decoration-[#6B726B]">
-                    {price.amount}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[34px] font-black leading-none tabular-nums text-bombovo-dark">
-                    {price.discounted}
-                  </span>
-                  <span className="text-sm text-[#9AA09A]">{price.unit}</span>
-                </div>
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
+                <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
+                  {price.amount}
+                </span>
+                <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
+                  {price.discounted}
+                </span>
+                <span className="text-sm text-[#9AA09A]">{price.unit}</span>
               </div>
 
               <Link
