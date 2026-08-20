@@ -3,12 +3,30 @@ import { getStrediskoById } from '@/data/strediska'
 import StrediskoDetailClient from './StrediskoDetailClient'
 import type { StrediskoDetailData } from './StrediskoDetailClient'
 import LomyClient from './LomyClient'
+import type { LomyContent } from '@/data/lomy/types'
 import { lomyContent } from '@/data/lomy/content'
+import { horskyHotelMinciarContent } from '@/data/horsky-hotel-minciar/content'
+import { hotelMartinskeHoleContent } from '@/data/hotel-martinske-hole/content'
+import { penzionRohacanContent } from '@/data/penzion-rohacan/content'
+import { hotelOsrblieContent } from '@/data/hotel-osrblie/content'
+import { penzionPalusakContent } from '@/data/penzion-palusak/content'
+import { penzionLaganContent } from '@/data/penzion-lagan/content'
 
-// Horský hotel Lomy is being rebuilt from scratch for the 2027 season. It renders
-// its own client from a dedicated content file (`data/lomy/`), while the other
-// five strediská keep the original Payload-backed detail page below untouched.
-const REBUILT_SLUG = 'horsky-hotel-lomy'
+// Strediská rebuilt on the Lomy architecture (proven 2027-season structure:
+// hero, all content sections, termíny table, sticky bar, hero popup, shared
+// enquiry form). Each renders LomyClient from its own content file in
+// `data/{slug}/`, while any stredisko not in this map keeps the original
+// Payload-backed detail page below untouched. Keep in sync with REBUILT_NAMES
+// in app/(app)/prihlaska-svp/[strediskoId]/page.tsx.
+const REBUILT_CONTENT: Record<string, LomyContent> = {
+  'horsky-hotel-lomy': lomyContent,
+  'horsky-hotel-minciar': horskyHotelMinciarContent,
+  'hotel-martinske-hole': hotelMartinskeHoleContent,
+  'penzion-rohacan': penzionRohacanContent,
+  'hotel-osrblie': hotelOsrblieContent,
+  'penzion-palusak': penzionPalusakContent,
+  'penzion-lagan': penzionLaganContent,
+}
 
 // ─── Default hardcoded accordion content (shared across all strediska) ────────
 const DEFAULT_ZLAVA = [
@@ -174,28 +192,29 @@ function mapHardcodedToDetail(
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 /**
- * Lomy's content with its photography taken from Payload.
+ * A rebuilt stredisko's content with its photography taken from Payload.
  *
  * Only the media is read from the CMS — the copy, prices and dates stay in
- * `data/lomy/content.ts`, which is the reviewed source of truth for them. That
- * keeps photographs manageable in the admin without putting approved copy
- * somewhere it can be edited by accident.
+ * `data/{slug}/content.ts`, which is the reviewed source of truth for them.
+ * That keeps photographs manageable in the admin without putting approved
+ * copy somewhere it can be edited by accident. Generalized from the original
+ * Lomy-only `buildLomyContent`, same behaviour for every rebuilt slug.
  *
  * Every step degrades rather than fails: if Payload is unreachable, or the row
  * is missing, or the gallery is empty, the static content stands as written.
  */
-async function buildLomyContent(): Promise<typeof lomyContent> {
+async function buildRebuiltContent(slug: string, baseContent: LomyContent): Promise<LomyContent> {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
       collection: 'strediska',
-      where: { slug: { equals: REBUILT_SLUG } },
+      where: { slug: { equals: slug } },
       limit: 1,
       depth: 1,
     })
 
     const doc = result.docs[0] as Record<string, any> | undefined
-    if (!doc) return lomyContent
+    if (!doc) return baseContent
 
     // Hero gallery: the uploaded photos, in their admin order.
     const uploaded = Array.isArray(doc.heroGallery)
@@ -212,10 +231,10 @@ async function buildLomyContent(): Promise<typeof lomyContent> {
       uploaded.length > 0
         ? uploaded.map((src: string, i: number) => ({
             src,
-            alt: i === 0 ? lomyContent.hero.photos[0].alt : `Horský hotel Lomy — fotka ${i + 1}`,
+            alt: i === 0 ? baseContent.hero.photos[0].alt : `${baseContent.hero.name} — fotka ${i + 1}`,
             isPlaceholder: false,
           }))
-        : lomyContent.hero.photos
+        : baseContent.hero.photos
 
     // Section 3's portrait slot. Empty in Payload means the section keeps its
     // marked placeholder, which is the intended state until a photo is supplied.
@@ -233,22 +252,22 @@ async function buildLomyContent(): Promise<typeof lomyContent> {
       : []
 
     return {
-      ...lomyContent,
-      hero: { ...lomyContent.hero, photos },
+      ...baseContent,
+      hero: { ...baseContent.hero, photos },
       vynimocny: {
-        ...lomyContent.vynimocny,
+        ...baseContent.vynimocny,
         photo: section2
-          ? { src: section2, alt: lomyContent.vynimocny.photo.alt }
-          : lomyContent.vynimocny.photo,
+          ? { src: section2, alt: baseContent.vynimocny.photo.alt }
+          : baseContent.vynimocny.photo,
       },
       program: {
-        ...lomyContent.program,
-        gallery: programGallery.length > 0 ? programGallery : lomyContent.program.gallery,
+        ...baseContent.program,
+        gallery: programGallery.length > 0 ? programGallery : baseContent.program.gallery,
       },
     }
   } catch {
     // Payload unavailable — the static content is a complete page on its own.
-    return lomyContent
+    return baseContent
   }
 }
 
@@ -259,8 +278,9 @@ export default async function StrediskoDetailPage({
 }) {
   const { strediskoId } = await params
 
-  if (strediskoId === REBUILT_SLUG) {
-    return <LomyClient content={await buildLomyContent()} />
+  const baseContent = REBUILT_CONTENT[strediskoId]
+  if (baseContent) {
+    return <LomyClient content={await buildRebuiltContent(strediskoId, baseContent)} />
   }
 
   let detailData: StrediskoDetailData | null = null

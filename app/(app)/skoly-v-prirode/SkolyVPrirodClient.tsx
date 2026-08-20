@@ -83,6 +83,9 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
     'penzion-rohacan': 'Škola v prírode na Penzióne Roháčan',
     'penzion-sabina': 'Škola v prírode na Penzióne Sabina',
     'stred-europy-krahule': 'Škola v prírode Stred Európy Krahule',
+    'hotel-osrblie': 'Škola v prírode na Hotel Osrblie',
+    'penzion-palusak': 'Škola v prírode na Penzióne Palušák',
+    'penzion-lagan': 'Škola v prírode na Penzióne Lagáň',
   }
 
   return (

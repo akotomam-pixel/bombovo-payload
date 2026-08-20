@@ -87,11 +87,27 @@ export default async function PrihlasSVPPage({
   const { d, termin } = await searchParams;
   const dateIndex = d ? parseInt(d) : 0;
 
-  // Lomy is rebuilt and uses the short enquiry form; the long registration below
-  // is retired for it. The other five strediská still render that form, so this
-  // branches rather than replacing the route.
-  if (strediskoId === "horsky-hotel-lomy") {
-    return <LomyEnquiryPage initialTerm={termin ?? ""} />;
+  // Rebuilt strediská use the short enquiry form; the long registration below
+  // is retired for them. Strediská still on the old page render that form, so
+  // this branches rather than replacing the route. Keep in sync with
+  // REBUILT_SLUGS in app/(app)/skoly-v-prirode/[strediskoId]/page.tsx.
+  const REBUILT_NAMES: Record<string, string> = {
+    "horsky-hotel-lomy": "Horský hotel Lomy",
+    "horsky-hotel-minciar": "Horský hotel Minciar",
+    "hotel-martinske-hole": "Hotel Martinské Hole",
+    "penzion-rohacan": "Penzión Roháčan",
+    "hotel-osrblie": "Hotel Osrblie",
+    "penzion-palusak": "Penzión Palušák",
+    "penzion-lagan": "Penzión Lagáň",
+  };
+  if (strediskoId in REBUILT_NAMES) {
+    return (
+      <LomyEnquiryPage
+        slug={strediskoId}
+        strediskoName={REBUILT_NAMES[strediskoId]}
+        initialTerm={termin ?? ""}
+      />
+    );
   }
 
   let matched =
