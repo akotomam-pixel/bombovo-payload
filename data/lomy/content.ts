@@ -254,7 +254,8 @@ export const lomyContent: LomyContent = {
     formCta: 'VYPLNIŤ NEZÁVÄZNÚ OBJEDNÁVKU',
     sticky: {
       label: 'Termíny',
-      cta: 'Získať ponuku',
+      // Matches the hero's primary CTA exactly, caps included.
+      cta: 'ZÍSKAŤ CENOVÚ PONUKU',
     },
   },
 

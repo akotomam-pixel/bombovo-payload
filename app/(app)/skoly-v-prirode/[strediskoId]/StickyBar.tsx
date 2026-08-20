@@ -92,7 +92,13 @@ export default function StickyBar({
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
-        <div className="flex min-w-0 items-center gap-4 sm:gap-6">
+        {/*
+          `flex-1` takes the space left of the button and `justify-center`
+          centres the block inside it, so the text is not stranded against the
+          left edge with a gap beside it. On mobile it stays left, where there is
+          no spare width to centre within.
+        */}
+        <div className="flex min-w-0 flex-1 items-center gap-4 sm:justify-center sm:gap-6">
           {/* Label and the months that actually have dates. */}
           <div className="hidden min-w-0 shrink-0 sm:block">
             <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#5C625C]">
@@ -122,7 +128,7 @@ export default function StickyBar({
         <button
           type="button"
           onClick={onOpen}
-          className="shrink-0 rounded-full border-2 border-white bg-bombovo-red px-6 py-3 text-center text-[15px] font-bold text-white shadow-[0_4px_14px_-4px_rgba(223,41,53,0.5)] transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue sm:px-9 sm:py-4 sm:text-[17px]"
+          className="shrink-0 whitespace-nowrap rounded-full border-2 border-white bg-bombovo-red px-5 py-3 text-center text-[13px] font-bold tracking-[0.02em] text-white shadow-[0_4px_14px_-4px_rgba(223,41,53,0.5)] transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue sm:px-8 sm:py-4 sm:text-[15px] lg:px-9 lg:text-[16px]"
         >
           {cta}
         </button>
