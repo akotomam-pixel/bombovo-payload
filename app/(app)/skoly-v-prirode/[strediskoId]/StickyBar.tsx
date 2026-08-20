@@ -114,25 +114,34 @@ export default function StickyBar({
           <span aria-hidden className="hidden h-10 w-px shrink-0 bg-[#E6E8E6] sm:block" />
 
           {/*
-            One tight price group, and it must never break: nowrap on the whole
-            line rather than the unit alone, which still let the € drop to a
-            second row on narrow phones. Sizes step down instead of wrapping.
+            The price group splits deliberately on mobile: both figures on one
+            line, the unit beneath. That buys the width to keep the figures at
+            full size rather than shrinking them, and each part carries nowrap so
+            neither can break mid-value — the euro sign used to drop on its own.
+            From sm up it is one line again.
           */}
-          <p className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap">
-            <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums xs:text-[15px] sm:text-[16px]">
-              {price}
+          <p className="flex shrink-0 flex-col items-start gap-x-1.5 sm:flex-row sm:items-baseline">
+            {/* The two figures stay together on their own line, never breaking. */}
+            <span className="flex items-baseline gap-1.5 whitespace-nowrap">
+              <span className="text-[15px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums sm:text-[16px]">
+                {price}
+              </span>
+              <span className="text-[22px] font-black leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums sm:text-[27px]">
+                {discounted}
+              </span>
             </span>
-            <span className="text-[19px] font-black leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums xs:text-[23px] sm:text-[27px]">
-              {discounted}
+
+            {/* Drops below the prices on mobile; rejoins the line from sm up. */}
+            <span className="whitespace-nowrap text-[13px] font-medium leading-tight text-[#3A403A] sm:text-[14px]">
+              {unit}
             </span>
-            <span className="text-[12px] font-medium text-[#3A403A] xs:text-[14px]">{unit}</span>
           </p>
         </div>
 
         <button
           type="button"
           onClick={onOpen}
-          className="shrink-0 whitespace-nowrap rounded-full border-2 border-white bg-bombovo-red px-5 py-3 text-center text-[13px] font-bold tracking-[0.02em] text-white shadow-[0_4px_14px_-4px_rgba(223,41,53,0.5)] transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue sm:px-8 sm:py-4 sm:text-[15px] lg:px-9 lg:text-[16px]"
+          className="shrink-0 whitespace-nowrap rounded-full border-2 border-white bg-bombovo-red px-3.5 py-3 text-center text-[11.5px] font-bold tracking-[0.02em] text-white shadow-[0_4px_14px_-4px_rgba(223,41,53,0.5)] transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue xs:px-5 xs:text-[13px] sm:px-8 sm:py-4 sm:text-[15px] lg:px-9 lg:text-[16px]"
         >
           {cta}
         </button>
