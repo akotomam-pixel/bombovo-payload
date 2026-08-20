@@ -280,14 +280,20 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                 </svg>
                 {hero.location}
               </span>
-              <span aria-hidden className="hidden h-3 w-px bg-[#D6DAD6] sm:block" />
-              {/* One star, one figure — the attribution text is dropped. */}
-              <span className="inline-flex items-center gap-1.5 text-[17px]">
-                <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#FDCA40]" fill="currentColor" aria-hidden>
-                  <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
-                </svg>
-                <span className="text-[17px] font-semibold tabular-nums text-[#080708]">{rating.value}</span>
-              </span>
+              {/* No confirmed Google rating yet for every stredisko — the star
+                  only renders once `rating.value` is real, rather than show a
+                  fabricated figure. */}
+              {rating.value && (
+                <>
+                  <span aria-hidden className="hidden h-3 w-px bg-[#D6DAD6] sm:block" />
+                  <span className="inline-flex items-center gap-1.5 text-[17px]">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#FDCA40]" fill="currentColor" aria-hidden>
+                      <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
+                    </svg>
+                    <span className="text-[17px] font-semibold tabular-nums text-[#080708]">{rating.value}</span>
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Mobile-only fact chips — kapacita and termíny sit directly under the headline */}
@@ -640,7 +646,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <CenaSection content={content.cena} />
 
-      <UbytovanieSection content={content.ubytovanie} />
+      <UbytovanieSection content={content.ubytovanie} strediskoName={content.hero.name} />
 
       <ProgramSection content={content.program} />
 
@@ -648,6 +654,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         content={content.kontakt}
         terminy={content.terminy}
         onOpenTerminy={openTerminy}
+        strediskoName={content.hero.name}
       />
 
       <StickyBar
@@ -666,12 +673,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <Footer />
 
-      <TerminyModal content={content.terminy} open={terminyOpen} onClose={closeTerminy} />
+      <TerminyModal content={content.terminy} slug={content.slug} open={terminyOpen} onClose={closeTerminy} />
 
       <PonukaModal
         heading={content.kontakt.formHeading}
         open={ponukaOpen}
         onClose={closePonuka}
+        strediskoName={content.hero.name}
       />
 
       <LightGallery

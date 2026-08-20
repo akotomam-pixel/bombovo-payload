@@ -58,11 +58,13 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
  */
 function BookButton({
   content,
+  slug,
   status,
   range,
   className = '',
 }: {
   content: LomyTerminy
+  slug: string
   status: string
   range: string
   className?: string
@@ -86,7 +88,7 @@ function BookButton({
 
   return (
     <Link
-      href={`/prihlaska-svp/horsky-hotel-lomy?termin=${encodeURIComponent(range)}`}
+      href={`/prihlaska-svp/${slug}?termin=${encodeURIComponent(range)}`}
       className={`${shape} border-white bg-bombovo-red text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue`}
     >
       {content.bookLabel}
@@ -96,10 +98,12 @@ function BookButton({
 
 export default function TerminyModal({
   content,
+  slug,
   open,
   onClose,
 }: {
   content: LomyTerminy
+  slug: string
   open: boolean
   onClose: () => void
 }) {
@@ -304,7 +308,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} status={t.status} range={t.range} className="w-[190px]" />
+                        <BookButton content={content} slug={slug} status={t.status} range={t.range} className="w-[190px]" />
                       </div>
                     </div>
                   )

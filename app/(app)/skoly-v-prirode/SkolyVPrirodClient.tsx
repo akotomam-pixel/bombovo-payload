@@ -6,7 +6,7 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
-import LomyStrediskoCard from '@/components/LomyStrediskoCard'
+import StrediskoCard from '@/components/StrediskoCard'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { renderBold } from '@/lib/renderBold'
@@ -83,6 +83,9 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
     'penzion-rohacan': 'Škola v prírode na Penzióne Roháčan',
     'penzion-sabina': 'Škola v prírode na Penzióne Sabina',
     'stred-europy-krahule': 'Škola v prírode Stred Európy Krahule',
+    'hotel-osrblie': 'Škola v prírode na Hotel Osrblie',
+    'penzion-palusak': 'Škola v prírode na Penzióne Palušák',
+    'penzion-lagan': 'Škola v prírode na Penzióne Lagáň',
   }
 
   return (
@@ -451,64 +454,15 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {centers.map((center) => (
-                center.id === 'horsky-hotel-lomy' ? (
-                  <LomyStrediskoCard
-                    key={center.id}
-                    name={center.name}
-                    image={center.image}
-                    vypredane={center.vypredane}
-                  />
-                ) : (
-                <div
+                <StrediskoCard
                   key={center.id}
-                  className={`bg-white rounded-3xl shadow-lg overflow-hidden relative transition-shadow duration-300 ${center.vypredane ? 'cursor-default' : 'hover:shadow-xl'}`}
-                >
-                  {/* Sold-out diagonal ribbon — rendered outside the grayscale wrapper so it stays red */}
-                  {center.vypredane && (
-                    <div
-                      className="absolute pointer-events-none z-10 text-white font-black text-sm text-center tracking-widest uppercase"
-                      style={{
-                        top: '36px',
-                        right: '-42px',
-                        width: '180px',
-                        padding: '9px 0',
-                        background: '#DC2626',
-                        transform: 'rotate(45deg)',
-                        boxShadow: '0 3px 10px rgba(0,0,0,0.35)',
-                        letterSpacing: '0.12em',
-                      }}
-                    >
-                      Vypredané
-                    </div>
-                  )}
-
-                  {/* Inner wrapper gets grayscale when sold out */}
-                  <div className={center.vypredane ? 'grayscale opacity-75' : ''}>
-                    <div className="h-64 relative overflow-hidden">
-                      <img src={center.image} alt={`${center.name} – rekreačné stredisko pre školy v prírode`} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="p-6 space-y-4">
-                      <h3 className="text-2xl font-bold text-bombovo-dark leading-tight">{center.name}</h3>
-                      <div className="flex gap-3 mt-6">
-                        <div className="flex-1 bg-bombovo-red rounded-2xl p-4 flex items-center justify-center">
-                          <span className="text-white text-2xl font-bold">{center.price}</span>
-                        </div>
-                        {center.vypredane ? (
-                          <div className="flex-1 bg-gray-300 text-gray-500 text-lg font-bold rounded-2xl p-4 flex items-center justify-center cursor-not-allowed select-none">
-                            Vypredané
-                          </div>
-                        ) : (
-                          <Link href={`/skoly-v-prirode/${center.id}`} aria-label={strediskoAria[center.id] ?? `Škola v prírode ${center.name}`} className="flex-1">
-                            <button className="w-full h-full bg-bombovo-yellow text-bombovo-dark text-lg font-bold rounded-2xl p-4 hover:translate-y-0.5 active:translate-y-1 transition-transform duration-150">
-                              Výber možností
-                            </button>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                )
+                  slug={center.id}
+                  name={center.name}
+                  image={center.image}
+                  fallbackPrice={center.price}
+                  vypredane={center.vypredane}
+                  ariaLabel={strediskoAria[center.id]}
+                />
               ))}
             </div>
           </div>

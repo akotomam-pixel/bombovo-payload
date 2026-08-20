@@ -75,7 +75,13 @@ const VYBAVENIE_ICONS: JSX.Element[] = [
   ),
 ]
 
-export default function UbytovanieSection({ content }: { content: LomyUbytovanie }) {
+export default function UbytovanieSection({
+  content,
+  strediskoName,
+}: {
+  content: LomyUbytovanie
+  strediskoName: string
+}) {
   const { heading, ubytovanie, vybavenie, mapa } = content
 
   return (
@@ -137,6 +143,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                 <li
                   key={item}
                   className="flex items-center gap-3 rounded-[12px] bg-[#EFF1EF] px-4 py-3.5"
+                  // Icon set is fixed-length; cycle it rather than go blank past index 6.
                 >
                   <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-white">
                     <svg
@@ -149,7 +156,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                       strokeLinejoin="round"
                       aria-hidden
                     >
-                      {VYBAVENIE_ICONS[i]}
+                      {VYBAVENIE_ICONS[i % VYBAVENIE_ICONS.length]}
                     </svg>
                   </span>
                   <span className="text-[17px] font-medium leading-[1.6] text-bombovo-dark">
@@ -168,7 +175,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
           */}
           <div className="flex flex-col lg:col-span-5">
             <iframe
-              title="Mapa — Horský hotel Lomy"
+              title={`Mapa — ${strediskoName}`}
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapa.coordinates.lng - 0.035}%2C${mapa.coordinates.lat - 0.018}%2C${mapa.coordinates.lng + 0.035}%2C${mapa.coordinates.lat + 0.018}&layer=mapnik&marker=${mapa.coordinates.lat}%2C${mapa.coordinates.lng}`}
               className="order-3 mt-6 h-[280px] w-full rounded-[12px] ring-1 ring-[#DDE0DD] md:h-[320px] lg:order-1 lg:mt-0"
               style={{ border: 0 }}
@@ -184,7 +191,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
 
             <div className="order-2 mt-4 lg:order-3">
               <DistanceCalculator
-                strediskoName="Horský hotel Lomy"
+                strediskoName={strediskoName}
                 coordinates={mapa.coordinates}
                 hideMap
               />
