@@ -68,7 +68,7 @@ function BookButton({
   className?: string
 }) {
   const soldOut = /vypredan/i.test(status)
-  const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[15px] font-bold ${className}`
+  const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
 
   if (soldOut) {
     return (
@@ -269,7 +269,7 @@ export default function TerminyModal({
                   return (
                     <div key={t.range}>
                       {showMonth && (
-                        <p className="bg-bombovo-gray/60 px-9 py-3 text-[13px] font-black uppercase tracking-[0.14em] text-bombovo-dark">
+                        <p className="bg-bombovo-gray/60 px-9 py-3 text-[17px] font-black uppercase tracking-[0.14em] text-bombovo-dark">
                           {month}
                         </p>
                       )}
@@ -288,14 +288,14 @@ export default function TerminyModal({
                         </p>
 
                         {/* Hand-maintained in content.ts — change the word to change the row. */}
-                        <p className="text-center text-[16px] font-semibold text-bombovo-dark">
+                        <p className="text-center text-[17.5px] font-semibold text-bombovo-dark">
                           {t.status}
                         </p>
 
                         {/* Price underlined in red, as on the original table. */}
                         <p className="text-center">
                           <span className="inline-block border-b-4 border-bombovo-red pb-1">
-                            <span className="text-[16px] font-medium text-[#9AA09A] line-through tabular-nums">
+                            <span className="text-[17.5px] font-medium text-[#9AA09A] line-through tabular-nums">
                               {t.price}
                             </span>{' '}
                             <span className="text-[25px] font-black text-bombovo-dark tabular-nums">
@@ -338,14 +338,14 @@ export default function TerminyModal({
                     </span>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-[14px] font-semibold leading-snug text-bombovo-dark tabular-nums">
+                      <p className="text-[17px] font-semibold leading-snug text-bombovo-dark tabular-nums">
                         {t.range}
                       </p>
                       {/* One line: length and status, no repeated fine print. */}
                       <p className="mt-1 flex items-center gap-2 text-[12px] text-[#8A908A]">
                         <span>{content.duration}</span>
                         <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
-                        <span className="font-semibold text-[#5C625C]">{t.status}</span>
+                        <span className="font-semibold text-[#3A403A]">{t.status}</span>
                       </p>
                     </div>
 
@@ -371,7 +371,7 @@ export default function TerminyModal({
           both.
         */}
         <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))]">
-          <p className="text-center text-[12px] text-[#5C625C]">
+          <p className="text-center text-[12px] text-[#3A403A]">
             Rezervácia termínu bude dostupná čoskoro.
           </p>
         </div>

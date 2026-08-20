@@ -50,7 +50,7 @@ export default function KontaktSection({
             <div className="relative mt-4 overflow-hidden rounded-[14px] border-4 border-bombovo-blue bg-white">
               <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.9fr)] items-center gap-4 bg-bombovo-yellow px-5 py-3">
                 {['Termín', 'Počet dní', 'Cena'].map((h) => (
-                  <p key={h} className="text-center text-[14px] font-black text-bombovo-dark">
+                  <p key={h} className="text-center text-[17px] font-black text-bombovo-dark">
                     {h}
                   </p>
                 ))}
@@ -61,14 +61,14 @@ export default function KontaktSection({
                   key={t.range}
                   className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.9fr)] items-center gap-4 border-t border-[#EDEFED] px-5 py-3.5"
                 >
-                  <p className="text-center text-[14.5px] font-semibold text-bombovo-dark tabular-nums">
+                  <p className="text-center text-[17px] font-semibold text-bombovo-dark tabular-nums">
                     {t.range}
                   </p>
-                  <p className="text-center text-[14.5px] font-semibold text-bombovo-dark">
+                  <p className="text-center text-[17px] font-semibold text-bombovo-dark">
                     {terminy.duration}
                   </p>
                   <p className="flex items-baseline justify-center gap-1.5">
-                    <span className="text-[13px] font-medium text-[#9AA09A] line-through tabular-nums">
+                    <span className="text-[15px] font-medium text-[#9AA09A] line-through tabular-nums">
                       {t.price}
                     </span>
                     <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
@@ -81,14 +81,14 @@ export default function KontaktSection({
               {/* A fourth row, half-covered by the fade, so the list reads as cut off. */}
               {terminy.items[TEASER_ROWS] && (
                 <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.9fr)] items-center gap-4 border-t border-[#EDEFED] px-5 py-3.5">
-                  <p className="text-center text-[14.5px] font-semibold text-bombovo-dark tabular-nums">
+                  <p className="text-center text-[17px] font-semibold text-bombovo-dark tabular-nums">
                     {terminy.items[TEASER_ROWS].range}
                   </p>
-                  <p className="text-center text-[14.5px] font-semibold text-bombovo-dark">
+                  <p className="text-center text-[17px] font-semibold text-bombovo-dark">
                     {terminy.duration}
                   </p>
                   <p className="flex items-baseline justify-center gap-1.5">
-                    <span className="text-[13px] font-medium text-[#9AA09A] line-through tabular-nums">
+                    <span className="text-[15px] font-medium text-[#9AA09A] line-through tabular-nums">
                       {terminy.items[TEASER_ROWS].price}
                     </span>
                     <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
@@ -104,14 +104,14 @@ export default function KontaktSection({
               />
             </div>
 
-            <p className="mt-3 text-[13px] text-[#5C625C]">
+            <p className="mt-3 text-[17px] text-[#3A403A]">
               a ďalších {Math.max(terminy.items.length - TEASER_ROWS, 0)} termínov
             </p>
 
             <button
               type="button"
               onClick={onOpenTerminy}
-              className="mt-4 inline-flex items-center justify-center rounded-full border-2 border-bombovo-dark bg-white px-7 py-3.5 text-[14px] font-bold text-bombovo-dark transition-colors duration-200 hover:bg-bombovo-dark hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
+              className="mt-4 inline-flex items-center justify-center rounded-full border-2 border-bombovo-dark bg-white px-7 py-3.5 text-[17px] font-bold text-bombovo-dark transition-colors duration-200 hover:bg-bombovo-dark hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
             >
               {content.terminyCta}
             </button>
@@ -126,7 +126,7 @@ export default function KontaktSection({
               {content.formHeading}
             </h2>
 
-            <p className="mt-3 max-w-[52ch] text-[14.5px] leading-[1.65] text-[#2B2E2B]">
+            <p className="mt-3 max-w-[52ch] text-[17px] leading-[1.65] text-[#1F2320]">
               {content.formIntro}
             </p>
 
@@ -146,7 +146,7 @@ export default function KontaktSection({
                     >
                       <path d="m5 12.5 4.6 4.5L19 7.5" />
                     </svg>
-                    <span className="text-[14px] text-[#2B2E2B]">{item}</span>
+                    <span className="text-[17px] text-[#1F2320]">{item}</span>
                   </li>
                 ),
               )}
@@ -154,7 +154,7 @@ export default function KontaktSection({
 
             <Link
               href={`/prihlaska-svp/${strediskoSlug}`}
-              className="mt-6 inline-flex items-center justify-center rounded-full border-2 border-white bg-bombovo-red px-7 py-3.5 text-center text-[14px] font-bold text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
+              className="mt-6 inline-flex items-center justify-center rounded-full border-2 border-white bg-bombovo-red px-7 py-3.5 text-center text-[17px] font-bold text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
             >
               {content.formCta}
             </Link>

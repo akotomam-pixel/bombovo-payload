@@ -50,7 +50,7 @@ function PhotoSlot({ className = '' }: { className?: string }) {
         <circle cx="8.6" cy="9.6" r="1.6" />
         <path d="m3.6 17.4 5-4.6 3.6 3.2 3.4-2.8 4.8 4.2" />
       </svg>
-      <p className="text-[11.5px] font-semibold leading-tight text-[#6C726C]">Miesto pre fotku</p>
+      <p className="text-[11.5px] font-semibold leading-tight text-[#3A403A]">Miesto pre fotku</p>
     </div>
   )
 }
@@ -116,7 +116,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         />
                         {isLast && (
-                          <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/70 text-[13px] font-semibold text-white">
+                          <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/70 text-[17px] font-semibold text-white">
                             +{gallery.length - 3}
                           </span>
                         )}
@@ -145,13 +145,13 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
               {heading}
             </h2>
 
-            <p className="mt-4 max-w-[62ch] text-[15px] leading-[1.7] text-[#3E443E] md:text-[15.5px]">
+            <p className="mt-4 max-w-[62ch] text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">
               {paragraph}
             </p>
 
             <Link
               href={cta.href}
-              className="mt-6 inline-flex items-center gap-2 rounded-[9px] bg-bombovo-blue px-6 py-3.5 text-[13.5px] font-bold uppercase tracking-[0.045em] text-white shadow-[0_3px_0_0_#1E49B8,0_10px_22px_-10px_rgba(55,114,255,0.75)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-[#2F66EE] active:translate-y-[3px] active:shadow-[0_0_0_0_#1E49B8,0_6px_14px_-10px_rgba(55,114,255,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
+              className="mt-6 inline-flex items-center gap-2 rounded-[9px] bg-bombovo-blue px-6 py-3.5 text-[17px] font-bold uppercase tracking-[0.045em] text-white shadow-[0_3px_0_0_#1E49B8,0_10px_22px_-10px_rgba(55,114,255,0.75)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-[#2F66EE] active:translate-y-[3px] active:shadow-[0_0_0_0_#1E49B8,0_6px_14px_-10px_rgba(55,114,255,0.7)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
             >
               {cta.label}
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -27,7 +27,7 @@ function Price({ price, tone = 'dark' }: { price: PriceTag; tone?: 'dark' | 'lig
       </span>
       <span
         className={`mt-1 block whitespace-nowrap text-[11.5px] font-medium ${
-          tone === 'light' ? 'text-[#E6E8E6]/70' : 'text-[#6C726C]'
+          tone === 'light' ? 'text-[#E6E8E6]/70' : 'text-[#3A403A]'
         }`}
       >
         {price.unit}
@@ -84,19 +84,19 @@ function SluzbaCard({ item }: { item: DoplnkovaSluzba }) {
       <div className="flex items-start gap-4">
         <IconSlot src={item.icon} label={item.label} />
 
-        <span className="min-w-0 flex-1 pt-1 text-[15px] font-semibold leading-snug text-bombovo-dark md:text-[16px]">
+        <span className="min-w-0 flex-1 pt-1 text-[17px] font-semibold leading-snug text-bombovo-dark md:text-[18px]">
           {item.label}
         </span>
 
         <Price price={item.price} />
       </div>
 
-      <p className="mt-3.5 max-w-[74ch] text-[14px] leading-[1.65] text-[#2B2E2B] md:text-[14.5px]">
+      <p className="mt-3.5 max-w-[74ch] text-[17px] leading-[1.65] text-[#1F2320] md:text-[17.5px]">
         {item.description}
       </p>
 
       {item.note && (
-        <p className="mt-3 inline-flex rounded-[6px] bg-[#EFF1EF] px-3 py-1.5 text-[12.5px] font-medium text-[#4A4F4A]">
+        <p className="mt-3 inline-flex rounded-[6px] bg-[#EFF1EF] px-3 py-1.5 text-[12.5px] font-medium text-[#1F2320]">
           {item.note}
         </p>
       )}
@@ -144,13 +144,13 @@ export default function CenaSection({ content }: { content: LomyCena }) {
                 <span className="block text-[22px] font-bold leading-none tracking-[-0.02em] text-[#2A7038] tabular-nums md:text-[25px]">
                   +0 €
                 </span>
-                <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-[#6C726C]">
+                <span className="mt-1 block whitespace-nowrap text-[11.5px] font-medium text-[#3A403A]">
                   / dieťa
                 </span>
               </span>
             </div>
 
-            <p className="mt-4 text-[14px] leading-[1.7] text-[#2B2E2B] md:text-[14.5px]">
+            <p className="mt-4 text-[17px] leading-[1.7] text-[#1F2320] md:text-[17.5px]">
               {zakladna.intro}
             </p>
 
@@ -169,7 +169,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
                   >
                     <path d="m5 12.5 4.6 4.5L19 7.5" />
                   </svg>
-                  <span className="text-[13.5px] leading-[1.55] text-[#2B2E2B] md:text-[14px]">
+                  <span className="text-[17px] leading-[1.65] text-[#1F2320] md:text-[17.5px]">
                     {item}
                   </span>
                 </li>
@@ -193,7 +193,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
               <Price price={animacny.price} />
             </div>
 
-            <p className="mt-4 text-[14px] leading-[1.7] text-[#2B2E2B] md:text-[14.5px]">
+            <p className="mt-4 text-[17px] leading-[1.7] text-[#1F2320] md:text-[17.5px]">
               {animacny.paragraph}
             </p>
 
@@ -201,7 +201,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
               {animacny.items.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <Tick />
-                  <span className="text-[13.5px] leading-[1.55] text-[#2B2E2B] md:text-[14px]">
+                  <span className="text-[17px] leading-[1.65] text-[#1F2320] md:text-[17.5px]">
                     {item}
                   </span>
                 </li>

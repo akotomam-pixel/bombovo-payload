@@ -106,14 +106,14 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                   key={room.label}
                   className="rounded-[12px] bg-white p-5 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD]"
                 >
-                  <p className="text-[15px] font-bold text-bombovo-dark">{room.label}</p>
-                  <p className="mt-1 text-[13.5px] leading-[1.55] text-[#4A4F4A]">{room.detail}</p>
+                  <p className="text-[17px] font-bold text-bombovo-dark">{room.label}</p>
+                  <p className="mt-1 text-[17px] leading-[1.65] text-[#1F2320]">{room.detail}</p>
                 </div>
               ))}
 
               {/* Capacity reads as a figure, not another bullet. */}
               <div className="flex items-baseline justify-between gap-4 rounded-[12px] bg-bombovo-dark px-5 py-4">
-                <span className="text-[13px] font-medium text-[#E6E8E6]/75">
+                <span className="text-[17px] font-medium text-[#E6E8E6]/75">
                   {ubytovanie.capacity.label}
                 </span>
                 <span className="text-[20px] font-bold leading-none text-bombovo-yellow tabular-nums">
@@ -152,7 +152,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
                       {VYBAVENIE_ICONS[i]}
                     </svg>
                   </span>
-                  <span className="text-[13.5px] font-medium leading-[1.45] text-bombovo-dark">
+                  <span className="text-[17px] font-medium leading-[1.6] text-bombovo-dark">
                     {item}
                   </span>
                 </li>

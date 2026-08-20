@@ -37,7 +37,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
               {heading}
             </h2>
 
-            <p className="mt-4 text-[15px] leading-[1.7] text-[#3E443E] md:text-[15.5px]">
+            <p className="mt-4 text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">
               {paragraph}
             </p>
 
@@ -52,7 +52,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
               {okolie.items.map((item, i) => (
                 <li
                   key={item}
-                  className={`flex items-center gap-3 py-3 text-[14px] text-[#3E443E] ${
+                  className={`flex items-center gap-3 py-3 text-[17px] text-[#1F2320] ${
                     i > 0 ? 'border-t border-[#E6E8E6]' : ''
                   }`}
                 >
@@ -88,8 +88,8 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
                   <circle cx="8.6" cy="9.6" r="1.6" />
                   <path d="m3.6 17.4 5-4.6 3.6 3.2 3.4-2.8 4.8 4.2" />
                 </svg>
-                <p className="text-[13px] font-semibold text-[#6C726C]">Miesto pre fotku</p>
-                <p className="text-[11.5px] leading-[1.45] text-[#8A908A]">Fotka na výšku</p>
+                <p className="text-[17px] font-semibold text-[#3A403A]">Miesto pre fotku</p>
+                <p className="text-[11.5px] leading-[1.6] text-[#8A908A]">Fotka na výšku</p>
               </div>
             )}
           </figure>

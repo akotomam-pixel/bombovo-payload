@@ -265,14 +265,14 @@ export default function LomyClient({ content }: { content: LomyContent }) {
     Focus rings are blue — it carries against both white and red.
   */
   const ctaPrimary =
-    'relative inline-flex items-center justify-center rounded-[9px] bg-[#DF2935] px-6 py-3.5 text-center text-[13.5px] font-bold leading-tight tracking-[0.045em] text-white ' +
+    'relative inline-flex items-center justify-center rounded-[9px] bg-[#DF2935] px-6 py-3.5 text-center text-[17px] font-bold leading-tight tracking-[0.045em] text-white ' +
     'shadow-[0_3px_0_0_#A81B24,0_10px_22px_-10px_rgba(223,41,53,0.7)] transition-[background-color,box-shadow,transform] duration-150 ease-out ' +
     'hover:bg-[#CC2430] hover:shadow-[0_3px_0_0_#A81B24,0_16px_28px_-12px_rgba(223,41,53,0.8)] ' +
     'active:translate-y-[3px] active:shadow-[0_0_0_0_#A81B24,0_6px_14px_-10px_rgba(223,41,53,0.65)] ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   const ctaSecondary =
-    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[13px] font-semibold uppercase leading-tight tracking-[0.045em] text-[#2B2E2B] ' +
+    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[17px] font-semibold uppercase leading-tight tracking-[0.045em] text-[#1F2320] ' +
     'transition-[background-color,border-color,color,transform] duration-150 ease-out hover:border-[#080708] hover:bg-[#080708] hover:text-white active:translate-y-px ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
@@ -318,7 +318,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
             {/* Location + understated Google rating */}
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 md:mt-5">
-              <span className="inline-flex items-center gap-2 text-[14px] text-[#4A4F4A]">
+              <span className="inline-flex items-center gap-2 text-[17px] text-[#1F2320]">
                 <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#8A908A]" fill="currentColor" aria-hidden>
                   <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" />
                 </svg>
@@ -326,11 +326,11 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               </span>
               <span aria-hidden className="hidden h-3 w-px bg-[#D6DAD6] sm:block" />
               {/* One star, one figure — the attribution text is dropped. */}
-              <span className="inline-flex items-center gap-1.5 text-[13px]">
+              <span className="inline-flex items-center gap-1.5 text-[17px]">
                 <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#FDCA40]" fill="currentColor" aria-hidden>
                   <path d="m12 2 2.9 6.26 6.85.72-5.1 4.6 1.43 6.72L12 16.9 5.92 20.3l1.43-6.72-5.1-4.6 6.85-.72L12 2Z" />
                 </svg>
-                <span className="text-[14px] font-semibold tabular-nums text-[#080708]">{rating.value}</span>
+                <span className="text-[17px] font-semibold tabular-nums text-[#080708]">{rating.value}</span>
               </span>
             </div>
 
@@ -343,10 +343,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     key={f.label}
                     className="inline-flex items-center gap-2 rounded-[8px] border border-[#E6E8E6] bg-white px-3 py-2"
                   >
-                    <span aria-hidden className="text-[13px] leading-none">
+                    <span aria-hidden className="text-[17px] leading-none">
                       {f.icon}
                     </span>
-                    <span className="text-[13px] font-medium text-[#2B2E2B]">{f.value}</span>
+                    <span className="text-[17px] font-medium text-[#1F2320]">{f.value}</span>
                     <span className="sr-only">{f.label}</span>
                   </span>
                 ))}
@@ -421,7 +421,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         />
                         {isLast && (
-                          <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/72 text-[13px] font-semibold text-white">
+                          <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/72 text-[17px] font-semibold text-white">
                             +{remaining} fotiek
                           </span>
                         )}
@@ -549,7 +549,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     <span className="text-[clamp(2.1rem,3.1vw,2.7rem)] font-bold leading-none tracking-[-0.035em] text-white tabular-nums">
                       {price.discounted}
                     </span>
-                    <span className="text-[15px] text-[#E6E8E6]/70">{price.unit}</span>
+                    <span className="text-[17px] text-[#E6E8E6]/70">{price.unit}</span>
                   </p>
 
                   {/*
@@ -585,7 +585,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                         </span>
                         <div className="min-w-0 flex-1">
                           <dt className="text-[12px] font-semibold text-bombovo-blue">{f.label}</dt>
-                          <dd className="mt-0.5 text-[15px] font-semibold leading-snug text-[#080708]">
+                          <dd className="mt-0.5 text-[17px] font-semibold leading-snug text-[#080708]">
                             {f.value}
                           </dd>
                         </div>
@@ -649,7 +649,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               >
                 &ldquo;
               </span>
-              <blockquote className="text-[15px] font-medium leading-[1.6] text-[#080708] md:text-[16.5px]">
+              <blockquote className="text-[17px] font-medium leading-[1.6] text-[#080708] md:text-[18px]">
                 {review.quote}
               </blockquote>
             </div>
@@ -661,10 +661,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               disc in its place just reads as a slot waiting for one.
             */}
             <figcaption className="min-w-0 shrink-0">
-              <p className="text-[15px] font-bold leading-tight text-[#080708] md:text-[16px]">
+              <p className="text-[17px] font-bold leading-tight text-[#080708] md:text-[18px]">
                 {review.author}
               </p>
-              <p className="mt-1 text-[13px] leading-tight text-[#6C726C] md:text-[13.5px]">
+              <p className="mt-1 text-[17px] leading-tight text-[#3A403A] md:text-[13.5px]">
                 {review.school} · {review.groupSize}
               </p>
               <span className="mt-2 block">
