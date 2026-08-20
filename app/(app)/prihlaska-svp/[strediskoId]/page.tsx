@@ -77,10 +77,13 @@ export default async function PrihlasSVPPage({
   searchParams,
 }: {
   params: Promise<{ strediskoId: string }>;
-  searchParams: Promise<{ d?: string }>;
+  // `termin` carries the date as text, which the rebuilt Lomy table uses: its
+  // 2027 dates do not correspond to the indexes in the stredisko data, so an
+  // index from there would pre-fill the wrong date.
+  searchParams: Promise<{ d?: string; termin?: string }>;
 }) {
   const { strediskoId } = await params;
-  const { d } = await searchParams;
+  const { d, termin } = await searchParams;
   const dateIndex = d ? parseInt(d) : 0;
 
   let matched =
@@ -108,7 +111,7 @@ export default async function PrihlasSVPPage({
     <RegistrationSVPClient
       strediskoId={strediskoId}
       strediskoName={matched.strediskoName}
-      initialDate={matched.initialDate}
+      initialDate={termin ?? matched.initialDate}
       allStrediskaOptions={matched.allStrediskaOptions}
     />
   );

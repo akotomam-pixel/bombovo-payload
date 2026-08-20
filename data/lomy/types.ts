@@ -222,6 +222,19 @@ export interface LomyUbytovanie {
   }
 }
 
+/** Section 7 on the page, plus the sticky bar that follows the scroll. */
+export interface LomyKontakt {
+  terminyHeading: string
+  terminyCta: string
+  formHeading: string
+  formIntro: string
+  formCta: string
+  sticky: {
+    label: string
+    cta: string
+  }
+}
+
 /** Section: "Overený animačný program". */
 export interface LomyProgram {
   heading: string
@@ -243,4 +256,5 @@ export interface LomyContent {
   ubytovanie: LomyUbytovanie
   program: LomyProgram
   terminy: LomyTerminy
+  kontakt: LomyKontakt
 }

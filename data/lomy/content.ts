@@ -244,6 +244,20 @@ export const lomyContent: LomyContent = {
     },
   },
 
+  // ─── Section 7: Dostupné termíny + kontakt ─────────────────────────────────
+  kontakt: {
+    terminyHeading: 'Dostupné termíny',
+    terminyCta: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY',
+    formHeading: 'Získať cenovú ponuku',
+    formIntro:
+      'Napíšte nám a pripravíme vám konkrétnu ponuku pre vašu školu. Nie je to záväzná rezervácia.',
+    formCta: 'VYPLNIŤ NEZÁVÄZNÚ OBJEDNÁVKU',
+    sticky: {
+      label: 'Termíny',
+      cta: 'Získať ponuku',
+    },
+  },
+
   // ─── Section 6: Overený animačný program ───────────────────────────────────
   // The draft's copy, with its em dash replaced by a comma. Deliberately short:
   // the draft calls for a paragraph, not a full presentation of the programme —

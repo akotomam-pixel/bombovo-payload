@@ -15,6 +15,8 @@ import VynimocnySection from './VynimocnySection'
 import CenaSection from './CenaSection'
 import UbytovanieSection from './UbytovanieSection'
 import ProgramSection from './ProgramSection'
+import KontaktSection from './KontaktSection'
+import StickyBar from './StickyBar'
 import type { LomyContent } from '@/data/lomy/types'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
@@ -592,9 +594,13 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   </dl>
 
                   <div className="mt-auto flex flex-col gap-2 pt-4">
-                    <button type="button" onClick={openTerminy} className={ctaPrimary}>
+                    {/*
+                      The quote request goes to the enquiry form; only the
+                      secondary button opens the dates dialog.
+                    */}
+                    <a href={`/prihlaska-svp/${content.slug}`} className={ctaPrimary}>
                       {ctas.primary.label}
-                    </button>
+                    </a>
                     <button type="button" onClick={openTerminy} className={ctaSecondary}>
                       {ctas.secondary.label}
                     </button>
@@ -668,37 +674,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
           </figure>
         </div>
 
-        {/* Mobile sticky action bar */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md lg:hidden">
-          <div className="flex items-center justify-between gap-3 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-            <div className="min-w-0">
-              {/* Same arithmetic as the desktop box, compressed to one line. */}
-              <p className="flex items-baseline gap-1.5">
-                <span className="text-[11px] text-[#8A908A]">{price.prefix}</span>
-                <span className="text-[21px] font-bold leading-none tracking-[-0.02em] text-[#080708] tabular-nums">
-                  {price.discounted}
-                </span>
-                <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-[#DF2935] tabular-nums">
-                  {price.amount}
-                </span>
-                <span className="text-[12px] text-[#4A4F4A]">{price.unit}</span>
-              </p>
-              <p className="mt-1 text-[11.5px] text-[#4A4F4A]">
-                <span className="font-semibold text-[#DF2935]">
-                  {discount.amount} {discount.unit}
-                </span>{' '}
-                <span className="text-[#8A908A]">{discount.deadline}</span>
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={openTerminy}
-              className={`${ctaPrimary} shrink-0 px-4 py-3 text-[12px]`}
-            >
-              {ctas.primary.label}
-            </button>
-          </div>
-        </div>
+        {/*
+          The old mobile-only price bar is gone: StickyBar covers both
+          breakpoints, and two fixed bars would stack on a phone screen.
+        */}
       </section>
 
       <VynimocnySection content={content.vynimocny} />
@@ -709,8 +688,25 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <ProgramSection content={content.program} />
 
+      <KontaktSection
+        content={content.kontakt}
+        terminy={content.terminy}
+        onOpenTerminy={openTerminy}
+        strediskoSlug={content.slug}
+      />
+
+      <StickyBar
+        label={content.kontakt.sticky.label}
+        cta={content.kontakt.sticky.cta}
+        price={price.amount}
+        discounted={price.discounted}
+        unit={price.unit}
+        href={`/prihlaska-svp/${content.slug}`}
+      />
+
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
-      <div aria-hidden className="h-[76px] lg:hidden" />
+      {/* Keeps the sticky bar from covering the end of the page at every width. */}
+      <div aria-hidden className="h-[76px]" />
 
       <Footer />
 

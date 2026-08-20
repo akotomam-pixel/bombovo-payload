@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
+import Link from 'next/link'
 import type { LomyTerminy } from '@/data/lomy/types'
 
 /**
@@ -43,45 +44,53 @@ const MONTHS: Record<string, string> = {
 const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 
 /**
- * Inert by design: the enquiry form is a later piece. Styled as a real control
- * and stating that it is not yet active, rather than looking broken or failing
- * on click.
- */
-/**
- * The row's action.
+ * The row's action: a link to the existing registration page.
  *
  * A term counts as sold out when its `status` says so, which is the one field
- * that drives both the Dostupnosť column and this button: set a term's status to
- * "Vypredané" in content.ts and the row shows it and the button changes with it.
+ * driving both the Dostupnosť column and this control.
  *
- * Both states are inert for now — the enquiry form is a later piece — so the
- * button announces itself rather than failing on click.
+ * The date travels as `?termin=` text rather than the `?d=` index that page
+ * normally takes. Its index reads `data/strediska/horsky-hotel-lomy.ts`, which
+ * still holds the 2026 season at 185 €, so an index from this 2027 list would
+ * pre-fill the wrong date entirely.
+ *
+ * Sold-out rows render as a disabled button rather than a link.
  */
 function BookButton({
   content,
   status,
+  range,
   className = '',
 }: {
   content: LomyTerminy
   status: string
+  range: string
   className?: string
 }) {
   const soldOut = /vypredan/i.test(status)
+  const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[15px] font-bold ${className}`
+
+  if (soldOut) {
+    return (
+      <button
+        type="button"
+        disabled
+        aria-disabled="true"
+        title="Termín je vypredaný"
+        className={`${shape} cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600`}
+      >
+        VYPREDANÉ
+      </button>
+    )
+  }
 
   return (
-    <button
-      type="button"
-      disabled
-      aria-disabled="true"
-      title={soldOut ? 'Termín je vypredaný' : `${content.bookLabel}: ${content.bookNote}`}
-      className={`shrink-0 cursor-not-allowed rounded-full border-2 px-6 py-3 text-[15px] font-bold ${
-        soldOut
-          ? 'border-gray-300 bg-bombovo-red/30 text-gray-600'
-          : 'border-white bg-bombovo-red text-white'
-      } ${className}`}
+    <Link
+      href={`/prihlaska-svp/horsky-hotel-lomy?termin=${encodeURIComponent(range)}`}
+      className={`${shape} border-white bg-bombovo-red text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue`}
     >
-      {soldOut ? 'VYPREDANÉ' : content.bookLabel}
-    </button>
+      {content.bookLabel}
+    </Link>
   )
 }
 
@@ -295,7 +304,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} status={t.status} className="w-[190px]" />
+                        <BookButton content={content} status={t.status} range={t.range} className="w-[190px]" />
                       </div>
                     </div>
                   )
