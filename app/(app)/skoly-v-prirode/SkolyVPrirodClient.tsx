@@ -6,6 +6,7 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
+import LomyStrediskoCard from '@/components/LomyStrediskoCard'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { renderBold } from '@/lib/renderBold'
@@ -450,6 +451,14 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {centers.map((center) => (
+                center.id === 'horsky-hotel-lomy' ? (
+                  <LomyStrediskoCard
+                    key={center.id}
+                    name={center.name}
+                    image={center.image}
+                    vypredane={center.vypredane}
+                  />
+                ) : (
                 <div
                   key={center.id}
                   className={`bg-white rounded-3xl shadow-lg overflow-hidden relative transition-shadow duration-300 ${center.vypredane ? 'cursor-default' : 'hover:shadow-xl'}`}
@@ -499,6 +508,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
                     </div>
                   </div>
                 </div>
+                )
               ))}
             </div>
           </div>
