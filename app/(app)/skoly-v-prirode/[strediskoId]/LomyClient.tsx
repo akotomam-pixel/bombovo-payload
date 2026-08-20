@@ -17,6 +17,7 @@ import UbytovanieSection from './UbytovanieSection'
 import ProgramSection from './ProgramSection'
 import KontaktSection from './KontaktSection'
 import StickyBar from './StickyBar'
+import PonukaModal from './PonukaModal'
 import type { LomyContent } from '@/data/lomy/types'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
@@ -224,6 +225,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const [terminyOpen, setTerminyOpen] = useState(false)
   const openTerminy = useCallback(() => setTerminyOpen(true), [])
   const closeTerminy = useCallback(() => setTerminyOpen(false), [])
+  // The quote request opens its own dialog with the enquiry form.
+  const [ponukaOpen, setPonukaOpen] = useState(false)
+  const openPonuka = useCallback(() => setPonukaOpen(true), [])
+  const closePonuka = useCallback(() => setPonukaOpen(false), [])
 
   const galleryDynamicEl = useMemo(
     () => photos.map((p) => ({ src: p.src, thumb: opt(p.src, 400), subHtml: `<h4>${p.alt}</h4>` })),
@@ -598,9 +603,9 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       The quote request goes to the enquiry form; only the
                       secondary button opens the dates dialog.
                     */}
-                    <a href={`/prihlaska-svp/${content.slug}`} className={ctaPrimary}>
+                    <button type="button" onClick={openPonuka} className={ctaPrimary}>
                       {ctas.primary.label}
-                    </a>
+                    </button>
                     <button type="button" onClick={openTerminy} className={ctaSecondary}>
                       {ctas.secondary.label}
                     </button>
@@ -692,7 +697,6 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         content={content.kontakt}
         terminy={content.terminy}
         onOpenTerminy={openTerminy}
-        strediskoSlug={content.slug}
       />
 
       <StickyBar
@@ -701,7 +705,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         price={price.amount}
         discounted={price.discounted}
         unit={price.unit}
-        href={`/prihlaska-svp/${content.slug}`}
+        onOpen={openPonuka}
       />
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
@@ -711,6 +715,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
       <Footer />
 
       <TerminyModal content={content.terminy} open={terminyOpen} onClose={closeTerminy} />
+
+      <PonukaModal
+        heading={content.kontakt.formHeading}
+        open={ponukaOpen}
+        onClose={closePonuka}
+      />
 
       <LightGallery
         onInit={(detail) => {

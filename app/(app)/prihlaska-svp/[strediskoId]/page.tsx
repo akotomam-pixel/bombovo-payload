@@ -1,6 +1,7 @@
 import { getPayloadClient } from "@/lib/payload";
 import { getStrediskoById, allStrediska } from "@/data/strediska";
 import RegistrationSVPClient from "./RegistrationSVPClient";
+import LomyEnquiryPage from "./LomyEnquiryPage";
 
 interface StrediskoOption {
   id: string;
@@ -85,6 +86,13 @@ export default async function PrihlasSVPPage({
   const { strediskoId } = await params;
   const { d, termin } = await searchParams;
   const dateIndex = d ? parseInt(d) : 0;
+
+  // Lomy is rebuilt and uses the short enquiry form; the long registration below
+  // is retired for it. The other five strediská still render that form, so this
+  // branches rather than replacing the route.
+  if (strediskoId === "horsky-hotel-lomy") {
+    return <LomyEnquiryPage initialTerm={termin ?? ""} />;
+  }
 
   let matched =
     (await findInPayload(strediskoId, dateIndex)) ??

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 
 /**
  * Bar that follows the scroll once the hero's own price card is out of view.
@@ -20,14 +19,14 @@ export default function StickyBar({
   price,
   discounted,
   unit,
-  href,
+  onOpen,
 }: {
   label: string
   cta: string
   price: string
   discounted: string
   unit: string
-  href: string
+  onOpen: () => void
 }) {
   const [shown, setShown] = useState(false)
 
@@ -64,12 +63,13 @@ export default function StickyBar({
           </p>
         </div>
 
-        <Link
-          href={href}
+        <button
+          type="button"
+          onClick={onOpen}
           className="shrink-0 rounded-full border-2 border-white bg-bombovo-red px-5 py-2.5 text-center text-[13px] font-bold text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue sm:px-7 sm:py-3 sm:text-[14px]"
         >
           {cta}
-        </Link>
+        </button>
       </div>
     </div>
   )
