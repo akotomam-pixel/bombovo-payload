@@ -88,6 +88,8 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                   <img
                     src={opt(gallery[0].src, 800)}
                     alt={gallery[0].alt}
+                loading="lazy"
+                decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
                   {/* Count badge, so it reads as a set rather than three loose photos. */}
@@ -113,6 +115,8 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                         <img
                           src={opt(p.src, 500)}
                           alt={p.alt}
+                loading="lazy"
+                decoding="async"
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         />
                         {isLast && (

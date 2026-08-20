@@ -2,6 +2,9 @@
 
 import type { DoplnkovaSluzba, LomyCena, PriceTag } from '@/data/lomy/types'
 
+/** Next.js image optimizer URL — same mechanism the rest of the page uses. */
+const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
+
 /**
  * "Čo je v nej zahrnuté v cene a doplnkové služby".
  *
@@ -53,7 +56,16 @@ function IconSlot({ src, label }: { src?: string; label: string }) {
   }
   return (
     <span className="flex h-[46px] w-[46px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#EFF1EF]">
-      <img src={src} alt="" aria-hidden className="h-[70px] w-[70px] max-w-none object-contain" />
+      <img
+        src={opt(src, 160)}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        decoding="async"
+        width={70}
+        height={70}
+        className="h-[70px] w-[70px] max-w-none object-contain"
+      />
       <span className="sr-only">{label}</span>
     </span>
   )

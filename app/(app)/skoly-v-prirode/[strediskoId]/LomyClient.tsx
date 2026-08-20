@@ -195,7 +195,16 @@ function FactIcon({ label }: { label: string }) {
 function ProofIcon({ src, label }: { src: string; label: string }) {
   return (
     <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center overflow-hidden">
-      <img src={opt(src, 128)} alt="" aria-hidden className="h-[58px] w-[58px] max-w-none object-contain" />
+      <img
+        src={opt(src, 128)}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        decoding="async"
+        width={58}
+        height={58}
+        className="h-[58px] w-[58px] max-w-none object-contain"
+      />
       <span className="sr-only">{label}</span>
     </span>
   )

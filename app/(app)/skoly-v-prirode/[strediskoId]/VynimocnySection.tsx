@@ -69,6 +69,8 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
               <img
                 src={opt(photo.src, 900)}
                 alt={photo.alt}
+                loading="lazy"
+                decoding="async"
                 className="h-full min-h-[420px] w-full rounded-[12px] object-cover shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)]"
               />
             ) : (
