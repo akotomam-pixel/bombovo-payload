@@ -13,7 +13,7 @@ import type { LomyVynimocny } from '@/data/lomy/types'
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
-const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 export default function VynimocnySection({ content }: { content: LomyVynimocny }) {
   const { heading, paragraph, okolie, photo } = content
@@ -32,7 +32,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
         */}
         <div className="grid items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Left column — heading, paragraph, then the okolie list. */}
-          <div className="order-2 lg:order-1 lg:col-span-7">
+          <div className="order-1 lg:col-span-7">
             <h2 className="text-[clamp(1.5rem,3vw,2.15rem)] font-bold leading-[1.12] tracking-[-0.03em] text-bombovo-dark">
               {heading}
             </h2>
@@ -64,7 +64,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
           </div>
 
           {/* Right column — the photo, matching the text column's height. */}
-          <figure className="order-1 lg:order-2 lg:col-span-5">
+          <figure className="order-2 lg:col-span-5">
             {photo.src ? (
               <img
                 src={opt(photo.src, 900)}

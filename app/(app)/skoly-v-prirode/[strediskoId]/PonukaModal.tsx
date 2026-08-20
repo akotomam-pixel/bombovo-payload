@@ -111,7 +111,7 @@ export default function PonukaModal({
         <div className="flex shrink-0 items-start justify-between gap-4 bg-bombovo-gray px-6 py-5 sm:px-8">
           <h2
             className="text-[24px] leading-tight text-bombovo-dark sm:text-[28px]"
-            style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
+            style={{ fontFamily: 'var(--font-subhead), "Comic Sans MS", cursive' }}
           >
             {heading}
           </h2>

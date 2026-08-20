@@ -13,7 +13,7 @@ import type { LomyKontakt, LomyTerminy } from '@/data/lomy/types'
  * hero popup and the /prihlaska-svp/horsky-hotel-lomy page render.
  */
 
-const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 /** Rows shown in full before the fade takes over the next one. */
 const TEASER_ROWS = 3

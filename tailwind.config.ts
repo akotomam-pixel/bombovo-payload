@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Small phones. The sticky bar's price steps down here rather than wrapping.
+      screens: {
+        xs: '400px',
+      },
       colors: {
         'bombovo-dark': '#080708',
         'bombovo-blue': '#3772FF',

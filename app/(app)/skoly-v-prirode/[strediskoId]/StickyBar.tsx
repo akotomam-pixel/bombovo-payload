@@ -113,15 +113,19 @@ export default function StickyBar({
 
           <span aria-hidden className="hidden h-10 w-px shrink-0 bg-[#E6E8E6] sm:block" />
 
-          {/* One tight price group: struck original, the figure charged, the unit. */}
-          <p className="flex min-w-0 items-baseline gap-1.5">
-            <span className="text-[15px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums sm:text-[16px]">
+          {/*
+            One tight price group, and it must never break: nowrap on the whole
+            line rather than the unit alone, which still let the € drop to a
+            second row on narrow phones. Sizes step down instead of wrapping.
+          */}
+          <p className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap">
+            <span className="text-[13px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums xs:text-[15px] sm:text-[16px]">
               {price}
             </span>
-            <span className="text-[23px] font-black leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums sm:text-[27px]">
+            <span className="text-[19px] font-black leading-none tracking-[-0.02em] text-bombovo-dark tabular-nums xs:text-[23px] sm:text-[27px]">
               {discounted}
             </span>
-            <span className="whitespace-nowrap text-[14px] font-medium text-[#3A403A]">{unit}</span>
+            <span className="text-[12px] font-medium text-[#3A403A] xs:text-[14px]">{unit}</span>
           </p>
         </div>
 

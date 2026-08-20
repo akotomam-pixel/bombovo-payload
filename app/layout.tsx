@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { The_Girl_Next_Door } from 'next/font/google'
+import { The_Girl_Next_Door, Comic_Neue } from 'next/font/google'
 import Script from 'next/script'
 import React from 'react'
 import NextTopLoader from 'nextjs-toploader'
@@ -10,6 +10,21 @@ const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
   subsets: ['latin'],
   variable: '--font-amatic',
+  display: 'swap',
+})
+
+// Sub-headings across the Lomy page. Comic Sans MS was being used as a system
+// font: it ships with Windows, so it worked in development, but iOS does not
+// have it and Safari fell through to `cursive`, which there is the Snell
+// Roundhand script. It is also proprietary and cannot be self-hosted, so this is
+// Comic Neue — the open face drawn as its successor — loaded properly and
+// therefore identical on every device.
+const comicNeue = Comic_Neue({
+  weight: ['400', '700'],
+  // Comic Neue ships one subset; checked its cmap directly and every Slovak
+  // diacritic (a c d e i l n o r s t u y z with their marks) is present.
+  subsets: ['latin'],
+  variable: '--font-subhead',
   display: 'swap',
 })
 
@@ -24,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="sk" className={theGirlNextDoor.variable}>
+    <html lang="sk" className={`${theGirlNextDoor.variable} ${comicNeue.variable}`}>
       <head>
         <script
           id="cookieyes"

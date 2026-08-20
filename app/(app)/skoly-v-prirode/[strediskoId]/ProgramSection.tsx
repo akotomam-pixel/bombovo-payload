@@ -25,7 +25,7 @@ import type { LomyProgram } from '@/data/lomy/types'
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
-const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 /** Next.js image optimizer URL — same mechanism the rest of the page uses. */
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`

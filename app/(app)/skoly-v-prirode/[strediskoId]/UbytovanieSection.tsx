@@ -12,7 +12,7 @@ import type { LomyUbytovanie } from '@/data/lomy/types'
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
-const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 /** Amenity glyphs, drawn in the same hand as the other sections' icons. */
 const VYBAVENIE_ICONS: JSX.Element[] = [
@@ -161,24 +161,28 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
             </div>
           </div>
 
-          {/* Right column — map on top, the distance lookup directly under it. */}
-          <div className="lg:col-span-5">
+          {/*
+            Right column. The map leads on desktop; on mobile the lookup comes
+            first, so someone on a phone reaches the input without scrolling
+            past a map they cannot act on yet.
+          */}
+          <div className="flex flex-col lg:col-span-5">
             <iframe
               title="Mapa — Horský hotel Lomy"
               src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapa.coordinates.lng - 0.035}%2C${mapa.coordinates.lat - 0.018}%2C${mapa.coordinates.lng + 0.035}%2C${mapa.coordinates.lat + 0.018}&layer=mapnik&marker=${mapa.coordinates.lat}%2C${mapa.coordinates.lng}`}
-              className="h-[280px] w-full rounded-[12px] ring-1 ring-[#DDE0DD] md:h-[320px]"
+              className="order-3 mt-6 h-[280px] w-full rounded-[12px] ring-1 ring-[#DDE0DD] md:h-[320px] lg:order-1 lg:mt-0"
               style={{ border: 0 }}
               loading="lazy"
             />
 
             <h3
-              className="mt-6 text-[24px] leading-[1.15] text-bombovo-red md:text-[27px]"
+              className="order-1 text-[24px] leading-[1.15] text-bombovo-red md:text-[27px] lg:order-2 lg:mt-6"
               style={{ fontFamily: SUBHEAD }}
             >
               {mapa.title}
             </h3>
 
-            <div className="mt-4">
+            <div className="order-2 mt-4 lg:order-3">
               <DistanceCalculator
                 strediskoName="Horský hotel Lomy"
                 coordinates={mapa.coordinates}

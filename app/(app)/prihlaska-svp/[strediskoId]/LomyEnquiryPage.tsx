@@ -36,7 +36,7 @@ export default function LomyEnquiryPage({ initialTerm }: { initialTerm: string }
 
           <h1
             className="mt-5 text-[clamp(1.7rem,4vw,2.4rem)] leading-[1.1] text-bombovo-dark"
-            style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}
+            style={{ fontFamily: 'var(--font-subhead), "Comic Sans MS", cursive' }}
           >
             Získať cenovú ponuku
           </h1>

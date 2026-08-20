@@ -12,7 +12,7 @@ import type { DoplnkovaSluzba, LomyCena, PriceTag } from '@/data/lomy/types'
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
-const SUBHEAD = '"Comic Sans MS", "Comic Sans", cursive'
+const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 /** Bold figure over its unit — the price treatment used throughout the section. */
 function Price({ price, tone = 'dark' }: { price: PriceTag; tone?: 'dark' | 'light' }) {

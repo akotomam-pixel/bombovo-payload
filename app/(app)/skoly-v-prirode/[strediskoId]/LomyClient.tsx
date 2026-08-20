@@ -645,16 +645,16 @@ export default function LomyClient({ content }: { content: LomyContent }) {
             photography. Quote and attribution stack below md, where the row plus
             divider would be too cramped to scan.
           */}
-          <figure className="mt-4 flex flex-col gap-5 rounded-[14px] bg-white px-7 py-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-24px_rgba(8,7,8,0.28)] ring-1 ring-[#E6E8E6] md:flex-row md:items-center md:gap-8 md:px-8 md:py-7">
-            <div className="flex min-w-0 flex-1 items-start gap-4">
+          <figure className="mt-4 flex flex-col gap-3 rounded-[12px] bg-white px-4 py-4 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-24px_rgba(8,7,8,0.28)] ring-1 ring-[#E6E8E6] md:flex-row md:items-center md:gap-8 md:rounded-[14px] md:px-8 md:py-7">
+            <div className="flex min-w-0 flex-1 items-start gap-2.5 md:gap-4">
               <span
                 aria-hidden
-                className="shrink-0 text-[48px] font-bold leading-[0.72] text-bombovo-blue md:text-[56px]"
+                className="shrink-0 text-[30px] font-bold leading-[0.72] text-bombovo-blue md:text-[56px]"
                 style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
               >
                 &ldquo;
               </span>
-              <blockquote className="text-[17px] font-medium leading-[1.6] text-[#080708] md:text-[18px]">
+              <blockquote className="text-[14px] font-medium leading-[1.5] text-[#080708] md:text-[18px] md:leading-[1.6]">
                 {review.quote}
               </blockquote>
             </div>
@@ -666,10 +666,10 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               disc in its place just reads as a slot waiting for one.
             */}
             <figcaption className="min-w-0 shrink-0">
-              <p className="text-[17px] font-bold leading-tight text-[#080708] md:text-[18px]">
+              <p className="text-[14px] font-bold leading-tight text-[#080708] md:text-[18px]">
                 {review.author}
               </p>
-              <p className="mt-1 text-[17px] leading-tight text-[#3A403A] md:text-[13.5px]">
+              <p className="mt-0.5 text-[12.5px] leading-tight text-[#3A403A] md:mt-1 md:text-[13.5px]">
                 {review.school} · {review.groupSize}
               </p>
               <span className="mt-2 block">
