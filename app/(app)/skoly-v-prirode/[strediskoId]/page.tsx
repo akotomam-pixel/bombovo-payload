@@ -222,9 +222,14 @@ async function buildRebuiltContent(slug: string, baseContent: LomyContent): Prom
           }))
         : baseContent.hero.photos
 
-    // Section 3's portrait slot. Empty in Payload means the section keeps its
-    // marked placeholder, which is the intended state until a photo is supplied.
-    const section2 = mediaUrl(doc.section2Photo)
+    // Section 3's portrait slot deliberately does NOT read Payload's
+    // `section2Photo` here — for Minciar/Martinské Hole/Roháčan that field
+    // still holds a photo picked for the old page's different layout (a wide
+    // group-activity shot, not a curated tall portrait for this section), so
+    // pulling it in showed the wrong photo. The static content file's own
+    // `vynimocny.photo` is the only source until a photo is deliberately
+    // curated for this section specifically — empty means the marked
+    // placeholder shows, which is the correct state until then.
 
     // Animačný program gallery. Same photos across every stredisko — they show
     // the programme, not the venue — so this is uploaded once per record.
@@ -240,12 +245,6 @@ async function buildRebuiltContent(slug: string, baseContent: LomyContent): Prom
     return {
       ...baseContent,
       hero: { ...baseContent.hero, photos },
-      vynimocny: {
-        ...baseContent.vynimocny,
-        photo: section2
-          ? { src: section2, alt: baseContent.vynimocny.photo.alt }
-          : baseContent.vynimocny.photo,
-      },
       program: {
         ...baseContent.program,
         gallery: programGallery.length > 0 ? programGallery : baseContent.program.gallery,
