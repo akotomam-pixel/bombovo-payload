@@ -720,7 +720,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
       {/* Keeps the sticky bar from covering the end of the page at every width. */}
-      <div aria-hidden className="h-[76px]" />
+      <div aria-hidden className="h-[76px] bg-bombovo-gray" />
 
       <Footer />
 
