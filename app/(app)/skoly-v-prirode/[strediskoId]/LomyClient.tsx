@@ -16,7 +16,7 @@ import CenaSection from './CenaSection'
 import UbytovanieSection from './UbytovanieSection'
 import ProgramSection from './ProgramSection'
 import KontaktSection from './KontaktSection'
-import StickyBar from './StickyBar'
+import StickyBar, { availableMonths } from './StickyBar'
 import PonukaModal from './PonukaModal'
 import type { LomyContent } from '@/data/lomy/types'
 
@@ -705,6 +705,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         price={price.amount}
         discounted={price.discounted}
         unit={price.unit}
+        months={availableMonths(content.terminy.items)}
         onOpen={openPonuka}
       />
 
