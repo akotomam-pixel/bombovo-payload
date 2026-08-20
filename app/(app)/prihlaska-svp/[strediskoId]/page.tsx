@@ -1,6 +1,7 @@
 import { getPayloadClient } from "@/lib/payload";
 import { getStrediskoById, allStrediska } from "@/data/strediska";
 import RegistrationSVPClient from "./RegistrationSVPClient";
+import LomyEnquiryPage from "./LomyEnquiryPage";
 
 interface StrediskoOption {
   id: string;
@@ -77,11 +78,21 @@ export default async function PrihlasSVPPage({
   searchParams,
 }: {
   params: Promise<{ strediskoId: string }>;
-  searchParams: Promise<{ d?: string }>;
+  // `termin` carries the date as text, which the rebuilt Lomy table uses: its
+  // 2027 dates do not correspond to the indexes in the stredisko data, so an
+  // index from there would pre-fill the wrong date.
+  searchParams: Promise<{ d?: string; termin?: string }>;
 }) {
   const { strediskoId } = await params;
-  const { d } = await searchParams;
+  const { d, termin } = await searchParams;
   const dateIndex = d ? parseInt(d) : 0;
+
+  // Lomy is rebuilt and uses the short enquiry form; the long registration below
+  // is retired for it. The other five strediská still render that form, so this
+  // branches rather than replacing the route.
+  if (strediskoId === "horsky-hotel-lomy") {
+    return <LomyEnquiryPage initialTerm={termin ?? ""} />;
+  }
 
   let matched =
     (await findInPayload(strediskoId, dateIndex)) ??
@@ -108,7 +119,7 @@ export default async function PrihlasSVPPage({
     <RegistrationSVPClient
       strediskoId={strediskoId}
       strediskoName={matched.strediskoName}
-      initialDate={matched.initialDate}
+      initialDate={termin ?? matched.initialDate}
       allStrediskaOptions={matched.allStrediskaOptions}
     />
   );

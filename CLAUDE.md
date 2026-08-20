@@ -3,19 +3,51 @@
 ## Always Do First
 - **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
 
+## Speak Up Early — Do Not Get Stuck
+- **The code change is the deliverable. Finish it, then report it.** Do not hold a finished change back because a screenshot, server, or tool is misbehaving.
+- **When something blocks you, stop and tell me within about two attempts.** Say what broke, why, and what you suggest. Do not silently keep trying — I am not a coder and I cannot see that you are stuck. From the outside, "working" and "stuck in a loop" look identical, and that is what makes it costly.
+- **Never spend more time on tooling than on the actual work I asked for.** Tooling exists to serve the change, not the other way round.
+- **A rule in this file is not a reason to keep hammering something that is not working.** If following a rule here is burning time, stop, tell me it is not working, and suggest changing the rule.
+- If you notice yourself on a third attempt at the same thing: stop and ask.
+
 ## Reference Images
 - If a reference image is provided: match layout, spacing, typography, and color exactly. Swap in placeholder content (images via `https://placehold.co/`, generic copy). Do not improve or add to the design.
 - If no reference image: design from scratch with high craft (see guardrails below).
-- Screenshot your output, compare against reference, fix mismatches, re-screenshot. Do at least 2 comparison rounds. Stop only when no visible differences remain or user says so.
+- Screenshot your output, compare against reference, fix mismatches, re-screenshot. Keep going while the screenshots are still finding real mismatches — but see the time limits in Screenshot Workflow. Once it looks right, stop and report; do not keep re-screenshotting to admire it.
 
 ## Local Server
 - **Always serve on localhost** — never screenshot a `file:///` URL.
-- Start the dev server: `node serve.mjs` (serves the project root at `http://localhost:3001`)
-- Note: port 3001 is used because Next.js dev server occupies 3000.
-- `serve.mjs` lives in the project root. Start it in the background before taking any screenshots.
-- If the server is already running, do not start a second instance.
+- **Which server depends on what you are building:**
+  - Standalone `index.html` mockups → `node serve.mjs` (serves the project root at `http://localhost:3001`)
+  - Pages inside the Next.js app (anything under `app/`, e.g. `/skoly-v-prirode/...`) → `npx next dev -p 3001`. `serve.mjs` cannot render these — it is a static file server.
+- Note: port 3001 is used because the Next.js dev server occupies 3000.
+- If a server is already running, do not start a second instance.
+- **The Next dev server is slow on first compile** — a heavy route can take 2–3 minutes the first time, then it is cached. Budget for this before deciding to screenshot at all, and never sit and wait on it more than once.
+- **Pages under `/skoly-v-prirode` are behind a password gate** (`middleware.ts`, cookie `svp_prezradene=1`). Plain `screenshot.mjs` will be redirected to the gate. Set that cookie in the Puppeteer script, or the screenshot is worthless.
 
 ## Screenshot Workflow
+
+**Screenshots serve the design. They are not the deliverable — the code change is.**
+
+### Time limits — these override everything else in this file
+- **Two failed attempts and you stop.** If the screenshot has not worked after two tries, stop trying. Do not write a third script, do not debug the tooling, do not "just fix one more thing."
+- **Roughly 5 minutes total on screenshots. If you pass that, stop.**
+- When you stop: **report the code change, say plainly that the screenshot did not work and why, and ask me to look at the browser or Vercel preview instead.** I have both open. Me glancing at the page is faster than any workaround you can build.
+- **Never let a screenshot problem delay reporting a finished code change.** The change is done when the code is written and typechecks. Tell me that first, then deal with the picture.
+- **Never spend longer on the screenshot than on the design change itself.** If you notice that happening, you have already gone too far — stop and report.
+- A screenshot that is merely awkward to get is not a reason to keep pushing. Ask.
+
+### When to screenshot at all
+- **Worth it:** new layout or section built from scratch, matching a reference image, anything where I asked "how does it look."
+- **Usually skip it:** colour/text/copy swaps, renaming a button, changing a font size — changes where you already know exactly what will render. Just make the change and tell me.
+- **Once it looks right, stop.** Confirming a good result twice adds nothing.
+
+### Known traps in this project — do not rediscover these
+- **Never wait on `networkidle2`.** Pages here load placeholder images from `picsum.photos` and never go network-idle, so it hangs for the full timeout. Use `domcontentloaded` plus a short fixed delay.
+- Puppeteer scripts must live in the **project root** to resolve `puppeteer` — a script in a temp/scratch directory fails with `ERR_MODULE_NOT_FOUND`.
+- Python is not available in this environment. Use Node, the Edit tool, or `sed` for file edits.
+
+### Mechanics
 - Puppeteer and Chrome are installed in the project. Chrome cache is at `~/.cache/puppeteer/`.
 - **Always screenshot from localhost:** `node screenshot.mjs http://localhost:3001`
 - Screenshots are saved automatically to `./temporary screenshots/screenshot-N.png` (auto-incremented, never overwritten).
