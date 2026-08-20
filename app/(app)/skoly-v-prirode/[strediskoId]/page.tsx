@@ -173,6 +173,70 @@ function mapHardcodedToDetail(
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+/**
+ * Lomy's content with its photography taken from Payload.
+ *
+ * Only the media is read from the CMS — the copy, prices and dates stay in
+ * `data/lomy/content.ts`, which is the reviewed source of truth for them. That
+ * keeps photographs manageable in the admin without putting approved copy
+ * somewhere it can be edited by accident.
+ *
+ * Every step degrades rather than fails: if Payload is unreachable, or the row
+ * is missing, or the gallery is empty, the static content stands as written.
+ */
+async function buildLomyContent(): Promise<typeof lomyContent> {
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'strediska',
+      where: { slug: { equals: REBUILT_SLUG } },
+      limit: 1,
+      depth: 1,
+    })
+
+    const doc = result.docs[0] as Record<string, any> | undefined
+    if (!doc) return lomyContent
+
+    // Hero gallery: the uploaded photos, in their admin order.
+    const uploaded = Array.isArray(doc.heroGallery)
+      ? doc.heroGallery
+          .map((entry: any) => mediaUrl(entry?.photo))
+          .filter((url: unknown): url is string => typeof url === 'string' && url.length > 0)
+      : []
+
+    // Payload media carries no alt text on these, so the first frame keeps the
+    // description written for it and the rest are numbered. The hero's markers
+    // are deliberately not carried over: their coordinates were measured against
+    // the old frame and would land in the wrong places on a different photo.
+    const photos =
+      uploaded.length > 0
+        ? uploaded.map((src: string, i: number) => ({
+            src,
+            alt: i === 0 ? lomyContent.hero.photos[0].alt : `Horský hotel Lomy — fotka ${i + 1}`,
+            isPlaceholder: false,
+          }))
+        : lomyContent.hero.photos
+
+    // Section 3's portrait slot. Empty in Payload means the section keeps its
+    // marked placeholder, which is the intended state until a photo is supplied.
+    const section2 = mediaUrl(doc.section2Photo)
+
+    return {
+      ...lomyContent,
+      hero: { ...lomyContent.hero, photos },
+      vynimocny: {
+        ...lomyContent.vynimocny,
+        photo: section2
+          ? { src: section2, alt: lomyContent.vynimocny.photo.alt }
+          : lomyContent.vynimocny.photo,
+      },
+    }
+  } catch {
+    // Payload unavailable — the static content is a complete page on its own.
+    return lomyContent
+  }
+}
+
 export default async function StrediskoDetailPage({
   params,
 }: {
@@ -181,7 +245,7 @@ export default async function StrediskoDetailPage({
   const { strediskoId } = await params
 
   if (strediskoId === REBUILT_SLUG) {
-    return <LomyClient content={lomyContent} />
+    return <LomyClient content={await buildLomyContent()} />
   }
 
   let detailData: StrediskoDetailData | null = null
