@@ -22,7 +22,8 @@ async function getHomepage() {
   try {
     const payload = await getPayload({ config: configPromise })
     return await payload.findGlobal({ slug: 'homepage', depth: 2 })
-  } catch {
+  } catch (err) {
+    console.error('getHomepage failed:', err)
     return null
   }
 }
@@ -42,7 +43,8 @@ async function getStrediskaByIds(ids: string[]) {
       depth: 1,
     })
     return result.docs as Record<string, any>[]
-  } catch {
+  } catch (err) {
+    console.error('getStrediskaByIds failed:', err)
     return []
   }
 }

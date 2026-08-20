@@ -127,7 +127,8 @@ export default async function SkolyVPrirodePage() {
         }
       })
     }
-  } catch {
+  } catch (err) {
+    console.error('skoly-v-prirode fetch failed:', err)
     // Payload unavailable — use full hardcoded fallback (already set above)
   }
 
