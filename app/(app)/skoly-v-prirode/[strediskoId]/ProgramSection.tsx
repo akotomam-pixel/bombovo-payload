@@ -63,7 +63,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
   // index, so the visible thumbnails stay ordinary buttons.
   const lgRef = useRef<any>(null)
   const galleryDynamicEl = useMemo(
-    () => gallery.map((p) => ({ src: p.src, thumb: opt(p.src, 400), subHtml: `<h4>${p.alt}</h4>` })),
+    () => gallery.map((p) => ({ src: p.src, thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
     [gallery],
   )
   const openGallery = (i: number) => lgRef.current?.openGallery(i)
@@ -86,7 +86,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                   className="group relative block h-full min-h-[260px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue md:min-h-[320px]"
                 >
                   <img
-                    src={opt(gallery[0].src, 800)}
+                    src={opt(gallery[0].src, 828)}
                     alt={gallery[0].alt}
                 loading="lazy"
                 decoding="async"
@@ -113,7 +113,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                         className="group relative block h-full min-h-[124px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue md:min-h-[154px]"
                       >
                         <img
-                          src={opt(p.src, 500)}
+                          src={opt(p.src, 640)}
                           alt={p.alt}
                 loading="lazy"
                 decoding="async"

@@ -240,7 +240,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const closePonuka = useCallback(() => setPonukaOpen(false), [])
 
   const galleryDynamicEl = useMemo(
-    () => photos.map((p) => ({ src: p.src, thumb: opt(p.src, 400), subHtml: `<h4>${p.alt}</h4>` })),
+    () => photos.map((p) => ({ src: p.src, thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
     [photos],
   )
 
@@ -430,7 +430,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                         style={{ aspectRatio: '4 / 3' }}
                       >
                         <img
-                          src={opt(p.src, 400)}
+                          src={opt(p.src, 384)}
                           alt={p.alt}
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         />

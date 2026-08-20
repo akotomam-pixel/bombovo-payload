@@ -67,7 +67,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
           <figure className="order-2 lg:col-span-5">
             {photo.src ? (
               <img
-                src={opt(photo.src, 900)}
+                src={opt(photo.src, 1080)}
                 alt={photo.alt}
                 loading="lazy"
                 decoding="async"

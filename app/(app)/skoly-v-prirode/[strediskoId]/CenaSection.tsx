@@ -57,7 +57,7 @@ function IconSlot({ src, label }: { src?: string; label: string }) {
   return (
     <span className="flex h-[46px] w-[46px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#EFF1EF]">
       <img
-        src={opt(src, 160)}
+        src={opt(src, 256)}
         alt=""
         aria-hidden
         loading="lazy"
