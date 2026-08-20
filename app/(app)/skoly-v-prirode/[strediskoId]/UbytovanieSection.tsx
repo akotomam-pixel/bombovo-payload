@@ -94,7 +94,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
           <div className="flex flex-col gap-8 lg:col-span-7">
             <div>
             <h3
-              className="text-[24px] leading-none text-bombovo-dark md:text-[27px]"
+              className="text-[24px] leading-none text-bombovo-dark md:text-[27px] font-bold"
               style={{ fontFamily: SUBHEAD }}
             >
               {ubytovanie.title}
@@ -126,7 +126,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
             {/* Amenities, directly below in the same column. */}
             <div>
             <h3
-              className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+              className="text-[24px] leading-none text-bombovo-blue md:text-[27px] font-bold"
               style={{ fontFamily: SUBHEAD }}
             >
               {vybavenie.title}
@@ -176,7 +176,7 @@ export default function UbytovanieSection({ content }: { content: LomyUbytovanie
             />
 
             <h3
-              className="order-1 text-[24px] leading-[1.15] text-bombovo-red md:text-[27px] lg:order-2 lg:mt-6"
+              className="order-1 text-[24px] leading-[1.15] text-bombovo-red md:text-[27px] lg:order-2 lg:mt-6 font-bold"
               style={{ fontFamily: SUBHEAD }}
             >
               {mapa.title}

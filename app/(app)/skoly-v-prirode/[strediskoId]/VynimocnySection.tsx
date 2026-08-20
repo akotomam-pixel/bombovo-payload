@@ -42,7 +42,7 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
             </p>
 
             <h3
-              className="mt-8 text-[24px] leading-none text-bombovo-red md:text-[27px]"
+              className="mt-8 text-[24px] leading-none text-bombovo-red md:text-[27px] font-bold"
               style={{ fontFamily: SUBHEAD }}
             >
               {okolie.title}

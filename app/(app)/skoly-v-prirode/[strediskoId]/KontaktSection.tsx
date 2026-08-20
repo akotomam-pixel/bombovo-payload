@@ -55,7 +55,7 @@ export default function KontaktSection({
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
         {/* ── Block 1: dates teaser ── */}
         <h2
-          className="text-[clamp(1.5rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark"
+          className="text-[clamp(1.5rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark font-bold"
           style={{ fontFamily: SUBHEAD }}
         >
           {content.terminyHeading}
@@ -93,7 +93,7 @@ export default function KontaktSection({
 
         {/* ── Block 2: the form, stacked below ── */}
         <h2
-          className="mt-12 text-[clamp(1.5rem,3vw,2.1rem)] leading-[1.1] text-bombovo-blue md:mt-16"
+          className="mt-12 text-[clamp(1.5rem,3vw,2.1rem)] leading-[1.1] text-bombovo-blue md:mt-16 font-bold"
           style={{ fontFamily: SUBHEAD }}
         >
           {content.formHeading}

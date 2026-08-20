@@ -129,7 +129,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
               <div className="flex items-center gap-3">
                 <IconSlot src={zakladna.icon} label={zakladna.title} />
                 <h3
-                  className="text-[24px] leading-none text-[#2A7038] md:text-[27px]"
+                  className="text-[24px] leading-none text-[#2A7038] md:text-[27px] font-bold"
                   style={{ fontFamily: SUBHEAD }}
                 >
                   {zakladna.title}
@@ -184,7 +184,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
               <div className="flex items-center gap-3">
                 <IconSlot src={animacny.icon} label={animacny.title} />
                 <h3
-                  className="text-[24px] leading-none text-bombovo-blue md:text-[27px]"
+                  className="text-[24px] leading-none text-bombovo-blue md:text-[27px] font-bold"
                   style={{ fontFamily: SUBHEAD }}
                 >
                   {animacny.title}
@@ -212,7 +212,7 @@ export default function CenaSection({ content }: { content: LomyCena }) {
 
         {/* Optional services — all open. */}
         <h3
-          className="mt-9 text-[24px] leading-none text-bombovo-dark md:mt-11 md:text-[27px]"
+          className="mt-9 text-[24px] leading-none text-bombovo-dark md:mt-11 md:text-[27px] font-bold"
           style={{ fontFamily: SUBHEAD }}
         >
           {doplnkove.title}

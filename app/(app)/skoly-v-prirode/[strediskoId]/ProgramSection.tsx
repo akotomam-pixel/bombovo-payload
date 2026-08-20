@@ -139,7 +139,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
           {/* Text right. */}
           <div className="lg:col-span-6">
             <h2
-              className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark"
+              className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark font-bold"
               style={{ fontFamily: SUBHEAD }}
             >
               {heading}
