@@ -69,6 +69,31 @@ export const Strediska: CollectionConfig = {
       ],
     },
 
+    // ─── Animačný program gallery ────────────────────────────────────────────
+    {
+      name: 'programGallery',
+      type: 'array',
+      label: 'Animačný program – galéria',
+      admin: {
+        description:
+          'Fotky animačného programu pre sekciu "Overený animačný program". Prvé tri sa zobrazia v sekcii, ostatné sú dostupné po kliknutí. Tieto fotky sú rovnaké naprieč strediskami – ukazujú program, nie stredisko.',
+      },
+      fields: [
+        {
+          name: 'photo',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          label: 'Popis fotky',
+          admin: { description: 'Čo je na fotke. Zobrazí sa v galérii a čítačkám obrazovky.' },
+        },
+      ],
+    },
+
     // ─── Icon bullets ─────────────────────────────────────────────────────────
     {
       name: 'bulletPoints',

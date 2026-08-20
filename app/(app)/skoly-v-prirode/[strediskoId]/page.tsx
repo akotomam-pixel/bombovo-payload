@@ -221,6 +221,17 @@ async function buildLomyContent(): Promise<typeof lomyContent> {
     // marked placeholder, which is the intended state until a photo is supplied.
     const section2 = mediaUrl(doc.section2Photo)
 
+    // Animačný program gallery. Same photos across every stredisko — they show
+    // the programme, not the venue — so this is uploaded once per record.
+    const programGallery = Array.isArray(doc.programGallery)
+      ? doc.programGallery
+          .map((entry: any) => {
+            const src = mediaUrl(entry?.photo)
+            return src ? { src, alt: entry?.alt || 'Animačný program CK Bombovo' } : null
+          })
+          .filter((p: unknown): p is { src: string; alt: string } => p !== null)
+      : []
+
     return {
       ...lomyContent,
       hero: { ...lomyContent.hero, photos },
@@ -229,6 +240,10 @@ async function buildLomyContent(): Promise<typeof lomyContent> {
         photo: section2
           ? { src: section2, alt: lomyContent.vynimocny.photo.alt }
           : lomyContent.vynimocny.photo,
+      },
+      program: {
+        ...lomyContent.program,
+        gallery: programGallery.length > 0 ? programGallery : lomyContent.program.gallery,
       },
     }
   } catch {

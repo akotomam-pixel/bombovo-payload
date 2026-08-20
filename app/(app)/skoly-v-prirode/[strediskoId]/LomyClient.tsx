@@ -435,7 +435,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                         />
                         {isLast && (
-                          <span className="absolute inset-0 flex items-center justify-center bg-[#080708]/72 text-[17px] font-semibold text-white">
+                          <span className="absolute inset-0 flex items-center justify-center bg-bombovo-yellow/70 text-[19px] font-black text-bombovo-dark">
                             +{remaining} fotiek
                           </span>
                         )}
