@@ -180,6 +180,36 @@ async function run() {
     `)
     console.log('✓ enum_giveaway_entries_source + fest-last-minute-popup')
 
+    // Migration 20260820_000000 — create strediska_program_gallery table for
+    // the "Animačný program – galéria" field on Strediska. The field was
+    // added to the collection config without this table, so every query
+    // touching strediska (homepage, /skoly-v-prirode, stredisko detail pages)
+    // 500ed with "relation strediska_program_gallery does not exist" and got
+    // silently swallowed by callers' try/catch, rendering empty content.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS "strediska_program_gallery" (
+        "_order" integer NOT NULL,
+        "_parent_id" integer NOT NULL,
+        "id" varchar PRIMARY KEY NOT NULL,
+        "photo_id" integer NOT NULL,
+        "alt" varchar
+      );
+      DO $$ BEGIN
+        ALTER TABLE "strediska_program_gallery"
+        ADD CONSTRAINT "strediska_program_gallery_photo_id_media_id_fk"
+        FOREIGN KEY ("photo_id") REFERENCES "media"("id") ON DELETE SET NULL;
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN
+        ALTER TABLE "strediska_program_gallery"
+        ADD CONSTRAINT "strediska_program_gallery_parent_id_fk"
+        FOREIGN KEY ("_parent_id") REFERENCES "strediska"("id") ON DELETE CASCADE;
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      CREATE INDEX IF NOT EXISTS "strediska_program_gallery_order_idx" ON "strediska_program_gallery" USING btree ("_order");
+      CREATE INDEX IF NOT EXISTS "strediska_program_gallery_parent_id_idx" ON "strediska_program_gallery" USING btree ("_parent_id");
+      CREATE INDEX IF NOT EXISTS "strediska_program_gallery_photo_idx" ON "strediska_program_gallery" USING btree ("photo_id");
+    `)
+    console.log('✓ strediska_program_gallery table created')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
