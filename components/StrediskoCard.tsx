@@ -1,27 +1,40 @@
 import Link from 'next/link'
-import { lomyContent } from '@/data/lomy/content'
+import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 import DiscountSeal from '@/components/DiscountSeal'
 
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
 /**
- * Redesigned overview-grid card for Horský hotel Lomy only — the other
- * strediská keep the original inline card in SkolyVPrirodClient. Price and
- * discount figures come from data/lomy/content.ts (the same source the
- * rebuilt Lomy page itself uses), not the generic Payload `price` string,
- * since that content file is the confirmed, actively-maintained number for
- * this stredisko.
+ * Overview-grid card, rolled out from the Lomy-only redesign to every
+ * rebuilt stredisko now that the design's been reviewed and approved.
+ * Replaces the old inline card in SkolyVPrirodClient entirely — there is
+ * only one card style now.
+ *
+ * Price and discount figures come from that stredisko's own content file in
+ * `data/rebuiltStrediska.ts` (the same source its individual page already
+ * uses), not the generic Payload `price` string, which is stale/inconsistent
+ * for several of these. If a slug has no rebuilt content file yet, the card
+ * falls back to the raw Payload price with no strikethrough/badge, rather
+ * than crash.
  */
-export default function LomyStrediskoCard({
+export default function StrediskoCard({
+  slug,
   name,
   image,
+  fallbackPrice,
   vypredane,
+  ariaLabel,
 }: {
+  slug: string
   name: string
   image: string
+  /** Raw Payload `price` string, used only if this slug has no content file. */
+  fallbackPrice: string
   vypredane?: boolean
+  ariaLabel?: string
 }) {
-  const { price, discount } = lomyContent.hero
+  const content = REBUILT_STREDISKA[slug]
+  const { price, discount } = content?.hero ?? {}
 
   return (
     <div
@@ -31,24 +44,6 @@ export default function LomyStrediskoCard({
           : 'shadow-[0_2px_6px_-2px_rgba(8,7,8,0.10),0_20px_44px_-20px_rgba(55,114,255,0.35)] hover:shadow-[0_4px_10px_-2px_rgba(8,7,8,0.14),0_28px_60px_-18px_rgba(55,114,255,0.45)]'
       }`}
     >
-      {vypredane && (
-        <div
-          className="absolute pointer-events-none z-10 text-white font-black text-sm text-center tracking-widest uppercase"
-          style={{
-            top: '36px',
-            right: '-42px',
-            width: '180px',
-            padding: '9px 0',
-            background: '#DC2626',
-            transform: 'rotate(45deg)',
-            boxShadow: '0 3px 10px rgba(0,0,0,0.35)',
-            letterSpacing: '0.12em',
-          }}
-        >
-          Vypredané
-        </div>
-      )}
-
       <div className={vypredane ? 'grayscale opacity-75' : ''}>
         {/* Photo */}
         <div className="relative h-64 overflow-hidden">
@@ -59,14 +54,20 @@ export default function LomyStrediskoCard({
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
-          {!vypredane && (
+          {vypredane ? (
+            <div className="absolute left-3 top-3 rounded-full bg-bombovo-dark px-4 py-2 shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
+              <span className="text-[12px] font-bold uppercase leading-none tracking-wider text-white">
+                Vypredané
+              </span>
+            </div>
+          ) : discount ? (
             <DiscountSeal
               amount={discount.amount}
               deadline={discount.deadline}
               size={92}
               className="pointer-events-none absolute left-3 top-3 -rotate-[9deg]"
             />
-          )}
+          ) : null}
         </div>
 
         {/* Content */}
@@ -79,25 +80,33 @@ export default function LomyStrediskoCard({
           </h3>
 
           {vypredane ? (
-            <div className="mt-5 flex-1 rounded-2xl bg-gray-300 p-4 text-center text-lg font-bold text-gray-500">
+            <div className="mt-5 flex w-full cursor-not-allowed items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 px-6 py-3.5 text-lg font-bold text-gray-400">
               Vypredané
             </div>
           ) : (
             <>
               <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
-                <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
-                  {price.amount}
-                </span>
-                <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
-                  {price.discounted}
-                </span>
-                <span className="text-sm text-[#9AA09A]">{price.unit}</span>
+                {price ? (
+                  <>
+                    <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
+                    <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
+                      {price.amount}
+                    </span>
+                    <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
+                      {price.discounted}
+                    </span>
+                    <span className="text-sm text-[#9AA09A]">{price.unit}</span>
+                  </>
+                ) : (
+                  <span className="text-[26px] font-black leading-none tabular-nums text-bombovo-dark">
+                    {fallbackPrice}
+                  </span>
+                )}
               </div>
 
               <Link
-                href={`/skoly-v-prirode/${lomyContent.slug}`}
-                aria-label={`Škola v prírode na Horskom Hoteli Lomy`}
+                href={`/skoly-v-prirode/${slug}`}
+                aria-label={ariaLabel ?? `Škola v prírode na ${name}`}
                 className="mt-7 block"
               >
                 <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-lg font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">

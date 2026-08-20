@@ -4,29 +4,15 @@ import StrediskoDetailClient from './StrediskoDetailClient'
 import type { StrediskoDetailData } from './StrediskoDetailClient'
 import LomyClient from './LomyClient'
 import type { LomyContent } from '@/data/lomy/types'
-import { lomyContent } from '@/data/lomy/content'
-import { horskyHotelMinciarContent } from '@/data/horsky-hotel-minciar/content'
-import { hotelMartinskeHoleContent } from '@/data/hotel-martinske-hole/content'
-import { penzionRohacanContent } from '@/data/penzion-rohacan/content'
-import { hotelOsrblieContent } from '@/data/hotel-osrblie/content'
-import { penzionPalusakContent } from '@/data/penzion-palusak/content'
-import { penzionLaganContent } from '@/data/penzion-lagan/content'
+import { REBUILT_STREDISKA as REBUILT_CONTENT } from '@/data/rebuiltStrediska'
 
 // Strediská rebuilt on the Lomy architecture (proven 2027-season structure:
 // hero, all content sections, termíny table, sticky bar, hero popup, shared
-// enquiry form). Each renders LomyClient from its own content file in
-// `data/{slug}/`, while any stredisko not in this map keeps the original
-// Payload-backed detail page below untouched. Keep in sync with REBUILT_NAMES
-// in app/(app)/prihlaska-svp/[strediskoId]/page.tsx.
-const REBUILT_CONTENT: Record<string, LomyContent> = {
-  'horsky-hotel-lomy': lomyContent,
-  'horsky-hotel-minciar': horskyHotelMinciarContent,
-  'hotel-martinske-hole': hotelMartinskeHoleContent,
-  'penzion-rohacan': penzionRohacanContent,
-  'hotel-osrblie': hotelOsrblieContent,
-  'penzion-palusak': penzionPalusakContent,
-  'penzion-lagan': penzionLaganContent,
-}
+// enquiry form) render LomyClient from their own content file in
+// `data/{slug}/`, listed in `data/rebuiltStrediska.ts` — the single source of
+// truth shared with the overview-grid card. Any stredisko not in that map
+// keeps the original Payload-backed detail page below untouched. Keep in
+// sync with REBUILT_NAMES in app/(app)/prihlaska-svp/[strediskoId]/page.tsx.
 
 // ─── Default hardcoded accordion content (shared across all strediska) ────────
 const DEFAULT_ZLAVA = [
