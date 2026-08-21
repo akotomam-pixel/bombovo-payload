@@ -6,18 +6,20 @@
  * All 65 real photos Matej uploaded. Order is hand-curated, not upload
  * order: the first 4 are the ones chosen for the section's visible squares
  * (an animator in branded gear or the Bombovo mascot in every one of them,
- * picked after actually viewing the batch), and the rest interleave the
- * two source photo sessions so the lightbox never shows two shots from the
- * same burst back to back.
+ * picked after actually viewing the batch — the 4th, the mascot high-fiving
+ * a full room of kids, was specifically requested after Matej spotted it in
+ * the lightbox), and the rest interleave the two source photo sessions so
+ * the lightbox never shows two shots from the same burst back to back.
  */
 export const PROGRAM_GALLERY_PHOTOS: { src: string; alt: string }[] = [
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iqGk8KlidIMDERPbns97pmCHSgFUaGKBcJNOA', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6ig8CY8zy14v2IiJQ7MySfXUkWq98mbtudsrCe', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iakp6m7AZknYtp4BjcezSJgw9NiGsQmEdMFrO', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iT5oijfe4YRvbuPG903W586LMa7wUhKSptnqJ', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iRTXyAZCU0K6iwSfNPA5pgtaHYv7MGOD4qFkb', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6ioZMCkAEDY8IcO2plf9Cbuah07FNHtVwZKGdJ', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iIInrdCqKxpszVUtLvjyYobHcrfmZCaiwEWTI', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iqRmgQOidIMDERPbns97pmCHSgFUaGKBcJNOA', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iakp6m7AZknYtp4BjcezSJgw9NiGsQmEdMFrO', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6ioZMCkAEDY8IcO2plf9Cbuah07FNHtVwZKGdJ', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6ig8CY8zy14v2IiJQ7MySfXUkWq98mbtudsrCe', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iqGk8KlidIMDERPbns97pmCHSgFUaGKBcJNOA', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iRTXyAZCU0K6iwSfNPA5pgtaHYv7MGOD4qFkb', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6is4v2ahfXw6vlP7ihYOzk9ub2jmxTHeodKCsF', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iZzlTyAMgt8Rb6whfB9kKdaE70p1rODvjqQNm', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6ivwlgyqYp2z1EuUBW6Z3I0yMnVYH9mSwkaGxA', alt: 'Animačný program CK Bombovo' },
@@ -56,7 +58,6 @@ export const PROGRAM_GALLERY_PHOTOS: { src: string; alt: string }[] = [
   { src: 'https://utfs.io/f/RRX2fWCU0K6irGJtVvIFhk26lX1SsfUQyj5CK4uaRVZBEpHd', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6i4rnvijWaE2dUBxgM7fO0FGtSZIrlu51VRNXW', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6i89y89rRKeTsloEiNHr6XcaYRdb9mnZj52gBF', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iT5oijfe4YRvbuPG903W586LMa7wUhKSptnqJ', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6ifsCkFCXmXRU9DG5IW7pef1sBVlnr6QZKYTkP', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iZCPAigMgt8Rb6whfB9kKdaE70p1rODvjqQNm', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6itKHSSND58viO6j9VkUHASEY3KeT7XFLnolpw', alt: 'Animačný program CK Bombovo' },
