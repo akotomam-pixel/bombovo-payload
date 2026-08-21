@@ -65,7 +65,7 @@ export default async function SkolyVPrirodePage() {
       'U nás v Cestovnej kancelárii Bombovo žiaci zažijú dni plné zmysluplných zážitkov a učitelia si doprajú zaslúžený oddych. Od ubytovania, stravy až po program a bezpečnosť detí funguje všetko plynule.',
     reviews: HARDCODED_REVIEWS,
     section3: HARDCODED_SECTION3,
-    strediskaHeadline: 'Naše strediská na rok 2026',
+    strediskaHeadline: 'Naše strediská na rok 2026/2027',
     centers: [],
     teacherReviewCount: 0,
   }

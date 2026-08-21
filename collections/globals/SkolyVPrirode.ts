@@ -124,7 +124,7 @@ export const SkolyVPrirode: GlobalConfig = {
       name: 'strediskaHeadline',
       type: 'text',
       label: 'Strediská section headline',
-      defaultValue: 'Naše strediská na rok 2026',
+      defaultValue: 'Naše strediská na rok 2026/2027',
     },
   ],
 }

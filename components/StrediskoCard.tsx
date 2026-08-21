@@ -10,6 +10,12 @@ const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
  * Replaces the old inline card in SkolyVPrirodClient entirely — there is
  * only one card style now.
  *
+ * Every size in this component (photo height, padding, text, the seal, the
+ * button) is scaled to ~90% of the values it shipped with, on instruction —
+ * the grid should read the way it does at 90% browser zoom, for every
+ * visitor, not just ones who zoom out. Scale any future size change here by
+ * the same ~0.9 factor rather than reaching for round numbers.
+ *
  * Price and discount figures come from that stredisko's own content file in
  * `data/rebuiltStrediska.ts` (the same source its individual page already
  * uses), not the generic Payload `price` string, which is stale/inconsistent
@@ -38,7 +44,7 @@ export default function StrediskoCard({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-[28px] bg-white ring-1 ring-black/5 transition-shadow duration-300 ${
+      className={`group relative overflow-hidden rounded-[25px] bg-white ring-1 ring-black/5 transition-shadow duration-300 ${
         vypredane
           ? 'cursor-default'
           : 'shadow-[0_2px_6px_-2px_rgba(8,7,8,0.10),0_20px_44px_-20px_rgba(55,114,255,0.35)] hover:shadow-[0_4px_10px_-2px_rgba(8,7,8,0.14),0_28px_60px_-18px_rgba(55,114,255,0.45)]'
@@ -46,7 +52,7 @@ export default function StrediskoCard({
     >
       <div className={vypredane ? 'grayscale opacity-75' : ''}>
         {/* Photo */}
-        <div className="relative h-64 overflow-hidden">
+        <div className="relative h-[230px] overflow-hidden">
           <img
             src={image}
             alt={`${name} – rekreačné stredisko pre školy v prírode`}
@@ -55,8 +61,8 @@ export default function StrediskoCard({
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
           {vypredane ? (
-            <div className="absolute left-3 top-3 rounded-full bg-bombovo-dark px-4 py-2 shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
-              <span className="text-[12px] font-bold uppercase leading-none tracking-wider text-white">
+            <div className="absolute left-[11px] top-[11px] rounded-full bg-bombovo-dark px-[14px] py-[7px] shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
+              <span className="text-[11px] font-bold uppercase leading-none tracking-wider text-white">
                 Vypredané
               </span>
             </div>
@@ -64,41 +70,41 @@ export default function StrediskoCard({
             <DiscountSeal
               amount={discount.amount}
               deadline={discount.deadline}
-              size={92}
-              className="pointer-events-none absolute left-3 top-3 -rotate-[9deg]"
+              size={83}
+              className="pointer-events-none absolute left-[11px] top-[11px] -rotate-[9deg]"
             />
           ) : null}
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-[22px]">
           <h3
             style={{ fontFamily: SUBHEAD }}
-            className="text-[26px] font-bold leading-[1.1] text-bombovo-dark"
+            className="text-[23px] font-bold leading-[1.1] text-bombovo-dark"
           >
             {name}
           </h3>
 
           {vypredane ? (
-            <div className="mt-5 flex w-full cursor-not-allowed items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 px-6 py-3.5 text-lg font-bold text-gray-400">
+            <div className="mt-[18px] flex w-full cursor-not-allowed items-center justify-center rounded-[14px] border-[2.5px] border-gray-300 bg-gray-100 px-[22px] py-[13px] text-[16px] font-bold text-gray-400">
               Vypredané
             </div>
           ) : (
             <>
-              <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+              <div className="mt-[14px] flex flex-wrap items-baseline gap-x-[9px] gap-y-1">
                 {price ? (
                   <>
-                    <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
-                    <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
+                    <span className="text-[13px] font-medium text-[#7A807A]">{price.prefix}</span>
+                    <span className="text-[29px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
                       {price.amount}
                     </span>
-                    <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
+                    <span className="text-[29px] font-black leading-none tabular-nums text-bombovo-dark">
                       {price.discounted}
                     </span>
-                    <span className="text-sm text-[#9AA09A]">{price.unit}</span>
+                    <span className="text-[13px] text-[#9AA09A]">{price.unit}</span>
                   </>
                 ) : (
-                  <span className="text-[26px] font-black leading-none tabular-nums text-bombovo-dark">
+                  <span className="text-[23px] font-black leading-none tabular-nums text-bombovo-dark">
                     {fallbackPrice}
                   </span>
                 )}
@@ -107,12 +113,12 @@ export default function StrediskoCard({
               <Link
                 href={`/skoly-v-prirode/${slug}`}
                 aria-label={ariaLabel ?? `Škola v prírode na ${name}`}
-                className="mt-7 block"
+                className="mt-[25px] block"
               >
-                <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-lg font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">
+                <button className="flex w-full items-center justify-center gap-[7px] rounded-[14px] border-[2.5px] border-bombovo-dark bg-bombovo-yellow px-[22px] py-[13px] text-[16px] font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">
                   Zistiť viac
                   <svg
-                    className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                    className="h-[14px] w-[14px] transition-transform duration-200 group-hover:translate-x-1"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
