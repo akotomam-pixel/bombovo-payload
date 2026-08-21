@@ -1,4 +1,5 @@
 import type { LomyContent } from './types'
+import { PROGRAM_GALLERY_PHOTOS } from '@/data/programGallery'
 
 /**
  * Copy and data for the rebuilt Horský hotel Lomy page.
@@ -275,7 +276,7 @@ export const lomyContent: LomyContent = {
     // page with no data dependencies, already linked from the strediská listing
     // and the original detail page.
     cta: { label: 'Zistiť viac o programe', href: '/program-skoly-v-prirode' },
-    gallery: [],
+    gallery: PROGRAM_GALLERY_PHOTOS,
   },
 
   // ─── Section 7 (partial): termíny modal ────────────────────────────────────

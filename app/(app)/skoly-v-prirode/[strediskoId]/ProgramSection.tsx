@@ -17,17 +17,12 @@ import type { LomyProgram } from '@/data/lomy/types'
  * programme, which is what the linked page is for. Section 4 already carries the
  * ratios, materials and prices; this one is about the team behind them.
  *
- * The gallery is the same across every stredisko rather than shot at this venue.
- * Its thumbnails open a LightGallery lightbox — the same one the hero uses — and
- * it holds any number of photos: the first four show, the rest are reachable
- * through the lightbox. The photos are still outstanding, so it renders marked
- * slots until `gallery` in the content file has entries.
- *
- * The gallery column stretches to match the text column's height rather than
- * holding a fixed size (the same fix VynimocnySection uses) — the copy here
- * runs to two paragraphs, so a fixed-height gallery centred beside it left an
- * awkward gap. A third stacked photo was added on the right so four real
- * photos, not three, fill that taller frame.
+ * The gallery is the same across every stredisko rather than shot at this venue
+ * (see data/programGallery.ts) — a real, hand-curated photo library, not a set
+ * of placeholders. Its thumbnails are four equal squares in a 2x2 grid; the
+ * rest of the library (any count) is reachable through the LightGallery
+ * lightbox the last square opens, same mechanism the hero uses. Renders
+ * marked slots only if `gallery` is ever empty.
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
@@ -77,77 +72,49 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
   return (
     <section className="bg-bombovo-gray">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-        <div className="grid items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
           {/*
-            Gallery left, stretched to the text column's full height (items-
-            stretch on the row) rather than a fixed size — the copy now runs
-            to two paragraphs, so the frame needs to grow with it. One tall
-            frame beside three stacked ones, so the group reads as a set of
-            programme moments rather than a uniform grid.
+            Gallery left: four equal squares in a 2x2 grid, top-aligned
+            against the text column rather than stretched or centred — the
+            copy runs to two paragraphs now, taller than a 2x2 square grid
+            naturally is, and forcing the squares to stretch to match would
+            break their aspect ratio. A shorter block sitting flush with the
+            top of taller copy beside it is an ordinary editorial pattern,
+            not a gap to fix.
           */}
           <div className="lg:col-span-5">
-            {hasPhotos ? (
-              <div className="grid h-full grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => openGallery(0)}
-                  aria-label={`Otvoriť galériu — ${gallery[0].alt}`}
-                  className="group relative block h-full min-h-[320px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
-                >
-                  <img
-                    src={opt(gallery[0].src, 828)}
-                    alt={gallery[0].alt}
-                loading="lazy"
-                decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                  />
-                  {/* Count badge, so it reads as a set rather than four loose photos. */}
-                  {gallery.length > 4 && (
-                    <span className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-[6px] bg-[#080708]/70 px-2.5 py-1.5 text-[11px] font-medium text-white backdrop-blur-[2px]">
-                      Zobraziť všetkých {gallery.length} fotiek
-                    </span>
-                  )}
-                </button>
-
-                <div className="flex h-full flex-col gap-3">
-                  {gallery.slice(1, 4).map((p, i) => {
-                    const index = i + 1
-                    const isLast = i === 2 && gallery.length > 4
-                    return (
-                      <button
-                        key={p.src}
-                        type="button"
-                        onClick={() => openGallery(index)}
-                        aria-label={`Otvoriť galériu — ${p.alt}`}
-                        className="group relative block min-h-[96px] flex-1 overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
-                      >
-                        <img
-                          src={opt(p.src, 640)}
-                          alt={p.alt}
-                loading="lazy"
-                decoding="async"
-                          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                        />
-                        {isLast && (
-                          <span className="absolute inset-0 flex items-center justify-center bg-bombovo-yellow/70 text-[19px] font-black text-bombovo-dark">
-                            +{gallery.length - 4}
-                          </span>
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            ) : (
-              <div className="grid h-full grid-cols-2 gap-3">
-                <PhotoSlot className="h-full min-h-[320px]" />
-                <div className="flex h-full flex-col gap-3">
-                  <PhotoSlot className="min-h-[96px] flex-1" />
-                  <PhotoSlot className="min-h-[96px] flex-1" />
-                  <PhotoSlot className="min-h-[96px] flex-1" />
-                </div>
-              </div>
-            )}
+            <div className="grid grid-cols-2 gap-3">
+              {(hasPhotos ? gallery.slice(0, 4) : [null, null, null, null]).map((p, i) =>
+                p ? (
+                  <button
+                    key={p.src}
+                    type="button"
+                    onClick={() => openGallery(i)}
+                    aria-label={`Otvoriť galériu — ${p.alt}`}
+                    className="group relative block aspect-square overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
+                  >
+                    <img
+                      src={opt(p.src, 640)}
+                      alt={p.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                    />
+                    {/* Count badge on the last square, so the set reads as a
+                        library rather than four loose photos. */}
+                    {i === 3 && gallery.length > 4 && (
+                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#080708]/55 text-center text-[13px] font-bold leading-tight text-white backdrop-blur-[1px]">
+                        Zobraziť všetkých
+                        <br />
+                        {gallery.length} fotiek
+                      </span>
+                    )}
+                  </button>
+                ) : (
+                  <PhotoSlot key={i} className="aspect-square" />
+                ),
+              )}
+            </div>
           </div>
 
           {/* Text right — wider now the copy runs to two paragraphs. */}

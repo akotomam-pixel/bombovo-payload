@@ -1,4 +1,5 @@
 import type { LomyContent } from '@/data/lomy/types'
+import { PROGRAM_GALLERY_PHOTOS } from '@/data/programGallery'
 
 /**
  * Content for the new Penzión Palušák page (season 2027), on the same
@@ -28,7 +29,7 @@ export const penzionPalusakContent: LomyContent = {
     kicker: 'Škola v prírode',
     name: 'Penzión Palušák',
     location: 'Stará Lesná, Vysoké Tatry',
-    rating: { value: '', source: '' },
+    rating: { value: '4,4', source: 'Google' },
 
     // TEMP PLACEHOLDER — Lomy's real hero photo, reused until real Palušák
     // photography is supplied.
@@ -209,7 +210,7 @@ export const penzionPalusakContent: LomyContent = {
     paragraph:
       'Animátori, ktorí robia deťom zábavný program? Sú ústretoví, starajú sa o ich šťastie a bezpečie, a hlavne robia svoju prácu srdcom? Presne to robí náš program výnimočným a obľúbeným medzi učiteľmi. Deti z neho odchádzajú so zážitkami, na ktoré budú spomínať celý život, a často s plačom, že nechcú odísť.\n\nNa školský rok 26/27 sme si pre materské a základné školy pripravili viacero programov. Dočítate sa o nich viac kliknutím na tlačidlo nižšie.',
     cta: { label: 'Zistiť viac o programe', href: '/program-skoly-v-prirode' },
-    gallery: [],
+    gallery: PROGRAM_GALLERY_PHOTOS,
   },
 
   terminy: {
