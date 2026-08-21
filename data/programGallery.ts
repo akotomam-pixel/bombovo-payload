@@ -4,18 +4,18 @@
  * the animačný tím, not the building.
  *
  * All 65 real photos Matej uploaded. Order is hand-curated, not upload
- * order: the first 4 are the ones chosen for the section's visible squares
- * (an animator in branded gear or the Bombovo mascot in every one of them,
- * picked after actually viewing the batch — the 4th, the mascot high-fiving
- * a full room of kids, was specifically requested after Matej spotted it in
- * the lightbox), and the rest interleave the two source photo sessions so
- * the lightbox never shows two shots from the same burst back to back.
+ * order: the first 4 are the ones chosen for the section's visible squares,
+ * picked and re-ordered after actually viewing the batch and taking Matej's
+ * feedback from the live lightbox (the mascot high-five photo moved to the
+ * first, most prominent square on request), and the rest interleave the two
+ * source photo sessions so the lightbox never shows two shots from the same
+ * burst back to back.
  */
 export const PROGRAM_GALLERY_PHOTOS: { src: string; alt: string }[] = [
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iqGk8KlidIMDERPbns97pmCHSgFUaGKBcJNOA', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iT5oijfe4YRvbuPG903W586LMa7wUhKSptnqJ', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6ig8CY8zy14v2IiJQ7MySfXUkWq98mbtudsrCe', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iakp6m7AZknYtp4BjcezSJgw9NiGsQmEdMFrO', alt: 'Animačný program CK Bombovo' },
-  { src: 'https://utfs.io/f/RRX2fWCU0K6iT5oijfe4YRvbuPG903W586LMa7wUhKSptnqJ', alt: 'Animačný program CK Bombovo' },
+  { src: 'https://utfs.io/f/RRX2fWCU0K6iqGk8KlidIMDERPbns97pmCHSgFUaGKBcJNOA', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iRTXyAZCU0K6iwSfNPA5pgtaHYv7MGOD4qFkb', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6ioZMCkAEDY8IcO2plf9Cbuah07FNHtVwZKGdJ', alt: 'Animačný program CK Bombovo' },
   { src: 'https://utfs.io/f/RRX2fWCU0K6iIInrdCqKxpszVUtLvjyYobHcrfmZCaiwEWTI', alt: 'Animačný program CK Bombovo' },
