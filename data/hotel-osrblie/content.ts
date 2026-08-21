@@ -186,9 +186,10 @@ export const hotelOsrblieContent: LomyContent = {
     },
     mapa: {
       title: 'Zistite, ako ďaleko je Hotel Osrblie od vás',
-      // TEMP PLACEHOLDER — Lomy's own coordinates, reused because no GPS
-      // coordinates for Hotel Osrblie were given. Replace once supplied.
-      coordinates: { lat: 48.58064084310827, lng: 18.56727918359109 },
+      // Real coordinates, geocoded from the confirmed address (Anderlová 224,
+      // 976 45 Osrblie) via OpenStreetMap Nominatim — matches a hotel-tagged
+      // building at that exact address.
+      coordinates: { lat: 48.7563606, lng: 19.5207151 },
     },
   },
 

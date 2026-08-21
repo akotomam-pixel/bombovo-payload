@@ -187,9 +187,10 @@ export const penzionPalusakContent: LomyContent = {
     },
     mapa: {
       title: 'Zistite, ako ďaleko je Penzión Palušák od vás',
-      // TEMP PLACEHOLDER — Lomy's own coordinates, reused because no GPS
-      // coordinates for Penzión Palušák were given. Replace once supplied.
-      coordinates: { lat: 48.58064084310827, lng: 18.56727918359109 },
+      // Real coordinates, geocoded via OpenStreetMap Nominatim — a direct
+      // name match ("Penzión Palušák", tourism=guest_house) at Hlavná, Stará
+      // Lesná, matching the known region exactly.
+      coordinates: { lat: 49.1354104, lng: 20.3102178 },
     },
   },
 

@@ -187,9 +187,10 @@ export const penzionLaganContent: LomyContent = {
     },
     mapa: {
       title: 'Zistite, ako ďaleko je Penzión Lagáň od vás',
-      // TEMP PLACEHOLDER — Lomy's own coordinates, reused because no GPS
-      // coordinates for Penzión Lagáň were given. Replace once supplied.
-      coordinates: { lat: 48.58064084310827, lng: 18.56727918359109 },
+      // Real coordinates, geocoded via OpenStreetMap Nominatim — a direct
+      // name match ("Penzión Lagáň", tourism=guest_house) at Radava,
+      // matching the known region exactly.
+      coordinates: { lat: 48.0786214, lng: 18.3100171 },
     },
   },
 
