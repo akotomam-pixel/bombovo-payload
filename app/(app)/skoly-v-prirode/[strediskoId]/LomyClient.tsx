@@ -228,8 +228,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   const ctaSecondary =
-    'inline-flex items-center justify-center rounded-[9px] border border-[#CFD4CF] bg-transparent px-6 py-3.5 text-center text-[17px] font-semibold uppercase leading-tight tracking-[0.045em] text-[#1F2320] ' +
-    'transition-[background-color,border-color,color,transform] duration-150 ease-out hover:border-[#080708] hover:bg-[#080708] hover:text-white active:translate-y-px ' +
+    'inline-flex items-center justify-center rounded-[9px] border border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-center text-[17px] font-bold uppercase leading-tight tracking-[0.045em] text-bombovo-dark ' +
+    'transition-[background-color,transform] duration-150 ease-out hover:bg-[#F5BD1F] active:translate-y-px ' +
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3772FF]'
 
   return (
@@ -494,8 +494,8 @@ export default function LomyClient({ content }: { content: LomyContent }) {
               */}
               <div className="relative flex flex-col overflow-hidden rounded-[16px] bg-[#FBFCFB] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_24px_50px_-30px_rgba(8,7,8,0.3)] ring-1 ring-[#E1E4E1] lg:h-[var(--photo-h)]">
                 {/* ── Price slab ── */}
-                {/* Brand dark slab, white text on it. */}
-                <div className="relative bg-bombovo-dark px-7 pb-8 pt-5">
+                {/* Brand blue slab, white text on it. */}
+                <div className="relative bg-bombovo-blue px-7 pb-8 pt-5">
                   <p className="text-[12px] font-medium text-[#E6E8E6]/65">Cena {price.prefix}</p>
 
                   {/*
