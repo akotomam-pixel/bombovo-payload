@@ -19,9 +19,15 @@ import type { LomyProgram } from '@/data/lomy/types'
  *
  * The gallery is the same across every stredisko rather than shot at this venue.
  * Its thumbnails open a LightGallery lightbox — the same one the hero uses — and
- * it holds any number of photos: the first three show, the rest are reachable
+ * it holds any number of photos: the first four show, the rest are reachable
  * through the lightbox. The photos are still outstanding, so it renders marked
  * slots until `gallery` in the content file has entries.
+ *
+ * The gallery column stretches to match the text column's height rather than
+ * holding a fixed size (the same fix VynimocnySection uses) — the copy here
+ * runs to two paragraphs, so a fixed-height gallery centred beside it left an
+ * awkward gap. A third stacked photo was added on the right so four real
+ * photos, not three, fill that taller frame.
  */
 
 /** Sub-headings across the page are set in this face by explicit instruction. */
@@ -71,19 +77,22 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
   return (
     <section className="bg-bombovo-gray">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-        <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="grid items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
           {/*
-            Gallery left. One tall frame beside two stacked ones, so the group
-            reads as a set of programme moments rather than a uniform grid.
+            Gallery left, stretched to the text column's full height (items-
+            stretch on the row) rather than a fixed size — the copy now runs
+            to two paragraphs, so the frame needs to grow with it. One tall
+            frame beside three stacked ones, so the group reads as a set of
+            programme moments rather than a uniform grid.
           */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-5">
             {hasPhotos ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid h-full grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => openGallery(0)}
                   aria-label={`Otvoriť galériu — ${gallery[0].alt}`}
-                  className="group relative block h-full min-h-[260px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue md:min-h-[320px]"
+                  className="group relative block h-full min-h-[320px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
                 >
                   <img
                     src={opt(gallery[0].src, 828)}
@@ -92,25 +101,25 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                 decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                   />
-                  {/* Count badge, so it reads as a set rather than three loose photos. */}
-                  {gallery.length > 3 && (
+                  {/* Count badge, so it reads as a set rather than four loose photos. */}
+                  {gallery.length > 4 && (
                     <span className="pointer-events-none absolute bottom-2.5 left-2.5 rounded-[6px] bg-[#080708]/70 px-2.5 py-1.5 text-[11px] font-medium text-white backdrop-blur-[2px]">
                       Zobraziť všetkých {gallery.length} fotiek
                     </span>
                   )}
                 </button>
 
-                <div className="flex flex-col gap-3">
-                  {gallery.slice(1, 3).map((p, i) => {
+                <div className="flex h-full flex-col gap-3">
+                  {gallery.slice(1, 4).map((p, i) => {
                     const index = i + 1
-                    const isLast = i === 1 && gallery.length > 3
+                    const isLast = i === 2 && gallery.length > 4
                     return (
                       <button
                         key={p.src}
                         type="button"
                         onClick={() => openGallery(index)}
                         aria-label={`Otvoriť galériu — ${p.alt}`}
-                        className="group relative block h-full min-h-[124px] overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue md:min-h-[154px]"
+                        className="group relative block min-h-[96px] flex-1 overflow-hidden rounded-[10px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
                       >
                         <img
                           src={opt(p.src, 640)}
@@ -121,7 +130,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                         />
                         {isLast && (
                           <span className="absolute inset-0 flex items-center justify-center bg-bombovo-yellow/70 text-[19px] font-black text-bombovo-dark">
-                            +{gallery.length - 3}
+                            +{gallery.length - 4}
                           </span>
                         )}
                       </button>
@@ -130,18 +139,19 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
-                <PhotoSlot className="min-h-[260px] md:min-h-[320px]" />
-                <div className="flex flex-col gap-3">
-                  <PhotoSlot className="min-h-[124px] md:min-h-[154px]" />
-                  <PhotoSlot className="min-h-[124px] md:min-h-[154px]" />
+              <div className="grid h-full grid-cols-2 gap-3">
+                <PhotoSlot className="h-full min-h-[320px]" />
+                <div className="flex h-full flex-col gap-3">
+                  <PhotoSlot className="min-h-[96px] flex-1" />
+                  <PhotoSlot className="min-h-[96px] flex-1" />
+                  <PhotoSlot className="min-h-[96px] flex-1" />
                 </div>
               </div>
             )}
           </div>
 
-          {/* Text right. */}
-          <div className="lg:col-span-6">
+          {/* Text right — wider now the copy runs to two paragraphs. */}
+          <div className="lg:col-span-7">
             <h2
               className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark font-bold"
               style={{ fontFamily: SUBHEAD }}
@@ -149,9 +159,13 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
               {heading}
             </h2>
 
-            <p className="mt-4 max-w-[62ch] text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">
-              {paragraph}
-            </p>
+            <div className="mt-4 max-w-[68ch] space-y-3.5">
+              {paragraph.split('\n\n').map((para, i) => (
+                <p key={i} className="text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">
+                  {para}
+                </p>
+              ))}
+            </div>
 
             <Link
               href={cta.href}

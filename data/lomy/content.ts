@@ -270,7 +270,7 @@ export const lomyContent: LomyContent = {
   program: {
     heading: 'Overený animačný program',
     paragraph:
-      'Náš animačný tím tvoria vyškolení animátori, ktorí sa tejto práci venujú sezónu čo sezónu. Už 30 sezón v rade pripravujeme animačný program pre základné školy, na sezónu 2027 sme pripravili programy pre materské školy, prvý aj druhý stupeň základných škôl. Zistite viac o programe kliknutím na tlačidlo nižšie.',
+      'Animátori, ktorí robia deťom zábavný program? Sú ústretoví, starajú sa o ich šťastie a bezpečie, a hlavne robia svoju prácu srdcom? Presne to robí náš program výnimočným a obľúbeným medzi učiteľmi. Deti z neho odchádzajú so zážitkami, na ktoré budú spomínať celý život, a často s plačom, že nechcú odísť.\n\nNa školský rok 26/27 sme si pre materské a základné školy pripravili viacero programov. Dočítate sa o nich viac kliknutím na tlačidlo nižšie.',
     // Verified: app/(app)/program-skoly-v-prirode/page.tsx is a real 289-line
     // page with no data dependencies, already linked from the strediská listing
     // and the original detail page.

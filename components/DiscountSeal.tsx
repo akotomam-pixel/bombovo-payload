@@ -1,14 +1,35 @@
 /**
- * The discount seal, drawn to the Lomy amphitheatre: a ring of timber benches
- * stepping down to a stone fire pit (see `/images/Skoly v Prirode/lomy.png`),
- * so the badge is built from concentric arcs around a centre rather than the
- * clip-art starburst it replaces. The rings are broken by small gaps the way
- * the real seating is broken by its access steps, which keeps it reading as
- * drawn rather than generated.
+ * The discount seal — a single circle with a scalloped, wavy rim, read as a
+ * wax-seal or rubber-stamp shape rather than a flat pill badge.
  *
- * Shared between the Lomy hero photo and the Lomy overview-grid card so both
- * render the identical badge.
+ * Shared between the Lomy hero photo and every overview-grid stredisko card
+ * so all of them render the identical badge.
  */
+
+/**
+ * Precomputed once at module load: a closed polygon path tracing a circle
+ * whose radius oscillates sinusoidally, which reads as a smooth scalloped
+ * edge at this size without needing per-render recomputation.
+ */
+const WAVY_CIRCLE_PATH = (() => {
+  const cx = 50
+  const cy = 50
+  const baseR = 42
+  const amplitude = 3.4
+  const waves = 14
+  const points = 160
+
+  let d = ''
+  for (let i = 0; i <= points; i++) {
+    const t = (i / points) * Math.PI * 2
+    const r = baseR + amplitude * Math.sin(waves * t)
+    const x = cx + r * Math.cos(t)
+    const y = cy + r * Math.sin(t)
+    d += i === 0 ? `M ${x.toFixed(2)} ${y.toFixed(2)}` : ` L ${x.toFixed(2)} ${y.toFixed(2)}`
+  }
+  return `${d} Z`
+})()
+
 export default function DiscountSeal({
   amount,
   deadline,
@@ -20,13 +41,6 @@ export default function DiscountSeal({
   size: number
   className?: string
 }) {
-  // Tiered seating: outer rings are the benches, each notched by a stepped aisle.
-  const tiers = [
-    { r: 47, gap: 7, rot: -14 },
-    { r: 42, gap: 9, rot: 24 },
-    { r: 37, gap: 8, rot: -62 },
-  ]
-
   return (
     <svg
       viewBox="0 0 100 100"
@@ -37,33 +51,12 @@ export default function DiscountSeal({
       className={className}
       style={{ fontFamily: 'inherit', filter: 'drop-shadow(0 8px 20px rgba(223,41,53,0.34))' }}
     >
-      {/* Fire-pit centre — the solid ground the figure sits on. */}
-      <circle cx="50" cy="50" r="33" fill="#DF2935" />
-
-      {/* Bench tiers, each an arc left open at its aisle. */}
-      {tiers.map((t) => {
-        const circumference = 2 * Math.PI * t.r
-        return (
-          <circle
-            key={t.r}
-            cx="50"
-            cy="50"
-            r={t.r}
-            fill="none"
-            stroke="#DF2935"
-            strokeWidth="3.1"
-            strokeLinecap="round"
-            strokeDasharray={`${circumference - t.gap} ${t.gap}`}
-            transform={`rotate(${t.rot} 50 50)`}
-            opacity={0.92}
-          />
-        )
-      })}
+      <path d={WAVY_CIRCLE_PATH} fill="#DF2935" />
 
       <text x="50" y="48" textAnchor="middle" fill="#FFFFFF" fontSize="20" fontWeight="700" letterSpacing="-1">
         {amount}
       </text>
-      {/* Hairline rule under the figure, echoing the tier lines. */}
+      {/* Hairline rule between the amount and the deadline. */}
       <line x1="37" y1="54.5" x2="63" y2="54.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.45" />
       <text x="50" y="65" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="600" opacity="0.92">
         {deadline}
