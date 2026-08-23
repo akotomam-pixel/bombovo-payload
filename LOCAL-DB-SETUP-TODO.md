@@ -72,15 +72,6 @@ design and code work.
 
 ---
 
-## Also outstanding (unrelated, pre-existing)
-
-- **React version mismatch in the admin panel** — Payload wants React >= 19,
-  project has 18.3.1. `/admin` returns HTTP 200 and works in practice, but the
-  log shows an unhandled rejection, so parts of the admin UI may misbehave or
-  silently fail to save. Fixing means upgrading React across the whole site —
-  a deliberate project with testing, not a quick change. Pre-existing, not
-  caused by the 2026-08-18 machine rebuild.
-
 ## Resolved
 
 - ~~**`sharp` not installed**~~ — misdiagnosed. sharp was installed and loading
@@ -88,3 +79,13 @@ design and code work.
   imageSizes in `collections/Media.ts` were ignored and uploads were stored at
   full size. Fixed in commit `4afc58d`. Existing media is unchanged; only new
   uploads are resized.
+
+- ~~**React version mismatch in the admin panel**~~ — this was actually two
+  mismatches against `payload@3.77.0`'s peer dependencies. React was on
+  18.3.1 against Payload's required 19.0.1/19.1.2/19.2.1+, throwing an
+  unhandled rejection that plausibly caused the admin's intermittent
+  "something went wrong" on Save. Separately (not previously noticed),
+  Next.js was on 15.5.9, which `npm ls` flags as outright invalid against
+  `@payloadcms/next`'s peer range — Payload only supports up to 15.4.11
+  within the 15.x line (or 16.2+). Fixed by downgrading Next to 15.4.11 and
+  upgrading React/React DOM to 19.2.x.
