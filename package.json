@@ -11,10 +11,10 @@
     "migrate:svp": "tsx scripts/migrate-svp.ts"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "^3.77.0",
-    "@payloadcms/next": "^3.77.0",
-    "@payloadcms/richtext-lexical": "^3.77.0",
-    "@payloadcms/storage-uploadthing": "^3.77.0",
+    "@payloadcms/db-postgres": "^3.88.0",
+    "@payloadcms/next": "^3.88.0",
+    "@payloadcms/richtext-lexical": "^3.88.0",
+    "@payloadcms/storage-uploadthing": "^3.88.0",
     "@types/pdfmake": "^0.3.3",
     "@types/qrcode": "^1.5.6",
     "@vercel/analytics": "^2.0.1",
@@ -25,7 +25,7 @@
     "next": "15.4.11",
     "nextjs-toploader": "^3.9.17",
     "nodemailer": "^8.0.1",
-    "payload": "^3.77.0",
+    "payload": "^3.88.0",
     "pdfmake": "^0.3.9",
     "posthog-js": "^1.372.6",
     "posthog-node": "^5.33.0",

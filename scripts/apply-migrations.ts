@@ -210,6 +210,22 @@ async function run() {
     `)
     console.log('✓ strediska_program_gallery table created')
 
+    // Migration 20260823_000000 — add prefix column to media. Payload 3.88.0's
+    // storage-uploadthing/plugin-cloud-storage now always injects a hidden
+    // "prefix" text field on upload collections; without this column every
+    // query touching "media" (directly or via a relationship) 500ed with
+    // "column \"prefix\" does not exist", which broke saving on virtually
+    // every collection/global since most reference media. Backfilling NULL to
+    // '' too — Payload's URL-generation code does path.join(prefix, filename)
+    // and throws on null (the field's own default only applies to new docs,
+    // not existing rows, which had no column at all until this migration).
+    await client.query(`
+      ALTER TABLE "media" ADD COLUMN IF NOT EXISTS "prefix" varchar;
+      ALTER TABLE "media" ALTER COLUMN "prefix" SET DEFAULT '';
+      UPDATE "media" SET "prefix" = '' WHERE "prefix" IS NULL;
+    `)
+    console.log('✓ media.prefix')
+
     console.log('All migrations applied.')
   } finally {
     client.release()
