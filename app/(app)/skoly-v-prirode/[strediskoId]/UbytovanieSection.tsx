@@ -1,5 +1,6 @@
 'use client'
 
+import type { JSX } from 'react'
 import DistanceCalculator from './DistanceCalculator'
 import type { LomyUbytovanie } from '@/data/lomy/types'
 

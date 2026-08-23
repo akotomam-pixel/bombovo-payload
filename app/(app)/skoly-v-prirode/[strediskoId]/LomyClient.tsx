@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
+import type { JSX } from 'react'
 import LightGallery from 'lightgallery/react'
 import lgThumbnail from 'lightgallery/plugins/thumbnail'
 import lgZoom from 'lightgallery/plugins/zoom'
