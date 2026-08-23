@@ -28,14 +28,9 @@ export interface PickerCard {
   badge?: string
 }
 
+// Order matches the page's section order below: 1. stupeň (the main
+// product) first, 2. stupeň second, materská škola last.
 export const pickerCards: PickerCard[] = [
-  {
-    id: 'materska-skola',
-    label: 'Materská škola',
-    ageRange: 'Deti do 6 rokov',
-    icon: '🧸',
-    teaser: 'Vlastná, jemne upravená verzia Tajomstiev denníka, presne pre ich vek a tempo.',
-  },
   {
     id: 'prvy-stupen-zs',
     label: '1. stupeň ZŠ',
@@ -50,6 +45,13 @@ export const pickerCards: PickerCard[] = [
     ageRange: 'Približne 11 až 15 rokov',
     icon: '📚',
     teaser: 'Teenagerská škola v prírode, postavená na tom, čo tento vek baví.',
+  },
+  {
+    id: 'materska-skola',
+    label: 'Materská škola',
+    ageRange: 'Deti do 6 rokov',
+    icon: '🧸',
+    teaser: 'Vlastná, jemne upravená verzia Tajomstiev denníka, presne pre ich vek a tempo.',
   },
 ]
 

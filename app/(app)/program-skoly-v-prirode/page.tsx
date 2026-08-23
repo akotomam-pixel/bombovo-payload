@@ -156,11 +156,7 @@ export default function ProgramSkolyVPrirodePage() {
         <WaveDivider color="blue" variant={1} />
       </div>
 
-      {/* ─── SECTION 1: MATERSKÁ ŠKOLA ────────────────────────────────────── */}
-      <SectionBlock content={materskaSection} />
-      <WaveDivider color="yellow" variant={2} />
-
-      {/* ─── SECTION 2: 1. STUPEŇ ZŠ ──────────────────────────────────────── */}
+      {/* ─── SECTION 1: 1. STUPEŇ ZŠ (main product, goes first) ──────────── */}
       <div className="bg-bombovo-gray">
         <SectionBlock content={prvyStupenIntro} background="bg-bombovo-gray" />
         <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 md:pb-16 lg:px-8">
@@ -169,12 +165,22 @@ export default function ProgramSkolyVPrirodePage() {
       </div>
       <WaveDivider color="red" variant={3} />
 
-      {/* ─── SECTION 3: 2. STUPEŇ ZŠ ──────────────────────────────────────── */}
+      {/* ─── SECTION 2: 2. STUPEŇ ZŠ ──────────────────────────────────────── */}
       <SectionBlock content={druhyStupenSection} />
+      <WaveDivider color="yellow" variant={2} />
+
+      {/* ─── SECTION 3: MATERSKÁ ŠKOLA (last) ─────────────────────────────── */}
+      <SectionBlock content={materskaSection} background="bg-bombovo-gray" />
       <WaveDivider color="blue" variant={2} />
 
       {/* ─── CLOSING CTA ──────────────────────────────────────────────────── */}
-      <section className="bg-bombovo-dark">
+      {/*
+        Deliberately not bg-bombovo-dark: that sits directly above the dark
+        Footer, and the two together read as one oversized black block with
+        no visible seam — CTA content mistaken for the start of the footer.
+        Blue keeps it legible as its own section.
+      */}
+      <section className="bg-bombovo-blue">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8 md:py-20">
           <p className="text-[19px] leading-[1.65] text-white md:text-[21px]">{closingCta.text}</p>
 
