@@ -42,7 +42,8 @@ export default function StrediskoCard({
   ariaLabel?: string
 }) {
   const content = REBUILT_STREDISKA[slug]
-  const { price, discount } = content?.hero ?? {}
+  const { price, discount, facts, rating } = content?.hero ?? {}
+  const kapacita = facts?.find((f) => f.label === 'Kapacita')?.value
 
   return (
     <div
@@ -80,12 +81,36 @@ export default function StrediskoCard({
 
         {/* Content */}
         <div className="p-6">
-          <h3
-            style={{ fontFamily: SUBHEAD }}
-            className="text-[26px] font-bold leading-[1.1] text-bombovo-dark"
-          >
-            {name}
-          </h3>
+          <div className="flex items-start justify-between gap-3">
+            <h3
+              style={{ fontFamily: SUBHEAD }}
+              className="text-[26px] font-bold leading-[1.1] text-bombovo-dark"
+            >
+              {name}
+            </h3>
+
+            {/* Kapacita/Hodnotenie — known before clicking through, so a
+                visitor can compare venues right from the listing grid.
+                Hidden per line when a stredisko has no content file yet
+                (falls outside REBUILT_STREDISKA) or is missing that fact. */}
+            {(kapacita || rating?.value) && (
+              <div className="shrink-0 pt-1 text-right">
+                {kapacita && (
+                  <p className="whitespace-nowrap text-[13px] font-semibold text-[#6B716B]">
+                    Kapacita: <span className="text-bombovo-dark">{kapacita}</span>
+                  </p>
+                )}
+                {rating?.value && (
+                  <p className="whitespace-nowrap text-[13px] font-semibold text-[#6B716B]">
+                    Hodnotenie:{' '}
+                    <span className="text-bombovo-dark">
+                      {rating.value} <span aria-hidden className="text-bombovo-yellow">★</span>
+                    </span>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
           {vypredane ? (
             <div className="mt-5 flex w-full cursor-not-allowed items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 px-6 py-3.5 text-lg font-bold text-gray-400">
