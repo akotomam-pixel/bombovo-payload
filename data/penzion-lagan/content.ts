@@ -104,7 +104,7 @@ export const penzionLaganContent: LomyContent = {
   },
 
   cena: {
-    heading: 'Čo je zahrnuté v cene a doplnkové služby',
+    heading: 'Čo je zahrnuté v cene a naše doplnkové služby',
 
     zakladna: {
       title: 'V základnej cene',

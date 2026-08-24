@@ -141,7 +141,7 @@ export const lomyContent: LomyContent = {
   // Three services were dropped on instruction: pobytový deň naviac, pobyt
   // dospelej osoby naviac, and pobyt pedagogického dieťaťa.
   cena: {
-    heading: 'Čo je zahrnuté v cene a doplnkové služby',
+    heading: 'Čo je zahrnuté v cene a naše doplnkové služby',
 
     zakladna: {
       title: 'V základnej cene',
