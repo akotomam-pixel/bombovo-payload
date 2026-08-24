@@ -31,12 +31,12 @@ export default function TopBar() {
               paddingRight: '100vw' // Adds full screen width of spacing after each sentence
             }}
           >
-            Tábory na leto 2026 sú v predaji!{' '}
-            <Link 
-              href="/letne-tabory" 
+            Školy v prírode na školský rok 2026/27 v predaji.{' '}
+            <Link
+              href="/skoly-v-prirode"
               className="underline hover:text-bombovo-yellow transition-colors"
             >
-              Zaregistruj sa teraz →
+              Využite zľavu 30 € do 31.10 →
             </Link>
           </span>
         ))}
