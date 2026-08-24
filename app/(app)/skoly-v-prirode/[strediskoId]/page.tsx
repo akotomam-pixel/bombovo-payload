@@ -222,14 +222,11 @@ async function buildRebuiltContent(slug: string, baseContent: LomyContent): Prom
           }))
         : baseContent.hero.photos
 
-    // Section 3's portrait slot deliberately does NOT read Payload's
-    // `section2Photo` here — for Minciar/Martinské Hole/Roháčan that field
-    // still holds a photo picked for the old page's different layout (a wide
-    // group-activity shot, not a curated tall portrait for this section), so
-    // pulling it in showed the wrong photo. The static content file's own
-    // `vynimocny.photo` is the only source until a photo is deliberately
-    // curated for this section specifically — empty means the marked
-    // placeholder shows, which is the correct state until then.
+    // Section 3's portrait slot: uses Payload's `section2Photo` when an admin
+    // has uploaded one for this stredisko, since that's now the intended way
+    // to curate this specific tall photo. Falls back to the static content
+    // file's placeholder (empty src) until one is uploaded.
+    const vynimocnyPhotoUrl = mediaUrl(doc.section2Photo)
 
     // Animačný program gallery. Same photos across every stredisko — they show
     // the programme, not the venue — so this is uploaded once per record.
@@ -245,6 +242,9 @@ async function buildRebuiltContent(slug: string, baseContent: LomyContent): Prom
     return {
       ...baseContent,
       hero: { ...baseContent.hero, photos },
+      vynimocny: vynimocnyPhotoUrl
+        ? { ...baseContent.vynimocny, photo: { ...baseContent.vynimocny.photo, src: vynimocnyPhotoUrl } }
+        : baseContent.vynimocny,
       program: {
         ...baseContent.program,
         gallery: programGallery.length > 0 ? programGallery : baseContent.program.gallery,
