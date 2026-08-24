@@ -64,23 +64,29 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
           </div>
 
           {/* Right column — the photo, cropped to exactly match the text
-              column's height. No min-height here: a floor taller than a
+              column's height. `relative` + `absolute inset-0` on the image
+              (rather than a plain h-full) because percentage heights on a
+              plain child don't reliably resolve against a CSS Grid-stretched
+              parent — the figure gets the right box, but a plain h-full img
+              inside it falls back to its own aspect ratio and overflows past
+              the text. Absolute positioning fills the figure's actual box
+              regardless. No min-height here either: a floor taller than a
               given stredisko's text would pull the grid row up to that
               floor, leaving invisible blank space under the (shorter, real)
               text while the photo — filled edge-to-edge with real pixels —
               visibly ran past where the text ended. */}
-          <figure className="order-2 overflow-hidden rounded-[12px] lg:col-span-5">
+          <figure className="relative order-2 overflow-hidden rounded-[12px] lg:col-span-5">
             {photo.src ? (
               <img
                 src={opt(photo.src, 1080)}
                 alt={photo.alt}
                 loading="lazy"
                 decoding="async"
-                className="h-full min-h-[280px] w-full rounded-[12px] object-cover object-bottom shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)]"
+                className="absolute inset-0 h-full min-h-[280px] w-full rounded-[12px] object-cover object-bottom shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)]"
               />
             ) : (
               /* Marked placeholder — the real portrait shot is being sourced. */
-              <div className="flex h-full min-h-[420px] w-full flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[#C9CEC9] bg-[#EFF1EF] px-6 text-center">
+              <div className="absolute inset-0 flex h-full min-h-[280px] w-full flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[#C9CEC9] bg-[#EFF1EF] px-6 text-center">
                 <svg
                   viewBox="0 0 24 24"
                   className="h-9 w-9 text-[#A2A8A2]"
