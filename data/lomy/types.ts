@@ -177,7 +177,7 @@ export interface DoplnkovaSluzba {
   icon?: string
 }
 
-/** Section: "Čo je v nej zahrnuté v cene a doplnkové služby". */
+/** Section: "Čo je zahrnuté v cene a doplnkové služby". */
 export interface LomyCena {
   heading: string
   zakladna: {

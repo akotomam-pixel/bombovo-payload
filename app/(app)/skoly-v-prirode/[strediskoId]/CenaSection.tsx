@@ -6,7 +6,7 @@ import type { DoplnkovaSluzba, LomyCena, PriceTag } from '@/data/lomy/types'
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
 /**
- * "Čo je v nej zahrnuté v cene a doplnkové služby".
+ * "Čo je zahrnuté v cene a doplnkové služby".
  *
  * Every price is a bold figure over a smaller unit at the top right of its card,
  * so the numbers can be compared down the column. Nothing here collapses: a

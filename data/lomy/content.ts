@@ -130,7 +130,7 @@ export const lomyContent: LomyContent = {
     },
   },
 
-  // ─── Section 4: Čo je v nej zahrnuté v cene a doplnkové služby ─────────────
+  // ─── Section 4: Čo je zahrnuté v cene a doplnkové služby ─────────────
   // The blocks are written as prose rather than the old spec list, but every
   // figure from the draft is still here and unchanged.
   //
@@ -141,7 +141,7 @@ export const lomyContent: LomyContent = {
   // Three services were dropped on instruction: pobytový deň naviac, pobyt
   // dospelej osoby naviac, and pobyt pedagogického dieťaťa.
   cena: {
-    heading: 'Čo je v nej zahrnuté v cene a doplnkové služby',
+    heading: 'Čo je zahrnuté v cene a doplnkové služby',
 
     zakladna: {
       title: 'V základnej cene',

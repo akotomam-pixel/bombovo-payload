@@ -105,7 +105,7 @@ export const penzionPalusakContent: LomyContent = {
   },
 
   cena: {
-    heading: 'Čo je v nej zahrnuté v cene a doplnkové služby',
+    heading: 'Čo je zahrnuté v cene a doplnkové služby',
 
     zakladna: {
       title: 'V základnej cene',

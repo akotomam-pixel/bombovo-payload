@@ -63,15 +63,20 @@ export default function VynimocnySection({ content }: { content: LomyVynimocny }
             </ul>
           </div>
 
-          {/* Right column — the photo, matching the text column's height. */}
-          <figure className="order-2 lg:col-span-5">
+          {/* Right column — the photo, cropped to exactly match the text
+              column's height. No min-height here: a floor taller than a
+              given stredisko's text would pull the grid row up to that
+              floor, leaving invisible blank space under the (shorter, real)
+              text while the photo — filled edge-to-edge with real pixels —
+              visibly ran past where the text ended. */}
+          <figure className="order-2 overflow-hidden rounded-[12px] lg:col-span-5">
             {photo.src ? (
               <img
                 src={opt(photo.src, 1080)}
                 alt={photo.alt}
                 loading="lazy"
                 decoding="async"
-                className="h-full min-h-[420px] w-full rounded-[12px] object-cover shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)]"
+                className="h-full min-h-[280px] w-full rounded-[12px] object-cover object-bottom shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)]"
               />
             ) : (
               /* Marked placeholder — the real portrait shot is being sourced. */
