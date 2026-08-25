@@ -20,13 +20,34 @@ function BannerText() {
 export default function TopBar() {
   return (
     <div className="bg-bombovo-blue text-white py-2 overflow-hidden relative">
-      {/* Mobile: a single static line. The scrolling marquee's duplicate
-          copies were bleeding into each other on narrow screens — the
-          banner text is wide relative to a phone's 100vw, so one copy's
-          overflow visually ran into the next, reading as garbled repeated
-          text. A static line sidesteps that, and is easier to tap besides. */}
-      <div className="text-center text-sm font-medium px-4 md:hidden">
-        <BannerText />
+      {/* Mobile: scrolling, same as desktop — but built differently. The old
+          version duplicated the text 5x assuming each copy fits within
+          100vw; on a phone the text is wider than that, so one copy's
+          overflow ran into the next and read as garbled repeated text.
+          This version duplicates it exactly twice and slides the row by
+          exactly half its own (content-measured, not viewport-guessed)
+          width, so the loop is seamless regardless of how wide the text
+          actually renders. */}
+      <div className="overflow-hidden md:hidden">
+        <motion.div
+          className="flex w-max whitespace-nowrap"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{
+            x: {
+              repeat: Infinity,
+              repeatType: 'loop',
+              duration: 12,
+              ease: 'linear',
+            },
+          }}
+        >
+          <span className="shrink-0 px-6 text-sm font-medium">
+            <BannerText />
+          </span>
+          <span className="shrink-0 px-6 text-sm font-medium" aria-hidden="true">
+            <BannerText />
+          </span>
+        </motion.div>
       </div>
 
       {/* Desktop: the scrolling marquee, unchanged. */}
