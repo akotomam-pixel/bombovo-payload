@@ -3,15 +3,18 @@
 import { useState } from 'react'
 
 /**
- * The simple enquiry form for the rebuilt Lomy page.
+ * The full enquiry form for the rebuilt Lomy page.
  *
- * Seven fields and nothing else — deliberately the low-friction alternative to
- * the long /prihlaska-svp registration, which teachers were not completing.
+ * Restores every field the old /prihlaska-svp registration asked for, except
+ * "alternatívne stredisko" (dropped — see conversation), laid out in the
+ * current card's input style rather than the old form's plain blue-bordered
+ * boxes.
  *
  * One component, three placements: inline in section 7, inside the hero's popup,
  * and on the /prihlaska-svp/horsky-hotel-lomy page where a clicked date arrives
  * as ?termin=. Submissions go to /api/contact-svp, the endpoint the site already
- * uses, so these land in the same inbox as every other enquiry.
+ * uses (and already expects this exact field set), so these land in the same
+ * inbox as every other enquiry.
  */
 
 const inputBase =
@@ -33,28 +36,45 @@ export default function LomyEnquiryForm({
   const [status, setStatus] = useState<Status>('idle')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [values, setValues] = useState({
-    skola: '',
-    pocetDeti: '',
-    termin: initialTerm,
-    animacny: '',
-    email: '',
+    datumPrichodu: initialTerm,
+    datumOdchodu: '',
+    veduciPobytu: '',
+    nazovSkoly: '',
+    adresa: '',
+    psc: '',
+    mesto: '',
     telefon: '',
+    email: '',
+    vekZiakov: '',
+    pocetZiakov: '',
+    pocetPedagogov: '',
+    zdravotnik: '',
+    animacny: '',
+    bombovyBalicek: '',
     poznamka: '',
   })
 
   const set =
     (k: keyof typeof values) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setValues((v) => ({ ...v, [k]: e.target.value }))
 
   const validate = () => {
     const next: Record<string, string> = {}
-    if (!values.skola.trim()) next.skola = 'Vyplňte názov školy.'
-    if (!values.pocetDeti.trim()) next.pocetDeti = 'Uveďte približný počet detí.'
+    if (!values.datumPrichodu.trim()) next.datumPrichodu = 'Uveďte dátum príchodu.'
+    if (!values.veduciPobytu.trim()) next.veduciPobytu = 'Vyplňte meno vedúcej/vedúceho pobytu.'
+    if (!values.nazovSkoly.trim()) next.nazovSkoly = 'Vyplňte názov školy.'
+    if (!values.adresa.trim()) next.adresa = 'Vyplňte adresu.'
+    if (!values.psc.trim()) next.psc = 'Vyplňte PSČ.'
+    if (!values.mesto.trim()) next.mesto = 'Vyplňte mesto.'
     if (!values.telefon.trim()) next.telefon = 'Vyplňte telefón.'
     if (!values.email.trim()) next.email = 'Vyplňte e-mail.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(values.email.trim()))
       next.email = 'Skontrolujte formát e-mailu.'
+    if (!values.vekZiakov) next.vekZiakov = 'Vyberte vek žiakov.'
+    if (!values.pocetZiakov.trim()) next.pocetZiakov = 'Uveďte počet žiakov.'
+    if (!values.pocetPedagogov.trim()) next.pocetPedagogov = 'Uveďte počet pedagógov.'
+    if (!values.zdravotnik) next.zdravotnik = 'Vyberte zdravotníka.'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -70,12 +90,21 @@ export default function LomyEnquiryForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           stredisko: strediskoName,
-          nazovSkoly: values.skola,
-          pocetZiakov: values.pocetDeti,
-          datumPrichodu: values.termin,
+          datumPrichodu: values.datumPrichodu,
+          datumOdchodu: values.datumOdchodu,
+          veduciPobytu: values.veduciPobytu,
+          nazovSkoly: values.nazovSkoly,
+          adresa: values.adresa,
+          psc: values.psc,
+          mesto: values.mesto,
           telefon: values.telefon,
           email: values.email,
+          vekZiakov: values.vekZiakov,
+          pocetZiakov: values.pocetZiakov,
+          pocetPedagogov: values.pocetPedagogov,
+          zdravotnik: values.zdravotnik,
           animacnyProgram: values.animacny || 'neuvedené',
+          bombovyBalicek: values.bombovyBalicek || 'neuvedené',
           poznamka: values.poznamka,
         }),
       })
@@ -103,49 +132,228 @@ export default function LomyEnquiryForm({
   return (
     <form onSubmit={handleSubmit} noValidate className={`grid gap-5 md:grid-cols-2 ${className}`}>
       <div>
-        <label htmlFor="lomy-skola" className={labelBase}>
-          Meno školy *
+        <label htmlFor="lomy-prichod" className={labelBase}>
+          Dátum príchodu *
         </label>
+        {/* Arrives pre-filled when a date row was clicked; still editable. */}
         <input
-          id="lomy-skola"
-          value={values.skola}
-          onChange={set('skola')}
+          id="lomy-prichod"
+          value={values.datumPrichodu}
+          onChange={set('datumPrichodu')}
           disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.skola ? 'border-bombovo-red' : ''}`}
+          placeholder="napr. máj 2027 alebo DD.MM.RRRR"
+          className={`mt-2 ${inputBase} ${errors.datumPrichodu ? 'border-bombovo-red' : ''}`}
         />
-        {errors.skola && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.skola}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="lomy-pocet" className={labelBase}>
-          Počet detí (približne) *
-        </label>
-        <input
-          id="lomy-pocet"
-          inputMode="numeric"
-          value={values.pocetDeti}
-          onChange={set('pocetDeti')}
-          disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.pocetDeti ? 'border-bombovo-red' : ''}`}
-        />
-        {errors.pocetDeti && (
-          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.pocetDeti}</p>
+        {errors.datumPrichodu && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.datumPrichodu}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="lomy-termin" className={labelBase}>
-          Preferovaný mesiac/termín
+        <label htmlFor="lomy-odchod" className={labelBase}>
+          Dátum odchodu
         </label>
-        {/* Arrives pre-filled when a date row was clicked; still editable. */}
         <input
-          id="lomy-termin"
-          value={values.termin}
-          onChange={set('termin')}
+          id="lomy-odchod"
+          value={values.datumOdchodu}
+          onChange={set('datumOdchodu')}
           disabled={status === 'sending'}
-          placeholder="napr. máj 2027"
+          placeholder="DD.MM.RRRR"
           className={`mt-2 ${inputBase}`}
         />
+      </div>
+
+      <div>
+        <label htmlFor="lomy-veduci" className={labelBase}>
+          Meno, priezvisko, titul vedúcej/vedúceho pobytu *
+        </label>
+        <input
+          id="lomy-veduci"
+          value={values.veduciPobytu}
+          onChange={set('veduciPobytu')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.veduciPobytu ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.veduciPobytu && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.veduciPobytu}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="lomy-skola" className={labelBase}>
+          Názov školy / organizácie *
+        </label>
+        <input
+          id="lomy-skola"
+          value={values.nazovSkoly}
+          onChange={set('nazovSkoly')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.nazovSkoly ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.nazovSkoly && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.nazovSkoly}</p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 md:col-span-2">
+        <div>
+          <label htmlFor="lomy-adresa" className={labelBase}>
+            Adresa *
+          </label>
+          <input
+            id="lomy-adresa"
+            value={values.adresa}
+            onChange={set('adresa')}
+            disabled={status === 'sending'}
+            className={`mt-2 ${inputBase} ${errors.adresa ? 'border-bombovo-red' : ''}`}
+          />
+          {errors.adresa && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.adresa}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="lomy-psc" className={labelBase}>
+            PSČ *
+          </label>
+          <input
+            id="lomy-psc"
+            value={values.psc}
+            onChange={set('psc')}
+            disabled={status === 'sending'}
+            className={`mt-2 ${inputBase} ${errors.psc ? 'border-bombovo-red' : ''}`}
+          />
+          {errors.psc && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.psc}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="lomy-mesto" className={labelBase}>
+            Mesto *
+          </label>
+          <input
+            id="lomy-mesto"
+            value={values.mesto}
+            onChange={set('mesto')}
+            disabled={status === 'sending'}
+            className={`mt-2 ${inputBase} ${errors.mesto ? 'border-bombovo-red' : ''}`}
+          />
+          {errors.mesto && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.mesto}</p>}
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="lomy-telefon" className={labelBase}>
+          Telefón *
+        </label>
+        <input
+          id="lomy-telefon"
+          type="tel"
+          value={values.telefon}
+          onChange={set('telefon')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.telefon ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.telefon && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.telefon}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="lomy-email" className={labelBase}>
+          E-mail *
+        </label>
+        <input
+          id="lomy-email"
+          type="email"
+          value={values.email}
+          onChange={set('email')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.email ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.email && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.email}</p>}
+      </div>
+
+      <div className="md:col-span-2">
+        <label htmlFor="lomy-stredisko" className={labelBase}>
+          Škola v prírode/stredisko
+        </label>
+        <input
+          id="lomy-stredisko"
+          value={strediskoName}
+          readOnly
+          className={`mt-2 ${inputBase} cursor-not-allowed bg-[#F4F5F4] text-[#5A605A]`}
+        />
+      </div>
+
+      <div className="md:col-span-2">
+        <label htmlFor="lomy-vek" className={labelBase}>
+          Vek žiakov/študentov *
+        </label>
+        <select
+          id="lomy-vek"
+          value={values.vekZiakov}
+          onChange={set('vekZiakov')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.vekZiakov ? 'border-bombovo-red' : ''}`}
+        >
+          <option value="">Vyberte vek žiakov</option>
+          <option value="MŠ">MŠ</option>
+          <option value="1. stupeň ZŠ">1. stupeň ZŠ</option>
+          <option value="2. stupeň ZŠ">2. stupeň ZŠ</option>
+        </select>
+        {errors.vekZiakov && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.vekZiakov}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="lomy-poc-ziakov" className={labelBase}>
+          Počet žiakov/študentov *
+        </label>
+        <input
+          id="lomy-poc-ziakov"
+          inputMode="numeric"
+          value={values.pocetZiakov}
+          onChange={set('pocetZiakov')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.pocetZiakov ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.pocetZiakov && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.pocetZiakov}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="lomy-poc-pedagogov" className={labelBase}>
+          Počet pedagógov *
+        </label>
+        <input
+          id="lomy-poc-pedagogov"
+          inputMode="numeric"
+          value={values.pocetPedagogov}
+          onChange={set('pocetPedagogov')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.pocetPedagogov ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.pocetPedagogov && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.pocetPedagogov}</p>
+        )}
+      </div>
+
+      <div className="md:col-span-2">
+        <label htmlFor="lomy-zdravotnik" className={labelBase}>
+          Zdravotník *
+        </label>
+        <select
+          id="lomy-zdravotnik"
+          value={values.zdravotnik}
+          onChange={set('zdravotnik')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.zdravotnik ? 'border-bombovo-red' : ''}`}
+        >
+          <option value="">Vyberte zdravotníka</option>
+          <option value="Vlastný zdravotník">Vlastný zdravotník</option>
+          <option value="Zdravotník z CK">Zdravotník z CK</option>
+        </select>
+        {errors.zdravotnik && (
+          <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.zdravotnik}</p>
+        )}
       </div>
 
       <div>
@@ -172,33 +380,26 @@ export default function LomyEnquiryForm({
       </div>
 
       <div>
-        <label htmlFor="lomy-email" className={labelBase}>
-          E-mail *
-        </label>
-        <input
-          id="lomy-email"
-          type="email"
-          value={values.email}
-          onChange={set('email')}
-          disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.email ? 'border-bombovo-red' : ''}`}
-        />
-        {errors.email && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.email}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="lomy-telefon" className={labelBase}>
-          Telefón *
-        </label>
-        <input
-          id="lomy-telefon"
-          type="tel"
-          value={values.telefon}
-          onChange={set('telefon')}
-          disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.telefon ? 'border-bombovo-red' : ''}`}
-        />
-        {errors.telefon && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.telefon}</p>}
+        <span className={labelBase}>Bombový balíček</span>
+        <div className="mt-3 flex gap-6">
+          {['Áno', 'Nie'].map((opt) => (
+            <label
+              key={opt}
+              className="inline-flex cursor-pointer items-center gap-2.5 text-[17px] text-[#1F2320]"
+            >
+              <input
+                type="radio"
+                name="lomy-balicek"
+                value={opt}
+                checked={values.bombovyBalicek === opt}
+                onChange={set('bombovyBalicek')}
+                disabled={status === 'sending'}
+                className="h-[18px] w-[18px] accent-bombovo-blue"
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className="md:col-span-2">
