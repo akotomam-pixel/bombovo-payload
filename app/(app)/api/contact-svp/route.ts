@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
   ${row('Zdravotník', v(body.zdravotnik))}
   ${row('Animačný program', v(body.animacnyProgram))}
   ${row('Bombový balíček', v(body.bombovyBalicek))}
+  ${row('Cestovné poistenie', v(body.poistenie))}
   ${row('Poznámka', v(body.poznamka))}
 </table>
 </body></html>`,

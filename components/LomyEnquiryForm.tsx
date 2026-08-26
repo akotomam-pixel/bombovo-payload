@@ -232,6 +232,7 @@ export default function LomyEnquiryForm({
     zdravotnik: '',
     animacny: '',
     bombovyBalicek: '',
+    poistenie: '',
     poznamka: '',
   })
 
@@ -291,6 +292,7 @@ export default function LomyEnquiryForm({
           zdravotnik: values.zdravotnik,
           animacnyProgram: values.animacny || 'neuvedené',
           bombovyBalicek: values.bombovyBalicek || 'neuvedené',
+          poistenie: values.poistenie || 'neuvedené',
           poznamka: values.poznamka,
         }),
       })
@@ -571,6 +573,29 @@ export default function LomyEnquiryForm({
                 value={opt}
                 checked={values.bombovyBalicek === opt}
                 onChange={set('bombovyBalicek')}
+                disabled={status === 'sending'}
+                className="h-[18px] w-[18px] accent-bombovo-blue"
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="md:col-span-2">
+        <span className={labelBase}>Máte záujem o komplexné cestovné poistenie?</span>
+        <div className="mt-3 flex gap-6">
+          {['Áno', 'Nie'].map((opt) => (
+            <label
+              key={opt}
+              className="inline-flex cursor-pointer items-center gap-2.5 text-[17px] text-[#1F2320]"
+            >
+              <input
+                type="radio"
+                name="lomy-poistenie"
+                value={opt}
+                checked={values.poistenie === opt}
+                onChange={set('poistenie')}
                 disabled={status === 'sending'}
                 className="h-[18px] w-[18px] accent-bombovo-blue"
               />
