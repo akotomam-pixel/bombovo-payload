@@ -432,7 +432,12 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                   </span>
                 </div>
 
-                <div className="mt-3 flex justify-center gap-1.5">
+                {/* flex-wrap: with ~20+ photos (one dot each), a non-wrapping
+                    row doesn't fit 358px and flex's default min-width:auto
+                    won't let it shrink — it overflowed instead, dragging the
+                    whole gallery column (and the photo box inside it) wider
+                    than the phone screen. Wrapping keeps it within bounds. */}
+                <div className="mt-3 flex flex-wrap justify-center gap-1.5">
                   {photos.map((p, i) => (
                     <button
                       key={p.src}
