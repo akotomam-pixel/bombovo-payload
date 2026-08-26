@@ -1,14 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import ReactDOM from 'react-dom'
+import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 
 /**
  * The full enquiry form for the rebuilt Lomy page.
  *
- * Restores every field the old /prihlaska-svp registration asked for, except
- * "alternatívne stredisko" (dropped — see conversation), laid out in the
- * current card's input style rather than the old form's plain blue-bordered
- * boxes.
+ * Restores the old /prihlaska-svp registration's fields (minus dátum odchodu
+ * and PSČ, dropped as noise, and with alternatívne stredisko now optional
+ * rather than required), laid out in the current card's input style rather
+ * than the old form's plain blue-bordered boxes.
+ *
+ * Selects use the custom Dropdown below instead of a native <select>: the
+ * native control renders differently per browser/OS (small and flipped
+ * upward in desktop Chrome, a bottom sheet on iOS) and can get clipped
+ * inside the popup's scroll container. Dropdown portals its panel to
+ * <body> and positions itself from the trigger's own bounding rect, so it
+ * always renders on top, un-clipped, flipping above the trigger only when
+ * there isn't room below.
  *
  * One component, three placements: inline in section 7, inside the hero's popup,
  * and on the /prihlaska-svp/horsky-hotel-lomy page where a clicked date arrives
@@ -21,6 +31,178 @@ const inputBase =
   'w-full rounded-[10px] border-2 border-[#E6E8E6] bg-white px-4 py-3 text-[17px] text-[#1F2320] outline-none transition-colors duration-200 placeholder:text-[#8A908A] focus:border-bombovo-blue disabled:opacity-60'
 
 const labelBase = 'block text-[15px] font-semibold text-[#1F2320]'
+
+/** Every rebuilt stredisko's display name, for the "alternatívne stredisko" list. */
+const ALL_STREDISKA_NAMES = Object.values(REBUILT_STREDISKA).map((c) => c.hero.name)
+
+type Option = { value: string; label: string }
+
+/**
+ * Custom select: a styled trigger button plus a panel portaled to <body>,
+ * positioned from the trigger's bounding rect (fixed, recomputed on scroll/
+ * resize so it tracks correctly even inside the popup's own scroll area,
+ * and flips above the trigger when the viewport doesn't have room below).
+ */
+function Dropdown({
+  id,
+  value,
+  onChange,
+  options,
+  placeholder,
+  disabled,
+  error,
+}: {
+  id: string
+  value: string
+  onChange: (v: string) => void
+  options: Option[]
+  placeholder: string
+  disabled?: boolean
+  error?: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number; openUp: boolean } | null>(
+    null,
+  )
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => setMounted(true), [])
+
+  const updatePosition = useCallback(() => {
+    const el = triggerRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const PANEL_MAX = 260
+    const spaceBelow = window.innerHeight - rect.bottom
+    const openUp = spaceBelow < PANEL_MAX && rect.top > spaceBelow
+    setCoords({
+      top: openUp ? rect.top - 8 : rect.bottom + 8,
+      left: rect.left,
+      width: rect.width,
+      openUp,
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [open, updatePosition])
+
+  useEffect(() => {
+    if (!open) return
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (triggerRef.current?.contains(target) || panelRef.current?.contains(target)) return
+      setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  const selected = options.find((o) => o.value === value)
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        id={id}
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={`flex items-center justify-between gap-2 text-left ${inputBase} ${
+          error ? 'border-bombovo-red' : ''
+        } ${disabled ? '' : 'cursor-pointer'}`}
+      >
+        <span className={selected ? '' : 'text-[#8A908A]'}>{selected ? selected.label : placeholder}</span>
+        <svg
+          viewBox="0 0 24 24"
+          className={`h-4 w-4 shrink-0 text-[#8A908A] transition-transform duration-200 ${
+            open ? 'rotate-180' : ''
+          }`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      {mounted &&
+        open &&
+        coords &&
+        ReactDOM.createPortal(
+          <div
+            ref={panelRef}
+            role="listbox"
+            aria-labelledby={id}
+            style={{
+              position: 'fixed',
+              top: coords.openUp ? undefined : coords.top,
+              bottom: coords.openUp ? window.innerHeight - coords.top : undefined,
+              left: coords.left,
+              width: coords.width,
+            }}
+            className="z-[300] max-h-64 overflow-y-auto rounded-[12px] bg-white p-1.5 shadow-[0_16px_36px_-12px_rgba(8,7,8,0.32)] ring-1 ring-[#DDE0DD]"
+          >
+            {options.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                role="option"
+                aria-selected={o.value === value}
+                onClick={() => {
+                  onChange(o.value)
+                  setOpen(false)
+                }}
+                className={`flex w-full items-center justify-between gap-2 rounded-[8px] px-3.5 py-2.5 text-left text-[16px] transition-colors duration-150 ${
+                  o.value === value
+                    ? 'bg-[#EAF1FB] font-semibold text-bombovo-blue'
+                    : 'text-[#1F2320] hover:bg-[#F4F5F4]'
+                }`}
+              >
+                {o.label}
+                {o.value === value && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    <path d="m5 12.5 4.6 4.5L19 7.5" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
+    </>
+  )
+}
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -37,14 +219,13 @@ export default function LomyEnquiryForm({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [values, setValues] = useState({
     datumPrichodu: initialTerm,
-    datumOdchodu: '',
     veduciPobytu: '',
     nazovSkoly: '',
     adresa: '',
-    psc: '',
     mesto: '',
     telefon: '',
     email: '',
+    alternativneStredisko: '',
     vekZiakov: '',
     pocetZiakov: '',
     pocetPedagogov: '',
@@ -54,10 +235,17 @@ export default function LomyEnquiryForm({
     poznamka: '',
   })
 
+  const altStrediskaOptions: Option[] = ALL_STREDISKA_NAMES.filter((n) => n !== strediskoName).map((n) => ({
+    value: n,
+    label: n,
+  }))
+
   const set =
     (k: keyof typeof values) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setValues((v) => ({ ...v, [k]: e.target.value }))
+
+  const setValue = (k: keyof typeof values) => (val: string) => setValues((v) => ({ ...v, [k]: val }))
 
   const validate = () => {
     const next: Record<string, string> = {}
@@ -65,7 +253,6 @@ export default function LomyEnquiryForm({
     if (!values.veduciPobytu.trim()) next.veduciPobytu = 'Vyplňte meno vedúcej/vedúceho pobytu.'
     if (!values.nazovSkoly.trim()) next.nazovSkoly = 'Vyplňte názov školy.'
     if (!values.adresa.trim()) next.adresa = 'Vyplňte adresu.'
-    if (!values.psc.trim()) next.psc = 'Vyplňte PSČ.'
     if (!values.mesto.trim()) next.mesto = 'Vyplňte mesto.'
     if (!values.telefon.trim()) next.telefon = 'Vyplňte telefón.'
     if (!values.email.trim()) next.email = 'Vyplňte e-mail.'
@@ -91,14 +278,13 @@ export default function LomyEnquiryForm({
         body: JSON.stringify({
           stredisko: strediskoName,
           datumPrichodu: values.datumPrichodu,
-          datumOdchodu: values.datumOdchodu,
           veduciPobytu: values.veduciPobytu,
           nazovSkoly: values.nazovSkoly,
           adresa: values.adresa,
-          psc: values.psc,
           mesto: values.mesto,
           telefon: values.telefon,
           email: values.email,
+          alternativneStredisko: values.alternativneStredisko || 'neuvedené',
           vekZiakov: values.vekZiakov,
           pocetZiakov: values.pocetZiakov,
           pocetPedagogov: values.pocetPedagogov,
@@ -150,20 +336,6 @@ export default function LomyEnquiryForm({
       </div>
 
       <div>
-        <label htmlFor="lomy-odchod" className={labelBase}>
-          Dátum odchodu
-        </label>
-        <input
-          id="lomy-odchod"
-          value={values.datumOdchodu}
-          onChange={set('datumOdchodu')}
-          disabled={status === 'sending'}
-          placeholder="DD.MM.RRRR"
-          className={`mt-2 ${inputBase}`}
-        />
-      </div>
-
-      <div>
         <label htmlFor="lomy-veduci" className={labelBase}>
           Meno, priezvisko, titul vedúcej/vedúceho pobytu *
         </label>
@@ -179,7 +351,7 @@ export default function LomyEnquiryForm({
         )}
       </div>
 
-      <div>
+      <div className="md:col-span-2">
         <label htmlFor="lomy-skola" className={labelBase}>
           Názov školy / organizácie *
         </label>
@@ -195,48 +367,32 @@ export default function LomyEnquiryForm({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 md:col-span-2">
-        <div>
-          <label htmlFor="lomy-adresa" className={labelBase}>
-            Adresa *
-          </label>
-          <input
-            id="lomy-adresa"
-            value={values.adresa}
-            onChange={set('adresa')}
-            disabled={status === 'sending'}
-            className={`mt-2 ${inputBase} ${errors.adresa ? 'border-bombovo-red' : ''}`}
-          />
-          {errors.adresa && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.adresa}</p>}
-        </div>
+      <div>
+        <label htmlFor="lomy-adresa" className={labelBase}>
+          Adresa *
+        </label>
+        <input
+          id="lomy-adresa"
+          value={values.adresa}
+          onChange={set('adresa')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.adresa ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.adresa && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.adresa}</p>}
+      </div>
 
-        <div>
-          <label htmlFor="lomy-psc" className={labelBase}>
-            PSČ *
-          </label>
-          <input
-            id="lomy-psc"
-            value={values.psc}
-            onChange={set('psc')}
-            disabled={status === 'sending'}
-            className={`mt-2 ${inputBase} ${errors.psc ? 'border-bombovo-red' : ''}`}
-          />
-          {errors.psc && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.psc}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="lomy-mesto" className={labelBase}>
-            Mesto *
-          </label>
-          <input
-            id="lomy-mesto"
-            value={values.mesto}
-            onChange={set('mesto')}
-            disabled={status === 'sending'}
-            className={`mt-2 ${inputBase} ${errors.mesto ? 'border-bombovo-red' : ''}`}
-          />
-          {errors.mesto && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.mesto}</p>}
-        </div>
+      <div>
+        <label htmlFor="lomy-mesto" className={labelBase}>
+          Mesto *
+        </label>
+        <input
+          id="lomy-mesto"
+          value={values.mesto}
+          onChange={set('mesto')}
+          disabled={status === 'sending'}
+          className={`mt-2 ${inputBase} ${errors.mesto ? 'border-bombovo-red' : ''}`}
+        />
+        {errors.mesto && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.mesto}</p>}
       </div>
 
       <div>
@@ -269,7 +425,7 @@ export default function LomyEnquiryForm({
         {errors.email && <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.email}</p>}
       </div>
 
-      <div className="md:col-span-2">
+      <div>
         <label htmlFor="lomy-stredisko" className={labelBase}>
           Škola v prírode/stredisko
         </label>
@@ -281,22 +437,41 @@ export default function LomyEnquiryForm({
         />
       </div>
 
+      <div>
+        <span id="lomy-alt-label" className={labelBase}>
+          Alternatívne stredisko
+        </span>
+        <div className="mt-2">
+          <Dropdown
+            id="lomy-alt-label"
+            value={values.alternativneStredisko}
+            onChange={setValue('alternativneStredisko')}
+            options={altStrediskaOptions}
+            placeholder="Nepovinné"
+            disabled={status === 'sending'}
+          />
+        </div>
+      </div>
+
       <div className="md:col-span-2">
-        <label htmlFor="lomy-vek" className={labelBase}>
+        <span id="lomy-vek-label" className={labelBase}>
           Vek žiakov/študentov *
-        </label>
-        <select
-          id="lomy-vek"
-          value={values.vekZiakov}
-          onChange={set('vekZiakov')}
-          disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.vekZiakov ? 'border-bombovo-red' : ''}`}
-        >
-          <option value="">Vyberte vek žiakov</option>
-          <option value="MŠ">MŠ</option>
-          <option value="1. stupeň ZŠ">1. stupeň ZŠ</option>
-          <option value="2. stupeň ZŠ">2. stupeň ZŠ</option>
-        </select>
+        </span>
+        <div className="mt-2">
+          <Dropdown
+            id="lomy-vek-label"
+            value={values.vekZiakov}
+            onChange={setValue('vekZiakov')}
+            options={[
+              { value: 'MŠ', label: 'MŠ' },
+              { value: '1. stupeň ZŠ', label: '1. stupeň ZŠ' },
+              { value: '2. stupeň ZŠ', label: '2. stupeň ZŠ' },
+            ]}
+            placeholder="Vyberte vek žiakov"
+            disabled={status === 'sending'}
+            error={!!errors.vekZiakov}
+          />
+        </div>
         {errors.vekZiakov && (
           <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.vekZiakov}</p>
         )}
@@ -337,20 +512,23 @@ export default function LomyEnquiryForm({
       </div>
 
       <div className="md:col-span-2">
-        <label htmlFor="lomy-zdravotnik" className={labelBase}>
+        <span id="lomy-zdravotnik-label" className={labelBase}>
           Zdravotník *
-        </label>
-        <select
-          id="lomy-zdravotnik"
-          value={values.zdravotnik}
-          onChange={set('zdravotnik')}
-          disabled={status === 'sending'}
-          className={`mt-2 ${inputBase} ${errors.zdravotnik ? 'border-bombovo-red' : ''}`}
-        >
-          <option value="">Vyberte zdravotníka</option>
-          <option value="Vlastný zdravotník">Vlastný zdravotník</option>
-          <option value="Zdravotník z CK">Zdravotník z CK</option>
-        </select>
+        </span>
+        <div className="mt-2">
+          <Dropdown
+            id="lomy-zdravotnik-label"
+            value={values.zdravotnik}
+            onChange={setValue('zdravotnik')}
+            options={[
+              { value: 'Vlastný zdravotník', label: 'Vlastný zdravotník' },
+              { value: 'Zdravotník z CK', label: 'Zdravotník z CK' },
+            ]}
+            placeholder="Vyberte zdravotníka"
+            disabled={status === 'sending'}
+            error={!!errors.zdravotnik}
+          />
+        </div>
         {errors.zdravotnik && (
           <p className="mt-1.5 text-[14px] text-bombovo-red">{errors.zdravotnik}</p>
         )}
@@ -419,18 +597,20 @@ export default function LomyEnquiryForm({
       <div className="md:col-span-2">
         {status === 'error' && (
           <p className="mb-4 rounded-[8px] bg-[#FDECEE] px-4 py-3 text-[16px] text-bombovo-red">
-            Dopyt sa nepodarilo odoslať. Skúste to prosím znova, alebo nám napíšte na
+            Ponuku sa nepodarilo odoslať. Skúste to prosím znova, alebo nám napíšte na
             bombovo@bombovo.sk.
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={status === 'sending'}
-          className="rounded-full border-2 border-white bg-bombovo-red px-8 py-3.5 text-[17px] font-bold text-white transition-transform duration-150 ease-out active:translate-y-px disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
-        >
-          {status === 'sending' ? 'Odosielam…' : 'ODOSLAŤ DOPYT'}
-        </button>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            disabled={status === 'sending'}
+            className="rounded-full border-2 border-white bg-bombovo-red px-8 py-3.5 text-[17px] font-bold text-white transition-transform duration-150 ease-out active:translate-y-px disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue"
+          >
+            {status === 'sending' ? 'Odosielam…' : 'ODOSLAŤ PONUKU'}
+          </button>
+        </div>
       </div>
     </form>
   )
