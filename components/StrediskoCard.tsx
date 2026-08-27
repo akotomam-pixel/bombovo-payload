@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 import DiscountSeal from '@/components/DiscountSeal'
-import UrgencySeal from '@/components/UrgencySeal'
+import UrgencyBadge from '@/components/UrgencyBadge'
 import { openTerminyCount, urgencyWords } from '@/lib/terminyStatus'
 
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
@@ -83,13 +83,14 @@ export default function StrediskoCard({
             />
           ) : null}
 
-          {/* Opposite corner from the discount seal, so the two never compete. */}
+          {/* Bottom of the photo, not the seal's corner — a different shape
+              reading a different message, not a second seal competing with
+              the first. */}
           {!vypredane && showUrgency && (
-            <UrgencySeal
+            <UrgencyBadge
               count={openCount}
               words={urgencyWords(openCount)}
-              size={84}
-              className="pointer-events-none absolute right-3 top-3 rotate-[9deg]"
+              className="pointer-events-none absolute bottom-3 left-3"
             />
           )}
         </div>
