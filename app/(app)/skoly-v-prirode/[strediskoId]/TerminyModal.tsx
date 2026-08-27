@@ -43,18 +43,34 @@ const MONTHS: Record<string, string> = {
 }
 const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 
+/** A term is closed once its status says "vypredané" or "rezervované". */
+const CLOSED_STATUS_RE = /vypredan|rezervovan/i
+
+/**
+ * The urgency banner's text. Slovak declines the adjectives too, not just the
+ * noun's ending, so this is a small table rather than one string with a
+ * number spliced in: 1 termín, 2–4 termíny, 5+ termínov.
+ */
+function urgencyText(n: number) {
+  if (n === 1) return 'Posledný voľný termín!'
+  if (n <= 4) return `Posledné ${n} voľné termíny!`
+  return `Posledných ${n} voľných termínov!`
+}
+
 /**
  * The row's action: a link to the existing registration page.
  *
- * A term counts as sold out when its `status` says so, which is the one field
- * driving both the Dostupnosť column and this control.
+ * A term counts as closed when its `status` says "vypredané" or "rezervované"
+ * (both hand-written in content.ts), which is the one field driving both the
+ * Dostupnosť column and this control. The button's own label and tooltip
+ * follow whichever word the status actually uses, rather than hardcoding one.
  *
  * The date travels as `?termin=` text rather than the `?d=` index that page
  * normally takes. Its index reads `data/strediska/horsky-hotel-lomy.ts`, which
  * still holds the 2026 season at 185 €, so an index from this 2027 list would
  * pre-fill the wrong date entirely.
  *
- * Sold-out rows render as a disabled button rather than a link.
+ * Closed rows render as a disabled button rather than a link.
  */
 function BookButton({
   content,
@@ -69,19 +85,20 @@ function BookButton({
   range: string
   className?: string
 }) {
-  const soldOut = /vypredan/i.test(status)
+  const closed = CLOSED_STATUS_RE.test(status)
   const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
 
-  if (soldOut) {
+  if (closed) {
+    const adjective = /rezervovan/i.test(status) ? 'rezervovaný' : 'vypredaný'
     return (
       <button
         type="button"
         disabled
         aria-disabled="true"
-        title="Termín je vypredaný"
+        title={`Termín je ${adjective}`}
         className={`${shape} cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600`}
       >
-        VYPREDANÉ
+        {status.toUpperCase()}
       </button>
     )
   }
@@ -184,6 +201,10 @@ export default function TerminyModal({
   let lastMonth = ''
   let lastMobileMonth = ''
 
+  // Driven by `status`, not typed by hand — stays correct as dates get booked.
+  const openCount = content.items.filter((t) => !CLOSED_STATUS_RE.test(t.status)).length
+  const showUrgency = content.upozornenie && openCount > 0
+
   return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center sm:p-6 lg:p-10"
@@ -241,6 +262,35 @@ export default function TerminyModal({
           </svg>
         </div>
 
+        {/*
+          ── Urgency banner ──
+          Hand-flipped on per stredisko (`upozornenie` in content.ts); the count
+          and word ending are read off the same `status` field driving the rest
+          of the dialog, so this can't say "posledné 2" once there's only one
+          left, or keep shouting once they're all gone. Pinned above the
+          scrollable list rather than inside it, so it stays visible.
+        */}
+        {showUrgency && (
+          <div className="shrink-0 border-b-2 border-[#8f0f10] bg-bombovo-red px-6 py-3.5 sm:px-7 md:px-9">
+            <p className="flex items-center justify-center gap-2.5 text-center text-[15px] font-bold uppercase tracking-[0.02em] text-white sm:text-[16px]">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[18px] w-[18px] shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 9v4.5M12 17h.01" />
+                <path d="M10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.29 2.25h17.78A1.5 1.5 0 0 0 22.18 18L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z" />
+              </svg>
+              {urgencyText(openCount)}
+            </p>
+          </div>
+        )}
+
         {/* ── Dates ── */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {/*
@@ -268,7 +318,7 @@ export default function TerminyModal({
                   const month = monthOf(t.range)
                   const showMonth = month !== lastMonth
                   lastMonth = month
-                  const soldOut = /vypredan/i.test(t.status)
+                  const closed = CLOSED_STATUS_RE.test(t.status)
 
                   return (
                     <div key={t.range}>
@@ -280,7 +330,7 @@ export default function TerminyModal({
 
                       <div
                         className={`grid grid-cols-[minmax(0,1.5fr)_minmax(0,0.7fr)_minmax(0,0.8fr)_minmax(0,0.9fr)_190px] items-center gap-6 border-t border-[#EDEFED] px-9 py-5 ${
-                          soldOut ? 'opacity-50' : ''
+                          closed ? 'opacity-50' : ''
                         }`}
                       >
                         <p className="text-center text-[19px] font-semibold text-bombovo-dark tabular-nums">

@@ -62,7 +62,7 @@ export const lomyContent: LomyContent = {
     facts: [
       { label: 'Lokalita', value: 'Prievidza (Horná Ves)', icon: '📍' },
       { label: 'Kapacita', value: '200 lôžok', icon: '🛏️' },
-      { label: 'Dostupné termíny', value: 'apríl – jún', icon: '📅' },
+      { label: 'Dostupné termíny', value: 'apríl', icon: '📅' },
     ],
 
     // Icons are the client's own artwork, used in the file order they gave
@@ -284,11 +284,13 @@ export const lomyContent: LomyContent = {
   // Every session is 205 €, so the hero's standing −30 € discount applies
   // uniformly: 205 € struck through, 175 € shown.
   //
-  // `status` is maintained by hand: all 12 dates were confirmed open by the
-  // client. No capacity system feeds this — `lib/campCapacity.ts` keys on Profis
-  // termín IDs in `camps_dates` (summer camps only) and `strediska.vypredane` is
-  // a single flag for a whole venue, so neither applies here. If one is wired up
-  // later it should write this field rather than introduce a parallel one.
+  // `status` is maintained by hand. As of 2026-08-27 only the first two dates
+  // (05.04.–09.04. and 12.04.–16.04.) are still open; the rest are reserved,
+  // per the client. No capacity system feeds this — `lib/campCapacity.ts` keys
+  // on Profis termín IDs in `camps_dates` (summer camps only) and
+  // `strediska.vypredane` is a single flag for a whole venue, so neither
+  // applies here. If one is wired up later it should write this field rather
+  // than introduce a parallel one.
   //
   // The contact form the draft places under this list, and the "V cene" block,
   // are both out of scope until section 4 exists.
@@ -299,19 +301,20 @@ export const lomyContent: LomyContent = {
     deadline: 'do 31.10',
     bookLabel: 'REZERVOVAŤ',
     bookNote: 'čoskoro',
+    upozornenie: true,
     items: [
       { range: '05.04. – 09.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
       { range: '12.04. – 16.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '19.04. – 23.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '26.04. – 30.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '03.05. – 07.05.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '10.05. – 14.05.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '17.05. – 21.05.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '24.05. – 28.05.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '14.06. – 18.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '21.06. – 25.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
+      { range: '19.04. – 23.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '26.04. – 30.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '03.05. – 07.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '10.05. – 14.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '17.05. – 21.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '24.05. – 28.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '14.06. – 18.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '21.06. – 25.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
     ],
   },
 }

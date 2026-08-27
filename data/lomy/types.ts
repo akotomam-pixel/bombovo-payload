@@ -137,6 +137,14 @@ export interface LomyTerminy {
   bookLabel: string
   /** Why that button does nothing yet. */
   bookNote: string
+  /**
+   * Shows a red urgency banner at the top of the termíny dialog when true —
+   * hand-flipped on once a stredisko is down to its last few open dates. The
+   * banner's own count and wording are computed from `items` at render time
+   * (via `status`, the same field driving the rest of the dialog), not typed
+   * here, so it can't drift out of sync as dates get booked.
+   */
+  upozornenie?: boolean
   items: Termin[]
 }
 

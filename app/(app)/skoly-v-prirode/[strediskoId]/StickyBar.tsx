@@ -32,16 +32,17 @@ const MONTH_NAMES = [
 /**
  * Which months still have dates, read off the terms themselves.
  *
- * A term counts as available unless its status says sold out, so this follows
- * the same field the table and its buttons use. A contiguous run collapses to
- * "apríl – jún"; gaps are listed instead. Returns '' when nothing is open, so
- * the bar simply omits the line rather than claiming a range that isn't there.
+ * A term counts as available unless its status says vypredané or rezervované,
+ * so this follows the same field the table and its buttons use. A contiguous
+ * run collapses to "apríl – jún"; gaps are listed instead. Returns '' when
+ * nothing is open, so the bar simply omits the line rather than claiming a
+ * range that isn't there.
  */
 export function availableMonths(items: { range: string; status: string }[]): string {
   const months = new Set<number>()
 
   for (const t of items) {
-    if (/vypredan/i.test(t.status)) continue
+    if (/vypredan|rezervovan/i.test(t.status)) continue
     // "05.04. – 09.04.2027" — the month is the second pair of digits.
     const m = t.range.match(/^\d{2}\.(\d{2})\./)
     if (m) months.add(parseInt(m[1], 10) - 1)
