@@ -83,14 +83,14 @@ export default function StrediskoCard({
             />
           ) : null}
 
-          {/* Bottom of the photo, not the seal's corner — a different shape
-              reading a different message, not a second seal competing with
-              the first. */}
+          {/* Opposite corner from the discount seal — blue against its red,
+              a pill against its scalloped circle, so the two read as two
+              different messages rather than one repeated shape. */}
           {!vypredane && showUrgency && (
             <UrgencyBadge
               count={openCount}
               words={urgencyWords(openCount)}
-              className="pointer-events-none absolute bottom-3 left-3"
+              className="pointer-events-none absolute right-3 top-3"
             />
           )}
         </div>
