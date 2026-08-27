@@ -143,7 +143,7 @@ export const penzionPalusakContent: LomyContent = {
           price: { amount: '35 €', unit: '/ dieťa' },
           icon: '/images/section-4-icon-bombovo-balicek.png',
           description:
-            'Ako poďakovanie za objednaný animačný program získa vaša škola odmenu 100 € za každých 10 platiacich detí. K tomu si môžete za príplatok 35 € na dieťa pripočítať vstup do Belianskej jaskyne a autobusovú dopravu, a darček na pamiatku pre každého účastníka.',
+            'Ak si k animačnému programu objednáte aj Bombový balíček, dostanete ako pedagógovia odmenu 100 € za každých 10 platiacich detí. Balíček navyše zahŕňa vstup do Belianskej jaskyne a autobusovú dopravu a darček na pamiatku pre každého účastníka.',
           note: 'Balíček je dostupný len pri objednanom animačnom programe.',
         },
         {
