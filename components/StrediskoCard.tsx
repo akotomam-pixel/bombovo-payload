@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 import DiscountSeal from '@/components/DiscountSeal'
+import UrgencySeal from '@/components/UrgencySeal'
+import { openTerminyCount, urgencyWords } from '@/lib/terminyStatus'
 
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
@@ -45,6 +47,9 @@ export default function StrediskoCard({
   const { price, discount, facts, rating } = content?.hero ?? {}
   const kapacita = facts?.find((f) => f.label === 'Kapacita')?.value
 
+  const openCount = content ? openTerminyCount(content.terminy.items) : 0
+  const showUrgency = !!content?.terminy.upozornenie && openCount > 0
+
   return (
     <div
       className={`group relative overflow-hidden rounded-[28px] bg-white ring-1 ring-black/5 transition-shadow duration-300 ${
@@ -77,6 +82,16 @@ export default function StrediskoCard({
               className="pointer-events-none absolute left-3 top-3 -rotate-[9deg]"
             />
           ) : null}
+
+          {/* Opposite corner from the discount seal, so the two never compete. */}
+          {!vypredane && showUrgency && (
+            <UrgencySeal
+              count={openCount}
+              words={urgencyWords(openCount)}
+              size={84}
+              className="pointer-events-none absolute right-3 top-3 rotate-[9deg]"
+            />
+          )}
         </div>
 
         {/* Content */}

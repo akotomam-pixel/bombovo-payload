@@ -12,6 +12,8 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DiscountSeal from '@/components/DiscountSeal'
+import UrgencySeal from '@/components/UrgencySeal'
+import { openTerminyCount, urgencyWords } from '@/lib/terminyStatus'
 import TerminyModal from './TerminyModal'
 import VynimocnySection from './VynimocnySection'
 import CenaSection from './CenaSection'
@@ -169,6 +171,9 @@ function Stars({ count, size = 12 }: { count: number; size?: number }) {
 export default function LomyClient({ content }: { content: LomyContent }) {
   const { hero } = content
   const { photos, price, facts, proof, discount, ctas, rating, review } = hero
+
+  const openTerminyCountValue = openTerminyCount(content.terminy.items)
+  const showTerminyUrgency = !!content.terminy.upozornenie && openTerminyCountValue > 0
 
   const lgRef = useRef<any>(null)
   const [mobileIndex, setMobileIndex] = useState(0)
@@ -363,6 +368,16 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     size={118}
                     className="pointer-events-none absolute -right-3 -top-4 -rotate-[9deg]"
                   />
+
+                  {/* Opposite corner from the discount seal. */}
+                  {showTerminyUrgency && (
+                    <UrgencySeal
+                      count={openTerminyCountValue}
+                      words={urgencyWords(openTerminyCountValue)}
+                      size={106}
+                      className="pointer-events-none absolute -left-3 -top-4 rotate-[9deg]"
+                    />
+                  )}
                 </figure>
 
                 <div className="mt-4 grid grid-cols-4 gap-3">
@@ -421,6 +436,16 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       deadline={discount.deadline}
                       size={86}
                       className="pointer-events-none absolute right-2.5 top-2.5 -rotate-[9deg]"
+                    />
+                  )}
+
+                  {/* Opposite corner, matching desktop */}
+                  {mobileIndex === 0 && showTerminyUrgency && (
+                    <UrgencySeal
+                      count={openTerminyCountValue}
+                      words={urgencyWords(openTerminyCountValue)}
+                      size={78}
+                      className="pointer-events-none absolute left-2.5 top-2.5 rotate-[9deg]"
                     />
                   )}
 

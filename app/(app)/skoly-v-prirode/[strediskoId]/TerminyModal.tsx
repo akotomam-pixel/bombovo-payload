@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import Link from 'next/link'
 import type { LomyTerminy } from '@/data/lomy/types'
+import { CLOSED_TERMIN_STATUS_RE, openTerminyCount, urgencyText } from '@/lib/terminyStatus'
 
 /**
  * Termíny dialog for the rebuilt Lomy page.
@@ -43,20 +44,6 @@ const MONTHS: Record<string, string> = {
 }
 const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 
-/** A term is closed once its status says "vypredané" or "rezervované". */
-const CLOSED_STATUS_RE = /vypredan|rezervovan/i
-
-/**
- * The urgency banner's text. Slovak declines the adjectives too, not just the
- * noun's ending, so this is a small table rather than one string with a
- * number spliced in: 1 termín, 2–4 termíny, 5+ termínov.
- */
-function urgencyText(n: number) {
-  if (n === 1) return 'Posledný voľný termín!'
-  if (n <= 4) return `Posledné ${n} voľné termíny!`
-  return `Posledných ${n} voľných termínov!`
-}
-
 /**
  * The row's action: a link to the existing registration page.
  *
@@ -85,7 +72,7 @@ function BookButton({
   range: string
   className?: string
 }) {
-  const closed = CLOSED_STATUS_RE.test(status)
+  const closed = CLOSED_TERMIN_STATUS_RE.test(status)
   const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
 
   if (closed) {
@@ -202,7 +189,7 @@ export default function TerminyModal({
   let lastMobileMonth = ''
 
   // Driven by `status`, not typed by hand — stays correct as dates get booked.
-  const openCount = content.items.filter((t) => !CLOSED_STATUS_RE.test(t.status)).length
+  const openCount = openTerminyCount(content.items)
   const showUrgency = content.upozornenie && openCount > 0
 
   return ReactDOM.createPortal(
@@ -318,7 +305,7 @@ export default function TerminyModal({
                   const month = monthOf(t.range)
                   const showMonth = month !== lastMonth
                   lastMonth = month
-                  const closed = CLOSED_STATUS_RE.test(t.status)
+                  const closed = CLOSED_TERMIN_STATUS_RE.test(t.status)
 
                   return (
                     <div key={t.range}>

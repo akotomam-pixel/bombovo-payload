@@ -11,7 +11,7 @@
  * whose radius oscillates sinusoidally, which reads as a smooth scalloped
  * edge at this size without needing per-render recomputation.
  */
-const WAVY_CIRCLE_PATH = (() => {
+export const WAVY_CIRCLE_PATH = (() => {
   const cx = 50
   const cy = 50
   const baseR = 42

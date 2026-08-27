@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { CLOSED_TERMIN_STATUS_RE } from '@/lib/terminyStatus'
 
 /**
  * Bar that follows the scroll once the hero's own price card is out of view.
@@ -42,7 +43,7 @@ export function availableMonths(items: { range: string; status: string }[]): str
   const months = new Set<number>()
 
   for (const t of items) {
-    if (/vypredan|rezervovan/i.test(t.status)) continue
+    if (CLOSED_TERMIN_STATUS_RE.test(t.status)) continue
     // "05.04. – 09.04.2027" — the month is the second pair of digits.
     const m = t.range.match(/^\d{2}\.(\d{2})\./)
     if (m) months.add(parseInt(m[1], 10) - 1)
