@@ -320,18 +320,28 @@ export default function TerminyModal({
                           closed ? 'opacity-50' : ''
                         }`}
                       >
-                        <p className="text-center text-[19px] font-semibold text-bombovo-dark tabular-nums">
-                          {t.range}
-                        </p>
+                        <div className="text-center">
+                          <p className="text-[19px] font-semibold text-bombovo-dark tabular-nums">{t.range}</p>
+                          {t.chatky && (
+                            <p className="mt-1 text-[12.5px] font-medium text-[#6B716B]">
+                              + 7-miestne chatky <span className="text-[#9AA09A]">(100 osôb)</span>
+                            </p>
+                          )}
+                        </div>
 
                         <p className="text-center text-[17px] font-semibold text-bombovo-dark">
                           {content.duration}
                         </p>
 
                         {/* Hand-maintained in content.ts — change the word to change the row. */}
-                        <p className="text-center text-[17.5px] font-semibold text-bombovo-dark">
-                          {t.status}
-                        </p>
+                        <div className="text-center">
+                          <p className="text-[17.5px] font-semibold text-bombovo-dark">{t.status}</p>
+                          {t.volnychMiest !== undefined && (
+                            <span className="mt-1.5 inline-flex items-center rounded-full bg-[#E8F3EA] px-2.5 py-1 text-[12px] font-bold text-[#2A7038]">
+                              ešte {t.volnychMiest} miest
+                            </span>
+                          )}
+                        </div>
 
                         {/* Price underlined in red, as on the original table. */}
                         <p className="text-center">
@@ -383,11 +393,21 @@ export default function TerminyModal({
                         {t.range}
                       </p>
                       {/* One line: length and status, no repeated fine print. */}
-                      <p className="mt-1 flex items-center gap-2 text-[12px] text-[#8A908A]">
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[#8A908A]">
                         <span>{content.duration}</span>
                         <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
                         <span className="font-semibold text-[#3A403A]">{t.status}</span>
+                        {t.volnychMiest !== undefined && (
+                          <span className="inline-flex items-center rounded-full bg-[#E8F3EA] px-2 py-0.5 text-[11px] font-bold text-[#2A7038]">
+                            ešte {t.volnychMiest}
+                          </span>
+                        )}
                       </p>
+                      {t.chatky && (
+                        <p className="mt-1 text-[11.5px] font-medium text-[#8A908A]">
+                          + 7-miestne chatky (100 osôb)
+                        </p>
+                      )}
                     </div>
 
                     <p className="flex shrink-0 items-baseline gap-1.5">

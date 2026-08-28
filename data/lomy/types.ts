@@ -123,6 +123,18 @@ export interface Termin {
    * rather than a new one.
    */
   status: string
+  /**
+   * Known remaining capacity for an open date, e.g. 40 for "ešte 40 voľných
+   * miest". Optional and separate from `status` rather than folded into its
+   * text — it needs its own styling (a small chip) and isn't known for every
+   * open date, only the ones the client happened to give a number for.
+   */
+  volnychMiest?: number
+  /**
+   * Lomy only, for now: 7-person chatky (100-person total capacity) are
+   * available alongside the main building for this date.
+   */
+  chatky?: boolean
 }
 
 export interface LomyTerminy {
