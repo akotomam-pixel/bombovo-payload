@@ -58,22 +58,32 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
  * pre-fill the wrong date entirely.
  *
  * Closed rows render as a disabled button rather than a link.
+ *
+ * `compact` swaps in smaller padding/type for the mobile list — done as a
+ * prop rather than by passing padding/text-size classes through `className`,
+ * since those would collide with the base `shape` classes already baked in
+ * here and Tailwind's cascade doesn't respect string order (the same bug
+ * that broke UrgencySeal's positioning earlier).
  */
 function BookButton({
   content,
   slug,
   status,
   range,
+  compact = false,
   className = '',
 }: {
   content: LomyTerminy
   slug: string
   status: string
   range: string
+  compact?: boolean
   className?: string
 }) {
   const closed = CLOSED_TERMIN_STATUS_RE.test(status)
-  const shape = `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
+  const shape = compact
+    ? `shrink-0 rounded-full border-2 px-3.5 py-1.5 text-center text-[12px] font-bold ${className}`
+    : `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
 
   if (closed) {
     const adjective = /rezervovan/i.test(status) ? 'rezervovaný' : 'vypredaný'
@@ -420,14 +430,17 @@ export default function TerminyModal({
                       )}
                     </div>
 
-                    <p className="flex shrink-0 items-baseline gap-1.5">
-                      <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
-                        {t.price}
-                      </span>
-                      <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
-                        {t.discounted}
-                      </span>
-                    </p>
+                    <div className="flex shrink-0 flex-col items-end gap-1.5">
+                      <p className="flex items-baseline gap-1.5">
+                        <span className="text-[12.5px] font-medium text-[#9AA09A] line-through decoration-bombovo-red tabular-nums">
+                          {t.price}
+                        </span>
+                        <span className="text-[17px] font-black text-bombovo-dark tabular-nums">
+                          {t.discounted}
+                        </span>
+                      </p>
+                      <BookButton content={content} slug={slug} status={t.status} range={t.range} compact />
+                    </div>
                   </div>
                 </li>
               )
@@ -436,10 +449,11 @@ export default function TerminyModal({
         </div>
 
         {/*
-          Mobile has no per-row button — twelve red buttons in a narrow sheet
-          crowds the dates themselves — and on desktop the buttons no longer
-          carry their own "čoskoro" line, so the message is given once here for
-          both.
+          Mobile's per-row button is compact (see BookButton's `compact` prop)
+          rather than left out entirely — a full-size button per row did crowd
+          the dates, but no button at all meant no way to book from a phone at
+          all, which mattered more. Neither size carries its own "čoskoro"
+          line, so the message is given once here for both.
         */}
         <div className="shrink-0 border-t border-[#EAECEA] bg-[#FBFCFB] px-5 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))]">
           <p className="text-center text-[12px] text-[#3A403A]">
