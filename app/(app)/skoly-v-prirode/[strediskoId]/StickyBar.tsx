@@ -1,19 +1,20 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { CLOSED_TERMIN_STATUS_RE } from '@/lib/terminyStatus'
 
 /**
- * Bar fixed to the bottom of the viewport the whole time the page is open —
- * including while the hero itself is still on screen, per instruction; it
- * used to appear only once scrolled past the hero, easing in on scroll, but
- * that meant no bottom CTA at all on first load.
+ * Bar that follows the scroll once the hero's own price card is out of view.
+ *
+ * Briefly made always-visible from page load, reverted — appearing while the
+ * hero (which has its own inline CTAs) is still on screen read as awful, not
+ * helpful, so this is back to easing in on scroll past the hero.
  *
  * It carries no specific date on purpose — "Termíny" as a label, the standing
  * price, and one action — so it stays true whichever dates are still open.
  *
- * It replaces the hero's own mobile action bar rather than sitting beside
- * it (see LomyClient) — that one was removed when this was introduced, so
- * there's still only one fixed bottom bar, not two stacking on each other.
+ * It replaces the hero's mobile action bar rather than sitting beside it: two
+ * fixed bars at the bottom of a phone screen would stack on each other.
  */
 /** Month names in the order they appear in a date range like "05.04. – 09.04.2027". */
 const MONTH_NAMES = [
@@ -78,16 +79,28 @@ export default function StickyBar({
   months: string
   onOpen: () => void
 }) {
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => {
+    // Appears once the page has scrolled past roughly the hero.
+    const onScroll = () => setShown(window.scrollY > 620)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md">
+    <div
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
+        shown ? 'translate-y-0' : 'translate-y-full'
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
-        {/*
-          `flex-1` takes the space left of the button and `justify-center`
-          centres the block inside it, so the text is not stranded against the
-          left edge with a gap beside it. On mobile it stays left, where there is
-          no spare width to centre within.
-        */}
-        <div className="flex min-w-0 flex-1 items-center gap-4 sm:justify-center sm:gap-6">
+        {/* `flex-1` takes the space left of the button; `justify-center`
+            centres the price/dates block within that space at every width,
+            including mobile — it used to only centre from sm up, which read
+            as stuck to the left on a phone. */}
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-4 sm:gap-6">
           {/* Label and the months that actually have dates. */}
           <div className="hidden min-w-0 shrink-0 sm:block">
             <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#5C625C]">
