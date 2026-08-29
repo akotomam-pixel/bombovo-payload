@@ -82,7 +82,17 @@ export default function StickyBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
+      {/*
+        pl-20 on mobile only: the bar is always on screen now, including the
+        hero, and CookieYes' revisit-consent icon (a remote widget, not ours —
+        see globals.css) sits fixed at the bottom-left corner at roughly the
+        same height. Centering the price block within the plain flex-1 slot
+        still let its left edge land under that icon on narrow phones; this
+        reserves a gutter so nothing renders there at all rather than
+        fighting over the same pixels. Not needed from sm up — the label
+        column and extra width already keep content well clear of that corner.
+      */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pl-20 pr-4 sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
         {/* `flex-1` takes the space left of the button; `justify-center`
             centres the price/dates block within that space at every width,
             including mobile — it used to only centre from sm up, which read
