@@ -670,7 +670,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         discounted={price.discounted}
         unit={price.unit}
         months={availableMonths(content.terminy.items)}
-        onOpen={openPonuka}
+        onOpen={openTerminy}
       />
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}

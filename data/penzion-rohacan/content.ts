@@ -189,7 +189,7 @@ export const penzionRohacanContent: LomyContent = {
     formCta: 'VYPLNIŤ NEZÁVÄZNÚ OBJEDNÁVKU',
     sticky: {
       label: 'Termíny',
-      cta: 'ZÍSKAŤ CENOVÚ PONUKU',
+      cta: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY',
     },
   },
 

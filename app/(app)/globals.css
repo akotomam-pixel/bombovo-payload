@@ -57,3 +57,19 @@ html {
   background: #2960db;
 }
 
+/*
+ * CookieYes' floating "revisit consent" button (the small round icon that
+ * lets a visitor reopen cookie preferences) is positioned by CookieYes'
+ * own dashboard setting, not by anything in this codebase — the widget is
+ * a remote script (see app/layout.tsx) that injects its own classes and
+ * inline styles. Its bottom-left placement was overlapping page content on
+ * mobile (the termíny sheet's own bottom bar), so this forces it to sit
+ * centered at the bottom instead, overriding whichever corner CookieYes
+ * assigned via its own `cky-revisit-bottom-*` class.
+ */
+.cky-btn-revisit-wrapper {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+}
+

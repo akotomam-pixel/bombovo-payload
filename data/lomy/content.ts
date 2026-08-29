@@ -255,8 +255,11 @@ export const lomyContent: LomyContent = {
     formCta: 'VYPLNIŤ NEZÁVÄZNÚ OBJEDNÁVKU',
     sticky: {
       label: 'Termíny',
-      // Matches the hero's primary CTA exactly, caps included.
-      cta: 'ZÍSKAŤ CENOVÚ PONUKU',
+      // Opens the termíny dialog (LomyClient wires onOpen={openTerminy}),
+      // not the enquiry popup the hero's own primary CTA opens — a visitor
+      // who scrolled this far down is more likely checking for a date than
+      // wanting to fill in a form site-unseen.
+      cta: 'ZOBRAZIŤ DOSTUPNÉ TERMÍNY',
     },
   },
 
