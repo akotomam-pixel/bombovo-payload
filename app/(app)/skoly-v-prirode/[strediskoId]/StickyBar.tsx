@@ -1,18 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { CLOSED_TERMIN_STATUS_RE } from '@/lib/terminyStatus'
 
 /**
- * Bar that follows the scroll once the hero's own price card is out of view.
+ * Bar fixed to the bottom of the viewport the whole time the page is open —
+ * including while the hero itself is still on screen, per instruction; it
+ * used to appear only once scrolled past the hero, easing in on scroll, but
+ * that meant no bottom CTA at all on first load.
  *
  * It carries no specific date on purpose — "Termíny" as a label, the standing
- * price, and one action — so it stays true whichever dates are still open. The
- * behaviour is borrowed (appear on scroll, stay fixed, compact horizontal row);
- * the styling is this page's own.
+ * price, and one action — so it stays true whichever dates are still open.
  *
- * It replaces the hero's mobile action bar rather than sitting beside it: two
- * fixed bars at the bottom of a phone screen would stack on each other.
+ * It replaces the hero's own mobile action bar rather than sitting beside
+ * it (see LomyClient) — that one was removed when this was introduced, so
+ * there's still only one fixed bottom bar, not two stacking on each other.
  */
 /** Month names in the order they appear in a date range like "05.04. – 09.04.2027". */
 const MONTH_NAMES = [
@@ -77,22 +78,8 @@ export default function StickyBar({
   months: string
   onOpen: () => void
 }) {
-  const [shown, setShown] = useState(false)
-
-  useEffect(() => {
-    // Appears once the page has scrolled past roughly the hero.
-    const onScroll = () => setShown(window.scrollY > 620)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
-        shown ? 'translate-y-0' : 'translate-y-full'
-      }`}
-    >
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
         {/*
           `flex-1` takes the space left of the button and `justify-center`
