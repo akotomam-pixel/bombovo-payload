@@ -370,6 +370,7 @@ export default function TerminyModal({
               const month = monthOf(t.range)
               const showMonth = month !== lastMobileMonth
               lastMobileMonth = month
+              const closed = CLOSED_TERMIN_STATUS_RE.test(t.status)
 
               return (
                 <li key={t.range}>
@@ -379,9 +380,11 @@ export default function TerminyModal({
                     </p>
                   )}
 
-                  <div className="flex items-center gap-3 rounded-[12px] px-2 py-2.5">
-                    <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] bg-bombovo-dark">
-                      <svg viewBox="0 0 24 24" className="h-[19px] w-[19px] text-bombovo-yellow" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <div className={`flex items-center gap-3 rounded-[12px] px-2 py-2.5 ${closed ? 'opacity-50' : ''}`}>
+                    <span
+                      className={`flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[10px] ${closed ? 'bg-[#C9CEC9]' : 'bg-bombovo-dark'}`}
+                    >
+                      <svg viewBox="0 0 24 24" className={`h-[19px] w-[19px] ${closed ? 'text-white' : 'text-bombovo-yellow'}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                         <rect x="3.4" y="5.6" width="17.2" height="15" rx="2.2" />
                         <path d="M3.4 10.2h17.2" />
                         <path d="M8.2 3.4v3.6M15.8 3.4v3.6" />
@@ -392,11 +395,18 @@ export default function TerminyModal({
                       <p className="text-[17px] font-semibold leading-snug text-bombovo-dark tabular-nums">
                         {t.range}
                       </p>
-                      {/* One line: length and status, no repeated fine print. */}
-                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-[#8A908A]">
+                      {/* Status is its own pill now — bold black text read the same
+                          whether a date was open or gone, which was the actual
+                          complaint: nothing to scan at a glance. */}
+                      <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[12px] text-[#8A908A]">
                         <span>{content.duration}</span>
-                        <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-[#C9CEC9]" />
-                        <span className="font-semibold text-[#3A403A]">{t.status}</span>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                            closed ? 'bg-[#EDEFED] text-[#6B716B]' : 'bg-[#E8F3EA] text-[#2A7038]'
+                          }`}
+                        >
+                          {t.status}
+                        </span>
                         {t.volnychMiest !== undefined && (
                           <span className="inline-flex items-center rounded-full bg-[#E8F3EA] px-2 py-0.5 text-[11px] font-bold text-[#2A7038]">
                             ešte {t.volnychMiest}
