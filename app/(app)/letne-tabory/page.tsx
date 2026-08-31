@@ -129,6 +129,15 @@ export default async function LetneTaborePage() {
     console.error('[letne-tabory] Payload fetch error:', e)
   }
 
+  // Season 2026 is over — every camp is off-season ("Po sezóne") until the
+  // 2027 dates go live. Flip this to false (or delete the block) when the new
+  // season opens; after that the per-camp "Po sezóne" checkbox in the CMS
+  // takes over again for individual camps.
+  const ALL_CAMPS_OFF_SEASON = true
+  if (ALL_CAMPS_OFF_SEASON) {
+    mergedCamps = mergedCamps.map((c) => ({ ...c, poSezone: true }))
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
