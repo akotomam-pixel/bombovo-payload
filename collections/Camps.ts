@@ -40,11 +40,11 @@ export const Camps: CollectionConfig = {
     {
       name: 'poSezone',
       type: 'checkbox',
-      label: 'Po sezóne (celý tábor uzavretý)',
+      label: 'Mimo sezóny (termíny na ďalšie leto ešte nie sú)',
       defaultValue: false,
       admin: {
         description:
-          'Zaškrtnite, keď je celý tábor mimo sezóny — nebeží a nič sa nedá objednať. Karta na výpise stmavne (šedá, tmavá páska "PO SEZÓNE"), cena a tlačidlá zmiznú a tábor sa presunie na koniec zoznamu. Toto NIE je to isté ako "Vypredané" pri jednotlivom termíne — to nechajte tak, ako je.',
+          'Zaškrtnite, keď tábor práve nebeží a nové termíny ešte nie sú zverejnené. Na karte pribudne páska "LETO 2027", namiesto ceny sa zobrazí "Termíny na leto 2027 pripravujeme" a tlačidlo vedie na detail tábora. Tábor sa presunie na koniec zoznamu. Toto NIE je to isté ako "Vypredané" pri jednotlivom termíne — to nechajte tak, ako je.',
       },
     },
 

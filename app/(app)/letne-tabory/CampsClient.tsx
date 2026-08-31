@@ -107,6 +107,16 @@ function CampsContent({ camps, heroData }: Props) {
                   />
                 </div>
 
+                {camps.some((c) => c.poSezone) && (
+                  <div className="mb-8 rounded-3xl border-[3px] border-bombovo-dark bg-bombovo-yellow/25 p-5 sm:p-6">
+                    <p className="text-xl font-bold text-bombovo-dark">Leto 2026 máme za sebou 💛</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-gray-700 sm:text-base">
+                      Termíny a ceny na leto 2027 zverejníme čoskoro. Zatiaľ si tábory pokojne
+                      prezri a vyber ten pravý — a ak chceš mať miesto isté medzi prvými, napíš nám.
+                    </p>
+                  </div>
+                )}
+
                 <div className="mb-8">
                   <p className="text-lg text-gray-600">
                     Zobrazuje sa{' '}
