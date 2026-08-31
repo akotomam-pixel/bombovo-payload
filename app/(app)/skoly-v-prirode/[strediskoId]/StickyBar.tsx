@@ -1,14 +1,21 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { CLOSED_TERMIN_STATUS_RE } from '@/lib/terminyStatus'
 
 /**
- * Bar fixed to the bottom of the viewport for the entire time a stredisko
- * page is open — including the hero, on purpose. Opening the page is the
- * trigger, not scroll position; it does not hide, ease in, or wait for
- * anything. (An earlier version showed it only past a scroll threshold, then
- * a later edit reverted that by mistake reading unrelated layout feedback as
- * a request to bring the scroll-trigger back — it was not. Always visible.)
+ * Mobile: fixed to the bottom of the viewport for the entire time a
+ * stredisko page is open — including the hero. That behaviour is right for
+ * mobile and stays as-is.
+ *
+ * Desktop (lg+): scroll-triggered instead — hidden until scrolled roughly
+ * past the hero, then slides in. A prior edit made this bar always-visible
+ * on desktop too (4c681dd), because it's one shared component and the
+ * "always visible" instruction was about mobile only; that accidentally
+ * carried the mobile behaviour over to desktop, where it doesn't belong —
+ * a sticky CTA bar sitting on top of the hero on a wide screen reads as
+ * cramped/broken rather than helpful. This restores the original
+ * scroll-triggered desktop behaviour while keeping mobile untouched.
  *
  * It carries no specific date on purpose — "Termíny" as a label, the standing
  * price, and one action — so it stays true whichever dates are still open.
@@ -87,8 +94,26 @@ export default function StickyBar({
   months: string
   onOpen: () => void
 }) {
+  const [pastHero, setPastHero] = useState(false)
+
+  useEffect(() => {
+    // Only matters at lg+ (see the translate classes below) — mobile shows
+    // regardless of this — but cheap enough to just always track it.
+    const onScroll = () => setPastHero(window.scrollY > 620)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md">
+    <div
+      className={`fixed inset-x-0 bottom-0 z-40 translate-y-0 border-t border-[#E6E8E6] bg-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
+        // Full class names spelled out (not split across the template
+        // literal) — Tailwind's scanner needs the complete "lg:..." token
+        // present literally in the source to generate it.
+        pastHero ? 'lg:translate-y-0' : 'lg:translate-y-full'
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
         {/* `flex-1` takes the space left of the button; `justify-end` sits
             the price/dates block flush against the button rather than
