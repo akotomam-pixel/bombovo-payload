@@ -226,6 +226,14 @@ async function run() {
     `)
     console.log('✓ media.prefix')
 
+    // Migration 20260831_000000 — add "po sezóne" (whole camp closed for the
+    // season) toggle to camps. Distinct from camps_dates.vypredane, which is
+    // per-term. Greys the whole card on the Letné tábory listing.
+    await client.query(`
+      ALTER TABLE "camps" ADD COLUMN IF NOT EXISTS "po_sezone" boolean DEFAULT false;
+    `)
+    console.log('✓ camps.po_sezone')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

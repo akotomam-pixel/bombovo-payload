@@ -40,6 +40,11 @@ export interface Camp {
   dates: string[]
   description: string
   image: string
+  /**
+   * Whole camp is closed for the season (not running now, nothing on sale) —
+   * distinct from a single termín being `vypredane`. Greys the whole card.
+   */
+  poSezone?: boolean
 }
 
 export const camps: Camp[] = [

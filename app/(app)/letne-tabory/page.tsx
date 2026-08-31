@@ -72,6 +72,9 @@ function payloadDocToCamp(doc: Record<string, any>, hardcodedBySlug: Map<string,
 
     // Date-filter keys — not stored in Payload, always from hardcoded
     dates: hardcoded?.dates ?? [],
+
+    // Whole camp closed for the season — Payload flag wins, else hardcoded
+    poSezone: doc.poSezone ?? hardcoded?.poSezone ?? false,
   }
 }
 

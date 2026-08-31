@@ -17,9 +17,14 @@ interface CampCardProps {
   index: number
   description: string
   image: string
+  /**
+   * Whole camp is closed for the season — greys the card and drops the price
+   * + CTA. Not the same as a single termín being `vypredané`.
+   */
+  poSezone?: boolean
 }
 
-export default function CampCard({ id, name, age, types, displayTypes, price, description, image, index }: CampCardProps) {
+export default function CampCard({ id, name, age, types, displayTypes, price, description, image, index, poSezone = false }: CampCardProps) {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'Akčný':
@@ -54,21 +59,37 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div
+      className={`bg-white rounded-3xl overflow-hidden transition-shadow duration-300 ${
+        poSezone
+          ? 'shadow-none ring-1 ring-black/5'
+          : 'shadow-lg hover:shadow-xl'
+      }`}
+    >
       {/* Camp Photo */}
       <Link href={`/letne-tabory/${id}`} className="block h-64 relative overflow-hidden" aria-label={`Pozri letný tábor ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
         <Image
           src={image}
           alt={`${name} – letný tábor pre deti | Bombovo`}
           fill
-          className="object-cover hover:scale-105 transition-transform duration-300"
+          className={`object-cover transition-transform duration-300 ${poSezone ? 'grayscale' : 'hover:scale-105'}`}
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={index < 3}
         />
+        {poSezone && (
+          <>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
+            <div className="absolute left-4 top-4 rounded-full bg-bombovo-dark px-4 py-2 shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
+              <span className="text-[12px] font-bold uppercase leading-none tracking-wider text-white">
+                Po sezóne
+              </span>
+            </div>
+          </>
+        )}
       </Link>
 
       {/* Content */}
-      <div className="p-6 space-y-4">
+      <div className={`p-6 space-y-4 ${poSezone ? 'opacity-75 grayscale' : ''}`}>
         {/* Camp Name */}
         <h3 className="text-2xl font-bold text-bombovo-dark leading-tight text-center">{name}</h3>
 
@@ -94,22 +115,30 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
         {/* Short Description */}
         <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
 
-        {/* Price and CTA Row */}
-        <div className="flex gap-3 mt-6">
-          {/* Price */}
-          <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Prihlásiť sa na tábor ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
-            <div className="bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
-              <span className="text-white text-3xl font-bold">{price}</span>
-            </div>
-          </Link>
+        {poSezone ? (
+          /* Off-season — no price, no booking. Mirrors the sold-out stredisko
+             card's dead box so the two listings read as one system. */
+          <div className="mt-6 flex w-full cursor-default items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 p-4 text-lg font-bold text-gray-400">
+            Po sezóne
+          </div>
+        ) : (
+          /* Price and CTA Row */
+          <div className="flex gap-3 mt-6">
+            {/* Price */}
+            <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Prihlásiť sa na tábor ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
+              <div className="bg-[#DF2935] rounded-2xl p-4 flex items-center justify-center">
+                <span className="text-white text-3xl font-bold">{price}</span>
+              </div>
+            </Link>
 
-          {/* CTA Button */}
-          <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Zistiť viac o letnom tábore ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
-            <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 active:translate-y-1 transition-transform duration-150">
-              Zistiť viac
-            </button>
-          </Link>
-        </div>
+            {/* CTA Button */}
+            <Link href={`/letne-tabory/${id}`} className="flex-1" aria-label={`Zistiť viac o letnom tábore ${name}`} onClick={() => posthog.capture('camp_viewed', { camp_name: name })}>
+              <button className="w-full h-full bg-[#FDCA40] text-bombovo-dark text-lg font-bold rounded-2xl p-4 active:translate-y-1 transition-transform duration-150">
+                Zistiť viac
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )

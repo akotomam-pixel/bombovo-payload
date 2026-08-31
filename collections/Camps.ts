@@ -36,6 +36,18 @@ export const Camps: CollectionConfig = {
       },
     },
 
+    // ─── Off-season (whole camp closed) ─────────────────────────────────────
+    {
+      name: 'poSezone',
+      type: 'checkbox',
+      label: 'Po sezóne (celý tábor uzavretý)',
+      defaultValue: false,
+      admin: {
+        description:
+          'Zaškrtnite, keď je celý tábor mimo sezóny — nebeží a nič sa nedá objednať. Karta na výpise stmavne (šedá, tmavá páska "PO SEZÓNE"), cena a tlačidlá zmiznú a tábor sa presunie na koniec zoznamu. Toto NIE je to isté ako "Vypredané" pri jednotlivom termíne — to nechajte tak, ako je.',
+      },
+    },
+
     // ─── Card image (thumbnail on the listing page) ───────────────────────────
     {
       name: 'cardImage',

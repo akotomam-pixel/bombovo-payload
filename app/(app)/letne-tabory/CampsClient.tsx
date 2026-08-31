@@ -44,20 +44,23 @@ function CampsContent({ camps, heroData }: Props) {
   }
 
   const filteredCamps = useMemo(() => {
-    return camps.filter((camp) => {
-      if (selectedAge !== 'all') {
-        const age = Number(selectedAge)
-        const [campMinAge, campMaxAge] = camp.ageRange
-        if (age < campMinAge || age > campMaxAge) return false
-      }
-      if (selectedType !== 'all') {
-        if (!camp.displayTypes.includes(selectedType)) return false
-      }
-      if (selectedDate !== 'all') {
-        if (!camp.dates.includes(selectedDate)) return false
-      }
-      return true
-    })
+    return camps
+      .filter((camp) => {
+        if (selectedAge !== 'all') {
+          const age = Number(selectedAge)
+          const [campMinAge, campMaxAge] = camp.ageRange
+          if (age < campMinAge || age > campMaxAge) return false
+        }
+        if (selectedType !== 'all') {
+          if (!camp.displayTypes.includes(selectedType)) return false
+        }
+        if (selectedDate !== 'all') {
+          if (!camp.dates.includes(selectedDate)) return false
+        }
+        return true
+      })
+      // Off-season camps sink to the bottom; order is otherwise preserved.
+      .sort((a, b) => Number(a.poSezone ?? false) - Number(b.poSezone ?? false))
   }, [camps, selectedAge, selectedType, selectedDate])
 
   return (
@@ -126,6 +129,7 @@ function CampsContent({ camps, heroData }: Props) {
                         index={index}
                         description={camp.description}
                         image={camp.image}
+                        poSezone={camp.poSezone}
                       />
                     ))}
                   </div>
