@@ -72,17 +72,30 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
   return (
     <section className="bg-bombovo-gray">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-        <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
+        {/*
+          Direct grid children, so the mobile stack can differ from the
+          desktop two-column layout. Mobile DOM order is heading → gallery →
+          copy → button. On lg the gallery moves to a left column spanning
+          both text rows (col-start-1), while the heading and copy sit in the
+          right column (col-start-6), heading above copy.
+        */}
+        <div className="grid items-start gap-x-8 gap-y-6 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-4">
+          <h2
+            className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark font-bold lg:col-span-7 lg:col-start-6 lg:row-start-1"
+            style={{ fontFamily: SUBHEAD }}
+          >
+            {heading}
+          </h2>
+
           {/*
-            Gallery left: four equal squares in a 2x2 grid, top-aligned
-            against the text column rather than stretched or centred — the
-            copy runs to two paragraphs now, taller than a 2x2 square grid
-            naturally is, and forcing the squares to stretch to match would
-            break their aspect ratio. A shorter block sitting flush with the
-            top of taller copy beside it is an ordinary editorial pattern,
-            not a gap to fix.
+            Gallery: four equal squares in a 2x2 grid, top-aligned against the
+            text column rather than stretched or centred — the copy runs to
+            two paragraphs now, taller than a 2x2 square grid naturally is,
+            and forcing the squares to stretch to match would break their
+            aspect ratio. A shorter block sitting flush with the top of taller
+            copy beside it is an ordinary editorial pattern, not a gap to fix.
           */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 lg:col-start-1 lg:row-start-1 lg:row-span-2">
             <div className="grid grid-cols-2 gap-3">
               {(hasPhotos ? gallery.slice(0, 4) : [null, null, null, null]).map((p, i) =>
                 p ? (
@@ -117,16 +130,9 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
             </div>
           </div>
 
-          {/* Text right — wider now the copy runs to two paragraphs. */}
-          <div className="lg:col-span-7">
-            <h2
-              className="text-[clamp(1.6rem,3vw,2.1rem)] leading-[1.1] text-bombovo-dark font-bold"
-              style={{ fontFamily: SUBHEAD }}
-            >
-              {heading}
-            </h2>
-
-            <div className="mt-4 max-w-[68ch] space-y-3.5">
+          {/* Copy + button — after the photos on mobile, below the heading on desktop. */}
+          <div className="lg:col-span-7 lg:col-start-6 lg:row-start-2">
+            <div className="max-w-[68ch] space-y-3.5">
               {paragraph.split('\n\n').map((para, i) => (
                 <p key={i} className="text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">
                   {para}
