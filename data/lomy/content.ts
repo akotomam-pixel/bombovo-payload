@@ -62,7 +62,7 @@ export const lomyContent: LomyContent = {
     facts: [
       { label: 'Lokalita', value: 'Prievidza (Horná Ves)', icon: '📍' },
       { label: 'Kapacita', value: '200 lôžok', icon: '🛏️' },
-      { label: 'Dostupné termíny', value: 'apríl, máj', icon: '📅' },
+      { label: 'Dostupné termíny', value: 'apríl', icon: '📅' },
     ],
 
     // Icons are the client's own artwork, used in the file order they gave
@@ -287,9 +287,10 @@ export const lomyContent: LomyContent = {
   // Every session is 205 €, so the hero's standing −30 € discount applies
   // uniformly: 205 € struck through, 175 € shown.
   //
-  // `status` is maintained by hand. As of 2026-08-28: 05.04.–09.04. is open,
-  // 12.04.–16.04. and 24.05.–28.05. are open with a known remaining-capacity
-  // number (`volnychMiest`), and the rest are reserved — all per the client.
+  // `status` is maintained by hand. As of 2026-08-29: only 05.04.–09.04. and
+  // 12.04.–16.04. are still open (the latter with a known remaining-capacity
+  // number, `volnychMiest`); every other date, including 24.05.–28.05. which
+  // had been open with a count too, is now reserved — all per the client.
   // No capacity system feeds this — `lib/campCapacity.ts` keys
   // on Profis termín IDs in `camps_dates` (summer camps only) and
   // `strediska.vypredane` is a single flag for a whole venue, so neither
@@ -321,14 +322,7 @@ export const lomyContent: LomyContent = {
       { range: '03.05. – 07.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '10.05. – 14.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '17.05. – 21.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
-      {
-        range: '24.05. – 28.05.2027',
-        price: '205 €',
-        discounted: '175 €',
-        status: 'Voľné',
-        volnychMiest: 25,
-        chatky: true,
-      },
+      { range: '24.05. – 28.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '14.06. – 18.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
