@@ -53,7 +53,7 @@ export const penzionPalusakContent: LomyContent = {
     facts: [
       { label: 'Lokalita', value: 'Stará Lesná (Vysoké Tatry)', icon: '📍' },
       { label: 'Kapacita', value: '50 lôžok', icon: '🛏️' },
-      { label: 'Dostupné termíny', value: 'máj – jún', icon: '📅' },
+      { label: 'Dostupné termíny', value: 'máj', icon: '📅' },
     ],
 
     proof: [
@@ -223,7 +223,7 @@ export const penzionPalusakContent: LomyContent = {
     bookNote: 'čoskoro',
     items: [
       { range: '17.05. – 21.05.2027', price: '220 €', discounted: '190 €', status: 'Voľné' },
-      { range: '24.05. – 28.05.2027', price: '220 €', discounted: '190 €', status: 'Voľné' },
+      { range: '24.05. – 28.05.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
       { range: '31.05. – 04.06.2027', price: '220 €', discounted: '190 €', status: 'Voľné' },
       { range: '07.06. – 11.06.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
     ],
