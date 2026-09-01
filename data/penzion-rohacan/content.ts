@@ -45,7 +45,7 @@ export const penzionRohacanContent: LomyContent = {
     facts: [
       { label: 'Lokalita', value: 'Huty (Západné Tatry)', icon: '📍' },
       { label: 'Kapacita', value: '54 lôžok', icon: '🛏️' },
-      { label: 'Dostupné termíny', value: 'máj – jún', icon: '📅' },
+      { label: 'Dostupné termíny', value: 'obsadené', icon: '📅' },
     ],
 
     proof: [
@@ -209,8 +209,8 @@ export const penzionRohacanContent: LomyContent = {
     bookLabel: 'REZERVOVAŤ',
     bookNote: 'čoskoro',
     items: [
-      { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
+      { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
+      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
     ],
   },
 }
