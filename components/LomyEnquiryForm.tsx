@@ -296,6 +296,10 @@ export default function LomyEnquiryForm({
           poznamka: values.poznamka,
         }),
       })
+      if (res.ok) {
+        window.dataLayer = window.dataLayer || []
+        window.dataLayer.push({ event: 'prihlaska_svp_submitted' })
+      }
       setStatus(res.ok ? 'sent' : 'error')
     } catch {
       setStatus('error')

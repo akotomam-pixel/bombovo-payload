@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -24,6 +25,11 @@ export default function LomyEnquiryPage({
   strediskoName: string
   initialTerm: string
 }) {
+  useEffect(() => {
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({ event: 'prihlaska_pageview' })
+  }, [])
+
   return (
     <main className="min-h-screen bg-white">
       <div className="bg-bombovo-gray">

@@ -32,6 +32,8 @@ export default function PonukaModal({
   useEffect(() => {
     if (open) {
       setVisible(true)
+      window.dataLayer = window.dataLayer || []
+      window.dataLayer.push({ event: 'prihlaska_pageview' })
       return
     }
     const t = setTimeout(() => setVisible(false), 200)
