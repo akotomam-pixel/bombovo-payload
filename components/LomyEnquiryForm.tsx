@@ -216,6 +216,7 @@ export default function LomyEnquiryForm({
   className?: string
 }) {
   const [status, setStatus] = useState<Status>('idle')
+  const sentRef = useRef<HTMLDivElement>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [values, setValues] = useState({
     datumPrichodu: initialTerm,
@@ -306,9 +307,15 @@ export default function LomyEnquiryForm({
     }
   }
 
+  useEffect(() => {
+    if (status === 'sent') {
+      sentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [status])
+
   if (status === 'sent') {
     return (
-      <div className={`rounded-[12px] bg-[#E8F3EA] px-6 py-10 text-center ${className}`}>
+      <div ref={sentRef} className={`rounded-[12px] bg-[#E8F3EA] px-6 py-10 text-center ${className}`}>
         <span className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white">
           <svg viewBox="0 0 24 24" className="h-7 w-7 text-[#2A7038]" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="m5 12.5 4.6 4.5L19 7.5" />
