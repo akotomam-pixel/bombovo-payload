@@ -52,13 +52,15 @@ export default function StrediskoCard({
   const showUrgency = !!content?.terminy.upozornenie && openCount > 0
 
   return (
-    <div
-      className={`group relative overflow-hidden rounded-[28px] bg-white ring-1 ring-black/5 transition-shadow duration-300 ${
-        vypredane
-          ? 'cursor-default'
-          : 'shadow-[0_2px_6px_-2px_rgba(8,7,8,0.10),0_20px_44px_-20px_rgba(55,114,255,0.35)] hover:shadow-[0_4px_10px_-2px_rgba(8,7,8,0.14),0_28px_60px_-18px_rgba(55,114,255,0.45)]'
-      }`}
-    >
+    <div className="group relative overflow-hidden rounded-[28px] bg-white ring-1 ring-black/5 shadow-[0_2px_6px_-2px_rgba(8,7,8,0.10),0_20px_44px_-20px_rgba(55,114,255,0.35)] transition-shadow duration-300 hover:shadow-[0_4px_10px_-2px_rgba(8,7,8,0.14),0_28px_60px_-18px_rgba(55,114,255,0.45)]">
+      {/*
+        Sold out no longer disables the card — it still greys out (kept, it
+        reads fine) but stays clickable: a visitor can still look around a
+        fully booked stredisko, e.g. for next season. The old flat black
+        pill badge is replaced by a diagonal sash across the corner, à la a
+        pageant sash — reads as a clear, deliberate "sold out" statement at
+        a glance rather than a small label easy to miss next to the seals.
+      */}
       <div className={vypredane ? 'grayscale opacity-75' : ''}>
         {/* Photo */}
         <div className="relative h-64 overflow-hidden">
@@ -69,13 +71,18 @@ export default function StrediskoCard({
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
-          {vypredane ? (
-            <div className="absolute left-3 top-3 rounded-full bg-bombovo-dark px-4 py-2 shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
-              <span className="text-[12px] font-bold uppercase leading-none tracking-wider text-white">
+          {vypredane && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -left-16 top-9 w-[280px] -rotate-45 bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.45)] ring-1 ring-inset ring-white/25"
+            >
+              <span className="text-[14px] font-black uppercase leading-none tracking-[0.2em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
                 Vypredané
               </span>
             </div>
-          ) : discount ? (
+          )}
+
+          {!vypredane && discount ? (
             <DiscountSeal
               amount={discount.amount}
               deadline={discount.deadline}
@@ -129,52 +136,47 @@ export default function StrediskoCard({
             )}
           </div>
 
-          {vypredane ? (
-            <div className="mt-5 flex w-full cursor-not-allowed items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 px-6 py-3.5 text-lg font-bold text-gray-400">
-              Vypredané
-            </div>
-          ) : (
-            <>
-              <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                {price ? (
-                  <>
-                    <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
-                    <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
-                      {price.amount}
-                    </span>
-                    <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
-                      {price.discounted}
-                    </span>
-                    <span className="text-sm text-[#9AA09A]">{price.unit}</span>
-                  </>
-                ) : (
-                  <span className="text-[26px] font-black leading-none tabular-nums text-bombovo-dark">
-                    {fallbackPrice}
-                  </span>
-                )}
-              </div>
+          {/* Real, clickable content always — even when sold out. The grey
+              filter on the whole card already carries that message; this
+              stopped being a dead end. */}
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+            {price ? (
+              <>
+                <span className="text-sm font-medium text-[#7A807A]">{price.prefix}</span>
+                <span className="text-[32px] font-black leading-none tabular-nums text-[#9AA09A] line-through decoration-2 decoration-[#9AA09A]">
+                  {price.amount}
+                </span>
+                <span className="text-[32px] font-black leading-none tabular-nums text-bombovo-dark">
+                  {price.discounted}
+                </span>
+                <span className="text-sm text-[#9AA09A]">{price.unit}</span>
+              </>
+            ) : (
+              <span className="text-[26px] font-black leading-none tabular-nums text-bombovo-dark">
+                {fallbackPrice}
+              </span>
+            )}
+          </div>
 
-              <Link
-                href={`/skoly-v-prirode/${slug}`}
-                aria-label={ariaLabel ?? `Škola v prírode na ${name}`}
-                className="mt-7 block"
-                onClick={() => posthog.capture('stredisko_viewed', { stredisko_name: name, stredisko_slug: slug })}
+          <Link
+            href={`/skoly-v-prirode/${slug}`}
+            aria-label={ariaLabel ?? `Škola v prírode na ${name}`}
+            className="mt-7 block"
+            onClick={() => posthog.capture('stredisko_viewed', { stredisko_name: name, stredisko_slug: slug })}
+          >
+            <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-lg font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">
+              Zistiť viac
+              <svg
+                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
               >
-                <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-lg font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">
-                  Zistiť viac
-                  <svg
-                    className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </Link>
-            </>
-          )}
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </Link>
         </div>
       </div>
     </div>
