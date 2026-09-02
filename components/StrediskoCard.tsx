@@ -72,13 +72,24 @@ export default function StrediskoCard({
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
           {vypredane && (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -left-16 top-9 w-[280px] -rotate-45 bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.45)] ring-1 ring-inset ring-white/25"
-            >
-              <span className="text-[14px] font-black uppercase leading-none tracking-[0.2em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
-                Vypredané
-              </span>
+            /*
+              True corner-to-corner sash, not a small corner ribbon: a
+              rectangle's diagonal always runs through its exact centre, so
+              centring the strip in an inset-0 wrapper and rotating it puts
+              it on that diagonal regardless of the card's actual rendered
+              width (which varies by grid breakpoint). w-[160%] guarantees
+              it overshoots both edges so it visibly reaches both corners;
+              overflow-hidden on the photo container clips it clean.
+            */
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+              <div
+                aria-hidden
+                className="w-[160%] -rotate-[33deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.45)] ring-1 ring-inset ring-white/25"
+              >
+                <span className="text-[14px] font-black uppercase leading-none tracking-[0.2em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
+                  Vypredané
+                </span>
+              </div>
             </div>
           )}
 
