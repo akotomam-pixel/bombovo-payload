@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
+import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 
 /**
@@ -300,6 +301,8 @@ export default function LomyEnquiryForm({
       if (res.ok) {
         window.dataLayer = window.dataLayer || []
         window.dataLayer.push({ event: 'prihlaska_svp_submitted' })
+        posthog.identify(values.email)
+        posthog.capture('svp_inquiry_submitted')
       }
       setStatus(res.ok ? 'sent' : 'error')
     } catch {
