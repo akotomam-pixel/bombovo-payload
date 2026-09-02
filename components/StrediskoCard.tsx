@@ -56,36 +56,30 @@ export default function StrediskoCard({
       {/*
         Sold out no longer disables the card — it still greys out (kept, it
         reads fine) but stays clickable: a visitor can still look around a
-        fully booked stredisko, e.g. for next season. The old flat black
-        pill badge is replaced by a sash across the whole card, corner to
-        corner — photo, price, and button all underneath it — à la a
-        pageant sash, reading as one deliberate statement rather than a
-        small label competing with the discount/urgency seals.
+        fully booked stredisko, e.g. for next season.
+
+        Went through two failed attempts at a steep corner-to-corner sash
+        across the whole card (first stayed inside the greyscale filter so
+        it desaturated along with everything else; then, fixed, still read
+        badly at a 52deg angle spanning down over the price/button — a
+        pageant-sash *shape* is a nice reference but doesn't translate well
+        onto a card this proportioned). Settled on a flatter, well-worn
+        pattern instead: a bold stamp band across the photo, tilted a
+        little for energy rather than running corner to corner, white
+        rules top and bottom like a rubber stamp. Reads clearly without
+        relying on exact geometry that's hard to get right without seeing
+        it rendered.
       */}
       {vypredane && (
-        /*
-          Sibling of the greyscale wrapper below, not a child of it — inside
-          it, the `grayscale` filter desaturated the sash's own red along
-          with everything else, which is exactly backwards (this is the one
-          thing on the card that must stay vivid red). Spans the *whole*
-          card (this outer div, not just the photo) via inset-0 here, one
-          level up from the photo-only version tried first. Centring in an
-          inset-0 wrapper puts it through the card's exact centre, which is
-          where a true corner-to-corner diagonal always runs, regardless of
-          the card's actual rendered width — w-[170%] guarantees it
-          overshoots every edge; overflow-hidden above clips it to the
-          rounded corners. 52deg (clockwise — a negative/counter-clockwise
-          rotation was tried first and ran the wrong diagonal, top-right to
-          bottom-left instead of top-left to bottom-right as asked) suits
-          the whole card's taller, narrower proportions (photo + text
-          block) rather than the photo alone.
-        */
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+        // Matches the photo's own h-64, not the whole card — sibling of the
+        // greyscale wrapper below so its own red stays vivid rather than
+        // getting desaturated along with the photo.
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-64 items-center justify-center overflow-hidden">
           <div
             aria-hidden
-            className="w-[170%] rotate-[52deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.5)] ring-1 ring-inset ring-white/25"
+            className="w-[130%] -rotate-6 border-y-[3px] border-white/90 bg-bombovo-red py-2.5 text-center shadow-[0_14px_30px_-8px_rgba(8,7,8,0.55)]"
           >
-            <span className="text-[15px] font-black uppercase leading-none tracking-[0.22em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
+            <span className="text-[16px] font-black uppercase leading-none tracking-[0.3em] text-white">
               Vypredané
             </span>
           </div>
