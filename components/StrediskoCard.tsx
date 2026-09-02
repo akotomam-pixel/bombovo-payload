@@ -74,13 +74,16 @@ export default function StrediskoCard({
           where a true corner-to-corner diagonal always runs, regardless of
           the card's actual rendered width — w-[170%] guarantees it
           overshoots every edge; overflow-hidden above clips it to the
-          rounded corners. -52deg suits the whole card's taller, narrower
-          proportions (photo + text block) rather than the photo alone.
+          rounded corners. 52deg (clockwise — a negative/counter-clockwise
+          rotation was tried first and ran the wrong diagonal, top-right to
+          bottom-left instead of top-left to bottom-right as asked) suits
+          the whole card's taller, narrower proportions (photo + text
+          block) rather than the photo alone.
         */
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
           <div
             aria-hidden
-            className="w-[170%] -rotate-[52deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.5)] ring-1 ring-inset ring-white/25"
+            className="w-[170%] rotate-[52deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.5)] ring-1 ring-inset ring-white/25"
           >
             <span className="text-[15px] font-black uppercase leading-none tracking-[0.22em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
               Vypredané
