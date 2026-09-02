@@ -57,10 +57,38 @@ export default function StrediskoCard({
         Sold out no longer disables the card — it still greys out (kept, it
         reads fine) but stays clickable: a visitor can still look around a
         fully booked stredisko, e.g. for next season. The old flat black
-        pill badge is replaced by a diagonal sash across the corner, à la a
-        pageant sash — reads as a clear, deliberate "sold out" statement at
-        a glance rather than a small label easy to miss next to the seals.
+        pill badge is replaced by a sash across the whole card, corner to
+        corner — photo, price, and button all underneath it — à la a
+        pageant sash, reading as one deliberate statement rather than a
+        small label competing with the discount/urgency seals.
       */}
+      {vypredane && (
+        /*
+          Sibling of the greyscale wrapper below, not a child of it — inside
+          it, the `grayscale` filter desaturated the sash's own red along
+          with everything else, which is exactly backwards (this is the one
+          thing on the card that must stay vivid red). Spans the *whole*
+          card (this outer div, not just the photo) via inset-0 here, one
+          level up from the photo-only version tried first. Centring in an
+          inset-0 wrapper puts it through the card's exact centre, which is
+          where a true corner-to-corner diagonal always runs, regardless of
+          the card's actual rendered width — w-[170%] guarantees it
+          overshoots every edge; overflow-hidden above clips it to the
+          rounded corners. -52deg suits the whole card's taller, narrower
+          proportions (photo + text block) rather than the photo alone.
+        */
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+          <div
+            aria-hidden
+            className="w-[170%] -rotate-[52deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.5)] ring-1 ring-inset ring-white/25"
+          >
+            <span className="text-[15px] font-black uppercase leading-none tracking-[0.22em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
+              Vypredané
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className={vypredane ? 'grayscale opacity-75' : ''}>
         {/* Photo */}
         <div className="relative h-64 overflow-hidden">
@@ -70,28 +98,6 @@ export default function StrediskoCard({
             className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
-
-          {vypredane && (
-            /*
-              True corner-to-corner sash, not a small corner ribbon: a
-              rectangle's diagonal always runs through its exact centre, so
-              centring the strip in an inset-0 wrapper and rotating it puts
-              it on that diagonal regardless of the card's actual rendered
-              width (which varies by grid breakpoint). w-[160%] guarantees
-              it overshoots both edges so it visibly reaches both corners;
-              overflow-hidden on the photo container clips it clean.
-            */
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-              <div
-                aria-hidden
-                className="w-[160%] -rotate-[33deg] bg-gradient-to-b from-[#E63946] to-[#B91C2B] py-2.5 text-center shadow-[0_10px_26px_-6px_rgba(8,7,8,0.45)] ring-1 ring-inset ring-white/25"
-              >
-                <span className="text-[14px] font-black uppercase leading-none tracking-[0.2em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
-                  Vypredané
-                </span>
-              </div>
-            </div>
-          )}
 
           {!vypredane && discount ? (
             <DiscountSeal
