@@ -41,11 +41,12 @@ export const hotelOsrblieContent: LomyContent = {
       },
     ],
 
-    // 235 € základná cena − 30 € zľava = 205 €.
+    // od 215 € (apríl – zač. mája, znížená cena) − 30 € zľava = 185 €.
+    // Bežná cena od 17.05. je 235 €, viď `terminy.items`.
     price: {
       prefix: 'od',
-      amount: '235 €',
-      discounted: '205 €',
+      amount: '215 €',
+      discounted: '185 €',
       unit: '/ 5 dní',
       note: 'bez animačného programu',
     },
@@ -53,7 +54,7 @@ export const hotelOsrblieContent: LomyContent = {
     facts: [
       { label: 'Lokalita', value: 'Osrblie (Horehronie)', icon: '📍' },
       { label: 'Kapacita', value: '100 lôžok', icon: '🛏️' },
-      { label: 'Dostupné termíny', value: 'máj – jún', icon: '📅' },
+      { label: 'Dostupné termíny', value: 'apríl – jún', icon: '📅' },
     ],
 
     proof: [
@@ -221,11 +222,19 @@ export const hotelOsrblieContent: LomyContent = {
     bookLabel: 'REZERVOVAŤ',
     bookNote: 'čoskoro',
     items: [
-      { range: '17.05. – 21.05.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
+      // Added at the client's reduced early-season price (215 € before the
+      // standing −30 € discount, vs. the usual 235 €).
+      { range: '05.04. – 09.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '12.04. – 16.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '19.04. – 23.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '26.04. – 30.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '03.05. – 07.05.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '10.05. – 14.05.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '17.05. – 21.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
       { range: '24.05. – 28.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
       { range: '31.05. – 04.06.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
       { range: '07.06. – 11.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
-      { range: '14.06. – 18.06.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
+      { range: '14.06. – 18.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
       { range: '21.06. – 25.06.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
     ],
   },

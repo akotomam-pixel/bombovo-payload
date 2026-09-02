@@ -287,9 +287,9 @@ export const lomyContent: LomyContent = {
   // Every session is 205 €, so the hero's standing −30 € discount applies
   // uniformly: 205 € struck through, 175 € shown.
   //
-  // `status` is maintained by hand. As of 2026-08-29: only 05.04.–09.04. and
-  // 12.04.–16.04. are still open (the latter with a known remaining-capacity
-  // number, `volnychMiest`); every other date, including 24.05.–28.05. which
+  // `status` is maintained by hand. As of 2026-09-02: only 05.04.–09.04. and
+  // 19.04.–23.04. are still open (the latter with a known remaining-capacity
+  // number, `volnychMiest`); every other date, including 12.04.–16.04. which
   // had been open with a count too, is now reserved — all per the client.
   // No capacity system feeds this — `lib/campCapacity.ts` keys
   // on Profis termín IDs in `camps_dates` (summer camps only) and
@@ -309,15 +309,14 @@ export const lomyContent: LomyContent = {
     upozornenie: true,
     items: [
       { range: '05.04. – 09.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné', chatky: true },
+      { range: '12.04. – 16.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       {
-        range: '12.04. – 16.04.2027',
+        range: '19.04. – 23.04.2027',
         price: '205 €',
         discounted: '175 €',
         status: 'Voľné',
         volnychMiest: 60,
-        chatky: true,
       },
-      { range: '19.04. – 23.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
       { range: '26.04. – 30.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
       { range: '03.05. – 07.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '10.05. – 14.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
