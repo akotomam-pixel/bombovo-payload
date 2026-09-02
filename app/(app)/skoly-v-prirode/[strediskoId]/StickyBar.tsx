@@ -115,12 +115,18 @@ export default function StickyBar({
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 sm:py-3.5 lg:px-8">
-        {/* `flex-1` takes the space left of the button; `justify-end` sits
-            the price/dates block flush against the button rather than
-            centred across the whole bar, so the left corner — where
-            CookieYes' revisit icon lives, see StickyBar's top comment —
-            stays naturally empty instead of fought over or padded away. */}
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-4 sm:gap-6">
+        {/* Mobile/tablet (below lg, matching this file's own desktop
+            boundary — see the scroll-trigger note above): `justify-end`
+            sits the price/dates block flush against the button rather
+            than centred, so the bottom-left corner — where CookieYes'
+            revisit icon lives, see StickyBar's top comment — stays
+            naturally empty instead of fought over or padded away.
+            Desktop (lg+) has no such corner conflict (far more width to
+            work with), and flush-against-the-button read as cramped there
+            — `lg:justify-center` centres the block within its flex-1
+            space instead, landing it roughly mid-bar with breathing room
+            from both the left edge and the button. */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-4 sm:gap-6 lg:justify-center">
           {/* Label and the months that actually have dates. */}
           <div className="hidden min-w-0 shrink-0 sm:block">
             <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#5C625C]">
