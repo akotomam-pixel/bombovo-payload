@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 import DiscountSeal from '@/components/DiscountSeal'
 import UrgencyBadge from '@/components/UrgencyBadge'
@@ -157,6 +158,7 @@ export default function StrediskoCard({
                 href={`/skoly-v-prirode/${slug}`}
                 aria-label={ariaLabel ?? `Škola v prírode na ${name}`}
                 className="mt-7 block"
+                onClick={() => posthog.capture('stredisko_viewed', { stredisko_name: name, stredisko_slug: slug })}
               >
                 <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] border-bombovo-dark bg-bombovo-yellow px-6 py-3.5 text-lg font-bold text-bombovo-dark shadow-[3px_3px_0_0_#080708] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#080708] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue">
                   Zistiť viac
