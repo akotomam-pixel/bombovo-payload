@@ -213,6 +213,7 @@ export const hotelMartinskeHoleContent: LomyContent = {
     deadline: 'do 31.10',
     bookLabel: 'REZERVOVAŤ',
     bookNote: 'čoskoro',
+    upozornenie: true,
     items: [
       { range: '17.05. – 21.05.2027', price: '225 €', discounted: '195 €', status: 'Voľné' },
       { range: '24.05. – 28.05.2027', price: '225 €', discounted: '195 €', status: 'Rezervované' },
