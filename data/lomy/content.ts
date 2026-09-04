@@ -310,13 +310,7 @@ export const lomyContent: LomyContent = {
     items: [
       { range: '05.04. – 09.04.2027', price: '205 €', discounted: '175 €', status: 'Voľné', chatky: true },
       { range: '12.04. – 16.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
-      {
-        range: '19.04. – 23.04.2027',
-        price: '205 €',
-        discounted: '175 €',
-        status: 'Voľné',
-        volnychMiest: 60,
-      },
+      { range: '19.04. – 23.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
       { range: '26.04. – 30.04.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
       { range: '03.05. – 07.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
       { range: '10.05. – 14.05.2027', price: '205 €', discounted: '175 €', status: 'Rezervované', chatky: true },
