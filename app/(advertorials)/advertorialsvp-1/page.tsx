@@ -301,7 +301,9 @@ a:hover { text-decoration: underline; }
 }
 
 @media (max-width: 480px) {
-    .article-headline { font-size: 24px; line-height: 1.2; margin-bottom: 14px; }
+    .article-headline { font-size: 27px; line-height: 1.2; margin-bottom: 14px; }
+    .lead-question { font-size: 18px; font-weight: 600; line-height: 1.45; }
+    .lead-question strong { font-weight: 600; }
 }
 
 .sticky-cta {
@@ -422,7 +424,7 @@ export default async function AdvertorialSvp1Page({
             />
           </div>
 
-          <p><strong>Vedeli by ste si predstaviť školu v prírode s wellnessom, bowlingom, nádhernou horehronskou prírodou a zážitkovou streľbou zo vzduchovky len pár krokov od hotela?</strong></p>
+          <p className="lead-question"><strong>Vedeli by ste si predstaviť školu v prírode s wellnessom, bowlingom, nádhernou horehronskou prírodou a zážitkovou streľbou zo vzduchovky len pár krokov od hotela?</strong></p>
 
           <p>Áno, znie to neuveriteľne.</p>
 
