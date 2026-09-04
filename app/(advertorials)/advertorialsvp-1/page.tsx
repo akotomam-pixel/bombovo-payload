@@ -332,34 +332,6 @@ a:hover { text-decoration: underline; }
 }
 `
 
-const DATE_SCRIPT = `
-(function() {
-    var months = ['januára','februára','marca','apríla','mája','júna','júla','augusta','septembra','októbra','novembra','decembra'];
-    var d = new Date();
-    var el = document.getElementById('byline-date');
-    if (el) el.textContent = d.getDate() + '. ' + months[d.getMonth()] + ' ' + d.getFullYear();
-})();
-`
-
-const STICKY_SCRIPT = `
-(function() {
-    var trigger = document.getElementById('scroll-trigger');
-    var bar = document.getElementById('sticky-cta');
-    if (!trigger || !bar) return;
-    var shown = false;
-    window.addEventListener('scroll', function() {
-        var rect = trigger.getBoundingClientRect();
-        if (!shown && rect.top < 0) {
-            bar.classList.add('visible');
-            shown = true;
-        } else if (shown && rect.top >= 0) {
-            bar.classList.remove('visible');
-            shown = false;
-        }
-    }, { passive: true });
-})();
-`
-
 export default async function AdvertorialSvp1Page({
   searchParams,
 }: {
@@ -433,7 +405,6 @@ export default async function AdvertorialSvp1Page({
               <span className="article-byline-meta"><span id="byline-date"></span> &nbsp;·&nbsp; 8&nbsp;942 zhliadnutí 🔥</span>
             </span>
           </p>
-          <script dangerouslySetInnerHTML={{ __html: DATE_SCRIPT }} />
 
           <div className="hero-photo">
             <Image
@@ -705,7 +676,6 @@ export default async function AdvertorialSvp1Page({
       <div className="sticky-cta" id="sticky-cta">
         <a href={ctaUrl} data-advertorial-cta className="sticky-cta-link">👉 Získať ponuku so zľavou 30 €</a>
       </div>
-      <script dangerouslySetInnerHTML={{ __html: STICKY_SCRIPT }} />
     </>
   )
 }
