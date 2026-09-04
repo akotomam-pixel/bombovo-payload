@@ -300,6 +300,10 @@ a:hover { text-decoration: underline; }
     .mid-cta-content .cta-btn-wrap { text-align: center; }
 }
 
+@media (max-width: 480px) {
+    .article-headline { font-size: 24px; line-height: 1.2; margin-bottom: 14px; }
+}
+
 .sticky-cta {
     position: fixed;
     bottom: 0;
