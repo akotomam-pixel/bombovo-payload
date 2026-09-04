@@ -25,11 +25,13 @@ export default function KontaktSection({
   terminy,
   onOpenTerminy,
   strediskoName,
+  slug,
 }: {
   content: LomyKontakt
   terminy: LomyTerminy
   onOpenTerminy: () => void
   strediskoName: string
+  slug: string
 }) {
   const preview = terminy.items.slice(0, TEASER_ROWS)
   const fading = terminy.items[TEASER_ROWS]
@@ -101,7 +103,7 @@ export default function KontaktSection({
           {content.formHeading}
         </h2>
 
-        <LomyEnquiryForm className="mt-6" strediskoName={strediskoName} />
+        <LomyEnquiryForm className="mt-6" strediskoName={strediskoName} strediskoSlug={slug} />
       </div>
     </section>
   )

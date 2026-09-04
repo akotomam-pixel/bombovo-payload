@@ -63,7 +63,7 @@ export default function LomyEnquiryPage({
           )}
 
           <div className="mt-7 rounded-[14px] bg-white p-6 shadow-[0_1px_2px_rgba(8,7,8,0.04),0_16px_36px_-26px_rgba(8,7,8,0.28)] ring-1 ring-[#DDE0DD] sm:p-8">
-            <LomyEnquiryForm initialTerm={initialTerm} strediskoName={strediskoName} />
+            <LomyEnquiryForm initialTerm={initialTerm} strediskoName={strediskoName} strediskoSlug={slug} />
           </div>
         </div>
       </section>

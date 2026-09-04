@@ -16,11 +16,13 @@ export default function PonukaModal({
   open,
   onClose,
   strediskoName,
+  slug,
 }: {
   heading: string
   open: boolean
   onClose: () => void
   strediskoName: string
+  slug: string
 }) {
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -134,7 +136,7 @@ export default function PonukaModal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:px-8">
-          <LomyEnquiryForm strediskoName={strediskoName} />
+          <LomyEnquiryForm strediskoName={strediskoName} strediskoSlug={slug} />
         </div>
       </div>
     </div>,

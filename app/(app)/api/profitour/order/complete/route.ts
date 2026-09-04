@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { soapCall } from '@/lib/profis'
+import { sendMetaCapiEvent } from '@/lib/metaCapi'
 
 
 async function getSubscriberTags(apiKey: string, listId: string, email: string): Promise<string[]> {
@@ -17,14 +18,23 @@ async function getSubscriberTags(apiKey: string, listId: string, email: string):
 }
 
 export async function POST(req: NextRequest) {
-  let body: { id_Objednavka?: number; klic?: string; email?: string; name?: string; campName?: string }
+  let body: {
+    id_Objednavka?: number
+    klic?: string
+    email?: string
+    name?: string
+    campName?: string
+    phone?: string
+    eventId?: string
+    eventSourceUrl?: string
+  }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { id_Objednavka, klic, email, name, campName } = body
+  const { id_Objednavka, klic, email, name, campName, phone, eventId, eventSourceUrl } = body
   if (!id_Objednavka || !klic) {
     return NextResponse.json({ error: 'Missing required fields: id_Objednavka, klic' }, { status: 400 })
   }
@@ -164,6 +174,25 @@ export async function POST(req: NextRequest) {
       } catch (ecomailErr) {
         console.error('[order/complete] Ecomail sync error (non-blocking):', ecomailErr)
       }
+    }
+
+    // Meta CAPI backup for the browser-side Purchase event GTM fires on prihlaska_submitted.
+    // Same eventId as the client's fbq() call, so Meta dedupes the two into one event.
+    if (eventId) {
+      await sendMetaCapiEvent({
+        eventName: 'Purchase',
+        eventId,
+        eventSourceUrl: eventSourceUrl || req.headers.get('referer') || 'https://bombovo.sk',
+        userData: {
+          email,
+          phone,
+          clientIpAddress: req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '',
+          clientUserAgent: req.headers.get('user-agent') ?? '',
+          fbc: req.cookies.get('_fbc')?.value,
+          fbp: req.cookies.get('_fbp')?.value,
+        },
+        customData: { value: 360, currency: 'EUR' },
+      })
     }
 
     return NextResponse.json({ success: true })

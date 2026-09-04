@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { sendMetaCapiEvent } from '@/lib/metaCapi'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -50,6 +51,24 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('[contact-svp] Resend error:', error)
       return NextResponse.json({ error: 'Nastala chyba pri odosielaní' }, { status: 500 })
+    }
+
+    // Meta CAPI backup for the browser-side Lead event GTM fires on prihlaska_svp_submitted.
+    // Same eventId as the client's fbq() call, so Meta dedupes the two into one event.
+    if (body.eventId) {
+      await sendMetaCapiEvent({
+        eventName: 'Lead',
+        eventId: body.eventId,
+        eventSourceUrl: body.eventSourceUrl || request.headers.get('referer') || 'https://bombovo.sk',
+        userData: {
+          email: body.email,
+          phone: body.telefon,
+          clientIpAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '',
+          clientUserAgent: request.headers.get('user-agent') ?? '',
+          fbc: request.cookies.get('_fbc')?.value,
+          fbp: request.cookies.get('_fbp')?.value,
+        },
+      })
     }
 
     return NextResponse.json({ success: true })

@@ -11,6 +11,7 @@ import 'lightgallery/css/lg-thumbnail.css'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import StrediskoViewTracking from '@/components/StrediskoViewTracking'
 import DiscountSeal from '@/components/DiscountSeal'
 import TerminyModal from './TerminyModal'
 import VynimocnySection from './VynimocnySection'
@@ -235,6 +236,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
   return (
     <main className="min-h-screen bg-white">
+      <StrediskoViewTracking strediskoSlug={content.slug} strediskoName={content.hero.name} />
       <div className="bg-bombovo-gray">
         <TopBar />
       </div>
@@ -661,6 +663,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         terminy={content.terminy}
         onOpenTerminy={openTerminy}
         strediskoName={content.hero.name}
+        slug={content.slug}
       />
 
       <StickyBar
@@ -686,6 +689,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         open={ponukaOpen}
         onClose={closePonuka}
         strediskoName={content.hero.name}
+        slug={content.slug}
       />
 
       <LightGallery

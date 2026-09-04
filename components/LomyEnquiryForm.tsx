@@ -210,10 +210,12 @@ type Status = 'idle' | 'sending' | 'sent' | 'error'
 export default function LomyEnquiryForm({
   initialTerm = '',
   strediskoName = 'Horský hotel Lomy',
+  strediskoSlug,
   className = '',
 }: {
   initialTerm?: string
   strediskoName?: string
+  strediskoSlug?: string
   className?: string
 }) {
   const [status, setStatus] = useState<Status>('idle')
@@ -274,6 +276,10 @@ export default function LomyEnquiryForm({
     if (!validate()) return
 
     setStatus('sending')
+    // One ID per conversion, shared between the client's fbq() call (via GTM's
+    // event_id dataLayer variable) and the server-side Meta CAPI Lead call fired
+    // from /api/contact-svp, so Meta dedupes the two events instead of double-counting.
+    const metaEventId = crypto.randomUUID()
     try {
       const res = await fetch('/api/contact-svp', {
         method: 'POST',
@@ -296,13 +302,16 @@ export default function LomyEnquiryForm({
           bombovyBalicek: values.bombovyBalicek || 'neuvedené',
           poistenie: values.poistenie || 'neuvedené',
           poznamka: values.poznamka,
+          eventId: metaEventId,
+          eventSourceUrl: window.location.href,
         }),
       })
       if (res.ok) {
         window.dataLayer = window.dataLayer || []
-        window.dataLayer.push({ event: 'prihlaska_svp_submitted' })
+        window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId })
         posthog.identify(values.email)
         posthog.capture('svp_inquiry_submitted')
+        if (strediskoSlug) posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoSlug })
       }
       setStatus(res.ok ? 'sent' : 'error')
     } catch {

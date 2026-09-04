@@ -12,6 +12,7 @@ import 'lightgallery/css/lg-thumbnail.css'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import StrediskoViewTracking from '@/components/StrediskoViewTracking'
 import WaveDivider from '@/components/WaveDivider'
 import DistanceCalculator from './DistanceCalculator'
 import Link from 'next/link'
@@ -119,6 +120,7 @@ export default function StrediskoDetailClient({
 
   return (
     <main className="min-h-screen bg-white">
+      <StrediskoViewTracking strediskoSlug={strediskoId} strediskoName={name} />
       {/* Section 0: Top Bar & Header */}
       <div className="bg-bombovo-gray">
         <TopBar />

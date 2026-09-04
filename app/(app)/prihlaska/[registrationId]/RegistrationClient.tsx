@@ -332,6 +332,11 @@ export default function RegistrationClient({
 
     setIsSubmitting(true);
 
+    // One ID per conversion, shared between the client's fbq() call (via GTM's
+    // event_id dataLayer variable) and the server-side Meta CAPI Purchase call
+    // fired from /api/profitour/order/complete, so Meta dedupes the two events.
+    const metaEventId = crypto.randomUUID();
+
     // Auto-validate discount code inline if entered but not yet applied via Uplatniť
     let effectiveDiscountParamId = appliedDiscountParamId;
     if (formData.discountCode.trim() && discountStatus !== 'applied') {
@@ -541,7 +546,10 @@ export default function RegistrationClient({
               klic,
               email: formData.email,
               name: `${formData.parentFirstName} ${formData.parentLastName}`.trim(),
+              phone: formData.phone,
               campName,
+              eventId: metaEventId,
+              eventSourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
             }),
           });
           const completeData = await completeRes.json();
@@ -571,7 +579,7 @@ export default function RegistrationClient({
       setTimeout(() => {
         if (typeof window !== 'undefined') {
           window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: 'prihlaska_submitted' });
+          window.dataLayer.push({ event: 'prihlaska_submitted', event_id: metaEventId });
         }
       }, 100);
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import posthog from "posthog-js";
 
 declare global {
   interface Window {
@@ -99,11 +100,19 @@ export default function RegistrationSVPClient({
     }
 
     setIsSubmitting(true);
+    // One ID per conversion, shared between the client's fbq() call (via GTM's
+    // event_id dataLayer variable) and the server-side Meta CAPI Lead call fired
+    // from /api/contact-svp, so Meta dedupes the two events instead of double-counting.
+    const metaEventId = crypto.randomUUID();
     try {
       const res = await fetch('/api/contact-svp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          eventId: metaEventId,
+          eventSourceUrl: window.location.href,
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -115,8 +124,9 @@ export default function RegistrationSVPClient({
       setTimeout(() => {
         if (typeof window !== 'undefined') {
           window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: 'prihlaska_svp_submitted' });
+          window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
         }
+        posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
       }, 100);
     } catch {
       setSubmitError('Nastala chyba. Skúste to prosím znova.');
