@@ -259,10 +259,10 @@ a:hover { text-decoration: underline; }
 /* --- Mid-article discount CTA: visually distinct from the closing offer-box --- */
 .mid-cta-box {
     background: #ffffff;
-    border: 1px solid #DCEBDF;
-    border-left: 6px solid #2E9E4F;
+    border: 1px solid #F6D6D2;
+    border-left: 6px solid #D93A2B;
     border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(46, 158, 79, 0.12);
+    box-shadow: 0 10px 30px rgba(217, 58, 43, 0.14);
     padding: 30px 32px;
     margin: 32px 0;
     display: flex;
@@ -278,9 +278,9 @@ a:hover { text-decoration: underline; }
     width: 96px;
     height: 96px;
     border-radius: 50%;
-    background: #EAF6EC;
-    border: 2px solid #2E9E4F;
-    color: #1F7A38;
+    background: #FBE7E4;
+    border: 2px solid #D93A2B;
+    color: #A9291B;
     font-weight: 700;
     line-height: 1.1;
 }
@@ -299,6 +299,37 @@ a:hover { text-decoration: underline; }
     .mid-cta-box { flex-direction: column; text-align: center; padding: 26px 22px; }
     .mid-cta-content .cta-btn-wrap { text-align: center; }
 }
+
+.sticky-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #D93A2B;
+    z-index: 9999;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 -3px 20px rgba(0,0,0,0.18);
+}
+.sticky-cta.visible { transform: translateY(0); }
+.sticky-cta a {
+    color: #fff;
+    font-weight: 700;
+    font-size: 17px;
+    text-decoration: none;
+    font-family: 'Poppins', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sticky-cta a:hover { text-decoration: none; color: #fff; }
+@media (max-width: 600px) {
+    .sticky-cta a { font-size: 15px; }
+}
 `
 
 const DATE_SCRIPT = `
@@ -307,6 +338,25 @@ const DATE_SCRIPT = `
     var d = new Date();
     var el = document.getElementById('byline-date');
     if (el) el.textContent = d.getDate() + '. ' + months[d.getMonth()] + ' ' + d.getFullYear();
+})();
+`
+
+const STICKY_SCRIPT = `
+(function() {
+    var trigger = document.getElementById('scroll-trigger');
+    var bar = document.getElementById('sticky-cta');
+    if (!trigger || !bar) return;
+    var shown = false;
+    window.addEventListener('scroll', function() {
+        var rect = trigger.getBoundingClientRect();
+        if (!shown && rect.top < 0) {
+            bar.classList.add('visible');
+            shown = true;
+        } else if (shown && rect.top >= 0) {
+            bar.classList.remove('visible');
+            shown = false;
+        }
+    }, { passive: true });
 })();
 `
 
@@ -377,9 +427,9 @@ export default async function AdvertorialSvp1Page({
           <h1 className="article-headline">Svetoznáme stredisko olympijských víťazov sa po rokoch vracia k organizovaniu škôl v prírode</h1>
 
           <p className="article-byline">
-            <img src="/advertorial-2/images/photo-18.jpg" alt="Doda Ullerová" />
+            <img src="/advertorial-2/images/photo-18.jpg" alt="Lucia Nováková" />
             <span className="article-byline-info">
-              <span className="article-byline-name">Doda Ullerová – Blogerka, Lepší Rodič</span>
+              <span className="article-byline-name">Lucia Nováková – Blogerka, Lepší Rodič</span>
               <span className="article-byline-meta"><span id="byline-date"></span> &nbsp;·&nbsp; 8&nbsp;942 zhliadnutí 🔥</span>
             </span>
           </p>
@@ -586,9 +636,7 @@ export default async function AdvertorialSvp1Page({
             </div>
           </section>
 
-          <h2>Získajte zľavu 30 € na každé dieťa pri skorej rezervácii Hotela Osrblie</h2>
-
-          <div className="mid-cta-box">
+          <div className="mid-cta-box" id="scroll-trigger">
             <div className="mid-cta-badge">
               <span className="amount">-30 €</span>
               <span className="unit">na dieťa</span>
@@ -653,6 +701,11 @@ export default async function AdvertorialSvp1Page({
         <span>© 2026 Lepší Rodič. Všetky práva vyhradené.</span>
         <span style={{ textAlign: 'right' }}>Toto je propagovaný článok. Nie je to spravodajský článok, blogový príspevok ani nezávislá redakčná recenzia.</span>
       </div>
+
+      <div className="sticky-cta" id="sticky-cta">
+        <a href={ctaUrl} data-advertorial-cta className="sticky-cta-link">👉 Získať ponuku so zľavou 30 €</a>
+      </div>
+      <script dangerouslySetInnerHTML={{ __html: STICKY_SCRIPT }} />
     </>
   )
 }
