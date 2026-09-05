@@ -137,6 +137,7 @@ a:hover { text-decoration: underline; }
     color: #333;
 }
 .main-col p strong { color: #111; }
+.main-col p.lead-question { margin-bottom: 10px; }
 .main-col h2 {
     font-size: 30px;
     font-weight: 700;
@@ -424,7 +425,11 @@ export default async function AdvertorialSvp1Page({
             />
           </div>
 
-          <p className="lead-question"><strong>Vedeli by ste si predstaviť školu v prírode s wellnessom, bowlingom, nádhernou horehronskou prírodou a zážitkovou streľbou zo vzduchovky len pár krokov od hotela?</strong></p>
+          <p className="lead-question"><strong>Predstavte si toto:</strong></p>
+
+          <p className="lead-question"><strong>Prídete na školu v prírode do hotela s wellnessom, saunou, vírivkou a bowlingom.</strong></p>
+
+          <p className="lead-question"><strong>To všetko nájdete uprostred nádhernej horehronskej prírody, len pár krokov od miesta, kde si deti môžu vyskúšať zážitkovú streľbu zo vzduchovky.</strong></p>
 
           <p>Áno, znie to neuveriteľne.</p>
 
