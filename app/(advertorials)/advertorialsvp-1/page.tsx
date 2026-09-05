@@ -133,7 +133,7 @@ a:hover { text-decoration: underline; }
 }
 
 .main-col p {
-    margin-bottom: 28px;
+    margin-bottom: 36px;
     color: #333;
 }
 .main-col p strong { color: #111; }
@@ -427,9 +427,9 @@ export default async function AdvertorialSvp1Page({
 
           <p className="lead-question"><strong>Predstavte si toto:</strong></p>
 
-          <p className="lead-question"><strong>Prídete na školu v prírode do hotela s wellnessom, saunou, vírivkou a bowlingom.</strong></p>
+          <p>Prídete na školu v prírode do hotela s wellnessom, saunou, vírivkou a bowlingom.</p>
 
-          <p className="lead-question"><strong>To všetko nájdete uprostred nádhernej horehronskej prírody, len pár krokov od miesta, kde si deti môžu vyskúšať zážitkovú streľbu zo vzduchovky.</strong></p>
+          <p>Hotela ktorý stojí uprostred nádhernej horehronskej prírody len pár krokov od zážitkovej streľby zo vzduchovky pre deti.</p>
 
           <p>Áno, znie to neuveriteľne.</p>
 

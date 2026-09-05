@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { The_Girl_Next_Door, Comic_Neue } from 'next/font/google'
 import Script from 'next/script'
 import React from 'react'
@@ -33,19 +34,26 @@ export const metadata: Metadata = {
   description: 'Najlepšie letné tábory a školy v prírode pre deti vo veku 6-17 rokov na Slovensku',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // advertorialsvp-1 suppresses the CookieYes banner (see middleware.ts) — every
+  // other route keeps it, since the header is only ever set for that one path.
+  const headersList = await headers()
+  const suppressCookieYes = headersList.get('x-suppress-cookieyes') === '1'
+
   return (
     <html lang="sk" className={`${theGirlNextDoor.variable} ${comicNeue.variable}`}>
       <head>
-        <script
-          id="cookieyes"
-          type="text/javascript"
-          src="https://cdn-cookieyes.com/client_data/500b87a6adab5aa80a1d290c0e3a5bdb/script.js"
-        />
+        {!suppressCookieYes && (
+          <script
+            id="cookieyes"
+            type="text/javascript"
+            src="https://cdn-cookieyes.com/client_data/500b87a6adab5aa80a1d290c0e3a5bdb/script.js"
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
