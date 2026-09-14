@@ -14,9 +14,12 @@ export const metadata: Metadata = {
   description: 'Čo hovoria taborníci a rodičia o letných táboroch Bombovo.',
 }
 
-// How many review cards we actually render on the page. The headline count and
-// the star breakdown come from the database totals, not from this slice.
-const DISPLAY_LIMIT = 200
+// How many review cards we fetch for the page. Must stay comfortably above the
+// real review count: the per-camp filter dropdown counts are computed client-side
+// from this exact slice, so anything beyond the limit silently disappears from
+// both the list and the counts (this previously cut off 64 approved reviews once
+// the total passed 200).
+const DISPLAY_LIMIT = 2000
 
 export default async function RecenziePage() {
   let reviews: CampReview[] = []
