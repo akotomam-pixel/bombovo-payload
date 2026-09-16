@@ -109,7 +109,7 @@ function WaitlistDialog({
 
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-[250] flex items-end justify-center sm:items-center sm:p-6"
+      className="fixed inset-0 z-[250] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={MODAL_HEADLINE}
@@ -119,7 +119,7 @@ function WaitlistDialog({
       <div
         ref={panelRef}
         onClick={stop}
-        className="relative flex max-h-[92vh] w-full flex-col overflow-y-auto rounded-t-[18px] bg-white p-6 shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] sm:max-w-[440px] sm:rounded-[18px] sm:p-7"
+        className="relative flex max-h-[92vh] w-full max-w-[440px] flex-col overflow-y-auto rounded-[18px] bg-white p-6 shadow-[0_30px_80px_-24px_rgba(8,7,8,0.5)] sm:p-7"
       >
         <button
           ref={closeRef}
