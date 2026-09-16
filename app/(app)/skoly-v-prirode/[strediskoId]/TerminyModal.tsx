@@ -89,20 +89,15 @@ function BookButton({
     : `shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold ${className}`
 
   if (closed) {
-    const adjective = /rezervovan/i.test(status) ? 'rezervovaný' : 'vypredaný'
+    if (payloadId == null) return null
     return (
-      <div className={`flex flex-col items-center gap-1.5 ${compact ? '' : 'w-[190px]'}`}>
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          title={`Termín je ${adjective}`}
-          className={`${shape} cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600`}
-        >
-          {status.toUpperCase()}
-        </button>
-        {payloadId != null && <WaitlistWidget strediskoId={payloadId} terminLabel={range} compact />}
-      </div>
+      <WaitlistWidget
+        strediskoId={payloadId}
+        terminLabel={range}
+        compact={compact}
+        variant="solid"
+        className={compact ? '' : 'w-[190px]'}
+      />
     )
   }
 

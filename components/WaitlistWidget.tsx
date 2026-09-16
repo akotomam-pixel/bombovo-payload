@@ -8,12 +8,14 @@ import ReactDOM from 'react-dom'
  * Stredisko and termín are already known from which row's button was
  * clicked, so the modal only ever asks for the teacher's own contact details.
  *
- * All copy below is TEMPORARY placeholder text — Matej is writing the final
- * wording separately. Swap the four constants when it lands; nothing else
- * needs to change.
+ * The modal headline/subheadline are final, approved copy. Everything else
+ * marked TEMP below is still placeholder — Matej is writing that wording
+ * separately. Swap those three constants when it lands; nothing else needs
+ * to change.
  */
 const TEMP_BUTTON_LABEL = 'Sledovať dostupnosť'
-const TEMP_MODAL_HEADLINE = 'Zadajte svoj email a my vám napíšeme v prípade uvoľnenia termínu'
+const MODAL_HEADLINE = 'Máte záujem o tento termín?'
+const MODAL_SUBHEADLINE = 'Vyplňte svoje údaje a my vám dáme vedieť, keď sa termín uvoľní.'
 const TEMP_SUBMIT_LABEL = 'Odoslať'
 const TEMP_CONFIRMATION = 'Ďakujeme, ozveme sa vám.'
 
@@ -110,7 +112,7 @@ function WaitlistDialog({
       className="fixed inset-0 z-[250] flex items-end justify-center sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
-      aria-label={TEMP_MODAL_HEADLINE}
+      aria-label={MODAL_HEADLINE}
     >
       <div onClick={onClose} aria-hidden className="absolute inset-0 bg-[#080708]/65 backdrop-blur-[3px]" />
 
@@ -142,10 +144,11 @@ function WaitlistDialog({
           </div>
         ) : (
           <>
-            <h2 className="pr-8 text-[19px] font-bold leading-snug tracking-[-0.01em] text-bombovo-dark">
-              {TEMP_MODAL_HEADLINE}
+            <h2 className="pr-8 text-[21px] font-bold leading-snug tracking-[-0.01em] text-bombovo-dark">
+              {MODAL_HEADLINE}
             </h2>
-            <p className="mt-1.5 text-[14px] text-[#6B716B]">{terminLabel}</p>
+            <p className="mt-1.5 pr-8 text-[17px] font-bold leading-snug text-bombovo-dark">{MODAL_SUBHEADLINE}</p>
+            <p className="mt-2 text-[14px] text-[#6B716B]">{terminLabel}</p>
 
             <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-4">
               <div>
@@ -214,10 +217,31 @@ function WaitlistDialog({
   )
 }
 
+/** Bell glyph for the trigger button — a watch/notify affordance next to the label. */
+function BellIcon({ compact }: { compact: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={compact ? 'h-3.5 w-3.5 shrink-0' : 'h-[18px] w-[18px] shrink-0'}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  )
+}
+
 export default function WaitlistWidget({
   strediskoId,
   terminLabel,
   compact = false,
+  /** 'outline' (default) is the original blue-outline pill. 'solid' is a filled brand-blue button sized to match the site's other primary CTA pills (e.g. TerminyModal's REZERVOVAŤ) — used where a sold-out row's status badge was removed and this became the row's one action. */
+  variant = 'outline',
   className = '',
 }: {
   /** The stredisko's Payload document id — every rebuilt-architecture stredisko still has one, used only for photos, matched by slug. */
@@ -225,6 +249,7 @@ export default function WaitlistWidget({
   /** Exact date-range text as shown on the row, e.g. "13.04.2026 - 17.04.2026". Carried silently; never shown as a field in the modal. */
   terminLabel: string
   compact?: boolean
+  variant?: 'outline' | 'solid'
   className?: string
 }) {
   const [open, setOpen] = useState(false)
@@ -233,15 +258,21 @@ export default function WaitlistWidget({
 
   const shape = compact
     ? 'shrink-0 rounded-full border-2 px-3.5 py-1.5 text-center text-[12px] font-bold'
-    : 'shrink-0 rounded-full border-2 px-6 py-3 text-center text-[15px] font-bold'
+    : 'shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold'
+
+  const colors =
+    variant === 'solid'
+      ? 'border-white bg-bombovo-blue text-white'
+      : 'border-bombovo-blue bg-white text-bombovo-blue transition-colors duration-150 ease-out hover:bg-bombovo-blue hover:text-white'
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`${shape} border-bombovo-blue bg-white text-bombovo-blue transition-colors duration-150 ease-out hover:bg-bombovo-blue hover:text-white active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${className}`}
+        className={`${shape} ${colors} inline-flex items-center justify-center gap-1.5 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${className}`}
       >
+        <BellIcon compact={compact} />
         {TEMP_BUTTON_LABEL}
       </button>
 
