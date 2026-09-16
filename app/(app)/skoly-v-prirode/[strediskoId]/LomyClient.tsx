@@ -682,7 +682,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <Footer />
 
-      <TerminyModal content={content.terminy} slug={content.slug} open={terminyOpen} onClose={closeTerminy} />
+      <TerminyModal content={content.terminy} slug={content.slug} payloadId={content.payloadId} open={terminyOpen} onClose={closeTerminy} />
 
       <PonukaModal
         heading={content.kontakt.formHeading}

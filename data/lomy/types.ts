@@ -270,6 +270,14 @@ export interface LomyProgram {
 
 export interface LomyContent {
   slug: string
+  /**
+   * The matching Payload `strediska` document's numeric id, resolved by slug
+   * in `buildRebuiltContent` (app/(app)/skoly-v-prirode/[strediskoId]/page.tsx).
+   * Undefined only if that lookup fails (Payload unreachable) — the waitlist
+   * button on sold-out termín rows (TerminyModal) needs it to save a signup
+   * against the right stredisko, and simply doesn't render without it.
+   */
+  payloadId?: number
   hero: LomyHero
   vynimocny: LomyVynimocny
   cena: LomyCena

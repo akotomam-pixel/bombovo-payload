@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "migrate:camps": "tsx scripts/migrate-camps.ts",
-    "migrate:svp": "tsx scripts/migrate-svp.ts"
+    "migrate:svp": "tsx scripts/migrate-svp.ts",
+    "waitlist:check": "tsx scripts/waitlist-check.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",

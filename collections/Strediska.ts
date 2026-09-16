@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { checkAndAlertWaitlist } from '../lib/waitlistAlert'
 
 export const Strediska: CollectionConfig = {
   slug: 'strediska',
@@ -9,6 +10,32 @@ export const Strediska: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    // Waitlist reopen alert (Step 4) — fires on any admin edit that flips a
+    // termín's `available` from false to true, no matter which field/button
+    // in the admin UI triggered the save. Only covers this Payload-backed
+    // path; the "rebuilt architecture" strediská (Lomy, Osrblie, ...) don't
+    // write to this collection's `dates` array at all — see
+    // scripts/waitlist-check.ts for how those are handled.
+    afterChange: [
+      async ({ doc, previousDoc, operation }) => {
+        if (operation !== 'update' || !previousDoc) return
+
+        const prevDates = Array.isArray(previousDoc.dates) ? previousDoc.dates : []
+        const newDates = Array.isArray(doc.dates) ? doc.dates : []
+
+        for (const d of newDates) {
+          const prev = prevDates.find((p: any) => p.id === d.id)
+          if (prev && prev.available === false && d.available === true) {
+            const terminLabel = `${d.startDate} - ${d.endDate}`
+            checkAndAlertWaitlist(doc.id, terminLabel).catch((err) => {
+              console.error('[strediska] waitlist alert failed:', err)
+            })
+          }
+        }
+      },
+    ],
   },
   fields: [
     // ─── Basic ────────────────────────────────────────────────────────────────

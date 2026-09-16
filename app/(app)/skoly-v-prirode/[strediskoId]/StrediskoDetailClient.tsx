@@ -14,6 +14,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import StrediskoViewTracking from '@/components/StrediskoViewTracking'
 import WaveDivider from '@/components/WaveDivider'
+import WaitlistWidget from '@/components/WaitlistWidget'
 import DistanceCalculator from './DistanceCalculator'
 import Link from 'next/link'
 import { FaChevronDown } from 'react-icons/fa'
@@ -29,6 +30,8 @@ export interface DateEntry {
 
 export interface StrediskoDetailData {
   id: string
+  /** Payload `strediska` doc id — used by WaitlistWidget to save a signup against this stredisko. Absent only if Payload was unreachable when the page was built. */
+  payloadId?: number
   name: string
   basePrice: string
   iconBullets: string[]
@@ -73,7 +76,7 @@ export default function StrediskoDetailClient({
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const lgRef = useRef<any>(null)
 
-  const { id: strediskoId, name, basePrice, iconBullets, heroGallery, section2Photo, coordinates, section3, programText, detaily, dates } = data
+  const { id: strediskoId, payloadId, name, basePrice, iconBullets, heroGallery, section2Photo, coordinates, section3, programText, detaily, dates } = data
 
   // Pre-fetch all gallery images at full size for LightGallery
   useEffect(() => {
@@ -461,9 +464,14 @@ export default function StrediskoDetailClient({
                           </button>
                         </Link>
                       ) : (
-                        <button className="px-8 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
-                          VYPREDANÉ
-                        </button>
+                        <div className="flex flex-col items-center gap-2">
+                          <button className="px-8 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
+                            VYPREDANÉ
+                          </button>
+                          {payloadId != null && (
+                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} compact />
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -497,9 +505,16 @@ export default function StrediskoDetailClient({
                         </button>
                       </Link>
                     ) : (
-                      <button className="w-full px-6 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
-                        VYPREDANÉ
-                      </button>
+                      <div className="space-y-2">
+                        <button className="w-full px-6 py-4 bg-bombovo-red bg-opacity-30 border-2 border-gray-300 text-gray-600 font-bold text-lg rounded-full cursor-not-allowed">
+                          VYPREDANÉ
+                        </button>
+                        {payloadId != null && (
+                          <div className="flex justify-center">
+                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} />
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

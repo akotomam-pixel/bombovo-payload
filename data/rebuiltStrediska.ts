@@ -15,6 +15,15 @@ import { penzionLaganContent } from '@/data/penzion-lagan/content'
  * card (components/StrediskoCard.tsx) — pure data, safe to import from a
  * client component too, unlike the router itself which also pulls in the
  * server-only Payload client.
+ *
+ * Flipping a termín's `status` here from "Rezervované"/"Vypredané" to
+ * "Voľné" is a plain code edit — it doesn't touch the database, so nothing
+ * fires automatically. If anyone signed up for "Sledovať dostupnosť" on that
+ * termín, run this right after making the edit:
+ *
+ *   npm run waitlist:check -- <slug> "<exact range string>"
+ *
+ * See scripts/waitlist-check.ts for details. No-op if nobody was waiting.
  */
 export const REBUILT_STREDISKA: Record<string, LomyContent> = {
   'horsky-hotel-lomy': lomyContent,

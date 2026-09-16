@@ -91,6 +91,7 @@ function mapPayloadToDetail(doc: Record<string, any>, strediskoId: string): Stre
 
   return {
     id: doc.slug ?? strediskoId,
+    payloadId: typeof doc.id === 'number' ? doc.id : Number(doc.id),
     name: doc.name ?? '',
     basePrice: doc.price ?? '',
     iconBullets: Array.isArray(doc.bulletPoints)
@@ -241,6 +242,7 @@ async function buildRebuiltContent(slug: string, baseContent: LomyContent): Prom
 
     return {
       ...baseContent,
+      payloadId: typeof doc.id === 'number' ? doc.id : Number(doc.id),
       hero: { ...baseContent.hero, photos },
       vynimocny: vynimocnyPhotoUrl
         ? { ...baseContent.vynimocny, photo: { ...baseContent.vynimocny.photo, src: vynimocnyPhotoUrl } }

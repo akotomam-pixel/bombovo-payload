@@ -74,6 +74,7 @@ export interface Config {
     'giveaway-entries': GiveawayEntry;
     'teacher-reviews': TeacherReview;
     'letne-tabory-reviews': LetneTaboryReview;
+    'waitlist-signups': WaitlistSignup;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +89,7 @@ export interface Config {
     'giveaway-entries': GiveawayEntriesSelect<false> | GiveawayEntriesSelect<true>;
     'teacher-reviews': TeacherReviewsSelect<false> | TeacherReviewsSelect<true>;
     'letne-tabory-reviews': LetneTaboryReviewsSelect<false> | LetneTaboryReviewsSelect<true>;
+    'waitlist-signups': WaitlistSignupsSelect<false> | WaitlistSignupsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -598,6 +600,25 @@ export interface GiveawayEntry {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "waitlist-signups".
+ */
+export interface WaitlistSignup {
+  id: number;
+  meno: string;
+  priezvisko: string;
+  email: string;
+  telefon: string;
+  stredisko?: (number | null) | Strediska;
+  /**
+   * Presný textový rozsah dátumu (napr. "13.04.2026-17.04.2026"), tak ako je zobrazený na stránke.
+   */
+  termin: string;
+  status: 'caka' | 'upozornene';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "teacher-reviews".
  */
 export interface TeacherReview {
@@ -695,6 +716,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'letne-tabory-reviews';
         value: number | LetneTaboryReview;
+      } | null)
+    | ({
+        relationTo: 'waitlist-signups';
+        value: number | WaitlistSignup;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1038,6 +1063,21 @@ export interface GiveawayEntriesSelect<T extends boolean = true> {
   selectedCamp?: T;
   source?: T;
   syncedToEcomail?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "waitlist-signups_select".
+ */
+export interface WaitlistSignupsSelect<T extends boolean = true> {
+  meno?: T;
+  priezvisko?: T;
+  email?: T;
+  telefon?: T;
+  stredisko?: T;
+  termin?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import Link from 'next/link'
 import type { LomyTerminy } from '@/data/lomy/types'
 import { CLOSED_TERMIN_STATUS_RE, openTerminyCount, urgencyText } from '@/lib/terminyStatus'
+import WaitlistWidget from '@/components/WaitlistWidget'
 
 /**
  * Termíny dialog for the rebuilt Lomy page.
@@ -68,6 +69,7 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 function BookButton({
   content,
   slug,
+  payloadId,
   status,
   range,
   compact = false,
@@ -75,6 +77,7 @@ function BookButton({
 }: {
   content: LomyTerminy
   slug: string
+  payloadId?: number
   status: string
   range: string
   compact?: boolean
@@ -88,15 +91,18 @@ function BookButton({
   if (closed) {
     const adjective = /rezervovan/i.test(status) ? 'rezervovaný' : 'vypredaný'
     return (
-      <button
-        type="button"
-        disabled
-        aria-disabled="true"
-        title={`Termín je ${adjective}`}
-        className={`${shape} cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600`}
-      >
-        {status.toUpperCase()}
-      </button>
+      <div className={`flex flex-col items-center gap-1.5 ${compact ? '' : 'w-[190px]'}`}>
+        <button
+          type="button"
+          disabled
+          aria-disabled="true"
+          title={`Termín je ${adjective}`}
+          className={`${shape} cursor-not-allowed border-gray-300 bg-bombovo-red/30 text-gray-600`}
+        >
+          {status.toUpperCase()}
+        </button>
+        {payloadId != null && <WaitlistWidget strediskoId={payloadId} terminLabel={range} compact />}
+      </div>
     )
   }
 
@@ -113,11 +119,13 @@ function BookButton({
 export default function TerminyModal({
   content,
   slug,
+  payloadId,
   open,
   onClose,
 }: {
   content: LomyTerminy
   slug: string
+  payloadId?: number
   open: boolean
   onClose: () => void
 }) {
@@ -365,7 +373,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} slug={slug} status={t.status} range={t.range} className="w-[190px]" />
+                        <BookButton content={content} slug={slug} payloadId={payloadId} status={t.status} range={t.range} className="w-[190px]" />
                       </div>
                     </div>
                   )
@@ -439,7 +447,7 @@ export default function TerminyModal({
                           {t.discounted}
                         </span>
                       </p>
-                      <BookButton content={content} slug={slug} status={t.status} range={t.range} compact />
+                      <BookButton content={content} slug={slug} payloadId={payloadId} status={t.status} range={t.range} compact />
                     </div>
                   </div>
                 </li>

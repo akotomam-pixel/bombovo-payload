@@ -4,3 +4,4 @@ export * as m20260526_000000_add_strediska_vypredane from './20260526_000000_add
 export * as m20260607_000000_create_ad_events from './20260607_000000_create_ad_events'
 export * as m20260617_000000_create_track_events from './20260617_000000_create_track_events'
 export * as m20260831_000000_add_camps_po_sezone from './20260831_000000_add_camps_po_sezone'
+export * as m20260916_000000_create_waitlist_signups from './20260916_000000_create_waitlist_signups'
