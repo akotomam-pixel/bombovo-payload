@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/payload'
+import { ecomailSubscribe, ecomailTriggerPipeline } from '@/lib/ecomail'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -9,30 +10,11 @@ const LIST_WAITLIST = process.env.ECOMAIL_WAITLIST_LIST_ID
 // "kontakty švp 2025" — the general newsletter list every signup also joins.
 const LIST_KONTAKTY_SVP = '11'
 
-async function ecomailSubscribe(
-  apiKey: string,
-  listId: string,
-  data: { email: string; meno: string; priezvisko: string; telefon: string; stredisko: string; termin: string },
-) {
-  const res = await fetch(`https://api2.ecomailapp.cz/lists/${listId}/subscribe`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', key: apiKey },
-    body: JSON.stringify({
-      subscriber_data: {
-        email: data.email,
-        name: data.meno,
-        surname: data.priezvisko,
-        phone: data.telefon,
-        custom_fields: { STREDISKO: data.stredisko, TERMIN: data.termin },
-      },
-      trigger_autoresponders: false,
-      update_existing: true,
-    }),
-  })
-  if (!res.ok) {
-    throw new Error(`Ecomail subscribe to list ${listId} failed: ${res.status} ${await res.text()}`)
-  }
-}
+const SITE_URL = 'https://bombovo.sk'
+
+// "ŠVP Čakacia listina - Potvrdenie" — fires right after a signup is saved
+// and synced, confirming to the teacher that they're on the list.
+const PIPELINE_CONFIRMATION = 47097
 
 export async function POST(req: NextRequest) {
   try {
@@ -89,31 +71,38 @@ export async function POST(req: NextRequest) {
       } else if (!LIST_WAITLIST) {
         console.error('[waitlist-signup] ECOMAIL_WAITLIST_LIST_ID not set — skipping Ecomail sync for signup', signup.id)
       } else {
-        const strediskoName = typeof signup.stredisko === 'object' && signup.stredisko ? signup.stredisko.name ?? '' : ''
+        const strediskoDoc = typeof signup.stredisko === 'object' && signup.stredisko ? signup.stredisko : null
+        const strediskoName = strediskoDoc?.name ?? ''
+        const strediskoUrl = strediskoDoc?.slug ? `${SITE_URL}/skoly-v-prirode/${strediskoDoc.slug}` : ''
 
         const contactData = {
           email: cleanEmail,
           meno: cleanMeno,
           priezvisko: cleanPriezvisko,
           telefon: cleanTelefon,
-          stredisko: strediskoName,
-          termin: cleanTermin,
+          customFields: { stredisko: strediskoName, termin: cleanTermin, stredisko_url: strediskoUrl },
         }
 
-        // Dedicated waitlist list — so a future automation can fire only for
-        // people who actually clicked this button, not the whole newsletter.
+        // Dedicated waitlist list — so the Ecomail automations (and any
+        // future one) fire only for people who actually clicked this
+        // button, not the whole newsletter.
         await ecomailSubscribe(apiKey, LIST_WAITLIST, contactData)
         // Also join the general "kontakty švp 2025" list — silently, no
         // separate opt-in, per the brief.
         await ecomailSubscribe(apiKey, LIST_KONTAKTY_SVP, contactData)
+
+        // "ŠVP Čakacia listina - Potvrdenie" — confirms to the teacher
+        // they're on the waitlist. Own try/catch so a trigger failure logs
+        // distinctly from a subscribe failure above.
+        try {
+          await ecomailTriggerPipeline(apiKey, PIPELINE_CONFIRMATION, cleanEmail)
+        } catch (triggerErr) {
+          console.error('[waitlist-signup] Ecomail confirmation pipeline trigger failed (non-blocking):', triggerErr)
+        }
       }
     } catch (ecomailErr) {
       console.error('[waitlist-signup] Ecomail error (non-blocking):', ecomailErr)
     }
-
-    // TODO: teacher's own "thanks, we'll let you know" confirmation email
-    // plugs in here. Not built yet — being designed separately (see prompt's
-    // "What not to build yet").
 
     return NextResponse.json({ success: true })
   } catch (err) {

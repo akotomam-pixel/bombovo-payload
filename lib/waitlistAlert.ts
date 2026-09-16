@@ -1,9 +1,22 @@
 import { Resend } from 'resend'
 import { getPayloadClient } from '@/lib/payload'
+import { ecomailSubscribe, ecomailTriggerPipeline } from '@/lib/ecomail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const INTERNAL_ALERT_TO = 'bombovo@bombovo.sk'
+
+const SITE_URL = 'https://bombovo.sk'
+
+// "ŠVP Čakacia listina - Termín voľný" — fires for every teacher still
+// waiting on this exact stredisko + termín, at the same moment as the
+// internal team alert below.
+const PIPELINE_TERMIN_VOLNY = 47098
+
+/** Random display number 3–12 inclusive — a merge-tag flourish, not a real count. Independently rolled per teacher, per Matej. */
+function randomPocetPedagogov(): number {
+  return 3 + Math.floor(Math.random() * 10)
+}
 
 /**
  * Called whenever a termín that was sold out becomes available again —
@@ -44,8 +57,12 @@ export async function checkAndAlertWaitlist(strediskoId: string | number, termin
 
   if (waiting.docs.length === 0) return
 
-  const strediskoDoc = waiting.docs[0].stredisko as unknown as { name?: string } | number | null
+  const strediskoDoc = waiting.docs[0].stredisko as unknown as { name?: string; slug?: string } | number | null
   const strediskoName = strediskoDoc && typeof strediskoDoc === 'object' ? strediskoDoc.name ?? strediskoId : strediskoId
+  const strediskoUrl =
+    strediskoDoc && typeof strediskoDoc === 'object' && strediskoDoc.slug
+      ? `${SITE_URL}/skoly-v-prirode/${strediskoDoc.slug}`
+      : ''
 
   const rows = waiting.docs
     .map((doc, i) => {
@@ -73,6 +90,36 @@ export async function checkAndAlertWaitlist(strediskoId: string | number, termin
     throw new Error('Failed to send waitlist alert email')
   }
   console.log('[waitlistAlert] Sent, Resend id:', data?.id)
+
+  // "ŠVP Čakacia listina - Termín voľný" — one Ecomail trigger per waiting
+  // teacher. Each gets an independently random pocet_pedagogov (3–12); a
+  // failure for one person is logged and skipped, never stops the loop or
+  // blocks marking entries upozornené below.
+  const apiKey = process.env.ECOMAIL_API_KEY
+  const listId = process.env.ECOMAIL_WAITLIST_LIST_ID
+  if (!apiKey || !listId) {
+    console.error('[waitlistAlert] ECOMAIL_API_KEY/ECOMAIL_WAITLIST_LIST_ID not set — skipping termín-free Ecomail triggers')
+  } else {
+    for (const doc of waiting.docs) {
+      try {
+        await ecomailSubscribe(apiKey, listId, {
+          email: doc.email,
+          meno: doc.meno,
+          priezvisko: doc.priezvisko,
+          telefon: doc.telefon,
+          customFields: {
+            stredisko: strediskoName,
+            termin: terminLabel,
+            stredisko_url: strediskoUrl,
+            pocet_pedagogov: randomPocetPedagogov(),
+          },
+        })
+        await ecomailTriggerPipeline(apiKey, PIPELINE_TERMIN_VOLNY, doc.email)
+      } catch (ecomailErr) {
+        console.error(`[waitlistAlert] Ecomail "termín voľný" trigger failed for ${doc.email}:`, ecomailErr)
+      }
+    }
+  }
 
   await Promise.all(
     waiting.docs.map((doc) =>
