@@ -209,8 +209,8 @@ export const horskyHotelMinciarContent: LomyContent = {
     bookNote: 'čoskoro',
     upozornenie: true,
     items: [
-      { range: '10.05. – 14.05.2027', price: '220 €', discounted: '190 €', status: 'Voľné' },
-      { range: '17.05. – 21.05.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
+      { range: '10.05. – 14.05.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
+      { range: '17.05. – 21.05.2027', price: '220 €', discounted: '190 €', status: 'Voľné' },
       { range: '24.05. – 28.05.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
       { range: '31.05. – 04.06.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
       { range: '07.06. – 11.06.2027', price: '220 €', discounted: '190 €', status: 'Rezervované' },
