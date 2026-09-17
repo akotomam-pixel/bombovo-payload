@@ -96,7 +96,7 @@ function BookButton({
         terminLabel={range}
         compact={compact}
         variant="solid"
-        className={compact ? '' : 'w-[190px]'}
+        className={compact ? '' : 'min-w-[190px]'}
       />
     )
   }

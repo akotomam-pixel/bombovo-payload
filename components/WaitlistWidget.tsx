@@ -257,19 +257,21 @@ export default function WaitlistWidget({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
-  // The solid, non-compact button (TerminyModal's desktop table, fixed at
-  // 190px) is the one spot where "Sledovať dostupnosť" + the bell icon don't
-  // fit the outline pill's roomier px-6/text-17px on one line the way the
-  // shorter "REZERVOVAŤ" does — REZERVOVAŤ never hit this because it's about
-  // half the character count. `py-3` (REZERVOVAŤ's own vertical padding)
-  // stays so the two buttons match height exactly; only the horizontal
-  // padding, font size, icon size and gap shrink to fit the same width.
+  // The solid, non-compact button (TerminyModal's desktop table, at least
+  // 190px — see the `min-w` the caller passes as `className`) is the one
+  // spot where "Sledovať dostupnosť" + the bell icon don't fit the outline
+  // pill's roomier px-6/text-17px on one line the way the shorter
+  // "REZERVOVAŤ" does — REZERVOVAŤ never hit this because it's about half
+  // the character count. `py-3` (REZERVOVAŤ's own vertical padding) stays so
+  // the two buttons match height exactly; the button is free to grow past
+  // 190px (its container's last column) if this text needs the room, rather
+  // than shrinking the font to fit a hard cap — that read as too small.
   const dense = variant === 'solid' && !compact
 
   const shape = compact
     ? 'shrink-0 rounded-full border-2 px-3.5 py-1.5 text-center text-[12px] font-bold whitespace-nowrap'
     : dense
-      ? 'shrink-0 rounded-full border-2 px-1.5 py-3 text-center text-[11px] font-bold whitespace-nowrap'
+      ? 'shrink-0 rounded-full border-2 px-4 py-3 text-center text-[14px] font-bold whitespace-nowrap'
       : 'shrink-0 rounded-full border-2 px-6 py-3 text-center text-[17px] font-bold whitespace-nowrap'
 
   const colors =
@@ -277,14 +279,14 @@ export default function WaitlistWidget({
       ? 'border-white bg-bombovo-blue text-white'
       : 'border-bombovo-blue bg-white text-bombovo-blue transition-colors duration-150 ease-out hover:bg-bombovo-blue hover:text-white'
 
-  const iconSize = compact ? 'sm' : dense ? 'sm' : 'lg'
+  const iconSize = compact ? 'sm' : dense ? 'md' : 'lg'
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`${shape} ${colors} inline-flex items-center justify-center ${dense ? 'gap-1' : 'gap-1.5'} active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${className}`}
+        className={`${shape} ${colors} inline-flex items-center justify-center gap-1.5 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${className}`}
       >
         <BellIcon size={iconSize} />
         {TEMP_BUTTON_LABEL}
