@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import Link from 'next/link'
 import type { LomyTerminy } from '@/data/lomy/types'
-import { CLOSED_TERMIN_STATUS_RE, openTerminyCount, urgencyText } from '@/lib/terminyStatus'
+import { CLOSED_TERMIN_STATUS_RE, openTerminyCount, shouldShowUrgency, urgencyText } from '@/lib/terminyStatus'
 import WaitlistWidget from '@/components/WaitlistWidget'
 
 /**
@@ -203,7 +203,7 @@ export default function TerminyModal({
 
   // Driven by `status`, not typed by hand — stays correct as dates get booked.
   const openCount = openTerminyCount(content.items)
-  const showUrgency = content.upozornenie && openCount > 0
+  const showUrgency = shouldShowUrgency(openCount)
 
   return ReactDOM.createPortal(
     <div
@@ -264,11 +264,13 @@ export default function TerminyModal({
 
         {/*
           ── Urgency banner ──
-          Hand-flipped on per stredisko (`upozornenie` in content.ts); the count
-          and word ending are read off the same `status` field driving the rest
-          of the dialog, so this can't say "posledné 2" once there's only one
-          left, or keep shouting once they're all gone. Pinned above the
-          scrollable list rather than inside it, so it stays visible.
+          Fully automatic off the live open count (shouldShowUrgency in
+          lib/terminyStatus.ts) — shows for 1–3 open dates left, hides for 0
+          or 4+. Count and word ending are read off the same `status` field
+          driving the rest of the dialog, so this can't say "posledné 2" once
+          there's only one left, or keep shouting once they're all gone.
+          Pinned above the scrollable list rather than inside it, so it stays
+          visible.
         */}
         {showUrgency && (
           <div className="shrink-0 border-b-2 border-[#8f0f10] bg-bombovo-red px-6 py-3.5 sm:px-7 md:px-9">

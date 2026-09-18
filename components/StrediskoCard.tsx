@@ -3,7 +3,7 @@ import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
 import DiscountSeal from '@/components/DiscountSeal'
 import UrgencyBadge from '@/components/UrgencyBadge'
-import { openTerminyCount, urgencyWords } from '@/lib/terminyStatus'
+import { openTerminyCount, shouldShowUrgency, urgencyWords } from '@/lib/terminyStatus'
 
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
@@ -49,7 +49,7 @@ export default function StrediskoCard({
   const kapacita = facts?.find((f) => f.label === 'Kapacita')?.value
 
   const openCount = content ? openTerminyCount(content.terminy.items) : 0
-  const showUrgency = !!content?.terminy.upozornenie && openCount > 0
+  const showUrgency = shouldShowUrgency(openCount)
 
   return (
     <div className="group relative overflow-hidden rounded-[28px] bg-white ring-1 ring-black/5 shadow-[0_2px_6px_-2px_rgba(8,7,8,0.10),0_20px_44px_-20px_rgba(55,114,255,0.35)] transition-shadow duration-300 hover:shadow-[0_4px_10px_-2px_rgba(8,7,8,0.14),0_28px_60px_-18px_rgba(55,114,255,0.45)]">

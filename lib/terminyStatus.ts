@@ -14,6 +14,16 @@ export function openTerminyCount(items: { status: string }[]): number {
 }
 
 /**
+ * Whether the urgency messaging (seal on the card, banner in the dialog)
+ * should show at all. Fully automatic off the live open count — no more
+ * per-stredisko manual flag: 1–3 open dates left shows it, 0 or 4+ doesn't.
+ * Both call sites should share this one cutoff rather than each guessing.
+ */
+export function shouldShowUrgency(openCount: number): boolean {
+  return openCount > 0 && openCount <= 3
+}
+
+/**
  * The urgency banner's sentence. Slovak declines the adjective too, not just
  * the noun's ending, so this is a small table rather than one string with a
  * number spliced in: 1 termín, 2–4 termíny, 5+ termínov.
