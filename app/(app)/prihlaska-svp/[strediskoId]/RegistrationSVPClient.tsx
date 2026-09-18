@@ -119,15 +119,11 @@ export default function RegistrationSVPClient({
         setSubmitError(data.error ?? 'Nastala chyba. Skúste to prosím znova.');
         return;
       }
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
+      posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
       setIsSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      setTimeout(() => {
-        if (typeof window !== 'undefined') {
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
-        }
-        posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
-      }, 100);
     } catch {
       setSubmitError('Nastala chyba. Skúste to prosím znova.');
     } finally {
