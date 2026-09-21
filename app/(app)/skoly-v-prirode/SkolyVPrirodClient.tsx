@@ -43,6 +43,11 @@ export interface SkolyVPrirodPageData {
   teacherReviewCount: number
 }
 
+// A/B TEST: when true, the page shows only hero + strediska grid.
+// Reviews (section 2), "why teachers love us" (section 3) and the strediska
+// headline are hidden but kept in the code. Set to false to restore everything.
+const STREDISKA_ONLY_TEST = true
+
 export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageData }) {
   const { headline, headlineHighlight, bodyText, reviews, section3, strediskaHeadline, centers, teacherReviewCount } = data
 
@@ -194,6 +199,7 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
       </div>
 
       {/* Section 2: Review Carousel */}
+      {!STREDISKA_ONLY_TEST && (
       <div className="bg-white">
         <section className="py-8 md:py-5">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -372,8 +378,10 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
         {/* Divider: White → Grey (Blue) */}
         <WaveDivider color="blue" variant={2} />
       </div>
+      )}
 
       {/* Section 3: Why Teachers Love Bombovo */}
+      {!STREDISKA_ONLY_TEST && (
       <div className="bg-bombovo-gray">
         <section className="py-16 md:py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -444,14 +452,17 @@ export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageDat
         {/* Divider: Grey → White (Blue) */}
         <WaveDivider color="blue" variant={3} />
       </div>
+      )}
 
       {/* Section 4: Centers Grid */}
       <div className="bg-white">
         <section id="strediska" className="py-16 md:py-20">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
-              {strediskaHeadline}
-            </h3>
+            {!STREDISKA_ONLY_TEST && (
+              <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
+                {strediskaHeadline}
+              </h3>
+            )}
             {/*
               `zoom` (not transform) so it reads exactly like the browser's own
               90% zoom, including layout — card width included, which a
