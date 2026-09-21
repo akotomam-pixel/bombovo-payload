@@ -225,13 +225,13 @@ export const hotelOsrblieContent: LomyContent = {
       // Added at the client's reduced early-season price (215 € before the
       // standing −30 € discount, vs. the usual 235 €).
       { range: '05.04. – 09.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
-      { range: '12.04. – 16.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '12.04. – 16.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné', volnychMiest: 40 },
       { range: '19.04. – 23.04.2027', price: '215 €', discounted: '185 €', status: 'Rezervované' },
-      { range: '26.04. – 30.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné', volnychMiest: 25 },
-      { range: '03.05. – 07.05.2027', price: '215 €', discounted: '185 €', status: 'Rezervované' },
+      { range: '26.04. – 30.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '03.05. – 07.05.2027', price: '215 €', discounted: '185 €', status: 'Voľné', volnychMiest: 40 },
       { range: '10.05. – 14.05.2027', price: '215 €', discounted: '185 €', status: 'Rezervované' },
-      { range: '17.05. – 21.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
-      { range: '24.05. – 28.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
+      { range: '17.05. – 21.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné', volnychMiest: 40 },
+      { range: '24.05. – 28.05.2027', price: '235 €', discounted: '205 €', status: 'Voľné', volnychMiest: 50 },
       { range: '31.05. – 04.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
       { range: '07.06. – 11.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
       { range: '14.06. – 18.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
