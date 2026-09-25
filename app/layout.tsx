@@ -39,8 +39,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // advertorialsvp-1 suppresses the CookieYes banner (see middleware.ts) — every
-  // other route keeps it, since the header is only ever set for that one path.
+  // advertorialsvp-1 and advertorialsvp-2 suppress the CookieYes banner (see
+  // middleware.ts) — every other route keeps it, since the header is only ever
+  // set for those two paths.
   const headersList = await headers()
   const suppressCookieYes = headersList.get('x-suppress-cookieyes') === '1'
 

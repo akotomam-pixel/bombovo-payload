@@ -4,12 +4,16 @@ import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
 export default function AdvertorialTracking({
+  advertorial,
+  destination,
   utm_source,
   utm_medium,
   utm_campaign,
   utm_content,
   fbclid,
 }: {
+  advertorial: string
+  destination: string
   utm_source: string
   utm_medium: string
   utm_campaign: string
@@ -17,9 +21,12 @@ export default function AdvertorialTracking({
   fbclid: string
 }) {
   useEffect(() => {
-    posthog.register({ from_advertorial: 'advertorialsvp-1' })
+    // Super property: attached to every later event from this browser (incl. the
+    // Lagáň landing page funnel), so PostHog can filter the funnel by advertorial.
+    posthog.register({ from_advertorial: advertorial })
     posthog.capture('advertorial_viewed', {
-      advertorial: 'advertorialsvp-1',
+      advertorial,
+      destination,
       utm_source,
       utm_medium,
       utm_campaign,
@@ -31,9 +38,13 @@ export default function AdvertorialTracking({
 
   useEffect(() => {
     const links = document.querySelectorAll<HTMLAnchorElement>('a[data-advertorial-cta]')
-    const handleClick = () => posthog.capture('advertorial_clicked', { advertorial: 'advertorialsvp-1' })
+    const handleClick = (e: Event) => {
+      const cta_position = (e.currentTarget as HTMLElement).dataset.advertorialCta || 'unknown'
+      posthog.capture('advertorial_clicked', { advertorial, destination, cta_position })
+    }
     links.forEach((link) => link.addEventListener('click', handleClick))
     return () => links.forEach((link) => link.removeEventListener('click', handleClick))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Always shows today's date next to the byline.
