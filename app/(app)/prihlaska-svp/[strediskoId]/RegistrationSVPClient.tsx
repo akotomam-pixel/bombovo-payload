@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import posthog from "posthog-js";
 
@@ -61,6 +61,7 @@ export default function RegistrationSVPClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [showErrors, setShowErrors] = useState(false);
+  const metaEventIdRef = useRef<string | null>(null);
 
   const requiredFields: (keyof typeof formData)[] = [
     'datumPrichodu', 'veduciPobytu', 'nazovSkoly', 'adresa', 'psc', 'mesto',
@@ -100,10 +101,10 @@ export default function RegistrationSVPClient({
     }
 
     setIsSubmitting(true);
-    // One ID per conversion, shared between the client's fbq() call (via GTM's
-    // event_id dataLayer variable) and the server-side Meta CAPI Lead call fired
-    // from /api/contact-svp, so Meta dedupes the two events instead of double-counting.
-    const metaEventId = crypto.randomUUID();
+    // One ID per conversion, shared between the client's fbq() calls (via GTM's
+    // event_id dataLayer variable) and the server-side Lead/SvP_Inquiry events.
+    const metaEventId = metaEventIdRef.current ?? crypto.randomUUID();
+    metaEventIdRef.current = metaEventId;
     try {
       const res = await fetch('/api/contact-svp', {
         method: 'POST',
@@ -119,11 +120,15 @@ export default function RegistrationSVPClient({
         setSubmitError(data.error ?? 'Nastala chyba. Skúste to prosím znova.');
         return;
       }
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
-      posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
       setIsSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
+        posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
+      } catch {
+        console.error('[svp-tracking] Browser analytics failed after a successful inquiry');
+      }
     } catch {
       setSubmitError('Nastala chyba. Skúste to prosím znova.');
     } finally {

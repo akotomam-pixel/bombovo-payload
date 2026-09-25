@@ -220,6 +220,7 @@ export default function LomyEnquiryForm({
 }) {
   const [status, setStatus] = useState<Status>('idle')
   const sentRef = useRef<HTMLDivElement>(null)
+  const metaEventIdRef = useRef<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [values, setValues] = useState({
     datumPrichodu: initialTerm,
@@ -276,10 +277,10 @@ export default function LomyEnquiryForm({
     if (!validate()) return
 
     setStatus('sending')
-    // One ID per conversion, shared between the client's fbq() call (via GTM's
-    // event_id dataLayer variable) and the server-side Meta CAPI Lead call fired
-    // from /api/contact-svp, so Meta dedupes the two events instead of double-counting.
-    const metaEventId = crypto.randomUUID()
+    // One ID per conversion, shared between the client's fbq() calls (via GTM's
+    // event_id dataLayer variable) and the server-side Lead/SvP_Inquiry events.
+    const metaEventId = metaEventIdRef.current ?? crypto.randomUUID()
+    metaEventIdRef.current = metaEventId
     try {
       const res = await fetch('/api/contact-svp', {
         method: 'POST',
@@ -306,14 +307,21 @@ export default function LomyEnquiryForm({
           eventSourceUrl: window.location.href,
         }),
       })
-      if (res.ok) {
+      if (!res.ok) {
+        setStatus('error')
+        return
+      }
+
+      setStatus('sent')
+      try {
         window.dataLayer = window.dataLayer || []
         window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId })
         posthog.identify(values.email)
         posthog.capture('svp_inquiry_submitted')
         if (strediskoSlug) posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoSlug })
+      } catch {
+        console.error('[svp-tracking] Browser analytics failed after a successful inquiry')
       }
-      setStatus(res.ok ? 'sent' : 'error')
     } catch {
       setStatus('error')
     }

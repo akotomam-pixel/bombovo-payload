@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { sendMetaCapiEvent } from '@/lib/metaCapi'
+import {
+  hasMetaMarketingConsent,
+  normalizeMetaEventId,
+  sendMetaCapiEvents,
+} from '@/lib/metaCapi'
+import { validateSvpInquiry } from '@/lib/svpInquiry'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -10,13 +15,14 @@ function row(label: string, value: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body = await request.json() as Record<string, unknown>
+    const validation = validateSvpInquiry(body)
 
-    if (!body.stredisko || !body.telefon || !body.email) {
+    if (!validation.valid) {
       return NextResponse.json({ error: 'Chýbajú povinné polia' }, { status: 400 })
     }
 
-    const v = (val: string | undefined) => val ?? ''
+    const v = (val: unknown) => typeof val === 'string' ? val : ''
 
     const { error } = await resend.emails.send({
       from: 'Bombovo <info@bombovo.sk>',
@@ -53,16 +59,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Nastala chyba pri odosielaní' }, { status: 500 })
     }
 
-    // Meta CAPI backup for the browser-side Lead event GTM fires on prihlaska_svp_submitted.
-    // Same eventId as the client's fbq() call, so Meta dedupes the two into one event.
-    if (body.eventId) {
-      await sendMetaCapiEvent({
-        eventName: 'Lead',
-        eventId: body.eventId,
-        eventSourceUrl: body.eventSourceUrl || request.headers.get('referer') || 'https://bombovo.sk',
+    // Both server events use the same event ID that the published GTM Lead and
+    // SvP_Inquiry tags read from dataLayer for browser/server deduplication.
+    const eventId = normalizeMetaEventId(body.eventId)
+    const marketingConsent = hasMetaMarketingConsent(
+      request.cookies.get('cookieyes-consent')?.value,
+    )
+    if (eventId && marketingConsent) {
+      await sendMetaCapiEvents({
+        eventNames: ['Lead', 'SvP_Inquiry'],
+        eventId,
+        eventSourceUrl: request.headers.get('referer') || v(body.eventSourceUrl) || 'https://bombovo.sk',
         userData: {
-          email: body.email,
-          phone: body.telefon,
+          email: v(body.email),
+          phone: v(body.telefon),
           clientIpAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '',
           clientUserAgent: request.headers.get('user-agent') ?? '',
           fbc: request.cookies.get('_fbc')?.value,
