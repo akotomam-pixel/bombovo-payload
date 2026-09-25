@@ -358,6 +358,8 @@ const EXTRA_CSS = `
     line-height: 1.35;
     margin: 8px 0 20px;
 }
+/* Square photo would be as tall as the column is wide (760px) — taller than a laptop screen. */
+.body-photo-square { max-width: 480px; margin-left: auto; margin-right: auto; }
 @media (max-width: 480px) {
     .article-deck { font-size: 18px; }
     .main-col h3 { font-size: 21px; }
@@ -518,7 +520,7 @@ export default async function AdvertorialSvp2Page({
 
           <h2>Stredisko overené najznámejšími hviezdami Slovenska</h2>
 
-          <div className="body-photo">
+          <div className="body-photo body-photo-square">
             <Image
               src="/advertorialsvp-2/photo-3.png"
               alt="Talentárium Mira Jaroša v Penzióne Lagáň"
@@ -596,7 +598,7 @@ export default async function AdvertorialSvp2Page({
 
           <ul className="checklist">
             <li>Kapacitu až 150 osôb, vďaka ktorej môže v jednom komplexe zostať aj väčšia školská skupina.</li>
-            <li>Dvoj až štvorlôžkové izby s vlastnou sprchou a toaletou.</li>
+            <li>Dvoj- až štvorlôžkové izby s vlastnou sprchou a toaletou.</li>
             <li>Stravu päťkrát denne a celodenný pitný režim.</li>
             <li>Veľkú trávnatú plochu s rozmermi približne 100 × 100 metrov na športové hry, súťaže a animačný program.</li>
             <li>Samostatnú športovú halu s približne 1&nbsp;000 m² vnútorného priestoru, šatňami, sprchami a sociálnymi zariadeniami.</li>
@@ -683,7 +685,7 @@ export default async function AdvertorialSvp2Page({
 
           <h2>Zážitok pripravený priamo pre Penzión Lagáň</h2>
 
-          <p>Školy, ktoré chcú deťom dopriať ešte viac, si môžu k animáčnému programu pridať aj Bombovo balíček.</p>
+          <p>Školy, ktoré chcú deťom dopriať ešte viac, si môžu k animačnému programu pridať aj Bombový balíček.</p>
 
           <p>Jeho súčasťou je lukostreľba priamo v areáli, takže škola nemusí organizovať ďalšiu dopravu ani opúšťať stredisko.</p>
 
