@@ -46,7 +46,7 @@ export interface SkolyVPrirodPageData {
 // A/B TEST: when true, the page shows only hero + strediska grid.
 // Reviews (section 2), "why teachers love us" (section 3) and the strediska
 // headline are hidden but kept in the code. Set to false to restore everything.
-const STREDISKA_ONLY_TEST = true
+const STREDISKA_ONLY_TEST = false
 
 export default function SkolyVPrirodClient({ data }: { data: SkolyVPrirodPageData }) {
   const { headline, headlineHighlight, bodyText, reviews, section3, strediskaHeadline, centers, teacherReviewCount } = data
