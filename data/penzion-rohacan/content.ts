@@ -210,7 +210,7 @@ export const penzionRohacanContent: LomyContent = {
     bookNote: 'čoskoro',
     items: [
       { range: '31.05. – 04.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
-      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Voľné' },
+      { range: '07.06. – 11.06.2027', price: '205 €', discounted: '175 €', status: 'Rezervované' },
     ],
   },
 }

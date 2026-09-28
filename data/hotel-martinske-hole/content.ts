@@ -215,7 +215,7 @@ export const hotelMartinskeHoleContent: LomyContent = {
     bookNote: 'čoskoro',
     upozornenie: true,
     items: [
-      { range: '17.05. – 21.05.2027', price: '225 €', discounted: '195 €', status: 'Voľné' },
+      { range: '17.05. – 21.05.2027', price: '225 €', discounted: '195 €', status: 'Rezervované' },
       { range: '24.05. – 28.05.2027', price: '225 €', discounted: '195 €', status: 'Rezervované' },
       { range: '31.05. – 04.06.2027', price: '225 €', discounted: '195 €', status: 'Voľné', volnychMiest: 30 },
       { range: '07.06. – 11.06.2027', price: '225 €', discounted: '195 €', status: 'Rezervované' },
