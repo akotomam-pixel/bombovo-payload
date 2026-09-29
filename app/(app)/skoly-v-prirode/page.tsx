@@ -53,8 +53,8 @@ function thumbUrl(url: string | undefined, w = 640): string {
 }
 
 export const metadata = {
-  title: 'Školy v Prírode 2026 | Bombovo',
-  description: 'Školy v prírode 2026 pre základné školy na Slovensku. Profesionálni animátori a overené strediská. Školy môžu využiť príspevok ministerstva 100 € na žiaka.',
+  title: 'Školy v prírode, kde si učitelia oddýchnu | Zľava 30 €',
+  description: 'Školy v prírode pre 1. aj 2. stupeň ZŠ s programom a animátormi. 7 overených stredísk, príspevok 100 € na žiaka. Termíny na jar 2027.',
 }
 
 export default async function SkolyVPrirodePage() {
