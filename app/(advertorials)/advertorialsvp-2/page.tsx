@@ -358,8 +358,6 @@ const EXTRA_CSS = `
     line-height: 1.35;
     margin: 8px 0 20px;
 }
-/* Square photo would be as tall as the column is wide (760px) — taller than a laptop screen. */
-.body-photo-square { max-width: 480px; margin-left: auto; margin-right: auto; }
 @media (max-width: 480px) {
     .article-deck { font-size: 18px; }
     .main-col h3 { font-size: 21px; }
@@ -520,12 +518,12 @@ export default async function AdvertorialSvp2Page({
 
           <h2>Stredisko overené najznámejšími hviezdami Slovenska</h2>
 
-          <div className="body-photo body-photo-square">
+          <div className="body-photo">
             <Image
-              src="/advertorialsvp-2/photo-3.png"
+              src="/advertorialsvp-2/photo-3.jpg"
               alt="Talentárium Mira Jaroša v Penzióne Lagáň"
-              width={1080}
-              height={1080}
+              width={1440}
+              height={960}
               loading="lazy"
               sizes="(max-width: 780px) 100vw, 760px"
               style={{ width: '100%', height: 'auto', display: 'block' }}
