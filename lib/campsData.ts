@@ -39,6 +39,8 @@ export interface Camp {
   types: string[]
   displayTypes: string[]
   price: string
+  /** Pre-discount price, e.g. '319 €' — card shows it struck through + a '-X €' seal */
+  originalPrice?: string
   dates: string[]
   description: string
   image: string
@@ -59,6 +61,7 @@ export const camps: Camp[] = [
     types: ['Dobrodružný', 'Tvorivý'],
     displayTypes: ['Dobrodružný', 'Tvorivý'],
     price: halloweenNaLomochData.price,
+    originalPrice: '319 €',
     dates: [],
     description: halloweenNaLomochData.bulletPoints[0],
     image: halloweenNaLomochData.heroGallery![0].src,
@@ -70,6 +73,7 @@ export const camps: Camp[] = [
     types: ['Tínedžerský', 'Akčný'],
     displayTypes: ['Tínedžerský', 'Akčný'],
     price: festHalloweenFestData.price,
+    originalPrice: '319 €',
     dates: [],
     description: festHalloweenFestData.bulletPoints[0],
     image: festHalloweenFestData.heroGallery![0].src,

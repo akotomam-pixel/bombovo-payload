@@ -126,6 +126,7 @@ function CampsContent({ camps, heroData }: Props) {
                         types={camp.types}
                         displayTypes={camp.displayTypes}
                         price={camp.price}
+                        originalPrice={camp.originalPrice}
                         index={index}
                         description={camp.description}
                         image={camp.image}

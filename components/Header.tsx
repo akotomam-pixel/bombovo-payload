@@ -97,7 +97,7 @@ export default function Header() {
                     href="/letne-tabory" 
                     className="relative inline-flex flex-col items-center text-bombovo-dark font-medium text-[1.2rem] group"
                   >
-                    <span>Letné tábory</span>
+                    <span>Tábory</span>
                     <svg 
                       className="absolute -bottom-1 left-0 w-full" 
                       height="8" 
@@ -429,7 +429,7 @@ export default function Header() {
                     onClick={closeMenu}
                     className="block px-6 py-4 text-lg font-semibold text-bombovo-dark hover:bg-bombovo-gray transition-colors"
                   >
-                    Letné tábory
+                    Tábory
                   </Link>
                   <div>
                     <button

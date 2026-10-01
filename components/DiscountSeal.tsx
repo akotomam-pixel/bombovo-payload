@@ -37,7 +37,8 @@ export default function DiscountSeal({
   className = '',
 }: {
   amount: string
-  deadline: string
+  /** Optional — without it the amount sits alone in the middle of the seal. */
+  deadline?: string
   size: number
   className?: string
 }) {
@@ -47,20 +48,24 @@ export default function DiscountSeal({
       width={size}
       height={size}
       role="img"
-      aria-label={`Zľava ${amount}, ${deadline}`}
+      aria-label={deadline ? `Zľava ${amount}, ${deadline}` : `Zľava ${amount}`}
       className={className}
       style={{ fontFamily: 'inherit', filter: 'drop-shadow(0 8px 20px rgba(223,41,53,0.34))' }}
     >
       <path d={WAVY_CIRCLE_PATH} fill="#DF2935" />
 
-      <text x="50" y="48" textAnchor="middle" fill="#FFFFFF" fontSize="20" fontWeight="700" letterSpacing="-1">
+      <text x="50" y={deadline ? 48 : 57} textAnchor="middle" fill="#FFFFFF" fontSize={deadline ? 20 : 22} fontWeight="700" letterSpacing="-1">
         {amount}
       </text>
-      {/* Hairline rule between the amount and the deadline. */}
-      <line x1="37" y1="54.5" x2="63" y2="54.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.45" />
-      <text x="50" y="65" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="600" opacity="0.92">
-        {deadline}
-      </text>
+      {deadline && (
+        <>
+          {/* Hairline rule between the amount and the deadline. */}
+          <line x1="37" y1="54.5" x2="63" y2="54.5" stroke="#FFFFFF" strokeWidth="0.9" opacity="0.45" />
+          <text x="50" y="65" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="600" opacity="0.92">
+            {deadline}
+          </text>
+        </>
+      )}
     </svg>
   )
 }

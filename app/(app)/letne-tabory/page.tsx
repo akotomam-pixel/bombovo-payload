@@ -55,6 +55,7 @@ function payloadDocToCamp(doc: Record<string, any>, hardcodedBySlug: Map<string,
 
     // Price — Payload value takes priority
     price: doc.price ?? hardcoded?.price ?? '',
+    originalPrice: hardcoded?.originalPrice,
 
     // Short description — first bulletPoint, then hardcoded
     description:
