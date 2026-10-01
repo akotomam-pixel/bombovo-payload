@@ -48,7 +48,7 @@ export const festHalloweenFestData: CampDetailData = {
 
   // TODO: "Ako to prežíva dieťa" text comes later (written separately).
   section3: {
-    headline: 'Ako Fest Halloween Fest prežíva dieťa?',
+    headline: 'Ako Fest prežíva dieťa?',
     text: [],
     reviews: [
       {
