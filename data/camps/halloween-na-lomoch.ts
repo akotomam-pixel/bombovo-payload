@@ -116,6 +116,7 @@ export const halloweenNaLomochData: CampDetailData = {
         // Profis: "HALLOWEEN na Lomoch" (id_Zajezd 146), id_Termin 1125
         registrationId: 1125,
         profisTerminId: 1125,
+        id_ZajezdHotel: 47,
         start: '28.10.2026',
         end: '01.11.2026',
         days: 5,

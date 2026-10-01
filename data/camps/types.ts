@@ -59,6 +59,8 @@ export interface CampDetailData {
       registrationId?: number
       /** Profis id_Termin — only needed for camps not managed in Payload */
       profisTerminId?: number
+      /** Profis id_ZajezdHotel — saves Profis a reject-and-retry in the price step */
+      id_ZajezdHotel?: number
       start: string
       end: string
       days: number

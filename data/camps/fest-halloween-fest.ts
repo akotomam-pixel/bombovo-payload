@@ -116,6 +116,7 @@ export const festHalloweenFestData: CampDetailData = {
         // Profis: "Fest HALLOWEEN fest" (id_Zajezd 145), id_Termin 1124
         registrationId: 1124,
         profisTerminId: 1124,
+        id_ZajezdHotel: 46,
         start: '28.10.2026',
         end: '01.11.2026',
         days: 5,

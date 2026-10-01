@@ -490,57 +490,41 @@ export default function RegistrationClient({
         // second real reservation for the same term.
         orderCreatedRef.current = true;
 
-        // ── Step 3: Extra fields (t-shirt + intolerances) ─────────────────────
-        // Non-blocking — failure must not prevent order finalization
-        try {
-          const extraCestujici = (cestujiciIds ?? []).map((id_Cestujici: number, idx: number) => {
-            const isFirstChild = idx === 0;
-            const intolerance = isFirstChild
-              ? (formData.hasIntolerance === 'ano' ? formData.intoleranceDetails : undefined)
-              : (formData.hasSecondChild && formData.hasIntolerance2 === 'ano' ? formData.intoleranceDetails2 : undefined);
-            const childName = isFirstChild
-              ? formData.childFirstName
-              : formData.childFirstName2;
-            const roomWith = isFirstChild
-              ? (formData.roomWith || undefined)
-              : (formData.hasSecondChild ? (formData.roomWith2 || undefined) : undefined);
-            return {
-              id_Cestujici,
-              id_KlientCestujici: (cestujiciKlientIds ?? [])[idx] ?? null,
-              id_VelikostTricka: isFirstChild
-                ? (Number(formData.tshirtSize) || null)
-                : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
-              zdravotniOmezeni: intolerance || undefined,
-              childName: childName || undefined,
-              roomWith,
-            };
-          });
+        // ── Step 3: Extras (t-shirt + intolerances + consents) and finalize ──
+        // One request. The server replies right away and does the slow part in the
+        // background: saves the extras, then finalizes the order (invoice, contract,
+        // email) and syncs Ecomail + Meta. The reservation already exists, so the
+        // customer doesn't wait for any of that. Non-blocking — a failure here must
+        // never make the customer think the booking didn't happen and resubmit.
+        const extraCestujici = (cestujiciIds ?? []).map((id_Cestujici: number, idx: number) => {
+          const isFirstChild = idx === 0;
+          const intolerance = isFirstChild
+            ? (formData.hasIntolerance === 'ano' ? formData.intoleranceDetails : undefined)
+            : (formData.hasSecondChild && formData.hasIntolerance2 === 'ano' ? formData.intoleranceDetails2 : undefined);
+          const childName = isFirstChild
+            ? formData.childFirstName
+            : formData.childFirstName2;
+          const roomWith = isFirstChild
+            ? (formData.roomWith || undefined)
+            : (formData.hasSecondChild ? (formData.roomWith2 || undefined) : undefined);
+          return {
+            id_Cestujici,
+            id_KlientCestujici: (cestujiciKlientIds ?? [])[idx] ?? null,
+            id_VelikostTricka: isFirstChild
+              ? (Number(formData.tshirtSize) || null)
+              : (formData.hasSecondChild ? (Number(formData.tshirtSize2) || null) : null),
+            zdravotniOmezeni: intolerance || undefined,
+            childName: childName || undefined,
+            roomWith,
+          };
+        });
 
-          await fetch('/api/profitour/order/extra', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id_Klient: id_Klient ?? null,
-              cestujici: extraCestujici,
-              gdprOmezeni: formData.additionalInfo || undefined,
-              newsletter: formData.gdprConsent || undefined,
-              photoConsent: formData.photoConsent || undefined,
-              klientEmail: klientEmail ?? undefined,
-              souhlasKlic: souhlasKlic ?? undefined,
-            }),
-          });
-        } catch (extraErr) {
-          console.warn('[prihlaska] order/extra non-blocking error:', extraErr);
-        }
-
-        // ── Step 4: Finalize order ────────────────────────────────────────────
-        // Non-blocking, same as Step 3 — the reservation already exists in Profis
-        // (orderCreatedRef is already set), so a network failure here must not be
-        // treated as a failed booking.
         try {
           const completeRes = await fetch('/api/profitour/order/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            // Let the request finish even if the success screen navigates/closes
+            keepalive: true,
             body: JSON.stringify({
               id_Objednavka,
               klic,
@@ -550,11 +534,20 @@ export default function RegistrationClient({
               campName,
               eventId: metaEventId,
               eventSourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+              extras: {
+                id_Klient: id_Klient ?? null,
+                cestujici: extraCestujici,
+                gdprOmezeni: formData.additionalInfo || undefined,
+                newsletter: formData.gdprConsent || undefined,
+                photoConsent: formData.photoConsent || undefined,
+                klientEmail: klientEmail ?? undefined,
+                souhlasKlic: souhlasKlic ?? undefined,
+              },
             }),
           });
           const completeData = await completeRes.json();
           if (!completeData?.success) {
-            console.error('[prihlaska] order/complete did not finalize the reservation:', completeData?.error, { id_Objednavka });
+            console.error('[prihlaska] order/complete was not accepted:', completeData?.error, { id_Objednavka });
           }
         } catch (completeErr) {
           console.warn('[prihlaska] order/complete non-blocking error:', completeErr, { id_Objednavka });

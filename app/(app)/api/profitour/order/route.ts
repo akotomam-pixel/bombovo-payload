@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server'
 import { soapCall, extractTag, escapeXml } from '@/lib/profis'
 import { claimCampSlot, releaseCampSlot, markTermSoldOut } from '@/lib/campCapacity'
 
+// Profis's ObecList is every town in Slovakia (~11 000 rows, ~1 MB) and barely ever
+// changes, so keep the parsed PSČ → id_Obec map in memory for a day instead of
+// downloading it on every order. When several towns share a PSČ, the last one wins —
+// same as the old per-order loop.
+const OBEC_CACHE_MS = 24 * 60 * 60 * 1000
+let obecCache: { map: Map<string, number>; at: number } | null = null
+
+async function getPscToObecMap(): Promise<Map<string, number>> {
+  if (obecCache && Date.now() - obecCache.at < OBEC_CACHE_MS) return obecCache.map
+
+  const obceRaw = await soapCall('Ciselnik', 'ObecList', `
+    <ns:Context>
+      <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
+      <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
+      <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
+      <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
+    </ns:Context>
+    <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
+  const obceXml = obceRaw._raw as string
+  const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
+  const map = new Map<string, number>()
+  for (const block of obceBlocks) {
+    const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
+    const idStr = extractTag(block, 'ID')
+    if (psc && idStr) map.set(psc, Number(idStr))
+  }
+  // Only cache a real list — an empty answer means the lookup didn't work
+  if (map.size > 0) obecCache = { map, at: Date.now() }
+  return map
+}
+
 export async function POST(req: NextRequest) {
   let input: {
     id_Termin?: number
@@ -88,28 +119,16 @@ export async function POST(req: NextRequest) {
     ...input.cestujici!.map(c => c.psc?.replace(/\s/g, '')),
   ].filter(Boolean) as string[])]
 
-  // Build PSČ → id_Obec map from a single ObecList API call
+  // Build PSČ → id_Obec map from Profis's town list (cached — see getPscToObecMap)
   const pscToObec: Record<string, number> = {}
   let obecListReturnedData = false
   if (allPsc.length > 0) {
     try {
-      const obceRaw = await soapCall('Ciselnik', 'ObecList', `
-        <ns:Context>
-          <ns:UzivatelHeslo>${process.env.PROFIS_HESLO}</ns:UzivatelHeslo>
-          <ns:UzivatelLogin>${process.env.PROFIS_LOGIN}</ns:UzivatelLogin>
-          <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>
-          <ns:id_Republika>${process.env.PROFIS_ID_REPUBLIKA}</ns:id_Republika>
-        </ns:Context>
-        <ns:id_Jazyk>${process.env.PROFIS_ID_JAZYK}</ns:id_Jazyk>`)
-      const obceXml = obceRaw._raw as string
-      const obceBlocks = obceXml.match(/<Obec[\s\S]*?<\/Obec>/g) ?? []
-      if (obceBlocks.length > 0) obecListReturnedData = true
-      for (const block of obceBlocks) {
-        const psc = extractTag(block, 'PSC')?.replace(/\s/g, '')
-        if (psc && allPsc.includes(psc)) {
-          const idStr = extractTag(block, 'ID')
-          if (idStr) pscToObec[psc] = Number(idStr)
-        }
+      const allPscToObec = await getPscToObecMap()
+      if (allPscToObec.size > 0) obecListReturnedData = true
+      for (const psc of allPsc) {
+        const id = allPscToObec.get(psc)
+        if (id) pscToObec[psc] = id
       }
       console.log('[order] id_Obec map:', pscToObec)
     } catch (e) {

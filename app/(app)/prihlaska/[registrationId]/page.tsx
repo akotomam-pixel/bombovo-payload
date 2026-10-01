@@ -72,6 +72,7 @@ function findInHardcoded(registrationIdNum: number): MatchedData | null {
         originalPrice: date.originalPrice,
         discountedPrice: date.discountedPrice,
         profisTerminId: date.profisTerminId ?? null,
+        id_ZajezdHotel: date.id_ZajezdHotel ?? null,
         campAge: details.age,
       };
     }
