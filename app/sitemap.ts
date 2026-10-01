@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { camps } from '@/lib/campsData'
+import { isPreviewCamp } from '@/lib/campPreviewGate'
 
 const BASE = 'https://bombovo.sk'
 
@@ -14,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/o-nas`, priority: 0.6, changeFrequency: 'monthly' },
   ]
 
-  const campPages: MetadataRoute.Sitemap = camps.map((camp) => ({
+  const campPages: MetadataRoute.Sitemap = camps.filter((camp) => !isPreviewCamp(camp.id)).map((camp) => ({
     url: `${BASE}/letne-tabory/${camp.id}`,
     priority: 0.8,
     changeFrequency: 'weekly' as const,

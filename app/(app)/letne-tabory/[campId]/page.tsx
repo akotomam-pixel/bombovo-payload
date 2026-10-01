@@ -8,6 +8,8 @@ import Footer from '@/components/Footer'
 import { getCampDetails } from '@/data/camps'
 import type { CampDetailData } from '@/data/camps/types'
 import CampDetailClient from './CampDetailClient'
+import CampPreviewGate from './CampPreviewGate'
+import { isPreviewCamp, PREVIEW_COOKIE } from '@/lib/campPreviewGate'
 import FestLastMinutePopup from '@/components/FestLastMinutePopup'
 import { TRACK_COOKIE, parseTrackCookie, logTrackEvent } from '@/lib/trackEvents'
 
@@ -172,6 +174,19 @@ export default async function CampDetailPage({
   // 2. Fall back to hardcoded data files
   if (!campDetails) {
     campDetails = getCampDetails(campId)
+  }
+
+  // "Pripravujeme" password gate for camps that aren't public yet
+  if (campDetails && isPreviewCamp(campId)) {
+    const cookieStore = await cookies()
+    if (cookieStore.get(PREVIEW_COOKIE)?.value !== '1') {
+      return (
+        <CampPreviewGate
+          campName={campDetails.name}
+          heroImage={campDetails.heroGallery?.[0]?.src}
+        />
+      )
+    }
   }
 
   // Route-scoped popup: only fetched/rendered on /letne-tabory/fest-animator-fest

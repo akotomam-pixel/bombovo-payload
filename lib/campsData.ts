@@ -16,6 +16,8 @@ import { kazdyDenNovyZazitokData } from '@/data/camps/kazdy-den-novy-zazitok'
 import { zBoduNulaDoBoduStoData } from '@/data/camps/z-bodu-nula-do-bodu-sto'
 import { woodkempData } from '@/data/camps/woodkemp'
 import { expectoData } from '@/data/camps/expecto'
+import { halloweenNaLomochData } from '@/data/camps/halloween-na-lomoch'
+import { festHalloweenFestData } from '@/data/camps/fest-halloween-fest'
 
 // Handles both hyphen and em-dash: "8-14 rokov" or "10 – 16 rokov"
 function parseAge(ageStr: string): { short: string; range: [number, number] } {
@@ -48,6 +50,30 @@ export interface Camp {
 }
 
 export const camps: Camp[] = [
+  // Autumn camps (28.10.–1.11.2026). Not in Payload — hardcoded only. Their
+  // detail pages sit behind a password (lib/campPreviewGate.ts) for now.
+  {
+    id: 'halloween-na-lomoch',
+    name: 'Halloween na Lomoch',
+    ...parseAgeFields(halloweenNaLomochData.age),
+    types: ['Dobrodružný', 'Tvorivý'],
+    displayTypes: ['Dobrodružný', 'Tvorivý'],
+    price: halloweenNaLomochData.price,
+    dates: [],
+    description: halloweenNaLomochData.bulletPoints[0],
+    image: halloweenNaLomochData.heroGallery![0].src,
+  },
+  {
+    id: 'fest-halloween-fest',
+    name: 'Fest Halloween Fest',
+    ...parseAgeFields(festHalloweenFestData.age),
+    types: ['Tínedžerský', 'Akčný'],
+    displayTypes: ['Tínedžerský', 'Akčný'],
+    price: festHalloweenFestData.price,
+    dates: [],
+    description: festHalloweenFestData.bulletPoints[0],
+    image: festHalloweenFestData.heroGallery![0].src,
+  },
   {
     id: 'olymp-kemp',
     name: 'Olymp Kemp',

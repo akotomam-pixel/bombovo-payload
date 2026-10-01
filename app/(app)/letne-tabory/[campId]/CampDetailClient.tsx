@@ -454,7 +454,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                       <h3 className="text-xl font-bold text-bombovo-dark mb-4">V TOMTO TÁBORE ZAŽIJEŠ:</h3>
                       <div className="space-y-2 text-base text-bombovo-dark leading-relaxed">
                         {campDetails.section4.details.vTomtoTaboreZazites.map((item, idx) => (
-                          <p key={idx}>• {item}</p>
+                          <p key={idx}>• {renderBold(item)}</p>
                         ))}
                       </div>
                     </div>

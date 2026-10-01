@@ -78,6 +78,9 @@ function payloadDocToCamp(doc: Record<string, any>, hardcodedBySlug: Map<string,
   }
 }
 
+// Autumn 2026 camps — still on sale, so exempt from the off-season override.
+const AUTUMN_CAMP_IDS = new Set(['halloween-na-lomoch', 'fest-halloween-fest'])
+
 export default async function LetneTaborePage() {
   // Build a quick lookup map for hardcoded camps
   const hardcodedBySlug = new Map<string, Camp>(
@@ -135,8 +138,16 @@ export default async function LetneTaborePage() {
   // takes over again for individual camps.
   const ALL_CAMPS_OFF_SEASON = true
   if (ALL_CAMPS_OFF_SEASON) {
-    mergedCamps = mergedCamps.map((c) => ({ ...c, poSezone: true }))
+    mergedCamps = mergedCamps.map((c) =>
+      AUTUMN_CAMP_IDS.has(c.id) ? c : { ...c, poSezone: true },
+    )
   }
+
+  // The autumn camps are the only ones on sale right now — list them first.
+  mergedCamps = [
+    ...mergedCamps.filter((c) => AUTUMN_CAMP_IDS.has(c.id)),
+    ...mergedCamps.filter((c) => !AUTUMN_CAMP_IDS.has(c.id)),
+  ]
 
   const jsonLd = {
     '@context': 'https://schema.org',

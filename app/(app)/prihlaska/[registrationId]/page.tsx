@@ -71,6 +71,8 @@ function findInHardcoded(registrationIdNum: number): MatchedData | null {
         dateEnd: date.end,
         originalPrice: date.originalPrice,
         discountedPrice: date.discountedPrice,
+        profisTerminId: date.profisTerminId ?? null,
+        campAge: details.age,
       };
     }
   }

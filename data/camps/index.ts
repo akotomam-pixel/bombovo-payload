@@ -16,6 +16,8 @@ import { vDracejNoreData } from './v-dracej-nore'
 import { tajomstvoBasketbalovehoPoharaData } from './tajomstvo-basketbaloveho-pohara'
 import { anglickeLetoData } from './anglicke-leto'
 import { trhlinaData } from './trhlina'
+import { halloweenNaLomochData } from './halloween-na-lomoch'
+import { festHalloweenFestData } from './fest-halloween-fest'
 
 export const campDetailsMap: Record<string, CampDetailData> = {
   'artlantida': artlantidaData,
@@ -35,6 +37,8 @@ export const campDetailsMap: Record<string, CampDetailData> = {
   'tajomstvo-basketbaloveho-pohara': tajomstvoBasketbalovehoPoharaData,
   'anglicke-leto': anglickeLetoData,
   'trhlina': trhlinaData,
+  'halloween-na-lomoch': halloweenNaLomochData,
+  'fest-halloween-fest': festHalloweenFestData,
 }
 
 export function getCampDetails(campId: string): CampDetailData | null {

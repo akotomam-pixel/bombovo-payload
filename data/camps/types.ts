@@ -57,6 +57,8 @@ export interface CampDetailData {
   section5: {
     dates: {
       registrationId?: number
+      /** Profis id_Termin — only needed for camps not managed in Payload */
+      profisTerminId?: number
       start: string
       end: string
       days: number
