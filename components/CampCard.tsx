@@ -79,10 +79,18 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
         {poSezone && (
           <>
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
-            <div className="absolute left-4 top-4 rounded-full bg-bombovo-dark px-4 py-2 shadow-[0_4px_14px_-2px_rgba(8,7,8,0.4)]">
-              <span className="text-[12px] font-bold uppercase leading-none tracking-wider text-white">
-                Po sezóne
-              </span>
+            {/* Same red stamp band as a sold-out stredisko card (StrediskoCard),
+                so both listings read as one system. Outside the photo's
+                grayscale (that's on the Image only), so it stays red. */}
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+              <div
+                aria-hidden
+                className="w-[130%] -rotate-6 border-y-[3px] border-white/90 bg-bombovo-red py-2.5 text-center shadow-[0_14px_30px_-8px_rgba(8,7,8,0.55)]"
+              >
+                <span className="text-[16px] font-black uppercase leading-none tracking-[0.3em] text-white">
+                  Vypredané
+                </span>
+              </div>
             </div>
           </>
         )}
@@ -119,7 +127,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
           /* Off-season — no price, no booking. Mirrors the sold-out stredisko
              card's dead box so the two listings read as one system. */
           <div className="mt-6 flex w-full cursor-default items-center justify-center rounded-2xl border-[3px] border-gray-300 bg-gray-100 p-4 text-lg font-bold text-gray-400">
-            Po sezóne
+            Vypredané
           </div>
         ) : (
           /* Price and CTA Row */
