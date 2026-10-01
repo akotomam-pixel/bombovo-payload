@@ -46,10 +46,12 @@ export const festHalloweenFestData: CampDetailData = {
     buttonText: 'Pozri Dostupné Termíny',
   },
 
-  // TODO: "Ako to prežíva dieťa" text comes later (written separately).
   section3: {
     headline: 'Ako Fest prežíva dieťa?',
-    text: [],
+    text: [
+      'Na Feste mám konečne priestor rozhodovať sa, zapojiť sa po svojom a nemať pocit, že sa musím na niečo hrať. Počas piatich dní od 28. októbra do 1. novembra v Horskom hoteli Lomy nie je každý krok naplánovaný za mňa. Program má tempo, ale stále zostáva dosť slobody vybrať si, do čoho sa pustím a kde budem užitočný. Pri vyrezávaní tekvíc, tímových súbojoch alebo hre Kto klame? sa rýchlo ukáže, kto premýšľa dopredu, kto vie strhnúť ostatných a kto drží skupinu pokope. Nemusím byť najhlasnejší, aby som do partie patril a aby môj názor niečo znamenal.',
+      'Najviac si z Festu neodnášam konkrétnu hru, ale ľudí, s ktorými som ju zažil. Prvá halloweenska edícia nadväzuje na komunitu, ktorá okolo tínedžerského Festu rastie už viac ako 15 rokov, a dáva jej nový jesenný príbeh. Čaká nás halloweenska párty v kostýmoch, Casino: The Night of Risk, Horror Photo Challenge, The Impossible Quiz aj tajné misie v hre Nenechaj sa chytiť. Raz riskujeme, inokedy blafujeme, tvoríme alebo bojujeme za tím, takže sa prirodzene spoznáme aj mimo bežných rolí zo školy. Z náhodných spolubývajúcich a spoluhráčov sa počas piatich dní stane pevná partia. Kontakty nekončia odchodom domov, často pokračujú v správach, stretnutiach a ďalších spoločných Festoch.',
+    ],
     reviews: [
       {
         text: 'Fest Animátor Fest je najlepší tábor na celom svete. Je to tábor kde sa ľudia spoznávajú, zabávajú a nepotrebujú k tomu žiadne moderné vecičky. Už som na Feste 2-krát a určite som ešte neskončil. Za týchto 9 dní som veľa toho pochopil a som za to vďačný všetkým ľuďom ktorý boli so mnou na Feste. A preto vám patrí veľké ĎAKUJEM!!!',

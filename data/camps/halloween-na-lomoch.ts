@@ -45,10 +45,12 @@ export const halloweenNaLomochData: CampDetailData = {
     buttonText: 'Pozri Dostupné Termíny',
   },
 
-  // TODO: "Ako to prežíva dieťa" text comes later (written separately).
   section3: {
     headline: 'Ako tábor prežíva dieťa?',
-    text: [],
+    text: [
+      'Na Lomoch má dieťa pocit, že vstúpilo do príbehu, v ktorom nič nie je iba obyčajnou hrou. Jesenný les vo Vtáčniku, kostýmy a svetlo vyrezaných tekvíc vytvoria tajomnú atmosféru, no stále zostáva dosť priestoru na smiech a bezpečné skúšanie vlastnej odvahy. Pri vyrezávaní tekvice dá priestor fantázii a teší sa, keď sa večer rozsvieti. Raz pátra pri Čarodejníckom súde, inokedy zbiera prísady do Magického elixíru alebo premýšľa, kto je čarodejník. Nie je len divákom. Všíma si stopy, rozhoduje sa, pomáha svojmu tímu a zisťuje, že aj zamotanú úlohu dokáže vyriešiť, keď sa sústredí a dôveruje ostatným.',
+      'Počas piatich dní, od 28. októbra do 1. novembra, sa Horský hotel Lomy stane miestom, kde sa nové kamarátstva rodia celkom prirodzene. Pri tvorbe vlastného monštra v Laboratórnej výzve môže dieťa ukázať fantáziu, na halloweenskej párty sa odviazať v kostýme a v záverečnom Escape Roome zažiť, že každý člen tímu vie priniesť dôležitý nápad. Domov si tak neodnáša iba spomienku na hry, tekvicu či kostým. Odchádza s pocitom, že zvládlo niečo nové, dokázalo požiadať o pomoc aj pomôcť iným a našlo si ľudí, s ktorými sa nebojí vstúpiť ani do ďalšieho tajomstva.',
+    ],
     reviews: [
       {
         text: 'Náš syn je už 7x veľmi spokojný a kamarátstva, ktoré si v tábore našiel, trvajú aj po jeho skončení. Budúce leto už pôjdeme jedine s vami. Máme odskúšaných viacero táborov, ale vy ste jediní, čo nás ani raz nesklamali.',
