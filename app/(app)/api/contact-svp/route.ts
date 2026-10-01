@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
   ${row('Bombový balíček', v(body.bombovyBalicek))}
   ${row('Cestovné poistenie', v(body.poistenie))}
   ${row('Poznámka', v(body.poznamka))}
+  ${row('ID prihlášky', v(body.eventId).slice(0, 8).toUpperCase())}
 </table>
 </body></html>`,
     })

@@ -125,7 +125,30 @@ export default function RegistrationSVPClient({
         window.scrollTo({ top: 0, behavior: 'smooth' });
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
-        posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoId });
+        // Form details for reporting. Personal data (leader name, phone, full email,
+        // address, free-text note) is intentionally NOT sent to PostHog.
+        const toNumber = (val: string) => {
+          const n = parseInt(val, 10);
+          return Number.isFinite(n) ? n : undefined;
+        };
+        posthog.capture('svp_registration_submitted', {
+          stredisko_slug: strediskoId,
+          submission_id: metaEventId.slice(0, 8).toUpperCase(),
+          stredisko: formData.stredisko,
+          alternativne_stredisko: formData.alternativneStredisko,
+          termin: formData.datumPrichodu,
+          datum_odchodu: formData.datumOdchodu || undefined,
+          school_name: formData.nazovSkoly,
+          school_city: formData.mesto,
+          school_email_domain: formData.email.split('@')[1]?.trim().toLowerCase(),
+          age_group: formData.vekZiakov,
+          students_count: toNumber(formData.pocetZiakov),
+          students_count_raw: formData.pocetZiakov,
+          teachers_count: toNumber(formData.pocetPedagogov),
+          zdravotnik: formData.zdravotnik,
+          animacny_program: formData.animacnyProgram,
+          bombovy_balicek: formData.bombovyBalicek,
+        });
       } catch {
         console.error('[svp-tracking] Browser analytics failed after a successful inquiry');
       }
