@@ -72,7 +72,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
           src={image}
           alt={`${name} – letný tábor pre deti | Bombovo`}
           fill
-          className={`object-cover transition-transform duration-300 ${poSezone ? 'grayscale' : 'hover:scale-105'}`}
+          className={`object-cover transition-transform duration-300 ${poSezone ? 'grayscale-[60%] brightness-105' : 'hover:scale-105'}`}
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={index < 3}
         />
@@ -97,7 +97,7 @@ export default function CampCard({ id, name, age, types, displayTypes, price, de
       </Link>
 
       {/* Content */}
-      <div className={`p-6 space-y-4 ${poSezone ? 'opacity-75 grayscale' : ''}`}>
+      <div className={`p-6 space-y-4 ${poSezone ? 'opacity-90 grayscale-[60%]' : ''}`}>
         {/* Camp Name */}
         <h3 className="text-2xl font-bold text-bombovo-dark leading-tight text-center">{name}</h3>
 
