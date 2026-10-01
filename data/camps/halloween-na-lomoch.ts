@@ -39,8 +39,8 @@ export const halloweenNaLomochData: CampDetailData = {
     },
     headline: 'O čom je Halloween na Lomoch?',
     description: [
-      'Jeseň v Bombove bude tentokrát trochu tajomnejšia! Čaká ťa dobrodružstvo plné jesennej atmosféry, Halloweenskych výziev, pohybových hier, tvorenia a záhad, ktoré budeme musieť spoločne rozlúštiť. Vyrobíme si vlastné tekvice a lampášiky, vydáme sa po stopách tajomstva, ktoré ukrývajú Lomy a užijeme si aj poriadnu dávku zábavy s kamarátmi.',
-      'Budeš potrebovať odvahu, šikovnosť, tímového ducha a možno aj trochu fantázie. Čo sa vlastne na Lomoch deje? To zistíš až vtedy, keď sa k nám pridáš!',
+      'Halloween na Lomoch je päťdňový jesenný tábor v Horskom hoteli Lomy pre deti od 8 do 14 rokov. Deti sa spoločne vydajú po stopách tajomstva, ktoré ukrývajú Lomy, a postupne ho rozlúštia cez detektívne hry, magické úlohy a tímové výzvy.',
+      'Program strieda pohybové hry, tvorenie a hádanky. Deti si vyrobia vlastné tekvice a lampášiky, vymyslia svoje monštrum a v Čarodejníckom súde odhalia, komu sa nedá veriť. Nechýba halloweenska párty v kostýmoch a na záver veľké finále v Halloween Escape Roome.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },
@@ -48,8 +48,7 @@ export const halloweenNaLomochData: CampDetailData = {
   section3: {
     headline: 'Ako tábor prežíva dieťa?',
     text: [
-      'Na Lomoch má dieťa pocit, že vstúpilo do príbehu, v ktorom nič nie je iba obyčajnou hrou. Jesenný les vo Vtáčniku, kostýmy a svetlo vyrezaných tekvíc vytvoria tajomnú atmosféru, no stále zostáva dosť priestoru na smiech a bezpečné skúšanie vlastnej odvahy. Pri vyrezávaní tekvice dá priestor fantázii a teší sa, keď sa večer rozsvieti. Raz pátra pri Čarodejníckom súde, inokedy zbiera prísady do Magického elixíru alebo premýšľa, kto je čarodejník. Nie je len divákom. Všíma si stopy, rozhoduje sa, pomáha svojmu tímu a zisťuje, že aj zamotanú úlohu dokáže vyriešiť, keď sa sústredí a dôveruje ostatným.',
-      'Počas piatich dní, od 28. októbra do 1. novembra, sa Horský hotel Lomy stane miestom, kde sa nové kamarátstva rodia celkom prirodzene. Pri tvorbe vlastného monštra v Laboratórnej výzve môže dieťa ukázať fantáziu, na halloweenskej párty sa odviazať v kostýme a v záverečnom Escape Roome zažiť, že každý člen tímu vie priniesť dôležitý nápad. Domov si tak neodnáša iba spomienku na hry, tekvicu či kostým. Odchádza s pocitom, že zvládlo niečo nové, dokázalo požiadať o pomoc aj pomôcť iným a našlo si ľudí, s ktorými sa nebojí vstúpiť ani do ďalšieho tajomstva.',
+      'Na Lomoch má dieťa pocit, že vstúpilo do príbehu, v ktorom nič nie je iba obyčajnou hrou. Všíma si stopy, rozhoduje sa, pomáha svojmu tímu a zisťuje, že aj zamotanú úlohu dokáže vyriešiť, keď sa sústredí a dôveruje ostatným. Odchádza s pocitom, že zvládlo niečo nové, dokázalo požiadať o pomoc aj pomôcť iným a našlo si ľudí, s ktorými sa nebojí vstúpiť ani do ďalšieho tajomstva.',
     ],
     reviews: [
       {

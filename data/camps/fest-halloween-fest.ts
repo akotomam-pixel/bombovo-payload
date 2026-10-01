@@ -40,8 +40,8 @@ export const festHalloweenFestData: CampDetailData = {
     },
     headline: 'O čom je Fest Halloween Fest?',
     description: [
-      'Fest Halloween Fest prichádza do Bombova po prvýkrát v histórii! Priprav sa na nezabudnuteľné dni plné halloweenskej atmosféry, nečakaných zvratov a zážitkov, ktoré posunú klasický FEST na úplne inú úroveň. Čo všetko sme si pre teba pripravili? To ti zatiaľ neprezradíme!',
-      'Jedno je však isté – túto premiéru si rozhodne nechceš nechať ujsť. Príď a odhaľ všetky tajomstvá Fest Halloween Festu na vlastnej koži!',
+      'Fest Halloween Fest je jesenná edícia nášho tínedžerského Festu pre mladých od 13 do 17 rokov. Päť dní v Horskom hoteli Lomy prináša všetko, čo máš na Feste rád: skvelú partiu, uvoľnenú atmosféru a slobodu byť sám sebou. Tentokrát však v halloweenskom šate a s nečakanými zvratmi.',
+      'Žiadne hry pre malé deti. Čakajú ťa strategické a psychologické hry ako Casino: The Night of Risk či Kto klame?, tajné misie, Horror Photo Challenge aj The Impossible Quiz. A večer to celé vyvrcholí halloweenskou párty v kostýmoch.',
     ],
     buttonText: 'Pozri Dostupné Termíny',
   },
@@ -49,8 +49,7 @@ export const festHalloweenFestData: CampDetailData = {
   section3: {
     headline: 'Ako Fest prežíva dieťa?',
     text: [
-      'Na Feste mám konečne priestor rozhodovať sa, zapojiť sa po svojom a nemať pocit, že sa musím na niečo hrať. Počas piatich dní od 28. októbra do 1. novembra v Horskom hoteli Lomy nie je každý krok naplánovaný za mňa. Program má tempo, ale stále zostáva dosť slobody vybrať si, do čoho sa pustím a kde budem užitočný. Pri vyrezávaní tekvíc, tímových súbojoch alebo hre Kto klame? sa rýchlo ukáže, kto premýšľa dopredu, kto vie strhnúť ostatných a kto drží skupinu pokope. Nemusím byť najhlasnejší, aby som do partie patril a aby môj názor niečo znamenal.',
-      'Najviac si z Festu neodnášam konkrétnu hru, ale ľudí, s ktorými som ju zažil. Prvá halloweenska edícia nadväzuje na komunitu, ktorá okolo tínedžerského Festu rastie už viac ako 15 rokov, a dáva jej nový jesenný príbeh. Čaká nás halloweenska párty v kostýmoch, Casino: The Night of Risk, Horror Photo Challenge, The Impossible Quiz aj tajné misie v hre Nenechaj sa chytiť. Raz riskujeme, inokedy blafujeme, tvoríme alebo bojujeme za tím, takže sa prirodzene spoznáme aj mimo bežných rolí zo školy. Z náhodných spolubývajúcich a spoluhráčov sa počas piatich dní stane pevná partia. Kontakty nekončia odchodom domov, často pokračujú v správach, stretnutiach a ďalších spoločných Festoch.',
+      'Na Feste mám konečne priestor rozhodovať sa, zapojiť sa po svojom a nemať pocit, že sa musím na niečo hrať. Nemusím byť najhlasnejší, aby som do partie patril a aby môj názor niečo znamenal. Najviac si z Festu neodnášam konkrétnu hru, ale ľudí, s ktorými som ju zažil.',
     ],
     reviews: [
       {
