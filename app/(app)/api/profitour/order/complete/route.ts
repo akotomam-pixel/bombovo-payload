@@ -2,10 +2,19 @@ import { NextRequest, NextResponse, after } from 'next/server'
 import { soapCall } from '@/lib/profis'
 import { sendMetaCapiEvent } from '@/lib/metaCapi'
 import { runOrderExtras, type OrderExtrasInput } from '@/lib/profisOrderExtras'
+import { ecomailTriggerPipeline } from '@/lib/ecomail'
 
 // Background work (extras + 4 Profis finalize steps + Ecomail + Meta) runs after the
 // response is sent; give the function enough time to finish it.
 export const maxDuration = 60
+
+// Halloween camps (autumn 2026) get their own post-purchase email ("bring a
+// costume"), sent 24h after purchase by an API-triggered automation on list 46.
+// An API trigger fires even for contacts already on list 46 from a summer
+// purchase — the old welcome-triggered helper only fires for brand-new contacts.
+// null = automation not built yet, buyers are only added to the list.
+const HALLOWEEN_POSTPURCHASE_PIPELINE: number | null = null
+const isHalloweenCamp = (campName: string) => /halloween/i.test(campName)
 
 
 async function getSubscriberTags(apiKey: string, listId: string, email: string): Promise<string[]> {
@@ -29,6 +38,7 @@ export async function POST(req: NextRequest) {
     email?: string
     name?: string
     campName?: string
+    childFirstName?: string
     phone?: string
     eventId?: string
     eventSourceUrl?: string
@@ -40,7 +50,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { id_Objednavka, klic, email, name, campName, phone, eventId, eventSourceUrl, extras } = body
+  const { id_Objednavka, klic, email, name, campName, childFirstName, phone, eventId, eventSourceUrl, extras } = body
   if (!id_Objednavka || !klic) {
     return NextResponse.json({ error: 'Missing required fields: id_Objednavka, klic' }, { status: 400 })
   }
@@ -178,8 +188,11 @@ export async function POST(req: NextRequest) {
               }),
             })
 
+            const halloween = isHalloweenCamp(resolvedCampName)
+
             // Subscribe to list 46 (PostPurchase Helper) — triggers post-purchase sequence
-            // CAMP_NAME must be set here so *|CAMP_NAME|* merge tag works in the email
+            // CAMP_NAME must be set here so *|CAMP_NAME|* merge tag works in the email.
+            // Halloween buyers skip the summer welcome email and get the Halloween one below.
             await fetch(`https://api2.ecomailapp.cz/lists/46/subscribe`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', key: apiKey },
@@ -187,12 +200,21 @@ export async function POST(req: NextRequest) {
                 subscriber_data: {
                   email: cleanEmail,
                   name: cleanName,
-                  custom_fields: { CAMP_NAME: resolvedCampName },
+                  custom_fields: {
+                    CAMP_NAME: resolvedCampName,
+                    CHILD_NAME: childFirstName?.trim() ?? '',
+                  },
                 },
-                trigger_autoresponders: true,
+                trigger_autoresponders: !halloween,
                 update_existing: true,
               }),
             })
+
+            if (halloween && HALLOWEEN_POSTPURCHASE_PIPELINE) {
+              await ecomailTriggerPipeline(apiKey, HALLOWEEN_POSTPURCHASE_PIPELINE, cleanEmail).catch((err) =>
+                console.error('[order/complete] Ecomail Halloween post-purchase trigger error (non-blocking):', err),
+              )
+            }
 
             // Delete from list 45 (NewSutaz Helper) — stops welcome sequence immediately on purchase
             fetch(

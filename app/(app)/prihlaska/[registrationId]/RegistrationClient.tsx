@@ -532,6 +532,7 @@ export default function RegistrationClient({
               name: `${formData.parentFirstName} ${formData.parentLastName}`.trim(),
               phone: formData.phone,
               campName,
+              childFirstName: formData.childFirstName,
               eventId: metaEventId,
               eventSourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
               extras: {
