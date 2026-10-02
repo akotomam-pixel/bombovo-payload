@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
                   name: cleanName,
                   custom_fields: {
                     CAMP_NAME: resolvedCampName,
-                    CHILD_NAME: childFirstName?.trim() ?? '',
+                    child_name: childFirstName?.trim() ?? '',
                   },
                 },
                 trigger_autoresponders: !halloween,
