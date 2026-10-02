@@ -12,8 +12,9 @@ export const maxDuration = 60
 // dedicated list. A welcome trigger only fires for contacts new to its list, so
 // a separate list is what lets summer buyers (already on list 46) get it too.
 // API-triggered automations would avoid the extra list, but the Profi plan
-// doesn't allow creating new ones. null = list not created yet, skip.
-const HALLOWEEN_POSTPURCHASE_LIST_ID: number | null = null
+// doesn't allow creating new ones. List 88 "Halloween Postpurchase Helper",
+// automation 48538. Its field keys are lowercase (camp_name, child_name).
+const HALLOWEEN_POSTPURCHASE_LIST_ID = 88
 const isHalloweenCamp = (campName: string) => /halloween/i.test(campName)
 
 
@@ -211,7 +212,7 @@ export async function POST(req: NextRequest) {
             })
 
             // Joining the Halloween helper list fires its welcome automation (24h wait → email)
-            if (halloween && HALLOWEEN_POSTPURCHASE_LIST_ID) {
+            if (halloween) {
               await fetch(`https://api2.ecomailapp.cz/lists/${HALLOWEEN_POSTPURCHASE_LIST_ID}/subscribe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', key: apiKey },
@@ -220,7 +221,7 @@ export async function POST(req: NextRequest) {
                     email: cleanEmail,
                     name: cleanName,
                     custom_fields: {
-                      CAMP_NAME: resolvedCampName,
+                      camp_name: resolvedCampName,
                       child_name: childFirstName?.trim() ?? '',
                     },
                   },
