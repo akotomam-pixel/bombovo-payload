@@ -69,7 +69,7 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                 />
               )}
               <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                {current.badgeText || 'Letné Tábory 2025'}
+                {current.badgeText || 'Tábory 2025'}
               </p>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                       style={{ width: '200px', height: '260px' }}
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                      {reviews[0].badgeText || 'Letné Tábory 2025'}
+                      {reviews[0].badgeText || 'Tábory 2025'}
                     </p>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                       style={{ width: '200px', height: '260px' }}
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                      {reviews[1].badgeText || 'Letné Tábory 2025'}
+                      {reviews[1].badgeText || 'Tábory 2025'}
                     </p>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default function ReviewCarousel({ reviews, displaySeconds }: ReviewCarous
                       style={{ width: '200px', height: '260px' }}
                     />
                     <p className="text-center mt-3 font-handwritten text-bombovo-dark text-base">
-                      {reviews[2].badgeText || 'Letné Tábory 2025'}
+                      {reviews[2].badgeText || 'Tábory 2025'}
                     </p>
                   </div>
                 </div>

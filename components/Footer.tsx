@@ -81,7 +81,7 @@ export default function Footer() {
 
             <ul className="space-y-3">
               {[
-                ['/letne-tabory', 'Letné tábory'],
+                ['/letne-tabory', 'Tábory'],
                 ['/skoly-v-prirode', 'Školy v prírode'],
                 ['/skolske-vylety', 'Školské výlety'],
                 ['/adaptacne-kurzy', 'Adaptačné kurzy'],

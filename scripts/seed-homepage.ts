@@ -59,19 +59,19 @@ async function seedHomepage(token: string): Promise<void> {
     // photo: assigned manually in admin (Review1.JPG, review2.JPG, review3.JPG)
     reviews: [
       {
-        badgeText: 'Letné Tábory 2025',
+        badgeText: 'Tábory 2025',
         reviewText:
           'Náš syn je už 7x veľmi spokojný a kamarátstva, ktoré si v tábore našiel, trvajú aj po jeho skončení. Budúce leto už pôjdeme jedine s vami. Máme odskúšaných viacero táborov, ale vy ste jediní, čo nás ani raz nesklamali.',
         reviewAuthor: 'Rodič Andrea D.',
       },
       {
-        badgeText: 'Letné Tábory 2025',
+        badgeText: 'Tábory 2025',
         reviewText:
           'Ďakujeme za našu dcéru Lauru, za kopec zážitkov a starostlivosť. Bol to pre ňu úžasný týždeň prázdnin.',
         reviewAuthor: 'Dovičáková Martina',
       },
       {
-        badgeText: 'Letné Tábory 2025',
+        badgeText: 'Tábory 2025',
         reviewText:
           'Dcérke sa v tábore veľmi páčilo. Aktivity, prístup animátorov bolo na jedničku, o rok sa chce vrátiť ku vám do tábora, už odpočítava dni. Ďakujeme.',
         reviewAuthor: 'Magdaléna R.',

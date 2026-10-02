@@ -69,7 +69,7 @@ export const HomepageGlobal: GlobalConfig = {
         {
           name: 'badgeText',
           type: 'text',
-          label: 'Text nad fotkou (napr. Letné Tábory 2025)',
+          label: 'Text nad fotkou (napr. Tábory 2025)',
         },
         {
           name: 'reviewText',
