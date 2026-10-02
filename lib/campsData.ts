@@ -52,8 +52,8 @@ export interface Camp {
 }
 
 export const camps: Camp[] = [
-  // Autumn camps (28.10.–1.11.2026). Not in Payload — hardcoded only. Their
-  // detail pages sit behind a password (lib/campPreviewGate.ts) for now.
+  // Autumn camps (28.10.–1.11.2026). Managed in Payload; these entries are the
+  // fallback + source of originalPrice and the kids camp's card types.
   {
     id: 'halloween-na-lomoch',
     name: 'Halloween na Lomoch',
