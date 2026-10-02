@@ -109,7 +109,7 @@ export default function HeroSection({ subHeadline, headline, stats }: HeroSectio
             <div className="flex flex-col sm:flex-row lg:flex-row gap-4 justify-center lg:justify-start" style={{ marginLeft: '20px' }}>
               <Link href="/letne-tabory">
                 <button className="px-8 py-4 bg-[#FDCA40] border-2 border-[#080708] text-[#080708] font-bold text-base rounded-full hover:translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
-                  Letné Tábory
+                  Tábory
                 </button>
               </Link>
               <Link href="/skoly-v-prirode">

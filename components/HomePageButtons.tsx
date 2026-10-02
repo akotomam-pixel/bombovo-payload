@@ -10,11 +10,11 @@ export default function HomePageButtons() {
         {/* Letné tábory - Black text with yellow hand-drawn underline */}
         <Link
           href="/letne-tabory"
-          aria-label="Detské letné tábory pre deti na Slovensku"
+          aria-label="Detské tábory pre deti na Slovensku"
           className="relative group"
         >
           <span className="text-bombovo-dark font-semibold text-lg">
-            Letné tábory
+            Tábory
           </span>
           {/* Yellow hand-drawn underline */}
           <svg 
