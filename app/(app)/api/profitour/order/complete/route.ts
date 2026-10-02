@@ -2,18 +2,18 @@ import { NextRequest, NextResponse, after } from 'next/server'
 import { soapCall } from '@/lib/profis'
 import { sendMetaCapiEvent } from '@/lib/metaCapi'
 import { runOrderExtras, type OrderExtrasInput } from '@/lib/profisOrderExtras'
-import { ecomailTriggerPipeline } from '@/lib/ecomail'
 
 // Background work (extras + 4 Profis finalize steps + Ecomail + Meta) runs after the
 // response is sent; give the function enough time to finish it.
 export const maxDuration = 60
 
 // Halloween camps (autumn 2026) get their own post-purchase email ("bring a
-// costume"), sent 24h after purchase by an API-triggered automation on list 46.
-// An API trigger fires even for contacts already on list 46 from a summer
-// purchase — the old welcome-triggered helper only fires for brand-new contacts.
-// null = automation not built yet, buyers are only added to the list.
-const HALLOWEEN_POSTPURCHASE_PIPELINE: number | null = null
+// costume"), sent 24h after purchase by a welcome-triggered automation on a
+// dedicated list. A welcome trigger only fires for contacts new to its list, so
+// a separate list is what lets summer buyers (already on list 46) get it too.
+// API-triggered automations would avoid the extra list, but the Profi plan
+// doesn't allow creating new ones. null = list not created yet, skip.
+const HALLOWEEN_POSTPURCHASE_LIST_ID: number | null = null
 const isHalloweenCamp = (campName: string) => /halloween/i.test(campName)
 
 
@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
 
             // Subscribe to list 46 (PostPurchase Helper) — triggers post-purchase sequence
             // CAMP_NAME must be set here so *|CAMP_NAME|* merge tag works in the email.
-            // Halloween buyers skip the summer welcome email and get the Halloween one below.
+            // Halloween buyers skip the summer welcome email; they get the Halloween one below.
             await fetch(`https://api2.ecomailapp.cz/lists/46/subscribe`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', key: apiKey },
@@ -210,9 +210,25 @@ export async function POST(req: NextRequest) {
               }),
             })
 
-            if (halloween && HALLOWEEN_POSTPURCHASE_PIPELINE) {
-              await ecomailTriggerPipeline(apiKey, HALLOWEEN_POSTPURCHASE_PIPELINE, cleanEmail).catch((err) =>
-                console.error('[order/complete] Ecomail Halloween post-purchase trigger error (non-blocking):', err),
+            // Joining the Halloween helper list fires its welcome automation (24h wait → email)
+            if (halloween && HALLOWEEN_POSTPURCHASE_LIST_ID) {
+              await fetch(`https://api2.ecomailapp.cz/lists/${HALLOWEEN_POSTPURCHASE_LIST_ID}/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', key: apiKey },
+                body: JSON.stringify({
+                  subscriber_data: {
+                    email: cleanEmail,
+                    name: cleanName,
+                    custom_fields: {
+                      CAMP_NAME: resolvedCampName,
+                      child_name: childFirstName?.trim() ?? '',
+                    },
+                  },
+                  trigger_autoresponders: true,
+                  update_existing: true,
+                }),
+              }).catch((err) =>
+                console.error('[order/complete] Ecomail Halloween list subscribe error (non-blocking):', err),
               )
             }
 
