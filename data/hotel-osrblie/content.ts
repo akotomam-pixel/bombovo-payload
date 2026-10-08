@@ -235,7 +235,7 @@ export const hotelOsrblieContent: LomyContent = {
       { range: '31.05. – 04.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
       { range: '07.06. – 11.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
       { range: '14.06. – 18.06.2027', price: '235 €', discounted: '205 €', status: 'Rezervované' },
-      { range: '21.06. – 25.06.2027', price: '235 €', discounted: '205 €', status: 'Voľné', volnychMiest: 30 },
+      { range: '21.06. – 25.06.2027', price: '235 €', discounted: '205 €', status: 'Voľné' },
     ],
   },
 }
