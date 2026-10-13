@@ -103,7 +103,12 @@ export default function KontaktSection({
           {content.formHeading}
         </h2>
 
-        <LomyEnquiryForm className="mt-6" strediskoName={strediskoName} strediskoSlug={slug} />
+        <LomyEnquiryForm
+          className="mt-6"
+          strediskoName={strediskoName}
+          strediskoSlug={slug}
+          formLocation="bottom_of_page"
+        />
       </div>
     </section>
   )
