@@ -22,14 +22,15 @@ const nextConfig = {
       // Facebook ad short links — temporary (307) so they can be repointed.
       // Next.js passes incoming query params (e.g. fbclid) through to the destination.
       ...[
-        ['/svp1', 'ad-1'],
-        ['/svp2', 'ad-2'],
-        ['/svp3', 'ad-3'],
-        ['/svp4', 'ad-4'],
-        ['/svp5', 'ad-2-rt'],
-      ].map(([source, content]) => ({
+        ['/svp1', 'ABO-Svp-video-direct', 'ad-1'],
+        ['/svp2', 'ABO-Svp-video-direct', 'ad-2'],
+        ['/svp3', 'ABO-Svp-video-direct', 'ad-3'],
+        ['/svp4', 'ABO-Svp-video-direct', 'ad-4'],
+        ['/svp5', 'ABO-retargeting-svp', 'ad-2-rt'],
+        ['/svp-rt', 'ABO-retargeting-svp', 'ad-2-rt'],
+      ].map(([source, campaign, content]) => ({
         source,
-        destination: `/skoly-v-prirode?utm_source=facebook&utm_medium=paid&utm_campaign=ABO-Svp-video-direct&utm_content=${content}&utm_term=textlink`,
+        destination: `/skoly-v-prirode?utm_source=facebook&utm_medium=paid&utm_campaign=${campaign}&utm_content=${content}&utm_term=textlink`,
         permanent: false,
       })),
     ]
