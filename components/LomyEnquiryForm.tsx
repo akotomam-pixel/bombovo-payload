@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
+import { newFormId, trackSvp, type AbandonReason, type FormLocation } from '@/lib/svpTracking'
 
 /**
  * The full enquiry form for the rebuilt Lomy page.
@@ -37,6 +38,29 @@ const labelBase = 'block text-[15px] font-semibold text-[#1F2320]'
 const ALL_STREDISKA_NAMES = Object.values(REBUILT_STREDISKA).map((c) => c.hero.name)
 
 type Option = { value: string; label: string }
+
+/**
+ * The visible label of each field, without the required asterisk. Sent as
+ * form_abandoned's last_field — the label only, never what was typed.
+ */
+const FIELD_LABELS = {
+  datumPrichodu: 'Dátum príchodu',
+  veduciPobytu: 'Meno, priezvisko, titul vedúcej/vedúceho pobytu',
+  nazovSkoly: 'Názov školy / organizácie',
+  adresa: 'Adresa',
+  mesto: 'Mesto',
+  telefon: 'Telefón',
+  email: 'E-mail',
+  alternativneStredisko: 'Alternatívne stredisko',
+  vekZiakov: 'Vek žiakov/študentov',
+  pocetZiakov: 'Počet žiakov/študentov',
+  pocetPedagogov: 'Počet pedagógov',
+  zdravotnik: 'Zdravotník',
+  animacny: 'Máte záujem o animačný program?',
+  bombovyBalicek: 'Bombový balíček',
+  poistenie: 'Máte záujem o komplexné cestovné poistenie?',
+  poznamka: 'Poznámka',
+} as const
 
 /**
  * Custom select: a styled trigger button plus a panel portaled to <body>,
@@ -211,11 +235,17 @@ export default function LomyEnquiryForm({
   initialTerm = '',
   strediskoName = 'Horský hotel Lomy',
   strediskoSlug,
+  formLocation,
+  popupOpen,
   className = '',
 }: {
   initialTerm?: string
   strediskoName?: string
   strediskoSlug?: string
+  /** Which of the three placements this is; sent on every form event. */
+  formLocation?: FormLocation
+  /** Only inside a popup: flips to false the moment it is closed, before unmount. */
+  popupOpen?: boolean
   className?: string
 }) {
   const [status, setStatus] = useState<Status>('idle')
@@ -241,6 +271,66 @@ export default function LomyEnquiryForm({
     poznamka: '',
   })
 
+  // form_started / form_abandoned bookkeeping. Refs, not state: none of it
+  // should re-render the form, and the abandon listeners read the latest values.
+  const [formId] = useState(newFormId)
+  const startedRef = useRef(false)
+  const finishedRef = useRef(false)
+  const lastFieldRef = useRef('')
+  // Only fields the person changed themselves; a pre-filled termín doesn't count.
+  const changedRef = useRef(new Set<keyof typeof values>())
+  const valuesRef = useRef(values)
+  valuesRef.current = values
+  const trackProps = {
+    stredisko_slug: strediskoSlug,
+    stredisko_name: strediskoName,
+    form_location: formLocation,
+    form_id: formId,
+  }
+  const trackPropsRef = useRef(trackProps)
+  trackPropsRef.current = trackProps
+
+  const touch = (k: keyof typeof values) => {
+    lastFieldRef.current = FIELD_LABELS[k]
+    changedRef.current.add(k)
+    if (startedRef.current) return
+    startedRef.current = true
+    trackSvp('form_started', trackPropsRef.current)
+  }
+
+  // Started but never successfully sent: fires once, on whichever comes first —
+  // the popup closing, unmount (navigating elsewhere on the site), or the tab
+  // being closed/hidden. The last two go by sendBeacon so they survive the page dying.
+  const abandonRef = useRef((reason: AbandonReason) => {
+    if (!startedRef.current || finishedRef.current) return
+    finishedRef.current = true
+    const filled = [...changedRef.current].filter((k) => valuesRef.current[k].trim() !== '').length
+    trackSvp(
+      'form_abandoned',
+      { ...trackPropsRef.current, reason, last_field: lastFieldRef.current, fields_filled: filled },
+      { beacon: reason === 'tab_closed' || reason === 'tab_hidden' },
+    )
+  })
+
+  useEffect(() => {
+    if (popupOpen === false) abandonRef.current('popup_closed')
+  }, [popupOpen])
+
+  useEffect(() => {
+    const abandon = abandonRef.current
+    const onPageHide = () => abandon('tab_closed')
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') abandon('tab_hidden')
+    }
+    window.addEventListener('pagehide', onPageHide)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.removeEventListener('pagehide', onPageHide)
+      document.removeEventListener('visibilitychange', onVisibility)
+      abandon('left_page')
+    }
+  }, [])
+
   const altStrediskaOptions: Option[] = ALL_STREDISKA_NAMES.filter((n) => n !== strediskoName).map((n) => ({
     value: n,
     label: n,
@@ -248,10 +338,15 @@ export default function LomyEnquiryForm({
 
   const set =
     (k: keyof typeof values) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      touch(k)
       setValues((v) => ({ ...v, [k]: e.target.value }))
+    }
 
-  const setValue = (k: keyof typeof values) => (val: string) => setValues((v) => ({ ...v, [k]: val }))
+  const setValue = (k: keyof typeof values) => (val: string) => {
+    touch(k)
+    setValues((v) => ({ ...v, [k]: val }))
+  }
 
   const validate = () => {
     const next: Record<string, string> = {}
@@ -312,13 +407,14 @@ export default function LomyEnquiryForm({
         return
       }
 
+      // Before the status flips, so nothing after a successful send counts as abandoned.
+      finishedRef.current = true
       setStatus('sent')
       try {
         window.dataLayer = window.dataLayer || []
         window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId })
         posthog.identify(values.email)
-        posthog.capture('svp_inquiry_submitted')
-        if (strediskoSlug) posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoSlug })
+        posthog.capture('svp_inquiry_submitted', trackPropsRef.current)
       } catch {
         console.error('[svp-tracking] Browser analytics failed after a successful inquiry')
       }

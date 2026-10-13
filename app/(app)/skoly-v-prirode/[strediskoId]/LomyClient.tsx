@@ -22,6 +22,7 @@ import KontaktSection from './KontaktSection'
 import StickyBar, { availableMonths } from './StickyBar'
 import PonukaModal from './PonukaModal'
 import type { LomyContent } from '@/data/lomy/types'
+import { trackSvp, type TerminyOpenedFrom } from '@/lib/svpTracking'
 
 /** Next.js image optimizer URL — same mechanism the original detail page uses. */
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
@@ -176,11 +177,23 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   // Both hero CTAs open the termíny dialog; neither scrolls to an anchor.
   const [terminyOpen, setTerminyOpen] = useState(false)
-  const openTerminy = useCallback(() => setTerminyOpen(true), [])
+  // Which button opened the table this time, so REZERVOVAŤ can report it too.
+  const [terminySource, setTerminySource] = useState<TerminyOpenedFrom>('top_of_page')
+  const openTerminy = useCallback(
+    (source: TerminyOpenedFrom) => {
+      setTerminySource(source)
+      setTerminyOpen(true)
+      trackSvp('terms_opened', { stredisko_slug: content.slug, stredisko_name: hero.name, opened_from: source })
+    },
+    [content.slug, hero.name],
+  )
   const closeTerminy = useCallback(() => setTerminyOpen(false), [])
   // The quote request opens its own dialog with the enquiry form.
   const [ponukaOpen, setPonukaOpen] = useState(false)
-  const openPonuka = useCallback(() => setPonukaOpen(true), [])
+  const openPonuka = useCallback(() => {
+    setPonukaOpen(true)
+    trackSvp('ponuka_opened', { stredisko_slug: content.slug, stredisko_name: hero.name })
+  }, [content.slug, hero.name])
   const closePonuka = useCallback(() => setPonukaOpen(false), [])
 
   const galleryDynamicEl = useMemo(
@@ -571,7 +584,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     <button type="button" onClick={openPonuka} className={ctaPrimary}>
                       {ctas.primary.label}
                     </button>
-                    <button type="button" onClick={openTerminy} className={ctaSecondary}>
+                    <button type="button" onClick={() => openTerminy('top_of_page')} className={ctaSecondary}>
                       {ctas.secondary.label}
                     </button>
                   </div>
@@ -661,7 +674,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
       <KontaktSection
         content={content.kontakt}
         terminy={content.terminy}
-        onOpenTerminy={openTerminy}
+        onOpenTerminy={() => openTerminy('above_form')}
         strediskoName={content.hero.name}
         slug={content.slug}
       />
@@ -673,7 +686,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
         discounted={price.discounted}
         unit={price.unit}
         months={availableMonths(content.terminy.items)}
-        onOpen={openTerminy}
+        onOpen={() => openTerminy('sticky_bar')}
       />
 
       {/* Keeps the sticky bar from covering the end of the page on mobile */}
@@ -682,7 +695,15 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <Footer />
 
-      <TerminyModal content={content.terminy} slug={content.slug} payloadId={content.payloadId} open={terminyOpen} onClose={closeTerminy} />
+      <TerminyModal
+        content={content.terminy}
+        slug={content.slug}
+        strediskoName={hero.name}
+        openedFrom={terminySource}
+        payloadId={content.payloadId}
+        open={terminyOpen}
+        onClose={closeTerminy}
+      />
 
       <PonukaModal
         heading={content.kontakt.formHeading}

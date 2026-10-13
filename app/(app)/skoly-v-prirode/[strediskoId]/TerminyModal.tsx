@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import Link from 'next/link'
 import type { LomyTerminy } from '@/data/lomy/types'
+import { trackSvp, type TerminyOpenedFrom } from '@/lib/svpTracking'
 import { CLOSED_TERMIN_STATUS_RE, openTerminyCount, shouldShowUrgency, urgencyText } from '@/lib/terminyStatus'
 import WaitlistWidget from '@/components/WaitlistWidget'
 
@@ -69,6 +70,8 @@ const monthOf = (range: string) => MONTHS[range.slice(3, 5)] ?? ''
 function BookButton({
   content,
   slug,
+  strediskoName,
+  openedFrom,
   payloadId,
   status,
   range,
@@ -77,6 +80,8 @@ function BookButton({
 }: {
   content: LomyTerminy
   slug: string
+  strediskoName: string
+  openedFrom: TerminyOpenedFrom
   payloadId?: number
   status: string
   range: string
@@ -94,6 +99,9 @@ function BookButton({
       <WaitlistWidget
         strediskoId={payloadId}
         terminLabel={range}
+        strediskoSlug={slug}
+        strediskoName={strediskoName}
+        openedFrom={openedFrom}
         compact={compact}
         variant="solid"
         className={compact ? '' : 'min-w-[190px]'}
@@ -104,6 +112,14 @@ function BookButton({
   return (
     <Link
       href={`/prihlaska-svp/${slug}?termin=${encodeURIComponent(range)}`}
+      onClick={() =>
+        trackSvp('reserve_clicked', {
+          stredisko_slug: slug,
+          stredisko_name: strediskoName,
+          termin: range,
+          opened_from: openedFrom,
+        })
+      }
       className={`${shape} border-white bg-bombovo-red text-white transition-transform duration-150 ease-out active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue`}
     >
       {content.bookLabel}
@@ -114,12 +130,17 @@ function BookButton({
 export default function TerminyModal({
   content,
   slug,
+  strediskoName,
+  openedFrom,
   payloadId,
   open,
   onClose,
 }: {
   content: LomyTerminy
   slug: string
+  strediskoName: string
+  /** The button that opened the table this time; carried onto reserve_clicked. */
+  openedFrom: TerminyOpenedFrom
   payloadId?: number
   open: boolean
   onClose: () => void
@@ -370,7 +391,7 @@ export default function TerminyModal({
                           </span>
                         </p>
 
-                        <BookButton content={content} slug={slug} payloadId={payloadId} status={t.status} range={t.range} className="w-[190px]" />
+                        <BookButton content={content} slug={slug} strediskoName={strediskoName} openedFrom={openedFrom} payloadId={payloadId} status={t.status} range={t.range} className="w-[190px]" />
                       </div>
                     </div>
                   )
@@ -444,7 +465,7 @@ export default function TerminyModal({
                           {t.discounted}
                         </span>
                       </p>
-                      <BookButton content={content} slug={slug} payloadId={payloadId} status={t.status} range={t.range} compact />
+                      <BookButton content={content} slug={slug} strediskoName={strediskoName} openedFrom={openedFrom} payloadId={payloadId} status={t.status} range={t.range} compact />
                     </div>
                   </div>
                 </li>
