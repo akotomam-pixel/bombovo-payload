@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
-import { trackSvp, type FormLocation } from '@/lib/svpTracking'
+import { newFormId, trackSvp, type AbandonReason, type FormLocation } from '@/lib/svpTracking'
 
 /**
  * The full enquiry form for the rebuilt Lomy page.
@@ -236,6 +236,7 @@ export default function LomyEnquiryForm({
   strediskoName = 'Horský hotel Lomy',
   strediskoSlug,
   formLocation,
+  popupOpen,
   className = '',
 }: {
   initialTerm?: string
@@ -243,6 +244,8 @@ export default function LomyEnquiryForm({
   strediskoSlug?: string
   /** Which of the three placements this is; sent on every form event. */
   formLocation?: FormLocation
+  /** Only inside a popup: flips to false the moment it is closed, before unmount. */
+  popupOpen?: boolean
   className?: string
 }) {
   const [status, setStatus] = useState<Status>('idle')
@@ -270,48 +273,61 @@ export default function LomyEnquiryForm({
 
   // form_started / form_abandoned bookkeeping. Refs, not state: none of it
   // should re-render the form, and the abandon listeners read the latest values.
+  const [formId] = useState(newFormId)
   const startedRef = useRef(false)
   const finishedRef = useRef(false)
   const lastFieldRef = useRef('')
+  // Only fields the person changed themselves; a pre-filled termín doesn't count.
+  const changedRef = useRef(new Set<keyof typeof values>())
   const valuesRef = useRef(values)
   valuesRef.current = values
-  const trackPropsRef = useRef({ stredisko_slug: strediskoSlug, stredisko_name: strediskoName, form_location: formLocation })
-  trackPropsRef.current = { stredisko_slug: strediskoSlug, stredisko_name: strediskoName, form_location: formLocation }
+  const trackProps = {
+    stredisko_slug: strediskoSlug,
+    stredisko_name: strediskoName,
+    form_location: formLocation,
+    form_id: formId,
+  }
+  const trackPropsRef = useRef(trackProps)
+  trackPropsRef.current = trackProps
 
   const touch = (k: keyof typeof values) => {
     lastFieldRef.current = FIELD_LABELS[k]
+    changedRef.current.add(k)
     if (startedRef.current) return
     startedRef.current = true
     trackSvp('form_started', trackPropsRef.current)
   }
 
   // Started but never successfully sent: fires once, on whichever comes first —
-  // unmount (popup closed, or navigating elsewhere on the site), or the tab being
-  // hidden/closed. The last two go by sendBeacon so they survive the page dying.
+  // the popup closing, unmount (navigating elsewhere on the site), or the tab
+  // being closed/hidden. The last two go by sendBeacon so they survive the page dying.
+  const abandonRef = useRef((reason: AbandonReason) => {
+    if (!startedRef.current || finishedRef.current) return
+    finishedRef.current = true
+    const filled = [...changedRef.current].filter((k) => valuesRef.current[k].trim() !== '').length
+    trackSvp(
+      'form_abandoned',
+      { ...trackPropsRef.current, reason, last_field: lastFieldRef.current, fields_filled: filled },
+      { beacon: reason === 'tab_closed' || reason === 'tab_hidden' },
+    )
+  })
+
   useEffect(() => {
-    const abandon = (beacon: boolean) => {
-      if (!startedRef.current || finishedRef.current) return
-      finishedRef.current = true
-      trackSvp(
-        'form_abandoned',
-        {
-          ...trackPropsRef.current,
-          last_field: lastFieldRef.current,
-          fields_filled: Object.values(valuesRef.current).filter((v) => v.trim() !== '').length,
-        },
-        { beacon },
-      )
-    }
-    const onPageHide = () => abandon(true)
+    if (popupOpen === false) abandonRef.current('popup_closed')
+  }, [popupOpen])
+
+  useEffect(() => {
+    const abandon = abandonRef.current
+    const onPageHide = () => abandon('tab_closed')
     const onVisibility = () => {
-      if (document.visibilityState === 'hidden') abandon(true)
+      if (document.visibilityState === 'hidden') abandon('tab_hidden')
     }
     window.addEventListener('pagehide', onPageHide)
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
       window.removeEventListener('pagehide', onPageHide)
       document.removeEventListener('visibilitychange', onVisibility)
-      abandon(false)
+      abandon('left_page')
     }
   }, [])
 
@@ -399,7 +415,6 @@ export default function LomyEnquiryForm({
         window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId })
         posthog.identify(values.email)
         posthog.capture('svp_inquiry_submitted', trackPropsRef.current)
-        if (strediskoSlug) posthog.capture('svp_registration_submitted', { stredisko_slug: strediskoSlug })
       } catch {
         console.error('[svp-tracking] Browser analytics failed after a successful inquiry')
       }

@@ -99,6 +99,9 @@ function BookButton({
       <WaitlistWidget
         strediskoId={payloadId}
         terminLabel={range}
+        strediskoSlug={slug}
+        strediskoName={strediskoName}
+        openedFrom={openedFrom}
         compact={compact}
         variant="solid"
         className={compact ? '' : 'min-w-[190px]'}

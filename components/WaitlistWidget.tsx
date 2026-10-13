@@ -2,6 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
+import { trackSvp, type TerminyOpenedFrom } from '@/lib/svpTracking'
+
+/** Tracking context; never anything the person types. */
+type WaitlistTrackProps = {
+  stredisko_slug?: string
+  stredisko_name?: string
+  termin: string
+  opened_from?: TerminyOpenedFrom
+}
 
 /**
  * "Sledovať dostupnosť" — button + modal shown on a sold-out termín row.
@@ -36,10 +45,12 @@ type Status = 'idle' | 'sending' | 'sent' | 'error'
 function WaitlistDialog({
   strediskoId,
   terminLabel,
+  trackProps,
   onClose,
 }: {
   strediskoId: string | number
   terminLabel: string
+  trackProps: WaitlistTrackProps
   onClose: () => void
 }) {
   const [status, setStatus] = useState<Status>('idle')
@@ -102,6 +113,7 @@ function WaitlistDialog({
         }),
       })
       setStatus(res.ok ? 'sent' : 'error')
+      if (res.ok) trackSvp('waitlist_submitted', trackProps)
     } catch {
       setStatus('error')
     }
@@ -244,6 +256,9 @@ export default function WaitlistWidget({
   /** 'outline' (default) is the original blue-outline pill. 'solid' is a filled brand-blue button sized to match the site's other primary CTA pills (e.g. TerminyModal's REZERVOVAŤ) — used where a sold-out row's status badge was removed and this became the row's one action. */
   variant = 'outline',
   className = '',
+  strediskoSlug,
+  strediskoName,
+  openedFrom,
 }: {
   /** The stredisko's Payload document id — every rebuilt-architecture stredisko still has one, used only for photos, matched by slug. */
   strediskoId: string | number
@@ -252,10 +267,22 @@ export default function WaitlistWidget({
   compact?: boolean
   variant?: 'outline' | 'solid'
   className?: string
+  /** Tracking only. */
+  strediskoSlug?: string
+  strediskoName?: string
+  /** Only inside the termín table: which button opened it. */
+  openedFrom?: TerminyOpenedFrom
 }) {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+
+  const trackProps: WaitlistTrackProps = {
+    stredisko_slug: strediskoSlug,
+    stredisko_name: strediskoName,
+    termin: terminLabel,
+    ...(openedFrom ? { opened_from: openedFrom } : {}),
+  }
 
   // The solid, non-compact button (TerminyModal's desktop table, at least
   // 190px — see the `min-w` the caller passes as `className`) is the one
@@ -285,7 +312,10 @@ export default function WaitlistWidget({
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true)
+          trackSvp('waitlist_clicked', trackProps)
+        }}
         className={`${shape} ${colors} inline-flex items-center justify-center gap-1.5 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bombovo-blue ${className}`}
       >
         <BellIcon size={iconSize} />
@@ -293,7 +323,12 @@ export default function WaitlistWidget({
       </button>
 
       {mounted && open && (
-        <WaitlistDialog strediskoId={strediskoId} terminLabel={terminLabel} onClose={() => setOpen(false)} />
+        <WaitlistDialog
+          strediskoId={strediskoId}
+          terminLabel={terminLabel}
+          trackProps={trackProps}
+          onClose={() => setOpen(false)}
+        />
       )}
     </>
   )

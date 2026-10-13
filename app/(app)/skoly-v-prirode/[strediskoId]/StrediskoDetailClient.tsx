@@ -469,7 +469,7 @@ export default function StrediskoDetailClient({
                             VYPREDANÉ
                           </button>
                           {payloadId != null && (
-                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} compact />
+                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} strediskoSlug={strediskoId} strediskoName={name} compact />
                           )}
                         </div>
                       )}
@@ -511,7 +511,7 @@ export default function StrediskoDetailClient({
                         </button>
                         {payloadId != null && (
                           <div className="flex justify-center">
-                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} />
+                            <WaitlistWidget strediskoId={payloadId} terminLabel={`${date.startDate} - ${date.endDate}`} strediskoSlug={strediskoId} strediskoName={name} />
                           </div>
                         )}
                       </div>

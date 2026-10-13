@@ -136,7 +136,7 @@ export default function PonukaModal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:px-8">
-          <LomyEnquiryForm strediskoName={strediskoName} strediskoSlug={slug} formLocation="ziskat_ponuku" />
+          <LomyEnquiryForm strediskoName={strediskoName} strediskoSlug={slug} formLocation="ziskat_ponuku" popupOpen={open} />
         </div>
       </div>
     </div>,
