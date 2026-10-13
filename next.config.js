@@ -19,6 +19,19 @@ const nextConfig = {
       { source: '/detske-tabory', destination: '/letne-tabory', permanent: true },
       { source: '/detske-tabory/', destination: '/letne-tabory', permanent: true },
       { source: '/landingpages/10-dovodov', destination: '/advertorial-1', permanent: true },
+      // Facebook ad short links — temporary (307) so they can be repointed.
+      // Next.js passes incoming query params (e.g. fbclid) through to the destination.
+      ...[
+        ['/svp1', 'ad-1'],
+        ['/svp2', 'ad-2'],
+        ['/svp3', 'ad-3'],
+        ['/svp4', 'ad-4'],
+        ['/svp5', 'ad-2-rt'],
+      ].map(([source, content]) => ({
+        source,
+        destination: `/skoly-v-prirode?utm_source=facebook&utm_medium=paid&utm_campaign=ABO-Svp-video-direct&utm_content=${content}&utm_term=textlink`,
+        permanent: false,
+      })),
     ]
   },
   reactStrictMode: true,
