@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { trackSvp } from '@/lib/svpTracking'
 
 const LOADING_STEPS: { progress: number; label: string }[] = [
   { progress: 15, label: 'Hľadám lokalitu...' },
@@ -21,6 +22,7 @@ interface DistanceResult {
 
 interface Props {
   strediskoName: string
+  strediskoSlug: string
   coordinates?: { lat: number; lng: number }
   /**
    * Hides the built-in map and the component's own headline so a caller can
@@ -41,7 +43,7 @@ function formatDuration(seconds: number): string {
   return `${h} hodín ${m} minút`
 }
 
-export default function DistanceCalculator({ strediskoName, coordinates, hideMap = false }: Props) {
+export default function DistanceCalculator({ strediskoName, strediskoSlug, coordinates, hideMap = false }: Props) {
   const [inputValue, setInputValue] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [progress, setProgress] = useState(0)
@@ -63,8 +65,32 @@ export default function DistanceCalculator({ strediskoName, coordinates, hideMap
     return interval
   }, [])
 
+  // Fired once the outcome is known, so status and distance travel with it.
+  const trackResult = useCallback(
+    (
+      status: 'success' | 'error' | 'empty',
+      extra: { distance_km?: number; duration_min?: number; error_message?: string } = {},
+    ) => {
+      trackSvp('distance_calculated', {
+        stredisko_name: strediskoName,
+        stredisko_slug: strediskoSlug,
+        location_query: inputValue,
+        status,
+        ...extra,
+      })
+    },
+    [strediskoName, strediskoSlug, inputValue],
+  )
+
   const handleCalculate = useCallback(async () => {
-    if (!inputValue.trim() || !coordinates) return
+    if (!inputValue.trim()) {
+      trackResult('empty')
+      return
+    }
+    if (!coordinates) {
+      trackResult('error', { error_message: 'stredisko has no coordinates' })
+      return
+    }
 
     setStatus('loading')
     setProgress(0)
@@ -84,6 +110,7 @@ export default function DistanceCalculator({ strediskoName, coordinates, hideMap
       if (!geoData.length) {
         clearInterval(progressInterval)
         setStatus('error')
+        trackResult('error', { error_message: 'geocoding: location not found' })
         return
       }
 
@@ -113,6 +140,7 @@ export default function DistanceCalculator({ strediskoName, coordinates, hideMap
       if (!orsRes.ok) {
         clearInterval(progressInterval)
         setStatus('error')
+        trackResult('error', { error_message: `routing: HTTP ${orsRes.status}` })
         return
       }
 
@@ -122,10 +150,15 @@ export default function DistanceCalculator({ strediskoName, coordinates, hideMap
       if (!summary) {
         clearInterval(progressInterval)
         setStatus('error')
+        trackResult('error', { error_message: 'routing: no route returned' })
         return
       }
 
       clearInterval(progressInterval)
+      trackResult('success', {
+        distance_km: Math.round(summary.distance / 100) / 10,
+        duration_min: Math.round(summary.duration / 60),
+      })
       setProgress(100)
       setLoadingLabel('Hotovo!')
 
@@ -137,11 +170,12 @@ export default function DistanceCalculator({ strediskoName, coordinates, hideMap
         })
         setStatus('result')
       }, 300)
-    } catch {
+    } catch (err) {
       clearInterval(progressInterval)
       setStatus('error')
+      trackResult('error', { error_message: err instanceof Error ? err.message : String(err) })
     }
-  }, [inputValue, coordinates, animateProgress])
+  }, [inputValue, coordinates, animateProgress, trackResult])
 
   const reset = useCallback(() => {
     setInputValue('')

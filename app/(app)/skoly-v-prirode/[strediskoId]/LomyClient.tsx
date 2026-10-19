@@ -667,7 +667,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
 
       <CenaSection content={content.cena} />
 
-      <UbytovanieSection content={content.ubytovanie} strediskoName={content.hero.name} />
+      <UbytovanieSection content={content.ubytovanie} strediskoName={content.hero.name} strediskoSlug={content.slug} />
 
       <ProgramSection content={content.program} />
 

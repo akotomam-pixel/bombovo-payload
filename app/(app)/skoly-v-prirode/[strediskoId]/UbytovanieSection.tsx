@@ -79,9 +79,11 @@ const VYBAVENIE_ICONS: JSX.Element[] = [
 export default function UbytovanieSection({
   content,
   strediskoName,
+  strediskoSlug,
 }: {
   content: LomyUbytovanie
   strediskoName: string
+  strediskoSlug: string
 }) {
   const { heading, ubytovanie, vybavenie, mapa } = content
 
@@ -193,6 +195,7 @@ export default function UbytovanieSection({
             <div className="order-2 mt-4 lg:order-3">
               <DistanceCalculator
                 strediskoName={strediskoName}
+                strediskoSlug={strediskoSlug}
                 coordinates={mapa.coordinates}
                 hideMap
               />
