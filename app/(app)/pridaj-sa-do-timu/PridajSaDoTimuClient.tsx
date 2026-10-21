@@ -20,7 +20,11 @@ import Footer from '@/components/Footer'
 
 const HERO_TITLE = 'Zaži brigádu plnú zážitkov, dobrodružstva a nových kamarátov'
 const HERO_SUBTITLE = 'Začni kariéru v Bombove'
-const HERO_MEDIA_LABEL = 'VIDEO / FOTO: animátori v akcii'
+const HERO_VIDEO = '/images/Videos/pridaj-sa-hero.mp4'
+const HERO_VIDEO_POSTER = '/images/Videos/pridaj-sa-hero-poster.jpg'
+
+/** Next.js image optimizer URL — same mechanism the strediská pages use. */
+const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
 /** Sub-headings across the strediská pages are set in this face (Comic Neue). */
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
@@ -38,6 +42,8 @@ type Role = {
   id: RoleId
   name: string
   photoLabel: string
+  /** Real photo (3:2). Falls back to the labelled placeholder when empty. */
+  photo?: string
   items: { icon: IconType; title: string; body: AccordionBody }[]
   cta: { label: string; href: string }
 }
@@ -47,6 +53,7 @@ const ROLES: Role[] = [
     id: 'animator',
     name: 'Animátor',
     photoLabel: 'FOTO: animátor s deťmi',
+    photo: '/pridaj-sa-do-timu/photo-animatori-web.jpg',
     items: [
       {
         icon: PiConfettiDuotone,
@@ -86,6 +93,7 @@ const ROLES: Role[] = [
     id: 'zdravotnik',
     name: 'Zdravotník',
     photoLabel: 'FOTO: zdravotník na tábore',
+    photo: '/pridaj-sa-do-timu/photo-zdavonik.jpg',
     items: [
       {
         icon: PiFirstAidKitDuotone,
@@ -289,7 +297,17 @@ function RolePanel({ role }: { role: Role }) {
           {role.name}
         </h3>
         <div className="mt-5 rounded-[24px] bg-white p-3 shadow-[0_1px_2px_rgba(8,7,8,0.05),0_22px_44px_-28px_rgba(8,7,8,0.45)] md:mt-7">
-          <Placeholder label={role.photoLabel} ratio="3 / 2" tint={style.photoTint} className="w-full rounded-[14px]" />
+          {role.photo ? (
+            <img
+              src={opt(role.photo, 1200)}
+              alt={role.photoLabel.replace(/^FOTO:\s*/, '')}
+              loading="lazy"
+              decoding="async"
+              className="block aspect-[3/2] w-full rounded-[14px] object-cover"
+            />
+          ) : (
+            <Placeholder label={role.photoLabel} ratio="3 / 2" tint={style.photoTint} className="w-full rounded-[14px]" />
+          )}
         </div>
       </div>
 
@@ -557,9 +575,21 @@ export default function PridajSaDoTimuClient() {
             <video autoPlay muted loop playsInline poster="…"> later keeps the
             layout identical.
           */}
-          <div className="lg:col-span-6">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[16px] shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)] lg:aspect-[5/4]">
-              <Placeholder label={HERO_MEDIA_LABEL} tint="#F9F0D4" className="absolute inset-0 h-full w-full" />
+          {/* Kept deliberately small (max ~460px wide): the source footage is
+              low resolution and gets soft when blown up to a full column. */}
+          <div className="lg:col-span-6 lg:flex lg:justify-end">
+            <div className="relative mx-auto aspect-[4/3] w-full max-w-[420px] overflow-hidden rounded-[16px] bg-bombovo-dark shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)] lg:mx-0 lg:max-w-[460px]">
+              <video
+                src={HERO_VIDEO}
+                poster={HERO_VIDEO_POSTER}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Animátori v akcii"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
             </div>
           </div>
         </div>
