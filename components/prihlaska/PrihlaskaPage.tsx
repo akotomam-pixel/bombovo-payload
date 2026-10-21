@@ -23,6 +23,7 @@ import {
   VZDELANIE_OPTIONS,
   paymentNote,
   validatePrihlaska,
+  type PrihlaskaConfig,
   type PrihlaskaData,
   type PrihlaskaRole,
 } from '@/lib/prihlaska/config'
@@ -631,15 +632,20 @@ function DobreVediet({ role }: { role: PrihlaskaRole }) {
   )
 }
 
-/* ─── Who may apply (zdravotník) ────────────────────────────────────────── */
+/* ─── Who may apply ─────────────────────────────────────────────────────── */
 /*
-  Many unqualified people apply, so this sits in the header, before anything
-  else is asked: a white card with a heavy yellow border, the four accepted
-  professions as ticked chips, and the exclusions underneath.
+  Many people apply who don't qualify (under-18s, non-medics), so the
+  conditions sit in the header, before anything else is asked: a white card
+  with a heavy border in the role colour, the conditions as ticked chips, and
+  who is excluded underneath.
 */
-function Requirement({ req }: { req: NonNullable<(typeof PRIHLASKA)['zdravotnik']['requirement']> }) {
+function Requirement({ req, role }: { req: NonNullable<PrihlaskaConfig['requirement']>; role: PrihlaskaRole }) {
+  const s = ROLE_STYLE[role]
   return (
-    <div className="mt-6 max-w-3xl rounded-[20px] border-[3px] border-[#FDCA40] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(201,154,22,0.6)] sm:p-6">
+    <div
+      className="mt-6 max-w-3xl rounded-[20px] border-[3px] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(8,7,8,0.35)] sm:p-6"
+      style={{ borderColor: s.accent }}
+    >
       <p className="flex items-start gap-3 text-[18px] font-bold leading-snug text-bombovo-dark sm:text-[20px]">
         <PiSealCheckDuotone aria-hidden className="mt-[-2px] h-8 w-8 shrink-0" />
         {req.title}
@@ -648,7 +654,8 @@ function Requirement({ req }: { req: NonNullable<(typeof PRIHLASKA)['zdravotnik'
         {req.allowed.map((a) => (
           <li
             key={a}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#FDCA40] px-3.5 py-1.5 text-[15px] font-semibold text-bombovo-dark"
+            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[15px] font-semibold text-bombovo-dark"
+            style={{ backgroundColor: role === 'zdravotnik' ? s.accent : s.tint }}
           >
             <PiCheckBold aria-hidden className="h-4 w-4" />
             {a}
@@ -713,7 +720,7 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
             ))}
           </ul>
 
-          {cfg.requirement && <Requirement req={cfg.requirement} />}
+          {cfg.requirement && <Requirement req={cfg.requirement} role={role} />}
 
           {/* Phones: the form sits last, so this jumps straight to it. */}
           <a

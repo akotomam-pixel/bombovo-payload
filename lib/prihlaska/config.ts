@@ -60,8 +60,12 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
         q: 'Dostanem po školení prácu?',
         a: 'Po úspešnom absolvovaní školenia ťa nominujeme na školy v prírode. Keď ťa pedagógovia a boss (šéf animátor) ohodnotia dobre, môžeš ísť aj na letné tábory.',
       },
-      { q: 'Podmienky', a: 'Viac ako 18 rokov k 1. 7. 2027, bezúhonnosť a účasť na školení.' },
     ],
+    requirement: {
+      title: 'Prihlásiť sa môžeš, len ak spĺňaš tieto podmienky',
+      allowed: ['Máš aspoň 18 rokov k 1. 7. 2027', 'Si bezúhonný/á', 'Absolvuješ 3-dňové školenie animátorov'],
+      notAllowed: 'Ak budeš mať k 1. 7. 2027 menej ako 18 rokov, prihlásiť sa zatiaľ nemôžeš.',
+    },
   },
   zdravotnik: {
     role: 'zdravotnik',
