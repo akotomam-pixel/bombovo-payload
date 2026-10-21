@@ -316,7 +316,8 @@ function RolePanel({ role }: { role: Role }) {
       </div>
 
       {/* Right: accordions + CTA */}
-      <div className="flex flex-col lg:pt-2">
+      {/* Centred against the role name + photo; as an item opens, the column grows evenly up and down. */}
+      <div className="flex flex-col lg:self-center">
         <ul className="flex flex-col gap-5">
           {role.items.map((item, i) => {
             const isOpen = open === i
