@@ -30,6 +30,8 @@ export type PrihlaskaConfig = {
   fee: number
   feeNote: string
   dobreVediet: { q: string; a: string }[]
+  /** Who may apply — shown prominently at the top of the page, before the form. */
+  requirement?: { title: string; allowed: string[]; notAllowed: string }
 }
 
 const NEVIEM_PRIST = {
@@ -71,11 +73,13 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     fee: 20,
     feeNote:
       'Zahŕňa odborné školenie, ubytovanie a stravu počas školenia. Uhrádzaš až po odoslaní prihlášky, do 14 dní.',
+    requirement: {
+      title: 'Prihlásiť sa môže len odborne spôsobilá osoba',
+      allowed: ['Lekár/ka', 'Sestra', 'Pôrodná asistentka', 'Zdravotnícky záchranár/ka'],
+      notAllowed:
+        'Za zdravotníka sa nepovažuje absolvent kurzu Slovenského Červeného kríža, kurzu prvej pomoci ani študent medicíny.',
+    },
     dobreVediet: [
-      {
-        q: 'Kto sa môže prihlásiť?',
-        a: 'Odborne spôsobilá osoba: lekár, sestra, pôrodná asistentka alebo zdravotnícky záchranár. Za zdravotníka sa nepovažuje absolvent kurzu Slovenského Červeného kríža, kurzu prvej pomoci ani študent medicíny.',
-      },
       {
         q: 'Prečo školenie, keď som zdravotník?',
         a: 'Práca s deťmi v zariadení pre deti a mládež, na škole v prírode, lyžiarskom výcviku či v letnom tábore je iná ako v nemocnici alebo ambulancii. Na školení sa dozvieš, ako takýto pobyt funguje, aké situácie s deťmi môžu nastať a ako sa v nich zachovať, aby si bol/a na všetko pripravený/á.',
@@ -96,6 +100,8 @@ export type PrihlaskaData = {
   titul: string
   meno: string
   priezvisko: string
+  /** ISO date from the date picker: YYYY-MM-DD. */
+  datumNarodenia: string
   adresa: string
   psc: string
   mesto: string
@@ -103,7 +109,6 @@ export type PrihlaskaData = {
   email: string
   vzdelanie: string
   strava: string
-  kamarat: string
   gdpr: boolean
 }
 
@@ -112,6 +117,7 @@ export const EMPTY_DATA: PrihlaskaData = {
   titul: '',
   meno: '',
   priezvisko: '',
+  datumNarodenia: '',
   adresa: '',
   psc: '',
   mesto: '',
@@ -119,7 +125,6 @@ export const EMPTY_DATA: PrihlaskaData = {
   email: '',
   vzdelanie: '',
   strava: '',
-  kamarat: '',
   gdpr: false,
 }
 
@@ -127,6 +132,29 @@ export type PrihlaskaErrors = Partial<Record<keyof PrihlaskaData, string>>
 
 const REQUIRED = 'Toto pole je povinné.'
 const MAX_LEN = 500
+
+/** Animátori must be 18 on this date (from the Podmienky). */
+const ANIMATOR_AGE_DATE = { y: 2027, m: 7, d: 1 }
+
+function birthDateError(role: PrihlaskaRole, iso: string): string | undefined {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  if (!m) return 'Zadaj svoj dátum narodenia.'
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])]
+  const date = new Date(Date.UTC(y, mo - 1, d))
+  if (date.getUTCMonth() !== mo - 1 || y < 1940 || date.getTime() > Date.now()) return 'Skontroluj dátum narodenia.'
+  if (role === 'animator') {
+    const { y: ty, m: tm, d: td } = ANIMATOR_AGE_DATE
+    const age = ty - y - (tm < mo || (tm === mo && td < d) ? 1 : 0)
+    if (age < 18) return 'Na animátora musíš mať k 1. 7. 2027 aspoň 18 rokov.'
+  }
+  return undefined
+}
+
+/** "2004-03-07" → "07.03.2004" for emails. */
+export const formatBirthDate = (iso: string) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso
+}
 
 /** Returns Slovak error messages per field; an empty object means the data is valid. */
 export function validatePrihlaska(role: PrihlaskaRole, d: PrihlaskaData): PrihlaskaErrors {
@@ -137,6 +165,8 @@ export function validatePrihlaska(role: PrihlaskaRole, d: PrihlaskaData): Prihla
   if (!cfg.terminy.includes(d.termin)) e.termin = 'Vyber si termín školenia.'
   if (!t(d.meno)) e.meno = REQUIRED
   if (!t(d.priezvisko)) e.priezvisko = REQUIRED
+  const dob = birthDateError(role, t(d.datumNarodenia))
+  if (dob) e.datumNarodenia = dob
   if (!t(d.adresa)) e.adresa = REQUIRED
   if (!t(d.psc)) e.psc = REQUIRED
   else if (!/^\d{3}\s?\d{2}$/.test(t(d.psc))) e.psc = 'PSČ má 5 číslic, napr. 971 01.'

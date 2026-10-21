@@ -3,7 +3,15 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { PiArrowLeftBold, PiCaretDownBold, PiCheckBold, PiCopyBold } from 'react-icons/pi'
+import {
+  PiArrowDownBold,
+  PiArrowLeftBold,
+  PiCaretDownBold,
+  PiCheckBold,
+  PiCopyBold,
+  PiSealCheckDuotone,
+  PiXCircleBold,
+} from 'react-icons/pi'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -67,6 +75,7 @@ const ERROR_ORDER: (keyof PrihlaskaData)[] = [
   'titul',
   'meno',
   'priezvisko',
+  'datumNarodenia',
   'adresa',
   'psc',
   'mesto',
@@ -74,7 +83,6 @@ const ERROR_ORDER: (keyof PrihlaskaData)[] = [
   'email',
   'vzdelanie',
   'strava',
-  'kamarat',
   'gdpr',
 ]
 
@@ -409,6 +417,22 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
           </Field>
         </div>
 
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          <Field id={fid('datumNarodenia')} label="Dátum narodenia" error={err('datumNarodenia')}>
+            {(a) => (
+              <input
+                {...a}
+                {...text('datumNarodenia')}
+                type="date"
+                min="1940-01-01"
+                max={new Date().toISOString().slice(0, 10)}
+                autoComplete="bday"
+                className={`${a.className} min-h-[54px] appearance-none ${data.datumNarodenia ? '' : 'text-[#9AA09A]'}`}
+              />
+            )}
+          </Field>
+        </div>
+
         <div className="mt-5 grid gap-5">
           <Field id={fid('adresa')} label="Adresa" hint="Ulica a číslo" error={err('adresa')}>
             {(a) => <input {...a} {...text('adresa')} type="text" placeholder="Hlavná 12" autoComplete="street-address" />}
@@ -465,20 +489,6 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
             {(a) => <textarea {...a} {...text('strava')} rows={3} placeholder="napr. bezlepková strava, alergia na orechy" className={`${a.className} resize-y`} />}
           </Field>
         </div>
-
-        {role === 'animator' && (
-          <div className="mt-5">
-            <Field
-              id={fid('kamarat')}
-              label="Prihlasuješ sa s kamarátom? Napíš jeho meno"
-              optional
-              hint="Keď sa uvediete navzájom, ubytujeme vás spolu na jednej izbe."
-              error={err('kamarat')}
-            >
-              {(a) => <input {...a} {...text('kamarat')} type="text" placeholder="Peter Horváth" />}
-            </Field>
-          </div>
-        )}
 
         {/* GDPR */}
         <div className="mt-7">
@@ -621,6 +631,38 @@ function DobreVediet({ role }: { role: PrihlaskaRole }) {
   )
 }
 
+/* ─── Who may apply (zdravotník) ────────────────────────────────────────── */
+/*
+  Many unqualified people apply, so this sits in the header, before anything
+  else is asked: a white card with a heavy yellow border, the four accepted
+  professions as ticked chips, and the exclusions underneath.
+*/
+function Requirement({ req }: { req: NonNullable<(typeof PRIHLASKA)['zdravotnik']['requirement']> }) {
+  return (
+    <div className="mt-6 max-w-3xl rounded-[20px] border-[3px] border-[#FDCA40] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(201,154,22,0.6)] sm:p-6">
+      <p className="flex items-start gap-3 text-[18px] font-bold leading-snug text-bombovo-dark sm:text-[20px]">
+        <PiSealCheckDuotone aria-hidden className="mt-[-2px] h-8 w-8 shrink-0" />
+        {req.title}
+      </p>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {req.allowed.map((a) => (
+          <li
+            key={a}
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#FDCA40] px-3.5 py-1.5 text-[15px] font-semibold text-bombovo-dark"
+          >
+            <PiCheckBold aria-hidden className="h-4 w-4" />
+            {a}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-4 flex items-start gap-2.5 text-[14.5px] leading-[1.6] text-[#3A403A]">
+        <PiXCircleBold aria-hidden className="mt-[3px] h-[18px] w-[18px] shrink-0 text-[#C21F2B]" />
+        {req.notAllowed}
+      </p>
+    </div>
+  )
+}
+
 /* ─── Page ──────────────────────────────────────────────────────────────── */
 
 export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
@@ -670,17 +712,41 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
               </li>
             ))}
           </ul>
+
+          {cfg.requirement && <Requirement req={cfg.requirement} />}
+
+          {/* Phones: the form sits last, so this jumps straight to it. */}
+          <a
+            href="#prihlaska"
+            onClick={(e) => {
+              e.preventDefault()
+              const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              document.getElementById('prihlaska')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+            }}
+            className={
+              'mt-6 inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-[9px] px-6 py-3.5 text-[17px] font-bold tracking-[0.02em] ' +
+              'transition-[background-color,box-shadow,transform] duration-150 ease-out motion-reduce:transition-none sm:w-auto lg:hidden ' +
+              `${style.button} ${FOCUS}`
+            }
+          >
+            Vyplniť prihlášku
+            <PiArrowDownBold aria-hidden className="h-4 w-4" />
+          </a>
         </div>
       </section>
 
       {/* ─── Form + side column ─── */}
+      {/* Desktop: form left, steps right. Phones: steps → Dobré vedieť → form last. */}
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl items-start gap-8 px-4 py-8 sm:px-6 md:py-12 lg:grid-cols-12 lg:gap-10 lg:px-8">
-          <div className="rounded-[24px] bg-white p-5 ring-1 ring-[#E1E4E1] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_28px_56px_-36px_rgba(8,7,8,0.35)] sm:p-8 lg:col-span-7 lg:-mt-20 lg:p-10">
+          <div
+            id="prihlaska"
+            className="order-2 scroll-mt-24 rounded-[24px] bg-white p-5 ring-1 ring-[#E1E4E1] shadow-[0_1px_2px_rgba(8,7,8,0.04),0_28px_56px_-36px_rgba(8,7,8,0.35)] sm:p-8 md:scroll-mt-36 lg:order-1 lg:col-span-7 lg:-mt-20 lg:p-10"
+          >
             {sent ? <Success role={role} data={sent} /> : <PrihlaskaForm role={role} onSuccess={setSent} />}
           </div>
 
-          <aside className="lg:sticky lg:top-40 lg:col-span-5">
+          <aside className="order-1 lg:sticky lg:top-40 lg:order-2 lg:col-span-5">
             <NextSteps role={role} />
             <DobreVediet role={role} />
           </aside>

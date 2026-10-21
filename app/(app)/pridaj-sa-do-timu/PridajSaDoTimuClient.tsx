@@ -152,10 +152,6 @@ const FAQ: { q: string; a: string }[] = [
     q: 'Prečo sa školenie platí?',
     a: 'Za poplatok 30 eur máš v cene odborné školenie, ubytovanie aj stravu počas celého školenia. Stačí ti prísť a bude o teba postarané.',
   },
-  {
-    q: 'Môžem sa prihlásiť spolu s kamarátom?',
-    a: 'Samozrejme. Stačí pri vypĺňaní prihlášky uviesť, s kým ideš na školenie, a my vás ubytujeme spolu na jednej izbe.',
-  },
 ]
 
 const TESTIMONIALS: { quote: string; name: string; role: string; photoLabel: string }[] = [

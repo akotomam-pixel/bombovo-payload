@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import {
   CONTACT_EMAIL,
   EMPTY_DATA,
+  formatBirthDate,
   IBAN,
   PRIHLASKA,
   paymentNote,
@@ -42,6 +43,7 @@ function internalHtml(role: PrihlaskaRole, d: PrihlaskaData) {
     ['Titul', d.titul],
     ['Meno', d.meno],
     ['Priezvisko', d.priezvisko],
+    ['Dátum narodenia', formatBirthDate(d.datumNarodenia)],
     ['Adresa', d.adresa],
     ['PSČ', d.psc],
     ['Mesto', d.mesto],
@@ -49,7 +51,6 @@ function internalHtml(role: PrihlaskaRole, d: PrihlaskaData) {
     ['Email', d.email],
     ...(role === 'zdravotnik' ? ([['Vzdelanie / odbornosť', d.vzdelanie]] as [string, string][]) : []),
     ['Intolerancie / alergie', d.strava],
-    ...(role === 'animator' ? ([['Prihlasuje sa s kamarátom', d.kamarat]] as [string, string][]) : []),
     ['Súhlas GDPR', 'áno'],
   ]
   return `<!DOCTYPE html><html><body style="font-family:sans-serif;color:#222;padding:20px">
