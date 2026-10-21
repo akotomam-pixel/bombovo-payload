@@ -635,10 +635,11 @@ export default function PridajSaDoTimuClient() {
             <video autoPlay muted loop playsInline poster="…"> later keeps the
             layout identical.
           */}
-          {/* Kept deliberately small (max ~460px wide): the source footage is
-              low resolution and gets soft when blown up to a full column. */}
+          {/* Small on phones (max 420px) because the footage is low resolution. On
+              desktop it fills the column width at 16:10, so it is wider without
+              getting much taller than the 4:3 version and the hero keeps its height. */}
           <div className="lg:col-span-6 lg:flex lg:justify-end">
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-[420px] overflow-hidden rounded-[16px] bg-bombovo-dark shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)] lg:mx-0 lg:max-w-[460px]">
+            <div className="relative mx-auto aspect-[4/3] w-full max-w-[420px] overflow-hidden rounded-[16px] bg-bombovo-dark shadow-[0_18px_40px_-24px_rgba(8,7,8,0.45)] lg:mx-0 lg:aspect-[16/10] lg:max-w-none">
               <video
                 src={HERO_VIDEO}
                 poster={HERO_VIDEO_POSTER}
