@@ -63,7 +63,7 @@ const ROLES: Role[] = [
         icon: PiConfettiDuotone,
         title: 'Čo budeš robiť',
         body: {
-          text: 'Pripravuješ a vedieš program pre deti na školách v prírode a letných táboroch. Hry, súťaže, šport, tvorivé dielne aj večerné programy. Si s deťmi celý deň a staráš sa o to, aby si pobyt užili.',
+          text: 'Pripravuješ a vedieš program pre deti na školách v prírode a letných táboroch. Celý týždeň si s deťmi a ostatnými animátormi na stredisku a staráš sa o to, aby si pobyt užili.',
         },
       },
       {
@@ -71,11 +71,11 @@ const ROLES: Role[] = [
         title: 'Čo ti to dá',
         body: {
           bullets: [
-            'Novú partiu ľudí, ktorí sú naladení ako ty',
+            'Týždennú finančnú odmenu za svoju prácu',
+            'Nových kamarátov, ktorí sú šialení presne ako ty',
             'Brigádu, pri ktorej sa zabavíš',
             'Certifikát zo školenia animátorov',
             'Zážitky, na ktoré budeš spomínať',
-            '[DOPLNIŤ: odmena za turnus]',
           ],
         },
       },
@@ -84,8 +84,8 @@ const ROLES: Role[] = [
         title: 'Podmienky',
         body: {
           bullets: [
-            'Máš viac ako 18 rokov',
-            'Si bezúhonný/á',
+            'Máš viac ako 18 rokov (k 1. 7. 2027)',
+            'Si bezúhonný/á a chceš sa zabávať',
             'Absolvuješ 3-dňové školenie animátorov v Horskom hoteli Lomy',
           ],
         },
@@ -132,18 +132,30 @@ const ROLES: Role[] = [
 ]
 
 const FAQ: { q: string; a: string }[] = [
-  { q: 'Musím mať skúsenosti s animovaním?', a: '[DOPLNIŤ]' },
-  { q: 'Ešte študujem. Môžem sa prihlásiť?', a: '[DOPLNIŤ]' },
-  { q: 'Koľko si zarobím?', a: '[DOPLNIŤ]' },
+  {
+    q: 'Musím mať skúsenosti s animovaním?',
+    a: 'Nie, netreba. Aby si u nás mohol robiť animátora, musíš však absolvovať naše 3-dňové školenie aspoň v jednom z termínov.',
+  },
+  {
+    q: 'Ešte študujem. Môžem sa prihlásiť?',
+    a: 'Áno, samozrejme. Väčšina našich animátorov študuje na strednej alebo vysokej škole. Nebudeš výnimkou!',
+  },
+  {
+    q: 'Koľko si zarobím?',
+    a: 'Väčšina z nás túto prácu nerobí pre peniaze. Zárobok sa líši podľa počtu odpracovaných dní v týždni a typu animovania. Pre viac informácií nás kontaktuj.',
+  },
   {
     q: 'Kde a kedy je školenie?',
-    a: 'Školenie animátorov prebieha v Horskom hoteli Lomy (Horná Ves, okr. Prievidza). Termíny na rok 2027: [DOPLNIŤ].',
+    a: 'Školenie animátorov prebieha v Horskom hoteli Lomy (Horná Ves, okr. Prievidza). Termíny na rok 2027 uvidíš pri vypĺňaní prihlášky.',
   },
   {
     q: 'Prečo sa školenie platí?',
-    a: 'Poplatok za školenie animátorov je 30 €. Zahŕňa odborné školenie, ubytovanie aj stravu počas celého školenia.',
+    a: 'Za poplatok 30 eur máš v cene odborné školenie, ubytovanie aj stravu počas celého školenia. Stačí ti prísť a bude o teba postarané.',
   },
-  { q: 'Môžem sa prihlásiť spolu s kamarátom?', a: '[DOPLNIŤ]' },
+  {
+    q: 'Môžem sa prihlásiť spolu s kamarátom?',
+    a: 'Samozrejme. Stačí pri vypĺňaní prihlášky uviesť, s kým ideš na školenie, a my vás ubytujeme spolu na jednej izbe.',
+  },
 ]
 
 const TESTIMONIALS: { quote: string; name: string; role: string; photoLabel: string }[] = [
