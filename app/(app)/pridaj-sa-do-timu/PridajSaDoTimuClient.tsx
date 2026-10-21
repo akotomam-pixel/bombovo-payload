@@ -57,7 +57,7 @@ const ROLES: Role[] = [
     id: 'animator',
     name: 'Animátor',
     photoLabel: 'FOTO: animátor s deťmi',
-    photo: '/pridaj-sa-do-timu/photo-animatori-web.jpg',
+    photo: '/pridaj-sa-do-timu/photo-animator.jpg',
     items: [
       {
         icon: PiConfettiDuotone,
@@ -97,7 +97,7 @@ const ROLES: Role[] = [
     id: 'zdravotnik',
     name: 'Zdravotník',
     photoLabel: 'FOTO: zdravotník na tábore',
-    photo: '/pridaj-sa-do-timu/photo-zdavonik.jpg',
+    photo: '/pridaj-sa-do-timu/photo-zdravotnik-web.jpg',
     items: [
       {
         icon: PiFirstAidKitDuotone,
