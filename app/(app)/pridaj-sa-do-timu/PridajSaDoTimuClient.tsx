@@ -672,18 +672,6 @@ export default function PridajSaDoTimuClient() {
       <FaqSection />
       {/* Reviews are hidden until real ones are collected — re-add <TestimonialsSection /> here. */}
 
-      {/* ─── FINAL CTA ─── */}
-      <section className="bg-bombovo-dark">
-        <div className="mx-auto max-w-2xl px-4 py-14 text-center sm:px-6 md:py-20">
-          <h2 className="text-[clamp(1.9rem,4vw,2.75rem)] font-bold leading-[1.1] tracking-[-0.03em] text-white">
-            Tak čo, ideš do toho?
-          </h2>
-          <div className="mt-8">
-            <RoleButtons />
-          </div>
-        </div>
-      </section>
-
       <Footer />
     </main>
   )
