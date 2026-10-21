@@ -34,7 +34,7 @@ export type PrihlaskaConfig = {
 
 const NEVIEM_PRIST = {
   q: 'Čo ak nakoniec nebudem môcť prísť?',
-  a: 'Daj nám čo najskôr vedieť na bombovo@bombovo.sk. [DOPLNIŤ: vrátenie poplatku / presun na iný termín]',
+  a: 'Ak nebudeš môcť prísť, poplatok ti vrátime v plnej sume. Daj nám čo najskôr vedieť na bombovo@bombovo.sk.',
 }
 
 export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
@@ -78,7 +78,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
       },
       {
         q: 'Prečo školenie, keď som zdravotník?',
-        a: '[DOPLNIŤ: čo sa na školení zdravotník naučí, napr. ako funguje škola v prírode a tábor, dokumentácia, spolupráca s animátormi]',
+        a: 'Práca s deťmi v zariadení pre deti a mládež, na škole v prírode, lyžiarskom výcviku či v letnom tábore je iná ako v nemocnici alebo ambulancii. Na školení sa dozvieš, ako takýto pobyt funguje, aké situácie s deťmi môžu nastať a ako sa v nich zachovať, aby si bol/a na všetko pripravený/á.',
       },
       {
         q: 'Koľko zarobím?',
