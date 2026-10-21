@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import Link from 'next/link'
 import type { IconType } from 'react-icons'
@@ -18,7 +18,11 @@ import Footer from '@/components/Footer'
 
 /* ─── Editable content ──────────────────────────────────────────────────── */
 
-const HERO_TITLE = 'Zaži brigádu plnú zážitkov, dobrodružstva a nových kamarátov'
+/** First line of the H1, then the rotating words in the blue box below it. */
+const HERO_TITLE_LEAD = 'Zaži brigádu plnú'
+const HERO_ROTATING_WORDS = ['zážitkov', 'dobrodružstva', 'nových kamarátov']
+/** How long each word stays before it swaps (ms). */
+const HERO_ROTATE_MS = 2600
 const HERO_SUBTITLE = 'Začni kariéru v Bombove'
 const HERO_VIDEO = '/images/Videos/pridaj-sa-hero.mp4'
 const HERO_VIDEO_POSTER = '/images/Videos/pridaj-sa-hero-poster.jpg'
@@ -540,6 +544,54 @@ function TestimonialsSection() {
   )
 }
 
+/* ─── Hero rotating word ────────────────────────────────────────────────── */
+/*
+  The end of the headline cycles through the three words, each set in a blue
+  box (blue is neutral — red and yellow stay reserved for the two roles). The
+  word fades and slides; only opacity and transform animate, and the box
+  simply resizes to fit the next word.
+*/
+function RotatingWord() {
+  const [index, setIndex] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let swap: ReturnType<typeof setTimeout> | undefined
+    const tick = setInterval(() => {
+      if (reduce) {
+        setIndex((i) => (i + 1) % HERO_ROTATING_WORDS.length)
+        return
+      }
+      setVisible(false)
+      swap = setTimeout(() => {
+        setIndex((i) => (i + 1) % HERO_ROTATING_WORDS.length)
+        setVisible(true)
+      }, 280)
+    }, HERO_ROTATE_MS)
+    return () => {
+      clearInterval(tick)
+      clearTimeout(swap)
+    }
+  }, [])
+
+  return (
+    <span
+      aria-hidden
+      className="mt-2 inline-block origin-left -rotate-[1.5deg] rounded-[12px] bg-[#3772FF] px-[0.32em] pb-[0.12em] pt-[0.04em] shadow-[0_14px_30px_-16px_rgba(55,114,255,0.75)] md:mt-3"
+    >
+      <span
+        className={`inline-block font-bold tracking-[-0.01em] text-white transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+          visible ? 'translate-y-0 opacity-100' : 'translate-y-[0.3em] opacity-0'
+        }`}
+        style={{ fontFamily: SUBHEAD }}
+      >
+        {HERO_ROTATING_WORDS[index]}
+      </span>
+    </span>
+  )
+}
+
 /* ─── Page ──────────────────────────────────────────────────────────────── */
 
 export default function PridajSaDoTimuClient() {
@@ -554,11 +606,18 @@ export default function PridajSaDoTimuClient() {
       <section className="bg-bombovo-gray">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 pb-10 pt-9 sm:px-6 md:pt-12 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:pb-16">
           <div className="lg:col-span-6">
-            <h1 className="text-[clamp(2.1rem,5.2vw,3.6rem)] font-bold leading-[1.05] tracking-[-0.035em] text-bombovo-dark">
-              {HERO_TITLE}
+            <h1 className="text-[clamp(2.1rem,5.2vw,3.6rem)] font-medium leading-[1.1] tracking-[-0.035em] text-bombovo-dark">
+              {/* Screen readers get the whole sentence once; the animated part is hidden from them. */}
+              <span className="sr-only">
+                {HERO_TITLE_LEAD} {HERO_ROTATING_WORDS.slice(0, -1).join(', ')} a {HERO_ROTATING_WORDS.at(-1)}
+              </span>
+              <span aria-hidden className="block">
+                {HERO_TITLE_LEAD}
+              </span>
+              <RotatingWord />
             </h1>
             <p
-              className="mt-4 text-[clamp(1.35rem,2.4vw,1.75rem)] font-bold leading-tight text-[#3772FF] md:mt-5"
+              className="mt-5 text-[clamp(1.35rem,2.4vw,1.75rem)] font-bold leading-tight text-bombovo-dark md:mt-6"
               style={{ fontFamily: SUBHEAD }}
             >
               {HERO_SUBTITLE}
@@ -597,7 +656,7 @@ export default function PridajSaDoTimuClient() {
 
       <KohoHladameSection />
       <FaqSection />
-      <TestimonialsSection />
+      {/* Reviews are hidden until real ones are collected — re-add <TestimonialsSection /> here. */}
 
       {/* ─── FINAL CTA ─── */}
       <section className="bg-bombovo-dark">
