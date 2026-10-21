@@ -459,7 +459,7 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
           <Field
             id={fid('strava')}
             label="Intolerancie / alergie na jedlo"
-            hint="Ak žiadne nemáš, napíš „žiadne“."
+            optional
             error={err('strava')}
           >
             {(a) => <textarea {...a} {...text('strava')} rows={3} placeholder="napr. bezlepková strava, alergia na orechy" className={`${a.className} resize-y`} />}

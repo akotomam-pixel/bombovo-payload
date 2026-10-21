@@ -145,7 +145,6 @@ export function validatePrihlaska(role: PrihlaskaRole, d: PrihlaskaData): Prihla
   else if ((t(d.telefon).match(/\d/g) ?? []).length < 9) e.telefon = 'Zadaj celé telefónne číslo, napr. 0900 123 456.'
   if (!t(d.email)) e.email = REQUIRED
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t(d.email))) e.email = 'Skontroluj email, niečo v ňom chýba.'
-  if (!t(d.strava)) e.strava = 'Napíš „žiadne“, ak žiadne nemáš.'
   if (role === 'zdravotnik' && !VZDELANIE_OPTIONS.includes(d.vzdelanie)) e.vzdelanie = 'Vyber svoju odbornosť.'
   if (!d.gdpr) e.gdpr = 'Bez súhlasu ti prihlášku nemôžeme spracovať.'
 
