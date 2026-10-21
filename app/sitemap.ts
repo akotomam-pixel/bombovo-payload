@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/faq`, priority: 0.6, changeFrequency: 'monthly' },
     { url: `${BASE}/nasa-misia`, priority: 0.6, changeFrequency: 'monthly' },
     { url: `${BASE}/o-nas`, priority: 0.6, changeFrequency: 'monthly' },
+    { url: `${BASE}/pridaj-sa-do-timu`, priority: 0.7, changeFrequency: 'monthly' },
   ]
 
   const campPages: MetadataRoute.Sitemap = camps.filter((camp) => !isPreviewCamp(camp.id)).map((camp) => ({

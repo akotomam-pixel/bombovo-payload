@@ -299,7 +299,7 @@ export default function Header() {
                   </svg>
                 </Link>
                 <Link 
-                  href="/pripravujeme" 
+                  href="/pridaj-sa-do-timu" 
                   className="relative inline-flex flex-col items-center text-bombovo-dark font-normal text-base group"
                 >
                   <span>Pridaj sa do tímu</span>
@@ -543,7 +543,7 @@ export default function Header() {
                     Otázky
                   </Link>
                   <Link 
-                    href="/pripravujeme"
+                    href="/pridaj-sa-do-timu"
                     onClick={closeMenu}
                     className="block px-6 py-4 text-lg font-semibold text-bombovo-dark hover:bg-bombovo-gray transition-colors"
                   >

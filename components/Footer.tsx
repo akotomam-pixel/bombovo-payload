@@ -87,7 +87,7 @@ export default function Footer() {
                 ['/adaptacne-kurzy', 'Adaptačné kurzy'],
                 ['/nasa-misia', 'Naša misia'],
                 ['/faq', 'Otázky'],
-                ['/prihlaska-animator', 'Pridaj sa do tímu'],
+                ['/pridaj-sa-do-timu', 'Pridaj sa do tímu'],
                 ['/kontakt', 'Kontaktujte nás'],
                 ['/pre-firmy', 'Pre Firmy'],
                 ['/recenzie', 'Recenzie'],

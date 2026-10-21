@@ -19,6 +19,7 @@ const nextConfig = {
       { source: '/detske-tabory', destination: '/letne-tabory', permanent: true },
       { source: '/detske-tabory/', destination: '/letne-tabory', permanent: true },
       { source: '/landingpages/10-dovodov', destination: '/advertorial-1', permanent: true },
+      { source: '/pripravujeme', destination: '/pridaj-sa-do-timu', permanent: true },
       // Facebook ad short links — temporary (307) so they can be repointed.
       // Next.js passes incoming query params (e.g. fbclid) through to the destination.
       ...[
