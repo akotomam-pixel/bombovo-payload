@@ -91,7 +91,6 @@ export default function Footer() {
                 ['/kontakt', 'Kontaktujte nás'],
                 ['/pre-firmy', 'Pre Firmy'],
                 ['/recenzie', 'Recenzie'],
-                ['/test-tabor', 'Test Page'],
               ].map(([href, label]) => (
                 <li key={href}>
                   <Link href={href} className={linkClass}>{label}</Link>
