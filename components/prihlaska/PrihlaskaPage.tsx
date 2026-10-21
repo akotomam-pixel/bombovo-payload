@@ -708,17 +708,19 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
           </h1>
           <p className="mt-4 max-w-xl text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">{cfg.intro}</p>
 
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {cfg.chips.map((c) => (
-              <li
-                key={c}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[15px] font-medium text-[#1F2320] ring-1 ring-[#DDE0DD]"
-              >
-                <span aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: style.accent }} />
-                {c}
-              </li>
-            ))}
-          </ul>
+          {/* Price tag: what it is on the left, the amount in the role colour on the right. */}
+          <p className="mt-6 inline-flex items-stretch overflow-hidden rounded-[16px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.05),0_14px_30px_-20px_rgba(8,7,8,0.35)] ring-1 ring-[#DDE0DD]">
+            <span className="flex flex-col justify-center px-4 py-3 sm:px-5">
+              <span className="text-[12px] font-semibold uppercase leading-none tracking-[0.12em] text-[#6B716B]">Cena</span>
+              <span className="mt-1.5 text-[16px] font-semibold leading-tight text-bombovo-dark sm:text-[17px]">{cfg.priceLabel}</span>
+            </span>
+            <span
+              className="flex items-center px-4 text-[28px] font-bold leading-none tracking-[-0.02em] sm:px-5 sm:text-[32px]"
+              style={{ backgroundColor: style.accent, color: style.onAccent }}
+            >
+              {cfg.fee} €
+            </span>
+          </p>
 
           {cfg.requirement && <Requirement req={cfg.requirement} role={role} />}
 

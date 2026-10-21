@@ -25,7 +25,8 @@ export type PrihlaskaConfig = {
   roleName: string
   title: string
   intro: string
-  chips: string[]
+  /** Shown next to the fee in the header price tag, e.g. "za 3-dňové školenie". */
+  priceLabel: string
   terminy: string[]
   fee: number
   feeNote: string
@@ -45,7 +46,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     roleName: 'Animátor',
     title: 'Prihláška animátor',
     intro: 'Vyber si termín školenia a vyplň pár údajov. Zaberie ti to len pár minút.',
-    chips: ['3-dňové školenie', 'Horský hotel Lomy', 'Poplatok 30 €'],
+    priceLabel: 'za 3-dňové školenie',
     terminy: TERMINY_ANIMATOR,
     fee: 30,
     feeNote:
@@ -72,7 +73,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     roleName: 'Zdravotník',
     title: 'Prihláška zdravotník',
     intro: 'Vyber si termín školenia a vyplň pár údajov. Zaberie ti to len pár minút.',
-    chips: ['2-dňové školenie', 'Horský hotel Lomy', 'Poplatok 20 €'],
+    priceLabel: 'za 2-dňové školenie',
     terminy: TERMINY_ZDRAVOTNIK,
     fee: 20,
     feeNote:
