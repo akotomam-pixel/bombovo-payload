@@ -30,6 +30,8 @@ const comicNeue = Comic_Neue({
 })
 
 export const metadata: Metadata = {
+  // All relative canonical/OG URLs resolve to the www host (the live site).
+  metadataBase: new URL('https://www.bombovo.sk'),
   title: 'Bombovo - Letné tábory pre deti',
   description: 'Najlepšie letné tábory a školy v prírode pre deti vo veku 6-17 rokov na Slovensku',
 }
@@ -62,7 +64,7 @@ export default async function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Bombovo',
-              url: 'https://bombovo.sk',
+              url: 'https://www.bombovo.sk',
               description: 'Detské letné tábory a školy v prírode pre deti od 6 do 17 rokov na Slovensku',
               sameAs: [
                 'https://www.facebook.com/Bombovo.sk/',

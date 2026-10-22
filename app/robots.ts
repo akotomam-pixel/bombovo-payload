@@ -5,7 +5,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      // Private registration/application pages stay out of search results.
+      disallow: ['/prihlaska/', '/prihlaska-svp/', '/prihlaska-animator', '/prihlaska-zdravotnik', '/animatori/'],
     },
-    sitemap: 'https://bombovo.sk/sitemap.xml',
+    sitemap: 'https://www.bombovo.sk/sitemap.xml',
   }
 }

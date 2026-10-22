@@ -1,5 +1,6 @@
 export const metadata = {
   title: 'Detské Letné Tábory a Školy v Prírode | Bombovo',
+  alternates: { canonical: '/' },
   description: 'Viac ako 26 rokov organizujeme detské letné tábory a školy v prírode pre deti od 6 do 17 rokov na Slovensku. 86 % návratnosť detí. Pozri ponuku 2026.',
 }
 

@@ -117,7 +117,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
 
             {/* Mobile Layout */}
             <div className="lg:hidden space-y-6">
-              <h1 className="text-3xl font-bold text-bombovo-dark">
+              <p role="heading" aria-level={1} className="text-3xl font-bold text-bombovo-dark">
                 {campDetails.headline}{' '}
                 <span className="relative inline-block text-bombovo-red">
                   {campDetails.headlineHighlight}
@@ -136,7 +136,7 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
                     />
                   </svg>
                 </span>
-              </h1>
+              </p>
 
               <div className="space-y-3">
                 {campDetails.bulletPoints.map((point, idx) => (

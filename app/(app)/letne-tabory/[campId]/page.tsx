@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { getPayloadClient } from '@/lib/payload'
 import Link from 'next/link'
 import { after } from 'next/server'
@@ -12,6 +13,8 @@ import CampPreviewGate from './CampPreviewGate'
 import { isPreviewCamp, PREVIEW_COOKIE } from '@/lib/campPreviewGate'
 import FestLastMinutePopup from '@/components/FestLastMinutePopup'
 import { TRACK_COOKIE, parseTrackCookie, logTrackEvent } from '@/lib/trackEvents'
+import type { Metadata } from 'next'
+import { campTitle, campDescription, campEventsJsonLd, SITE_URL } from '@/lib/campSeo'
 
 const FEST_LAST_MINUTE_CAMP_ID = 'fest-animator-fest'
 
@@ -146,16 +149,9 @@ function mapPayloadToCampDetails(doc: Record<string, any>): CampDetailData {
   }
 }
 
-export default async function CampDetailPage({
-  params,
-}: {
-  params: Promise<{ campId: string }>
-}) {
-  const { campId } = await params
-
-  let campDetails: CampDetailData | null = null
-
-  // 1. Try Payload CMS first
+// Loads a camp: Payload CMS first, then the hardcoded data files.
+// cache() lets generateMetadata and the page share one lookup per request.
+const loadCamp = cache(async (campId: string): Promise<CampDetailData | null> => {
   try {
     const payload = await getPayloadClient()
     const result = await payload.find({
@@ -165,16 +161,52 @@ export default async function CampDetailPage({
       depth: 2,
     })
     if (result.docs.length > 0) {
-      campDetails = mapPayloadToCampDetails(result.docs[0] as Record<string, any>)
+      return mapPayloadToCampDetails(result.docs[0] as Record<string, any>)
     }
   } catch {
     // Payload unavailable (e.g. no DB connection) — fall through to hardcoded data
   }
+  return getCampDetails(campId) ?? null
+})
 
-  // 2. Fall back to hardcoded data files
-  if (!campDetails) {
-    campDetails = getCampDetails(campId)
+// Unique <title>, description and canonical URL per camp (SEO).
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ campId: string }>
+}): Promise<Metadata> {
+  const { campId } = await params
+  const camp = await loadCamp(campId)
+  if (!camp) return { title: 'Tábor sa nenašiel', robots: { index: false } }
+  const title = campTitle(camp, campId)
+  const description = campDescription(camp, campId)
+  const url = `/letne-tabory/${campId}`
+  const image = camp.heroGallery?.[0]?.src
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    ...(isPreviewCamp(campId) ? { robots: { index: false } } : {}),
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'website',
+      locale: 'sk_SK',
+      siteName: 'Bombovo',
+      ...(image ? { images: [image] } : {}),
+    },
   }
+}
+
+export default async function CampDetailPage({
+  params,
+}: {
+  params: Promise<{ campId: string }>
+}) {
+  const { campId } = await params
+
+  const campDetails = await loadCamp(campId)
 
   // "Pripravujeme" password gate for camps that aren't public yet
   if (campDetails && isPreviewCamp(campId)) {
@@ -232,28 +264,7 @@ export default async function CampDetailPage({
     )
   }
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: campDetails.name,
-    description: campDetails.bulletPoints[0] ?? '',
-    location: {
-      '@type': 'Place',
-      name: campDetails.location,
-    },
-    organizer: {
-      '@type': 'Organization',
-      name: 'Bombovo',
-      url: 'https://bombovo.sk',
-    },
-    offers: {
-      '@type': 'Offer',
-      price: campDetails.price.replace(/\s?€/g, '').trim(),
-      priceCurrency: 'EUR',
-      availability: 'https://schema.org/InStock',
-    },
-    typicalAgeRange: campDetails.age,
-  }
+  const jsonLd = campEventsJsonLd(campDetails, campId)
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -263,29 +274,31 @@ export default async function CampDetailPage({
         '@type': 'ListItem',
         position: 1,
         name: 'Bombovo',
-        item: 'https://bombovo.sk',
+        item: SITE_URL,
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Letné tábory',
-        item: 'https://bombovo.sk/letne-tabory',
+        item: `${SITE_URL}/letne-tabory`,
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: campDetails.name,
-        item: `https://bombovo.sk/letne-tabory/${campId}`,
+        item: `${SITE_URL}/letne-tabory/${campId}`,
       },
     ],
   }
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLd.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd) }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}

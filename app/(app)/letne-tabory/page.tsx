@@ -3,6 +3,7 @@ export const revalidate = 60
 import { getPayloadClient } from '@/lib/payload'
 
 export const metadata = {
+  alternates: { canonical: '/letne-tabory' },
   title: 'Detské Letné Tábory 2026 | Bombovo',
   description: 'Detské letné tábory 2026 na Slovensku. Viac ako 26 rokov skúseností, 86 % návratnosť detí. Fantasy, športové, dobrodružné aj umelecké tábory pre deti od 6 do 17 rokov.',
 }
@@ -158,7 +159,7 @@ export default async function LetneTaborePage() {
       '@type': 'ListItem',
       position: index + 1,
       name: camp.name,
-      url: `https://bombovo.sk/letne-tabory/${camp.id}`,
+      url: `https://www.bombovo.sk/letne-tabory/${camp.id}`,
       offers: {
         '@type': 'Offer',
         price: camp.price.replace(/\s?€/g, '').trim(),
