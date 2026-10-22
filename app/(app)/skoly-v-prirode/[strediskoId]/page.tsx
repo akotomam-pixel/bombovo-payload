@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/payload'
 import { getStrediskoById } from '@/data/strediska'
 import StrediskoDetailClient from './StrediskoDetailClient'
@@ -291,13 +292,8 @@ export default async function StrediskoDetailPage({
     detailData = mapHardcodedToDetail(getStrediskoById(strediskoId), strediskoId)
   }
 
-  if (!detailData) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p className="text-xl font-bold">Stredisko nenájdené</p>
-      </main>
-    )
-  }
+  // Unknown stredisko → real HTTP 404 (friendly message lives in ./not-found.tsx)
+  if (!detailData) notFound()
 
   return <StrediskoDetailClient data={detailData} />
 }

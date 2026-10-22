@@ -1,11 +1,8 @@
 import { cache } from 'react'
 import { getPayloadClient } from '@/lib/payload'
-import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { after } from 'next/server'
 import { cookies, headers } from 'next/headers'
-import TopBar from '@/components/TopBar'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import { getCampDetails } from '@/data/camps'
 import type { CampDetailData } from '@/data/camps/types'
 import CampDetailClient from './CampDetailClient'
@@ -208,6 +205,9 @@ export default async function CampDetailPage({
 
   const campDetails = await loadCamp(campId)
 
+  // Unknown camp → real HTTP 404 (friendly message lives in ./not-found.tsx)
+  if (!campDetails) notFound()
+
   // "Pripravujeme" password gate for camps that aren't public yet
   if (campDetails && isPreviewCamp(campId)) {
     const cookieStore = await cookies()
@@ -239,29 +239,6 @@ export default async function CampDetailPage({
         await logTrackEvent(track, 'viewed_camp', { campId, ip, userAgent, referrer })
       })
     }
-  }
-
-  // 3. 404
-  if (!campDetails) {
-    return (
-      <div className="min-h-screen flex flex-col bg-white">
-        <TopBar />
-        <Header />
-        <main className="flex-grow flex items-center justify-center px-6">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-bombovo-dark mb-6">
-              Táto stránka neexistuje
-            </h1>
-            <Link href="/letne-tabory">
-              <button className="px-8 py-4 bg-bombovo-yellow text-bombovo-dark font-bold text-lg rounded-3xl hover:translate-y-0.5 transition-transform duration-150">
-                Späť na letné tábory
-              </button>
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
   }
 
   const jsonLd = campEventsJsonLd(campDetails, campId)
