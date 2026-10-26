@@ -55,7 +55,7 @@ export const zimnyFestAnimatorFestData: CampDetailData = {
   ],
 
   bulletPoints: [
-    'Na Fest sa nemusí čakať do leta. Príď cez zimné prázdniny za známymi tvárami alebo spoznať partiu, s ktorou začneš nový rok.',
+    'Fest pokračuje aj v zime, so všetkým, čo nás na ňom baví. Na Lomoch nás čaká šesť dní hier, diskoték a spoločného času aj s vianočnou večerou a silvestrovskou párty.',
   ],
 
   section2: {
