@@ -80,8 +80,9 @@ function payloadDocToCamp(doc: Record<string, any>, hardcodedBySlug: Map<string,
   }
 }
 
-// Autumn 2026 camps — still on sale, so exempt from the off-season override.
-const AUTUMN_CAMP_IDS = new Set(['halloween-na-lomoch', 'fest-halloween-fest'])
+// Camps still on sale, so exempt from the off-season override. Empty now that
+// the autumn 2026 Halloween camps are sold out too.
+const AUTUMN_CAMP_IDS = new Set<string>([])
 
 export default async function LetneTaborePage() {
   // Build a quick lookup map for hardcoded camps
