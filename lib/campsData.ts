@@ -18,6 +18,7 @@ import { woodkempData } from '@/data/camps/woodkemp'
 import { expectoData } from '@/data/camps/expecto'
 import { halloweenNaLomochData } from '@/data/camps/halloween-na-lomoch'
 import { festHalloweenFestData } from '@/data/camps/fest-halloween-fest'
+import { zimnyFestAnimatorFestData } from '@/data/camps/zimny-fest-animator-fest'
 
 // Handles both hyphen and em-dash: "8-14 rokov" or "10 – 16 rokov"
 function parseAge(ageStr: string): { short: string; range: [number, number] } {
@@ -77,6 +78,19 @@ export const camps: Camp[] = [
     dates: [],
     description: festHalloweenFestData.bulletPoints[0],
     image: festHalloweenFestData.heroGallery![0].src,
+  },
+  // Winter camp (2.–7.1.2027). Managed in Payload; fallback + originalPrice here.
+  {
+    id: 'zimny-fest-animator-fest',
+    name: 'Zimný Fest animátor fest',
+    ...parseAgeFields(zimnyFestAnimatorFestData.age),
+    types: ['Tínedžerský', 'Akčný'],
+    displayTypes: ['Tínedžerský', 'Akčný'],
+    price: zimnyFestAnimatorFestData.price,
+    originalPrice: '359 €',
+    dates: [],
+    description: zimnyFestAnimatorFestData.bulletPoints[0],
+    image: zimnyFestAnimatorFestData.heroGallery![0].src,
   },
   {
     id: 'olymp-kemp',

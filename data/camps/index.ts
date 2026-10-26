@@ -18,6 +18,7 @@ import { anglickeLetoData } from './anglicke-leto'
 import { trhlinaData } from './trhlina'
 import { halloweenNaLomochData } from './halloween-na-lomoch'
 import { festHalloweenFestData } from './fest-halloween-fest'
+import { zimnyFestAnimatorFestData } from './zimny-fest-animator-fest'
 
 export const campDetailsMap: Record<string, CampDetailData> = {
   'artlantida': artlantidaData,
@@ -39,6 +40,7 @@ export const campDetailsMap: Record<string, CampDetailData> = {
   'trhlina': trhlinaData,
   'halloween-na-lomoch': halloweenNaLomochData,
   'fest-halloween-fest': festHalloweenFestData,
+  'zimny-fest-animator-fest': zimnyFestAnimatorFestData,
 }
 
 export function getCampDetails(campId: string): CampDetailData | null {

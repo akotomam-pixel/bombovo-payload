@@ -28,6 +28,7 @@ const CAMP_KEYWORD: Record<string, string> = {
   trhlina: 'fantasy tábor',
   'v-dracej-nore': 'fantasy tábor',
   woodkemp: 'tábor v prírode',
+  'zimny-fest-animator-fest': 'tábor pre teenagerov',
   'z-bodu-nula-do-bodu-sto': 'zážitkový tábor',
 }
 

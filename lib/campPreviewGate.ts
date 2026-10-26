@@ -4,10 +4,10 @@
 //
 // To make a camp public: remove its id from PREVIEW_CAMP_IDS.
 
-export const PREVIEW_CAMP_IDS: readonly string[] = []
+export const PREVIEW_CAMP_IDS: readonly string[] = ['zimny-fest-animator-fest']
 
 export const PREVIEW_COOKIE = 'camp_preview'
-export const PREVIEW_PASSWORD = 'bombovo1235'
+export const PREVIEW_PASSWORD = 'bombovo123'
 
 export function isPreviewCamp(campId: string): boolean {
   return PREVIEW_CAMP_IDS.includes(campId)

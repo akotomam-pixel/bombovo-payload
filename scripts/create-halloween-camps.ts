@@ -20,6 +20,7 @@ import fs from 'fs'
 import { halloweenNaLomochData } from '../data/camps/halloween-na-lomoch'
 import { festHalloweenFestData } from '../data/camps/fest-halloween-fest'
 import type { CampDetailData } from '../data/camps/types'
+import { toPayloadDoc } from './lib/campToPayloadDoc'
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true } as any)
 
@@ -29,9 +30,6 @@ if (!photosDir) {
   console.error('Usage: npx tsx scripts/create-halloween-camps.ts <photosDir>')
   process.exit(1)
 }
-
-// Lomy stredisko photos already in Payload (same set Trhlina uses)
-const LOMY_STREDISKO_MEDIA_IDS = [421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431]
 
 const CAMPS: Array<{ data: CampDetailData; folder: string; campTypes: string[] }> = [
   // Kids camp types ("Dobrodružný", "Tvorivý") aren't all valid Payload options —
@@ -77,55 +75,6 @@ async function slugExists(token: string, slug: string): Promise<boolean> {
   })
   const data = await res.json()
   return (data.totalDocs ?? 0) > 0
-}
-
-function toPayloadDoc(d: CampDetailData, campTypes: string[], galleryIds: number[]) {
-  const items = (arr: string[]) => arr.map((item) => ({ item }))
-  const paragraphs = (arr: string[]) => arr.map((paragraph) => ({ paragraph }))
-  return {
-    name: d.name,
-    slug: d.id,
-    order: 0,
-    poSezone: false,
-    cardImage: galleryIds[0],
-    campTypes,
-    headline: d.headline,
-    headlineHighlight: d.headlineHighlight,
-    bulletPoints: d.bulletPoints.map((text) => ({ text })),
-    location: d.location,
-    age: d.age,
-    price: d.price,
-    heroGallery: galleryIds.map((photo) => ({ photo })),
-    section2_headline: d.section2.headline,
-    section2_description: paragraphs(d.section2.description),
-    ratings: d.section2.ratings,
-    section3_headline: d.section3.headline,
-    section3_text: paragraphs(d.section3.text),
-    reviews: d.section3.reviews,
-    vTomtoTaboreZazites: items(d.section4.details.vTomtoTaboreZazites),
-    vCene: items(d.section4.details.vCene),
-    lokalita: d.section4.details.lokalita,
-    doprava: d.section4.details.doprava,
-    ubytovanie: items(d.section4.details.ubytovanie),
-    zaPriplatok: items(d.section4.details.zaPriplatok),
-    hasStredisko: d.section4.hasStredisko ?? false,
-    strediskoName: d.section4.strediskoName,
-    strediskoDescription: d.section4.strediskoDescription,
-    strediskoGallery: LOMY_STREDISKO_MEDIA_IDS.map((photo) => ({ photo })),
-    mapLat: d.section4.mapCoordinates?.lat,
-    mapLng: d.section4.mapCoordinates?.lng,
-    dates: d.section5.dates.map((t) => ({
-      start: t.start,
-      end: t.end,
-      days: t.days,
-      originalPrice: t.originalPrice,
-      discountedPrice: t.discountedPrice,
-      registrationId: t.registrationId != null ? String(t.registrationId) : undefined,
-      profisTerminId: t.profisTerminId,
-      id_ZajezdHotel: t.id_ZajezdHotel,
-      vypredane: false,
-    })),
-  }
 }
 
 async function main() {
