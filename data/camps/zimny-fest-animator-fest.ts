@@ -54,9 +54,8 @@ export const zimnyFestAnimatorFestData: CampDetailData = {
     photo('RRX2fWCU0K6iI3swldmqKxpszVUtLvjyYobHcrfmZCaiwEWT'),
   ],
 
-  // TEMP card/hero line until the ChatGPT intro arrives — facts from the program only.
   bulletPoints: [
-    'Zimný Fest na Lomoch od 2. do 7. januára 2027: diskotéky, zimné hry, eskimácky deň, vianočná večera s medovníkmi, silvestrovská párty aj escape hra po celých Lomoch.',
+    'Na Fest sa nemusí čakať do leta. Príď cez zimné prázdniny za známymi tvárami alebo spoznať partiu, s ktorou začneš nový rok.',
   ],
 
   section2: {
@@ -69,13 +68,18 @@ export const zimnyFestAnimatorFestData: CampDetailData = {
       kritickeMyslenie: 6,
     },
     headline: 'O čom je Zimný Fest?',
-    description: [],
+    description: [
+      'Zimný Fest animátor fest je zimná verzia nášho tábora pre tínedžerov od 13 do 17 rokov. Od 2. do 7. januára 2027 sa stretneme v Horskom hoteli Lomy v pohorí Vtáčnik. Nadväzujeme na komunitu, ktorú budujeme už viac ako 15 rokov. V programe striedame tradičné aj netradičné táborové hry, zimné hry, špeciálny eskimácky deň a diskotéky.',
+      'Sviatky si tu dáme ešte raz, s tradičnou vianočnou večerou, zdobením medovníkov aj silvestrovskou párty. Počas pohodového pyžamového dňa trochu spomalíme a čaká nás aj úniková hra, ktorá sa bude odohrávať po celých Lomoch. Chystáme aj veľmi špeciálne trhy. Za šesť dní tak stihneme sviatočné tradície, poriadnu párty aj čas na oddych.',
+    ],
     buttonText: 'Pozri Dostupné Termíny',
   },
 
   section3: {
     headline: 'Ako Fest prežíva dieťa?',
-    text: [],
+    text: [
+      'Na Feste mám voľnosť byť sám sebou a nemusím sa na nič hrať. Pri hrách aj večer na izbe mám okolo seba partiu, ktorá drží spolu. S kamarátmi zostávam v kontakte aj po tábore a už doma plánujem, kedy sa zasa uvidíme.',
+    ],
     reviews: [
       {
         text: 'Fest Animátor Fest je najlepší tábor na celom svete. Je to tábor kde sa ľudia spoznávajú, zabávajú a nepotrebujú k tomu žiadne moderné vecičky. Už som na Feste 2-krát a určite som ešte neskončil. Za týchto 9 dní som veľa toho pochopil a som za to vďačný všetkým ľuďom ktorý boli so mnou na Feste. A preto vám patrí veľké ĎAKUJEM!!!',
