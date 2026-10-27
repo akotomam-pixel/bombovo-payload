@@ -58,6 +58,15 @@ export default function RegistrationSVPClient({
   }, []);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Jump to the top only after the success screen has replaced the form, so the
+  // shrinking page cannot cut the scroll short and leave people at the footer.
+  useEffect(() => {
+    if (!isSubmitted) return;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    });
+  }, [isSubmitted]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [showErrors, setShowErrors] = useState(false);
@@ -122,7 +131,6 @@ export default function RegistrationSVPClient({
       }
       setIsSubmitted(true);
       try {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: 'prihlaska_svp_submitted', event_id: metaEventId });
         // Form details for reporting. Personal data (leader name, phone, full email,

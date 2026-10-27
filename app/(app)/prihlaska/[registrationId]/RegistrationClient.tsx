@@ -100,6 +100,16 @@ export default function RegistrationClient({
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Jump to the top only after the success box has replaced the form. Scrolling
+  // before that re-render let the shrinking page cut the smooth scroll short,
+  // which on tall screens left people looking at the footer.
+  useEffect(() => {
+    if (!isSubmitted) return;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    });
+  }, [isSubmitted]);
   const [tshirtSizes, setTshirtSizes] = useState<{ id: number; nazev: string }[]>([]);
 
   const [discountStatus, setDiscountStatus] = useState<'idle' | 'applying' | 'applied' | 'error'>('idle');
@@ -255,6 +265,7 @@ export default function RegistrationClient({
     }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
+      setSubmitError('Niektoré povinné polia nie sú vyplnené. Označili sme ich červenou.');
       const firstKey = Object.keys(errors)[0];
       const el = document.getElementById(`field-${firstKey}`);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -319,7 +330,6 @@ export default function RegistrationClient({
     // to fail later (e.g. the non-blocking finalize step). Just show success.
     if (orderCreatedRef.current) {
       setIsSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setSubmitError(null);
@@ -351,6 +361,7 @@ export default function RegistrationClient({
           setDiscountStatus('error');
           setDiscountMessage(discData.error ?? 'Neplatný zľavový kód.');
           document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setIsSubmitting(false);
           return;
         }
         effectiveDiscountParamId = discData.id_SkupinaSlevaParametr;
@@ -361,6 +372,7 @@ export default function RegistrationClient({
         setDiscountStatus('error');
         setDiscountMessage('Neplatný zľavový kód.');
         document.getElementById('field-discountCode')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setIsSubmitting(false);
         return;
       }
     }
@@ -568,7 +580,6 @@ export default function RegistrationClient({
       }).catch(() => {});
 
       setIsSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       setTimeout(() => {
         if (typeof window !== 'undefined') {
@@ -590,7 +601,7 @@ export default function RegistrationClient({
           fetch('https://script.google.com/macros/s/AKfycbxb-uieDsMkLrXZ98LxTKUpjYIE7iCat4uue-YikXYLfuv1f_lEKeKg7Je5JYfOTEeZCQ/exec', {
             method: 'POST',
             body: JSON.stringify({
-              name: formData.firstName + ' ' + formData.lastName,
+              name: formData.parentFirstName + ' ' + formData.parentLastName,
               price: cleanPrice + ' EUR',
               ecmid: ecmid
             })
