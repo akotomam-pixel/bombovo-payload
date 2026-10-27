@@ -30,6 +30,11 @@ const HERO_VIDEO_POSTER = '/images/Videos/pridaj-sa-hero-poster.jpg'
 /** Next.js image optimizer URL — same mechanism the strediská pages use. */
 const opt = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=80`
 
+/** Role photo sizes: phones pick a small file, desktops / retina the larger one. */
+const ROLE_PHOTO_WIDTHS = [640, 828, 1080, 1200]
+const ROLE_PHOTO_SIZES = '(min-width: 1024px) 600px, 100vw'
+const rolePhotoSrcSet = (src: string) => ROLE_PHOTO_WIDTHS.map((w) => `${opt(src, w)} ${w}w`).join(', ')
+
 /** Sub-headings across the strediská pages are set in this face (Comic Neue). */
 const SUBHEAD = 'var(--font-subhead), "Comic Sans MS", cursive'
 
@@ -312,6 +317,8 @@ function RolePanel({ role }: { role: Role }) {
           {role.photo ? (
             <img
               src={opt(role.photo, 1200)}
+              srcSet={rolePhotoSrcSet(role.photo)}
+              sizes={ROLE_PHOTO_SIZES}
               alt={role.photoLabel.replace(/^FOTO:\s*/, '')}
               loading="lazy"
               decoding="async"
@@ -396,8 +403,33 @@ function RolePanel({ role }: { role: Role }) {
 function KohoHladameSection() {
   const [active, setActive] = useState(0)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const sectionRef = useRef<HTMLElement>(null)
   const baseId = useId()
   const role = ROLES[active]
+
+  // Only the active tab's photo is on the page, so the other photos would
+  // start downloading only on click. Fetch them all as the section comes near,
+  // so switching tabs shows the photo instantly.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        io.disconnect()
+        for (const r of ROLES) {
+          if (!r.photo) continue
+          const img = new Image()
+          img.sizes = ROLE_PHOTO_SIZES
+          img.srcset = rolePhotoSrcSet(r.photo)
+          img.src = opt(r.photo, 1200)
+        }
+      },
+      { rootMargin: '800px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const last = ROLES.length - 1
@@ -413,7 +445,7 @@ function KohoHladameSection() {
   }
 
   return (
-    <section className="bg-white">
+    <section ref={sectionRef} className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-20 lg:px-8">
         {/* Heading row: title left, tab pills right (wrap below on mobile) */}
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
