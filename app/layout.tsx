@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
-import { The_Girl_Next_Door, Comic_Neue } from 'next/font/google'
+import { The_Girl_Next_Door } from 'next/font/google'
+import localFont from 'next/font/local'
 import Script from 'next/script'
 import React from 'react'
 import NextTopLoader from 'nextjs-toploader'
@@ -9,7 +10,8 @@ import { PostHogProvider } from '@/components/PostHogProvider'
 
 const theGirlNextDoor = The_Girl_Next_Door({
   weight: ['400'],
-  subsets: ['latin'],
+  // latin-ext carries ľ č š ž ť ň — without it those letters fall back.
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-amatic',
   display: 'swap',
 })
@@ -20,11 +22,16 @@ const theGirlNextDoor = The_Girl_Next_Door({
 // Roundhand script. It is also proprietary and cannot be self-hosted, so this is
 // Comic Neue — the open face drawn as its successor — loaded properly and
 // therefore identical on every device.
-const comicNeue = Comic_Neue({
-  weight: ['400', '700'],
-  // Comic Neue ships one subset; checked its cmap directly and every Slovak
-  // diacritic (a c d e i l n o r s t u y z with their marks) is present.
-  subsets: ['latin'],
+//
+// Self-hosted, not next/font/google: Google serves Comic Neue only as a
+// `latin` subset (U+0000-00FF), which drops ľ č š ž ť ň ď ĺ ŕ. Those letters
+// then fell back to another font mid-word ("hľadáme"). The full files in
+// app/fonts/ (from github.com/google/fonts, OFL) contain every Slovak letter.
+const comicNeue = localFont({
+  src: [
+    { path: './fonts/ComicNeue-Regular.ttf', weight: '400', style: 'normal' },
+    { path: './fonts/ComicNeue-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-subhead',
   display: 'swap',
 })
