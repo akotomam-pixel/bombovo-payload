@@ -28,7 +28,7 @@ const FALLBACK_S1: FooterDoc[] = [
   { name: 'Pokyny k táborom Leto 2027', url: '/documents/Pokyny-k-taborom-Leto-2027.pdf' },
   { name: 'Pokyny k táborom Zima 2027', url: '/documents/Pokyny-k-taborom-Zima-2027.pdf' },
   { name: 'Splnomocnenie o odovzdaní/prebratí dieťaťa', url: '/documents/splnomocnenie.pdf' },
-  { name: 'Dôležité informácie o ŠvP', url: '/documents/Dolezite-Informacie-o-SVP2026.pdf' },
+  { name: 'Dôležité informácie o ŠvP', url: '/documents/Dolezite-Informacie-o-SVP2027.pdf' },
   { name: 'Prehlásenie o zdravotnom stave', url: '/documents/Prehlasenie-o-zdravotnom-stave.pdf' },
   { name: 'Menný zoznam účastníkov ŠvP', url: '/documents/menny-zoznam-ucastnikov-svp-2026-excel.pdf' },
   { name: 'Darčekový poukaz', url: '/documents/darcekovy-poukaz.pdf' },
