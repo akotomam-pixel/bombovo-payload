@@ -60,6 +60,10 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
         q: 'Dostanem po školení prácu?',
         a: 'Áno! Hneď po školení si budeš môcť vybrať termín na svoj prvý animačný týždeň.',
       },
+      {
+        q: 'Kde a kedy je školenie?',
+        a: 'Školenie prebieha v Horskom hoteli Lomy (Horná Ves, okr. Prievidza) v termíne, ktorý si vyberieš.',
+      },
     ],
     requirement: {
       title: 'Prihlásiť sa môžeš, len ak budeš mať k 1. 7. 2027 aspoň 18 rokov.',
