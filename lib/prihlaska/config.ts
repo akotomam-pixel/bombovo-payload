@@ -84,7 +84,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     dobreVediet: [
       {
         q: 'Prečo školenie, keď som zdravotník?',
-        a: 'Práca s deťmi v zariadení pre deti a mládež, na škole v prírode, lyžiarskom výcviku či v letnom tábore je iná ako v nemocnici alebo ambulancii. Na školení sa dozvieš, ako takýto pobyt funguje, aké situácie s deťmi môžu nastať a ako sa v nich zachovať, aby si bol/a na všetko pripravený/á.',
+        a: 'Práca s deťmi na škole v prírode či v letnom tábore je iná ako v nemocnici alebo ambulancii. Na školení sa dozvieš, ako takýto pobyt funguje, aké situácie s deťmi môžu nastať a ako sa v nich zachovať, aby si bol/a na všetko pripravený/á.',
       },
       {
         q: 'Koľko zarobím?',
