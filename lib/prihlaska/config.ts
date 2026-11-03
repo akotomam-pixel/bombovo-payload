@@ -24,7 +24,6 @@ export type PrihlaskaConfig = {
   /** Used in emails and the H1, e.g. "Animátor". */
   roleName: string
   title: string
-  intro: string
   /** Shown next to the fee in the header price tag, e.g. "za 3-dňové školenie". */
   priceLabel: string
   terminy: string[]
@@ -45,7 +44,6 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     role: 'animator',
     roleName: 'Animátor',
     title: 'Prihláška animátor',
-    intro: 'Vyber si termín školenia a vyplň pár údajov. Zaberie ti to len pár minút.',
     priceLabel: 'za 3-dňové školenie',
     terminy: TERMINY_ANIMATOR,
     fee: 30,
@@ -72,7 +70,6 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
     role: 'zdravotnik',
     roleName: 'Zdravotník',
     title: 'Prihláška zdravotník',
-    intro: 'Vyber si termín školenia a vyplň pár údajov. Zaberie ti to len pár minút.',
     priceLabel: 'za 2-dňové školenie',
     terminy: TERMINY_ZDRAVOTNIK,
     fee: 20,

@@ -787,7 +787,9 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
             <span className="underline-offset-4 group-hover:underline">Späť na Pridaj sa do tímu</span>
           </Link>
 
-          <h1 className="mt-5 text-[clamp(2.1rem,5vw,3.4rem)] font-medium leading-[1.1] tracking-[-0.035em] text-bombovo-dark md:mt-6">
+          {/* Heading left, price tag top-right on desktop; stacked on phones. */}
+          <div className="mt-5 flex flex-col items-start gap-6 md:mt-6 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="text-[clamp(2.1rem,5vw,3.4rem)] font-medium leading-[1.1] tracking-[-0.035em] text-bombovo-dark">
             Prihláška{' '}
             {/* Same tilted word box as the /pridaj-sa-do-timu hero, in the role's colour. */}
             <span
@@ -797,10 +799,8 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
               {word}
             </span>
           </h1>
-          <p className="mt-4 max-w-xl text-[17px] leading-[1.7] text-[#1F2320] md:text-[18px]">{cfg.intro}</p>
-
           {/* Price tag: what it is on the left, the amount in the role colour on the right. */}
-          <p className="mt-6 inline-flex items-stretch overflow-hidden rounded-[16px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.05),0_14px_30px_-20px_rgba(8,7,8,0.35)] ring-1 ring-[#DDE0DD]">
+          <p className="inline-flex shrink-0 items-stretch overflow-hidden rounded-[16px] bg-white shadow-[0_1px_2px_rgba(8,7,8,0.05),0_14px_30px_-20px_rgba(8,7,8,0.35)] ring-1 ring-[#DDE0DD]">
             <span className="flex flex-col justify-center px-4 py-3 sm:px-5">
               <span className="text-[12px] font-semibold uppercase leading-none tracking-[0.12em] text-[#6B716B]">Cena</span>
               <span className="mt-1.5 text-[16px] font-semibold leading-tight text-bombovo-dark sm:text-[17px]">{cfg.priceLabel}</span>
@@ -812,6 +812,7 @@ export default function PrihlaskaPage({ role }: { role: PrihlaskaRole }) {
               {cfg.fee} €
             </span>
           </p>
+          </div>
 
           {cfg.requirement && <Requirement req={cfg.requirement} role={role} />}
 
