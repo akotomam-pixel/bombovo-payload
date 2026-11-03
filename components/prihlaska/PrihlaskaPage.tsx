@@ -22,11 +22,13 @@ import {
   PRIHLASKA,
   VZDELANIE_OPTIONS,
   paymentNote,
+  posthogPersonProps,
   validatePrihlaska,
   type PrihlaskaConfig,
   type PrihlaskaData,
   type PrihlaskaRole,
 } from '@/lib/prihlaska/config'
+import { identifySafe, newFormId, posthogContext, trackSvp } from '@/lib/svpTracking'
 
 /*
   Shared layout for /prihlaska-animator and /prihlaska-zdravotnik. Same visual
@@ -86,6 +88,25 @@ const ERROR_ORDER: (keyof PrihlaskaData)[] = [
   'strava',
   'gdpr',
 ]
+
+/** Field labels for team_form_abandoned's last_field. The label only, never what was typed. */
+const FIELD_LABELS: Record<keyof PrihlaskaData, string> = {
+  termin: 'Termín školenia',
+  titul: 'Titul',
+  meno: 'Meno',
+  priezvisko: 'Priezvisko',
+  datumNarodenia: 'Dátum narodenia',
+  adresa: 'Adresa',
+  psc: 'PSČ',
+  mesto: 'Mesto',
+  telefon: 'Telefón',
+  email: 'Email',
+  vzdelanie: 'Vzdelanie / odbornosť',
+  strava: 'Intolerancie / alergie',
+  gdpr: 'Súhlas GDPR',
+}
+
+type AbandonReason = 'left_page' | 'tab_closed' | 'tab_hidden'
 
 /* ─── Small building blocks ─────────────────────────────────────────────── */
 
@@ -300,7 +321,67 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
   const allErrors = validatePrihlaska(role, data)
   const err = (k: keyof PrihlaskaData) => (submitted || touched[k] ? allErrors[k] : undefined)
 
-  const set = <K extends keyof PrihlaskaData>(k: K, v: PrihlaskaData[K]) => setData((d) => ({ ...d, [k]: v }))
+  // ── PostHog funnel: viewed → started → submitted / abandoned. Same mechanics
+  // as LomyEnquiryForm. Refs, not state: none of it should re-render the form.
+  const [formId] = useState(newFormId)
+  const trackProps = { role, form_id: formId }
+  const viewedRef = useRef(false)
+  const startedRef = useRef(false)
+  const finishedRef = useRef(false)
+  const lastFieldRef = useRef('')
+  const changedRef = useRef(new Set<keyof PrihlaskaData>())
+  const dataRef = useRef(data)
+  dataRef.current = data
+
+  useEffect(() => {
+    if (viewedRef.current) return
+    viewedRef.current = true
+    trackSvp('team_form_viewed', { role, form_id: formId })
+  }, [role, formId])
+
+  const touch = (k: keyof PrihlaskaData) => {
+    lastFieldRef.current = FIELD_LABELS[k]
+    changedRef.current.add(k)
+    if (startedRef.current) return
+    startedRef.current = true
+    trackSvp('team_form_started', { role, form_id: formId })
+  }
+
+  // Started but never successfully sent: fires once, on whichever comes first.
+  // Tab closed/hidden go by sendBeacon so they survive the page dying.
+  const abandonRef = useRef((reason: AbandonReason) => {
+    if (!startedRef.current || finishedRef.current) return
+    finishedRef.current = true
+    const filled = [...changedRef.current].filter((k) => {
+      const v = dataRef.current[k]
+      return typeof v === 'string' ? v.trim() !== '' : v
+    }).length
+    trackSvp(
+      'team_form_abandoned',
+      { role, form_id: formId, reason, last_field: lastFieldRef.current, fields_filled: filled },
+      { beacon: reason !== 'left_page' },
+    )
+  })
+
+  useEffect(() => {
+    const abandon = abandonRef.current
+    const onPageHide = () => abandon('tab_closed')
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') abandon('tab_hidden')
+    }
+    window.addEventListener('pagehide', onPageHide)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.removeEventListener('pagehide', onPageHide)
+      document.removeEventListener('visibilitychange', onVisibility)
+      abandon('left_page')
+    }
+  }, [])
+
+  const set = <K extends keyof PrihlaskaData>(k: K, v: PrihlaskaData[K]) => {
+    touch(k)
+    setData((d) => ({ ...d, [k]: v }))
+  }
   const blur = (k: keyof PrihlaskaData) => () => setTouched((t) => ({ ...t, [k]: true }))
   const text = (k: keyof PrihlaskaData) => ({
     name: k,
@@ -316,6 +397,7 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
     setServerError('')
     const first = ERROR_ORDER.find((k) => allErrors[k])
     if (first) {
+      trackSvp('team_form_validation_failed', { ...trackProps, fields: ERROR_ORDER.filter((k) => allErrors[k]) })
       const el =
         first === 'termin'
           ? document.querySelector<HTMLInputElement>(`input[name="${uid}-termin"]`)
@@ -324,15 +406,29 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
       return
     }
     setSending(true)
+    let status = 0 // 0 = the request never got a response (offline, blocked)
     try {
       const res = await fetch(`/api/contact-${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, ...posthogContext() }),
       })
+      status = res.status
       if (!res.ok) throw new Error(String(res.status))
+      const json = (await res.json().catch(() => ({}))) as { applicationId?: number | null }
+
+      // Before the form unmounts, so a successful send never counts as abandoned.
+      finishedRef.current = true
+      const person = posthogPersonProps(role, data)
+      identifySafe(person.email, person)
+      trackSvp('team_application_submitted', {
+        ...trackProps,
+        termin: data.termin,
+        application_id: json.applicationId ?? null,
+      })
       onSuccess(data)
     } catch {
+      trackSvp('team_form_submit_failed', { ...trackProps, status })
       setServerError('Prihlášku sa nepodarilo odoslať. Skús to znova alebo nám napíš na bombovo@bombovo.sk.')
       setSending(false)
     }

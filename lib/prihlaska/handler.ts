@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { getPayloadClient } from '@/lib/payload'
+import { captureServer } from '@/lib/posthogServer'
 import {
   CONTACT_EMAIL,
   EMPTY_DATA,
@@ -7,6 +9,7 @@ import {
   IBAN,
   PRIHLASKA,
   paymentNote,
+  posthogPersonProps,
   validatePrihlaska,
   type PrihlaskaData,
   type PrihlaskaRole,
@@ -15,7 +18,9 @@ import {
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM = 'Bombovo <info@bombovo.sk>'
-const INTERNAL_TO = ['maja@bombovo.sk']
+const INTERNAL_TO = ['maja@bombovo.sk', 'bombovo@bombovo.sk']
+/** Where the applicant's reply to the confirmation lands. CONTACT_EMAIL stays as shown on the site. */
+const APPLICANT_REPLY_TO = 'maja@bombovo.sk'
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -125,12 +130,21 @@ ${blocks.join('\n')}
 }
 
 // ─── Route handler ───────────────────────────────────────────────────────────
+//
+// Order: validate → save to the DB → internal email → confirmation → record
+// the email status. The applicant only sees an error when the application
+// reached neither the DB nor Maja's inbox.
+
+const errText = (err: unknown) =>
+  err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err)
 
 export async function handlePrihlaska(request: NextRequest, role: PrihlaskaRole) {
   const tag = `[prihlaska-${role}]`
+  let body: unknown
   let data: PrihlaskaData
   try {
-    data = pick(await request.json())
+    body = await request.json()
+    data = pick(body)
   } catch {
     return NextResponse.json({ error: 'Neplatná požiadavka.' }, { status: 400 })
   }
@@ -140,8 +154,32 @@ export async function handlePrihlaska(request: NextRequest, role: PrihlaskaRole)
     return NextResponse.json({ error: 'Skontroluj, prosím, povinné polia.', fields: errors }, { status: 400 })
   }
 
+  // Tracking extras from the browser; not part of the application itself.
+  const extra = body as Record<string, unknown>
+  const clientDistinctId =
+    typeof extra.posthog_distinct_id === 'string' ? extra.posthog_distinct_id.slice(0, 200) : undefined
+  const isInternal = extra.is_internal === true
+
+  const cfg = PRIHLASKA[role]
+  const emailErrors: string[] = []
+
+  // 1. Save first, so the application exists even if every email fails.
+  let applicationId: number | null = null
   try {
-    const cfg = PRIHLASKA[role]
+    const payload = await getPayloadClient()
+    const doc = await payload.create({
+      collection: 'team-applications',
+      overrideAccess: true,
+      data: { ...data, role, email: data.email.toLowerCase() },
+    })
+    applicationId = doc.id
+  } catch (err) {
+    console.error(tag, 'DB save failed, still sending emails:', err)
+  }
+
+  // 2. Internal notification.
+  let internalEmailSent = false
+  try {
     const internal = await resend.emails.send({
       from: FROM,
       to: INTERNAL_TO,
@@ -151,28 +189,71 @@ export async function handlePrihlaska(request: NextRequest, role: PrihlaskaRole)
     })
     if (internal.error) {
       console.error(tag, 'internal email failed:', internal.error)
-      return NextResponse.json({ error: 'Nastala chyba pri odosielaní.' }, { status: 500 })
-    }
-
-    // The application is in; a failed confirmation is logged, not shown to the applicant.
-    try {
-      const text = confirmationText(role, data)
-      const confirm = await resend.emails.send({
-        from: FROM,
-        to: [data.email],
-        replyTo: CONTACT_EMAIL,
-        subject: `Tvoja prihláška do Bombova: školenie ${data.termin}`,
-        text,
-        html: confirmationHtml(text),
-      })
-      if (confirm.error) console.error(tag, 'confirmation email failed:', confirm.error)
-    } catch (err) {
-      console.error(tag, 'confirmation email threw:', err)
-    }
-
-    return NextResponse.json({ success: true })
+      emailErrors.push(`Interný email: ${errText(internal.error)}`)
+    } else internalEmailSent = true
   } catch (err) {
-    console.error(tag, 'error:', err)
-    return NextResponse.json({ error: 'Nastala chyba pri spracovaní formulára.' }, { status: 500 })
+    console.error(tag, 'internal email threw:', err)
+    emailErrors.push(`Interný email: ${errText(err)}`)
   }
+
+  // Lost entirely: tell the applicant so they can try again.
+  if (applicationId === null && !internalEmailSent) {
+    return NextResponse.json({ error: 'Nastala chyba pri odosielaní.' }, { status: 500 })
+  }
+
+  // 3. Confirmation to the applicant. A failure is logged, not shown to them.
+  let confirmationEmailSent = false
+  try {
+    const text = confirmationText(role, data)
+    const confirm = await resend.emails.send({
+      from: FROM,
+      to: [data.email],
+      replyTo: APPLICANT_REPLY_TO,
+      subject: `Tvoja prihláška do Bombova: školenie ${data.termin}`,
+      text,
+      html: confirmationHtml(text),
+    })
+    if (confirm.error) {
+      console.error(tag, 'confirmation email failed:', confirm.error)
+      emailErrors.push(`Potvrdenie: ${errText(confirm.error)}`)
+    } else confirmationEmailSent = true
+  } catch (err) {
+    console.error(tag, 'confirmation email threw:', err)
+    emailErrors.push(`Potvrdenie: ${errText(err)}`)
+  }
+
+  // 4. Record how the emails went.
+  if (applicationId !== null) {
+    try {
+      const payload = await getPayloadClient()
+      await payload.update({
+        collection: 'team-applications',
+        id: applicationId,
+        overrideAccess: true,
+        data: { internalEmailSent, confirmationEmailSent, emailError: emailErrors.join('\n') || null },
+      })
+    } catch (err) {
+      console.error(tag, 'email status update failed:', err)
+    }
+  }
+
+  // 5. Server-side backup of the conversion event.
+  const person = posthogPersonProps(role, data)
+  await captureServer({
+    distinctId: person.email,
+    aliasOf: clientDistinctId,
+    event: 'team_application_submitted_server',
+    properties: {
+      role,
+      termin: data.termin,
+      application_id: applicationId,
+      db_saved: applicationId !== null,
+      internal_email_sent: internalEmailSent,
+      confirmation_email_sent: confirmationEmailSent,
+      ...(isInternal ? { is_internal: true } : {}),
+      $set: person,
+    },
+  })
+
+  return NextResponse.json({ success: true, applicationId })
 }

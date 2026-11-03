@@ -193,3 +193,25 @@ export function validatePrihlaska(role: PrihlaskaRole, d: PrihlaskaData): Prihla
 /** The payment note the applicant must write: "Meno Priezvisko, termín". */
 export const paymentNote = (d: Pick<PrihlaskaData, 'meno' | 'priezvisko' | 'termin'>) =>
   `${d.meno.trim()} ${d.priezvisko.trim()}, ${d.termin}`
+
+/**
+ * Person properties sent to PostHog for an applicant (browser identify and the
+ * server backup event). Deliberately left out: birth date, street address,
+ * PSČ and food intolerances (health data).
+ */
+export function posthogPersonProps(role: PrihlaskaRole, d: PrihlaskaData) {
+  const meno = d.meno.trim()
+  const priezvisko = d.priezvisko.trim()
+  return {
+    email: d.email.trim().toLowerCase(),
+    name: `${meno} ${priezvisko}`.trim(),
+    first_name: meno,
+    last_name: priezvisko,
+    phone: d.telefon.trim(),
+    titul: d.titul.trim() || undefined,
+    mesto: d.mesto.trim(),
+    role,
+    termin: d.termin,
+    ...(role === 'zdravotnik' ? { vzdelanie: d.vzdelanie } : {}),
+  }
+}

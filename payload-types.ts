@@ -75,6 +75,7 @@ export interface Config {
     'teacher-reviews': TeacherReview;
     'letne-tabory-reviews': LetneTaboryReview;
     'waitlist-signups': WaitlistSignup;
+    'team-applications': TeamApplication;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -90,6 +91,7 @@ export interface Config {
     'teacher-reviews': TeacherReviewsSelect<false> | TeacherReviewsSelect<true>;
     'letne-tabory-reviews': LetneTaboryReviewsSelect<false> | LetneTaboryReviewsSelect<true>;
     'waitlist-signups': WaitlistSignupsSelect<false> | WaitlistSignupsSelect<true>;
+    'team-applications': TeamApplicationsSelect<false> | TeamApplicationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -619,6 +621,35 @@ export interface WaitlistSignup {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-applications".
+ */
+export interface TeamApplication {
+  id: number;
+  role: 'animator' | 'zdravotnik';
+  termin: string;
+  titul?: string | null;
+  meno: string;
+  priezvisko: string;
+  /**
+   * Tak, ako prišiel z formulára: RRRR-MM-DD.
+   */
+  datumNarodenia?: string | null;
+  adresa?: string | null;
+  psc?: string | null;
+  mesto?: string | null;
+  telefon: string;
+  email: string;
+  vzdelanie?: string | null;
+  strava?: string | null;
+  gdpr?: boolean | null;
+  internalEmailSent?: boolean | null;
+  confirmationEmailSent?: boolean | null;
+  emailError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "teacher-reviews".
  */
 export interface TeacherReview {
@@ -720,6 +751,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'waitlist-signups';
         value: number | WaitlistSignup;
+      } | null)
+    | ({
+        relationTo: 'team-applications';
+        value: number | TeamApplication;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1078,6 +1113,31 @@ export interface WaitlistSignupsSelect<T extends boolean = true> {
   stredisko?: T;
   termin?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-applications_select".
+ */
+export interface TeamApplicationsSelect<T extends boolean = true> {
+  role?: T;
+  termin?: T;
+  titul?: T;
+  meno?: T;
+  priezvisko?: T;
+  datumNarodenia?: T;
+  adresa?: T;
+  psc?: T;
+  mesto?: T;
+  telefon?: T;
+  email?: T;
+  vzdelanie?: T;
+  strava?: T;
+  gdpr?: T;
+  internalEmailSent?: T;
+  confirmationEmailSent?: T;
+  emailError?: T;
   updatedAt?: T;
   createdAt?: T;
 }

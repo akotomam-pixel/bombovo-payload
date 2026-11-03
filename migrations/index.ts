@@ -5,3 +5,4 @@ export * as m20260607_000000_create_ad_events from './20260607_000000_create_ad_
 export * as m20260617_000000_create_track_events from './20260617_000000_create_track_events'
 export * as m20260831_000000_add_camps_po_sezone from './20260831_000000_add_camps_po_sezone'
 export * as m20260916_000000_create_waitlist_signups from './20260916_000000_create_waitlist_signups'
+export * as m20261103_000000_create_team_applications from './20261103_000000_create_team_applications'

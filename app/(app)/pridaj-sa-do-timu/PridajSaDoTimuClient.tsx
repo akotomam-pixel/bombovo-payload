@@ -15,6 +15,11 @@ import {
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { trackSvp } from '@/lib/svpTracking'
+
+/** Which of the two CTA spots per role was clicked: hero buttons or the role panel. */
+const trackCta = (role: RoleId, location: 'hero' | 'role_panel') =>
+  trackSvp('team_cta_clicked', { role, location })
 
 /* ─── Editable content ──────────────────────────────────────────────────── */
 
@@ -249,6 +254,7 @@ function RoleButton({ role, className = '' }: { role: Role; className?: string }
   return (
     <Link
       href={role.cta.href}
+      onClick={() => trackCta(role.id, 'hero')}
       className={
         'inline-flex min-h-[56px] items-center justify-center rounded-[9px] px-6 py-3.5 text-center text-[17px] font-bold leading-tight tracking-[0.02em] ' +
         'transition-[background-color,box-shadow,transform] duration-150 ease-out motion-reduce:transition-none ' +
@@ -385,6 +391,7 @@ function RolePanel({ role }: { role: Role }) {
         {/* Galileo-style CTA: hard offset shadow that the button "presses" into. */}
         <Link
           href={role.cta.href}
+          onClick={() => trackCta(role.id, 'role_panel')}
           className={
             'mt-8 inline-flex min-h-[56px] w-full items-center justify-center rounded-full border-2 border-bombovo-dark bg-white px-8 py-3.5 text-[17px] font-bold text-bombovo-dark sm:w-auto sm:self-start ' +
             'shadow-[5px_5px_0_0_#080708] transition-[transform,box-shadow] duration-150 ease-out motion-reduce:transition-none ' +

@@ -23,12 +23,33 @@ export function newFormId(): string {
 
 export function trackSvp(
   event: string,
-  properties: Record<string, string | number | undefined>,
+  properties: Record<string, string | number | string[] | null | undefined>,
   options?: { beacon?: boolean },
 ) {
   try {
     posthog.capture(event, properties, options?.beacon ? { transport: 'sendBeacon' } : undefined)
   } catch {
     console.error(`[svp-tracking] ${event} failed`)
+  }
+}
+
+/** posthog.identify, wrapped the same way as trackSvp. */
+export function identifySafe(distinctId: string, properties: Record<string, unknown>) {
+  try {
+    posthog.identify(distinctId, properties)
+  } catch {
+    console.error('[svp-tracking] identify failed')
+  }
+}
+
+/** The browser's PostHog id and internal flag, sent along with a form so the server event joins the same person. */
+export function posthogContext(): { posthog_distinct_id?: string; is_internal?: boolean } {
+  try {
+    return {
+      posthog_distinct_id: posthog.get_distinct_id() || undefined,
+      is_internal: posthog.get_property('is_internal') === true || undefined,
+    }
+  } catch {
+    return {}
   }
 }
