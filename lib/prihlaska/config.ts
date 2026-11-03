@@ -59,7 +59,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
       NEVIEM_PRIST,
       {
         q: 'Dostanem po školení prácu?',
-        a: 'Po úspešnom absolvovaní školenia ťa nominujeme na školy v prírode. Keď ťa pedagógovia a boss (šéf animátor) ohodnotia dobre, môžeš ísť aj na letné tábory.',
+        a: 'Áno! Hneď po školení si budeš môcť vybrať termín na svoj prvý animačný týždeň.',
       },
     ],
     requirement: {
