@@ -61,12 +61,33 @@ export default function CampDetailClient({ campDetails, campId }: Props) {
     [],
   )
 
-  // Pre-fetch all gallery images at display size so clicking thumbnails is instant
+  // Pre-fetch all gallery images at display size so clicking thumbnails is instant.
+  // Waits until the page has loaded and the browser is idle, so 30+ background
+  // downloads don't compete with the hero photo and the rest of the first view.
   useEffect(() => {
-    galleryImages.forEach((img) => {
-      const el = new window.Image()
-      el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
-    })
+    let cancelled = false
+    let idleId: number | undefined
+    const prefetch = () => {
+      if (cancelled) return
+      galleryImages.forEach((img) => {
+        const el = new window.Image()
+        el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
+      })
+    }
+    const schedule = () => {
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(prefetch, { timeout: 3000 })
+      else idleId = setTimeout(prefetch, 1500) as unknown as number
+    }
+    if (document.readyState === 'complete') schedule()
+    else window.addEventListener('load', schedule, { once: true })
+    return () => {
+      cancelled = true
+      window.removeEventListener('load', schedule)
+      if (idleId !== undefined) {
+        if ('cancelIdleCallback' in window) window.cancelIdleCallback(idleId)
+        clearTimeout(idleId)
+      }
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
