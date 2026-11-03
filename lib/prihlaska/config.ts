@@ -102,7 +102,6 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
 
 export type PrihlaskaData = {
   termin: string
-  titul: string
   meno: string
   priezvisko: string
   /** ISO date from the date picker: YYYY-MM-DD. */
@@ -119,7 +118,6 @@ export type PrihlaskaData = {
 
 export const EMPTY_DATA: PrihlaskaData = {
   termin: '',
-  titul: '',
   meno: '',
   priezvisko: '',
   datumNarodenia: '',
@@ -208,7 +206,6 @@ export function posthogPersonProps(role: PrihlaskaRole, d: PrihlaskaData) {
     first_name: meno,
     last_name: priezvisko,
     phone: d.telefon.trim(),
-    titul: d.titul.trim() || undefined,
     mesto: d.mesto.trim(),
     role,
     termin: d.termin,

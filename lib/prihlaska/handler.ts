@@ -45,7 +45,6 @@ function row(label: string, value: string) {
 function internalHtml(role: PrihlaskaRole, d: PrihlaskaData) {
   const rows: [string, string][] = [
     ['Termín školenia', d.termin],
-    ['Titul', d.titul],
     ['Meno', d.meno],
     ['Priezvisko', d.priezvisko],
     ['Dátum narodenia', formatBirthDate(d.datumNarodenia)],

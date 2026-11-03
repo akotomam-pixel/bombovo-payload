@@ -75,7 +75,6 @@ const inputBase =
 
 const ERROR_ORDER: (keyof PrihlaskaData)[] = [
   'termin',
-  'titul',
   'meno',
   'priezvisko',
   'datumNarodenia',
@@ -92,7 +91,6 @@ const ERROR_ORDER: (keyof PrihlaskaData)[] = [
 /** Field labels for team_form_abandoned's last_field. The label only, never what was typed. */
 const FIELD_LABELS: Record<keyof PrihlaskaData, string> = {
   termin: 'Termín školenia',
-  titul: 'Titul',
   meno: 'Meno',
   priezvisko: 'Priezvisko',
   datumNarodenia: 'Dátum narodenia',
@@ -502,10 +500,7 @@ function PrihlaskaForm({ role, onSuccess }: { role: PrihlaskaRole; onSuccess: (d
           Tvoje údaje
         </SectionHeading>
 
-        <div className="mt-6 grid gap-5 sm:grid-cols-[110px_1fr_1fr]">
-          <Field id={fid('titul')} label="Titul" optional error={err('titul')}>
-            {(a) => <input {...a} {...text('titul')} type="text" placeholder="Bc." autoComplete="honorific-prefix" />}
-          </Field>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <Field id={fid('meno')} label="Meno" error={err('meno')}>
             {(a) => <input {...a} {...text('meno')} type="text" placeholder="Lucia" autoComplete="given-name" />}
           </Field>
