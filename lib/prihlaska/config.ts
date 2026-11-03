@@ -31,7 +31,8 @@ export type PrihlaskaConfig = {
   feeNote: string
   dobreVediet: { q: string; a: string }[]
   /** Who may apply — shown prominently at the top of the page, before the form. */
-  requirement?: { title: string; allowed: string[]; notAllowed: string }
+  /** Just a title renders as a single-sentence card. */
+  requirement?: { title: string; allowed?: string[]; notAllowed?: string }
 }
 
 const NEVIEM_PRIST = {
@@ -61,9 +62,7 @@ export const PRIHLASKA: Record<PrihlaskaRole, PrihlaskaConfig> = {
       },
     ],
     requirement: {
-      title: 'Prihlásiť sa môžeš, len ak spĺňaš tieto podmienky',
-      allowed: ['Máš aspoň 18 rokov k 1. 7. 2027', 'Si bezúhonný/á', 'Absolvuješ 3-dňové školenie animátorov'],
-      notAllowed: 'Ak budeš mať k 1. 7. 2027 menej ako 18 rokov, prihlásiť sa zatiaľ nemôžeš.',
+      title: 'Prihlásiť sa môžeš, len ak budeš mať k 1. 7. 2027 aspoň 18 rokov.',
     },
   },
   zdravotnik: {

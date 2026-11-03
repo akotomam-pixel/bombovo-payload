@@ -734,13 +734,14 @@ function Requirement({ req, role }: { req: NonNullable<PrihlaskaConfig['requirem
   const s = ROLE_STYLE[role]
   return (
     <div
-      className="mt-6 max-w-3xl rounded-[20px] border-[3px] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(8,7,8,0.35)] sm:p-6"
+      className="mt-6 w-fit max-w-3xl rounded-[20px] border-[3px] bg-white p-5 shadow-[0_18px_40px_-28px_rgba(8,7,8,0.35)] sm:p-6"
       style={{ borderColor: s.accent }}
     >
       <p className="flex items-start gap-3 text-[18px] font-bold leading-snug text-bombovo-dark sm:text-[20px]">
         <PiSealCheckDuotone aria-hidden className="mt-[-2px] h-8 w-8 shrink-0" />
         {req.title}
       </p>
+      {req.allowed && (
       <ul className="mt-4 flex flex-wrap gap-2">
         {req.allowed.map((a) => (
           <li
@@ -753,10 +754,13 @@ function Requirement({ req, role }: { req: NonNullable<PrihlaskaConfig['requirem
           </li>
         ))}
       </ul>
+      )}
+      {req.notAllowed && (
       <p className="mt-4 flex items-start gap-2.5 text-[14.5px] leading-[1.6] text-[#3A403A]">
         <PiXCircleBold aria-hidden className="mt-[3px] h-[18px] w-[18px] shrink-0 text-[#C21F2B]" />
         {req.notAllowed}
       </p>
+      )}
     </div>
   )
 }
