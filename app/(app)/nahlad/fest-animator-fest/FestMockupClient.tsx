@@ -7,7 +7,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 // Mockup of the new FEST page (canvas Page 8). Copy is placeholder: every
-// spot marked [Copy doplniť] waits for the final text.
+// spot marked waits for the final text.
 
 const UT = (key: string) => `https://utfs.io/f/${key}`
 
@@ -57,16 +57,16 @@ const interviews = [
   { title: '„Z fesťáka animátorom“', sub: '[Meno], animátor', tag: 'Rozhovor' },
   { title: '„Najlepší moment Festu“', sub: '[Meno], 5. Fest', tag: 'Rozhovor' },
 ]
-const interviewBgs = ['#212121', '#2457D6', '#DF2935', '#212121', '#2457D6']
+const interviewBgs = ['#212121', '#3772FF', '#DF2935', '#212121', '#3772FF']
 
 const days = [
-  { n: 'Deň 1', short: 'Zoznamka', title: 'Prvý deň: nikto tu nie je cudzí', text: 'Vymyslíš si prezývku, pod ktorou ťa bude celý Fest poznať. Hry sú postavené tak, aby ste sa do večera poznali všetci. [Copy doplniť]', games: ['Prezývky', 'Miro, tu som', 'Posúvanie papiera', 'Varuj', 'Stratégia'], evening: 'Disko', bg: '#FFF6DC' },
-  { n: 'Deň 2', short: 'Tímy', title: 'Tímy, fanúšikovia a prvá Mission', text: 'Vzniknú tímy, ktoré spolu budú bojovať celý týždeň. Večer príde Mission, najbláznivejšia hra Festu. [Copy doplniť]', games: ['Končatiny', 'Výchovná', 'Fanúšikovia', 'Vybíjaná', 'Topánka', 'Hututu'], evening: 'Mission', bg: '#E8EFFF' },
-  { n: 'Deň 3', short: 'Stredovek', title: 'Turnaj Mekyho Žbirku', text: 'Celý deň v stredoveku. Tímy súťažia o titul a večer sa koná Stredoveký súd. [Copy doplniť]', games: ['Rímska stena', 'Záprah', 'Preťahovanie lanom', 'Dobi svoje územie', 'Dvojičky', '5 proti 5'], evening: 'Stredoveký súd', bg: '#FDE7E9' },
-  { n: 'Deň 4', short: 'Paintball', title: 'Výlet na paintball', text: 'Celodenný výlet. Tím proti tímu, farby všade. Večer sa vrátite na Trhy. [Copy doplniť]', games: ['Paintball', 'Výlet'], evening: 'Trhy', bg: '#FFF6DC' },
-  { n: 'Deň 5', short: 'Les', title: 'Hry v lese a opekačka', text: 'Vietkong, Bobor a hry, pri ktorých treba zapojiť mozog aj nohy. Večer oheň, gitara a rozhovory do noci. [Copy doplniť]', games: ['Kde si?', 'Bobor', 'Vietkong', 'Kužeľ', 'Kvočky'], evening: 'Opekačka pod hviezdami', bg: '#E8EFFF' },
-  { n: 'Deň 6', short: 'Finále', title: 'Posledný veľký deň', text: 'Najlepšie hry si nechávame na koniec. Večer posledné Disko. [Copy doplniť]', games: ['Tam je metla', 'Umývarka', 'Divokej Bil', 'Dáždnik', 'Bozk smrti', 'Vtáky v tŕni'], evening: 'Disko', bg: '#FDE7E9' },
-  { n: 'Deň 7', short: 'Lúčenie', title: 'Záverečná pošta a odchod', text: '[Záverečná pošta, lúčenie a odchod domov. Copy doplniť.]', games: ['Záverečná pošta'], evening: 'Cesta domov', bg: '#F4F4F4' },
+  { n: 'Deň 1', short: 'Zoznamka', title: 'Prvý deň: nikto tu nie je cudzí', text: 'Vymyslíš si prezývku, pod ktorou ťa bude celý Fest poznať. Hry sú postavené tak, aby ste sa do večera poznali všetci.', games: ['Prezývky', 'Miro, tu som', 'Posúvanie papiera', 'Varuj', 'Stratégia'], evening: 'Disko', bg: '#FFF6DC' },
+  { n: 'Deň 2', short: 'Tímy', title: 'Tímy, fanúšikovia a prvá Mission', text: 'Vzniknú tímy, ktoré spolu budú bojovať celý týždeň. Večer príde Mission, najbláznivejšia hra Festu.', games: ['Končatiny', 'Výchovná', 'Fanúšikovia', 'Vybíjaná', 'Topánka', 'Hututu'], evening: 'Mission', bg: '#E8EFFF' },
+  { n: 'Deň 3', short: 'Stredovek', title: 'Turnaj Mekyho Žbirku', text: 'Celý deň v stredoveku. Tímy súťažia o titul a večer sa koná Stredoveký súd.', games: ['Rímska stena', 'Záprah', 'Preťahovanie lanom', 'Dobi svoje územie', 'Dvojičky', '5 proti 5'], evening: 'Stredoveký súd', bg: '#FDE7E9' },
+  { n: 'Deň 4', short: 'Paintball', title: 'Výlet na paintball', text: 'Celodenný výlet. Tím proti tímu, farby všade. Večer sa vrátite na Trhy.', games: ['Paintball', 'Výlet'], evening: 'Trhy', bg: '#FFF6DC' },
+  { n: 'Deň 5', short: 'Les', title: 'Hry v lese a opekačka', text: 'Vietkong, Bobor a hry, pri ktorých treba zapojiť mozog aj nohy. Večer oheň, gitara a rozhovory do noci.', games: ['Kde si?', 'Bobor', 'Vietkong', 'Kužeľ', 'Kvočky'], evening: 'Opekačka pod hviezdami', bg: '#E8EFFF' },
+  { n: 'Deň 6', short: 'Finále', title: 'Posledný veľký deň', text: 'Najlepšie hry si nechávame na koniec. Večer posledné Disko.', games: ['Tam je metla', 'Umývarka', 'Divokej Bil', 'Dáždnik', 'Bozk smrti', 'Vtáky v tŕni'], evening: 'Disko', bg: '#FDE7E9' },
+  { n: 'Deň 7', short: 'Lúčenie', title: 'Záverečná pošta a odchod', text: '[Záverečná pošta, lúčenie a odchod domov.]', games: ['Záverečná pošta'], evening: 'Cesta domov', bg: '#F4F4F4' },
 ]
 
 const schedule = [
@@ -117,7 +117,7 @@ const stories = [
 ]
 
 const faqs = [
-  { q: 'Prídem sám a nebudem poznať nikoho. Nebudem sám?', a: 'Väčšina fesťákov prišla prvýkrát sama. Animátori na začiatku spájajú ľudí cez hry, tímy a večery na chatkách. [Copy doplniť]' },
+  { q: 'Prídem sám a nebudem poznať nikoho. Nebudem sám?', a: 'Väčšina fesťákov prišla prvýkrát sama. Animátori na začiatku spájajú ľudí cez hry, tímy a večery na chatkách.' },
   { q: 'Je na tábore zdravotník?', a: '[Kto, kedy je k dispozícii, ako to funguje.]' },
   { q: 'Môžem mať mobil?', a: '[Pravidlá používania mobilov na Feste.]' },
   { q: 'Nie je 13 rokov málo?', a: 'Fest je pre 13 až 17 ročných a 13-roční sú v každom turnuse. [Overiť.]' },
@@ -142,7 +142,7 @@ const revRaw = [
 ]
 
 // Shared interactive-state classes (hover, focus-visible, active).
-const press = 'transition-transform duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2457D6]/40'
+const press = 'transition-transform duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40'
 const h2 = 'm-0 text-[28px] md:text-[32px] font-extrabold leading-[1.15] tracking-[-0.02em]'
 
 const css = `
@@ -155,7 +155,7 @@ const css = `
 
 function CheckIcon() {
   return (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2457D6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
+    <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3772FF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M20 6L9 17l-5-5" /></svg>
   )
 }
 
@@ -186,14 +186,15 @@ export default function FestMockupClient() {
       <Header />
 
 
-      <main className="w-full max-w-[1240px] mx-auto px-4 md:px-6 pt-6 pb-20">
+      <div className="bg-bombovo-gray">
+      <div className="w-full max-w-[1240px] mx-auto px-4 md:px-6 pt-6 pb-10">
         <p className="m-0 mb-5 text-[13px] text-[#4B5563]">Tábory › Tínedžerské tábory › Fest animátor fest</p>
 
         {/* S1. HERO */}
         <div className="flex flex-col gap-4 mb-6">
-          <span className="self-start bg-[#FDCA40] text-[14px] font-bold px-[14px] py-[6px] rounded-full">Tínedžerský tábor</span>
+          <span className="font-handwritten text-[28px] leading-none text-bombovo-blue">Tínedžerský tábor</span>
           <h1 className="m-0 text-[34px] md:text-[56px] leading-[1.05] font-extrabold tracking-[-0.03em]">Fest animátor fest</h1>
-          <p className="m-0 text-[18px] md:text-[21px] font-medium text-[#212121] max-w-[820px] leading-[1.5]">Letný tábor na Lomoch pre 13 až 17 ročných. Týždeň originálnych táborových hier, tematických dní, paintballu a večerov pri ohni. S animátormi, ktorí boli kedysi sami fesťákmi. [Copy doplniť]</p>
+          <p className="m-0 text-[18px] md:text-[21px] font-medium text-[#212121] max-w-[820px] leading-[1.5]">Letný tábor na Lomoch pre 13 až 17 ročných. Týždeň originálnych táborových hier, tematických dní, paintballu a večerov pri ohni. S animátormi, ktorí boli kedysi sami fesťákmi.</p>
           <div className="grid gap-[10px] max-w-[960px] grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
             {heroInfo.map((h) => (
               <div key={h.label} className="flex gap-[14px] items-center border-[1.5px] border-[#E6E8E6] rounded-2xl px-4 py-[14px] bg-white">
@@ -208,36 +209,39 @@ export default function FestMockupClient() {
         </div>
 
         {/* GALLERY */}
-        <section aria-label="Fotogaléria" className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[200px] gap-[10px] rounded-[20px] overflow-hidden mb-11">
+        <section aria-label="Fotogaléria" className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[200px] gap-[10px] rounded-[20px] overflow-hidden">
           <img src={gallery[0]} alt="Fest fotka 1" className="col-span-2 row-span-2 w-full h-full object-cover" />
           {gallery.slice(1).map((src, i) => (
             <img key={src} src={src} alt={`Fest fotka ${i + 2}`} className="w-full h-full object-cover" />
           ))}
         </section>
+      </div>
+      </div>
 
+      <main className="w-full max-w-[1240px] mx-auto px-4 md:px-6 pt-12 pb-20">
         <div className="flex flex-wrap gap-12 items-start">
           <div className="flex-[999_1_560px] min-w-0 flex flex-col gap-20">
 
             {/* S2. BIG IDEA */}
             <section className="flex flex-col gap-4">
-              <span className="text-[13px] font-bold text-[#4B5563]">Prečo Fest</span>
+              <span className="font-handwritten text-[26px] leading-none text-bombovo-red">Prečo Fest</span>
               <h2 className="m-0 text-[30px] md:text-[42px] font-extrabold leading-[1.12] tracking-[-0.03em] max-w-[760px]">Tínedžerský tábor, kde si každý nájde svoju druhú rodinu.</h2>
-              <p className="m-0 text-[18px] leading-[1.65] text-[#212121] max-w-[660px]">Väčšina fesťákov prišla prvýkrát sama. Animátori ťa hneď zapoja do hier a zvyšok spraví partia. Preto sa sem vracajú každé leto, kým im to vek dovolí. [Copy doplniť]</p>
+              <p className="m-0 text-[18px] leading-[1.65] text-[#212121] max-w-[660px]">Väčšina fesťákov prišla prvýkrát sama. Animátori ťa hneď zapoja do hier a zvyšok spraví partia. Preto sa sem vracajú každé leto, kým im to vek dovolí.</p>
             </section>
 
-            {/* S3. RODINA (blue) */}
-            <section aria-label="Fest jedným slovom" className="-mt-10 bg-[#2457D6] text-white rounded-3xl p-8 grid gap-7 items-center grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+            {/* S3. RODINA */}
+            <section aria-label="Fest jedným slovom" className="-mt-10 bg-bombovo-gray rounded-3xl p-8 grid gap-7 items-center grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
               <div className="flex flex-col gap-3">
-                <p className="m-0 text-[16px] leading-[1.6]">Na poslednom Feste sme fesťákov poprosili, aby opísali tábor jedným slovom.</p>
+                <p className="m-0 text-[16px] leading-[1.6] text-[#212121]">Na poslednom Feste sme fesťákov poprosili, aby opísali tábor jedným slovom.</p>
                 <div className="flex flex-wrap gap-2">
                   {['domov', 'zábava', 'spomienky', 'sebapoznanie'].map((w) => (
-                    <span key={w} className="border border-white/55 text-[14px] px-3 py-[6px] rounded-full">{w}</span>
+                    <span key={w} className="bg-white text-bombovo-blue font-semibold text-[14px] px-3 py-[6px] rounded-full shadow-[0_4px_12px_-6px_rgba(55,114,255,0.35)]">{w}</span>
                   ))}
                 </div>
-                <p className="m-0 text-[16px]">Najčastejšie slovo však bolo jedno:</p>
-                <p className="m-0 text-[48px] md:text-[72px] font-extrabold leading-none text-[#FDCA40] tracking-[-0.03em]">Rodina.</p>
+                <p className="m-0 text-[16px] text-[#212121]">Najčastejšie slovo však bolo jedno:</p>
+                <p className="m-0 text-[48px] md:text-[72px] font-extrabold leading-none text-bombovo-red tracking-[-0.03em]">Rodina.</p>
               </div>
-              <div className="aspect-[4/5] max-h-[340px] bg-[#1A44B0] rounded-2xl flex items-center justify-center text-center p-4 text-[14px] text-[#E8EFFF]">[GIF: fesťáci hovoria svoje slovo do kamery]</div>
+              <div className="aspect-[4/5] max-h-[340px] bg-white rounded-2xl flex items-center justify-center text-center p-4 text-[14px] text-[#4B5563] shadow-[0_10px_30px_-12px_rgba(8,7,8,0.2)]">[GIF: fesťáci hovoria svoje slovo do kamery]</div>
             </section>
 
             {/* S4. VIDEO + ROZHOVORY */}
@@ -245,12 +249,12 @@ export default function FestMockupClient() {
               <div className="flex flex-wrap justify-between items-end gap-[14px]">
                 <div className="flex flex-col gap-[6px]">
                   <h2 className={h2}>Pozri si Fest z prvej ruky</h2>
-                  <p className="m-0 text-[17px] leading-[1.6] text-[#212121] max-w-[600px]">Natočené priamo na Feste. Žiadne reklamné zábery. [Copy doplniť]</p>
+                  <p className="m-0 text-[17px] leading-[1.6] text-[#212121] max-w-[600px]">Natočené priamo na Feste. Žiadne reklamné zábery.</p>
                 </div>
                 <div role="tablist" className="inline-flex bg-[#F4F4F4] rounded-full p-1 gap-1">
                   {['POV videá', 'Rozhovory s fesťákmi'].map((label, i) => (
                     <button key={label} type="button" role="tab" aria-selected={vidTab === i} onClick={() => setVidTab(i)}
-                      className={`rounded-full px-4 min-h-[40px] text-[14px] font-bold ${press} ${vidTab === i ? 'bg-[#080708] text-white' : 'bg-transparent hover:bg-white'}`}>{label}</button>
+                      className={`rounded-full px-4 min-h-[40px] text-[14px] font-bold ${press} ${vidTab === i ? 'bg-bombovo-blue text-white' : 'bg-transparent hover:bg-white'}`}>{label}</button>
                   ))}
                 </div>
               </div>
@@ -275,21 +279,21 @@ export default function FestMockupClient() {
             <section className="flex flex-col gap-5">
               <div className="flex flex-col gap-[6px]">
                 <h2 className={h2}>Čo zažiješ na najlepšom tínedžerskom tábore?</h2>
-                <p className="m-0 text-[17px] text-[#212121]">Klikni na deň a pozri sa, čo sa v ten deň deje. Podľa programu 2027. [Copy doplniť]</p>
+                <p className="m-0 text-[17px] text-[#212121]">Klikni na deň a pozri sa, čo sa v ten deň deje. Podľa programu 2027.</p>
               </div>
               <div role="tablist" className="flex gap-2 overflow-x-auto pb-1">
                 {days.map((d, i) => (
                   <button key={d.n} type="button" role="tab" aria-selected={day === i} onClick={() => setDay(i)}
-                    className={`flex-none flex flex-col items-start gap-[2px] min-h-[56px] px-4 py-2 rounded-[14px] text-left border-2 ${press} ${day === i ? 'bg-[#080708] text-white border-[#080708]' : 'bg-white border-[#E6E8E6] hover:border-[#080708]'}`}>
+                    className={`flex-none flex flex-col items-start gap-[2px] min-h-[56px] px-4 py-2 rounded-[14px] text-left border-2 ${press} ${day === i ? 'bg-bombovo-blue text-white border-bombovo-blue' : 'bg-white border-[#E6E8E6] hover:border-bombovo-blue'}`}>
                     <span className="text-[12px] font-semibold opacity-75">{d.n}</span>
                     <span className="text-[15px] font-bold">{d.short}</span>
                   </button>
                 ))}
               </div>
-              <div className="border-2 border-[#080708] rounded-[22px] overflow-hidden grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+              <div className="bg-white rounded-[22px] overflow-hidden shadow-[0_12px_32px_-12px_rgba(55,114,255,0.3)] border border-[#E6E8E6] grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
                 <div className="min-h-[260px] flex items-center justify-center p-5 text-center text-[14px] font-semibold text-[#4B5563]" style={{ background: cur.bg }}>[FOTO alebo krátke video: {cur.title}]</div>
                 <div className="p-[26px] flex flex-col gap-[14px]">
-                  <span className="self-start text-[12px] font-bold bg-[#080708] text-white px-[10px] py-1 rounded-full">{cur.n}</span>
+                  <span className="self-start text-[12px] font-bold bg-bombovo-red text-white px-[10px] py-1 rounded-full">{cur.n}</span>
                   <h3 className="m-0 text-[26px] font-extrabold leading-[1.15]">{cur.title}</h3>
                   <p className="m-0 text-[16px] leading-[1.6] text-[#212121]">{cur.text}</p>
                   <div className="flex flex-wrap gap-[6px]">
@@ -305,7 +309,7 @@ export default function FestMockupClient() {
               </div>
               <div className="flex flex-col gap-[10px]">
                 <button type="button" onClick={() => setScheduleOpen(!scheduleOpen)} aria-expanded={scheduleOpen}
-                  className="self-start py-[6px] text-[16px] font-bold text-[#2457D6] min-h-[44px] hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2457D6]/40 rounded">
+                  className="self-start py-[6px] text-[16px] font-bold text-[#3772FF] min-h-[44px] hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
                   {scheduleOpen ? 'Skryť bežný deň ↑' : 'Ako vyzerá bežný deň na Feste ↓'}
                 </button>
                 {scheduleOpen && (
@@ -325,13 +329,13 @@ export default function FestMockupClient() {
             <section className="flex flex-col gap-[22px]">
               <div className="flex flex-col gap-2">
                 <h2 className="m-0 text-[30px] md:text-[40px] font-extrabold leading-[1.12] tracking-[-0.03em]">Najlepší tínedžerský tábor? <span className="text-[#4B5563]">Never nám.</span><br />Ver fesťákom, čo nám napísali.</h2>
-                <p className="m-0 text-[16px] text-[#212121]"><b>4,97 z 5</b> zo 152 recenzií od fesťákov. [Copy doplniť]</p>
+                <p className="m-0 text-[16px] text-[#212121]"><b>4,97 z 5</b> zo 152 recenzií od fesťákov.</p>
               </div>
               <div className="[columns:3_220px] [column-gap:12px]">
                 {wall.map(([who, pre, hl, post], i) => {
                   const local = i % 15
                   return (
-                    <figure key={who + i} className="fm-card break-inside-avoid m-0 mb-3 bg-white border-[1.5px] border-[#080708] rounded-2xl px-4 py-[14px] flex flex-col gap-[10px] shadow-[3px_3px_0_#080708]"
+                    <figure key={who + i} className="fm-card break-inside-avoid m-0 mb-3 bg-white border border-[#E6E8E6] rounded-2xl px-4 py-[14px] flex flex-col gap-[10px] shadow-[0_8px_24px_-10px_rgba(8,7,8,0.18)]"
                       style={{ transform: `rotate(${tilts[i % tilts.length]}deg)`, animationDelay: `${(local * 0.12).toFixed(2)}s` }}>
                       <div className="flex justify-between items-center gap-2">
                         <span className="flex items-center gap-2">
@@ -349,7 +353,7 @@ export default function FestMockupClient() {
               </div>
               {wallCount < wallRaw.length && (
                 <button type="button" onClick={() => setWallCount(wallCount + 15)}
-                  className={`self-center min-h-[48px] px-6 border-2 border-[#080708] bg-white rounded-full text-[15px] font-bold hover:bg-[#FFF6DC] ${press}`}>
+                  className={`self-center min-h-[48px] px-6 border-2 border-bombovo-blue text-bombovo-blue bg-white rounded-full text-[15px] font-bold hover:bg-[#EEF3FF] ${press}`}>
                   Ukáž ďalšie ({wallRaw.length - wall.length})
                 </button>
               )}
@@ -360,19 +364,18 @@ export default function FestMockupClient() {
               <div className="flex flex-wrap justify-between items-end gap-3">
                 <div className="flex flex-col gap-[6px]">
                   <h2 className={h2}>Prečítaj si pravdivé príbehy, ktoré sa na Feste stali</h2>
-                  <p className="m-0 text-[17px] text-[#212121]">[Copy doplniť]</p>
-                </div>
-                <a href="#" target="_blank" rel="noopener" className="text-[15px] font-bold text-[#2457D6] hover:underline">Všetky príbehy ↗</a>
+                                  </div>
+                <a href="#" target="_blank" rel="noopener" className="text-[15px] font-bold text-[#3772FF] hover:underline">Všetky príbehy ↗</a>
               </div>
               <div className="grid gap-[14px] grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
                 {stories.map((s) => (
-                  <a key={s.title} href="#" target="_blank" rel="noopener" className={`no-underline text-[#080708] border-[1.5px] border-[#E6E8E6] rounded-[18px] overflow-hidden flex flex-col bg-white hover:border-[#080708] ${press}`}>
+                  <a key={s.title} href="#" target="_blank" rel="noopener" className={`no-underline text-[#080708] border-[1.5px] border-[#E6E8E6] rounded-[18px] overflow-hidden flex flex-col bg-white hover:border-bombovo-blue ${press}`}>
                     <div className="h-[170px] flex items-center justify-center text-[13px] font-semibold text-[#4B5563] text-center p-3" style={{ background: s.bg }}>{s.img}</div>
                     <div className="p-[18px] flex flex-col gap-2 flex-1">
                       <span className="text-[12px] font-bold text-[#4B5563]">Príbeh · {s.time}</span>
                       <b className="text-[18px] leading-[1.3]">{s.title}</b>
                       <span className="text-[14px] leading-[1.55] text-[#212121]">{s.text}</span>
-                      <span className="mt-auto pt-[6px] text-[14px] font-bold text-[#2457D6]">Čítať príbeh ↗</span>
+                      <span className="mt-auto pt-[6px] text-[14px] font-bold text-[#3772FF]">Čítať príbeh ↗</span>
                     </div>
                   </a>
                 ))}
@@ -385,7 +388,7 @@ export default function FestMockupClient() {
               <div className="grid gap-5 items-start grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
                 <div className="flex flex-col gap-3">
                   <b className="text-[18px]">Horský hotel Lomy pri Partizánskom</b>
-                  <p className="m-0 text-[15px] leading-[1.65] text-[#212121]">Areál uprostred lesa s bazénom, telocvičňou, dvoma ihriskami, altánkami a amfiteátrom na večerný program. [Copy doplniť]</p>
+                  <p className="m-0 text-[15px] leading-[1.65] text-[#212121]">Areál uprostred lesa s bazénom, telocvičňou, dvoma ihriskami, altánkami a amfiteátrom na večerný program.</p>
                   <ul className="m-0 p-0 list-none flex flex-col gap-[6px] text-[14px]">
                     <li><b>Izby:</b> [počet lôžok, kúpeľňa]</li>
                     <li><b>Strava:</b> [5× denne, pitný režim, diéty]</li>
@@ -399,7 +402,7 @@ export default function FestMockupClient() {
                 </div>
               </div>
               <div className="h-[180px] rounded-2xl flex items-center justify-center bg-[repeating-linear-gradient(45deg,#F4F4F4_0_14px,#ECEDEC_14px_28px)]">
-                <span className="bg-white border-[1.5px] border-[#080708] rounded-full px-[18px] py-[10px] text-[14px] font-bold">📍 [Mapa] Lomy, Partizánske</span>
+                <span className="bg-white border-[1.5px] border-bombovo-blue rounded-full px-[18px] py-[10px] text-[14px] font-bold">📍 [Mapa] Lomy, Partizánske</span>
               </div>
               <div className="grid gap-[10px] grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
                 <div className="bg-[#FFF6DC] rounded-2xl p-[18px] flex flex-col gap-1">
@@ -427,7 +430,7 @@ export default function FestMockupClient() {
                   return (
                     <div key={f.q} className="border-b border-[#E6E8E6]">
                       <button type="button" onClick={() => setOpenFaq(open ? -1 : i)} aria-expanded={open}
-                        className="w-full py-[18px] flex justify-between gap-4 items-center text-left text-[16px] font-semibold min-h-[44px] hover:text-[#2457D6] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2457D6]/40 rounded">
+                        className="w-full py-[18px] flex justify-between gap-4 items-center text-left text-[16px] font-semibold min-h-[44px] hover:text-[#3772FF] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
                         <span>{f.q}</span>
                         <span aria-hidden className="text-[22px] font-medium">{open ? '−' : '+'}</span>
                       </button>
@@ -443,7 +446,7 @@ export default function FestMockupClient() {
               <div className="flex flex-wrap justify-between items-center gap-3">
                 <h2 className={h2}>Všetky recenzie Festu</h2>
                 <button type="button" onClick={() => { setFormOpen(!formOpen); setFormSent(false) }}
-                  className={`min-h-[48px] px-[22px] bg-[#FDCA40] rounded-full text-[15px] font-bold ${press}`}>✍️ Napíš recenziu</button>
+                  className={`min-h-[48px] px-[22px] bg-bombovo-blue text-white rounded-full text-[15px] font-bold ${press}`}>✍️ Napíš recenziu</button>
               </div>
 
               <div className="grid gap-5 items-center bg-[#F4F4F4] rounded-[20px] p-[22px] grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
@@ -464,9 +467,9 @@ export default function FestMockupClient() {
               </div>
 
               {formOpen && (
-                <div className="border-2 border-[#080708] rounded-[20px] p-[22px] flex flex-col gap-[14px]">
+                <div className="border-2 border-bombovo-blue rounded-[20px] p-[22px] flex flex-col gap-[14px]">
                   {formSent ? (
-                    <p className="m-0 text-[17px] font-bold">Ďakujeme! Recenzia sa zobrazí po kontrole. [Copy doplniť]</p>
+                    <p className="m-0 text-[17px] font-bold">Ďakujeme! Recenzia sa zobrazí po kontrole.</p>
                   ) : (
                     <>
                       <b className="text-[18px]">Ako sa ti páčilo na Feste?</b>
@@ -478,19 +481,19 @@ export default function FestMockupClient() {
                       </div>
                       <div className="grid gap-[10px] grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                         <label className="flex flex-col gap-[6px] text-[13px] font-semibold">Meno
-                          <input type="text" placeholder="Napr. Linda K." className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl focus-visible:outline-none focus-visible:border-[#2457D6]" />
+                          <input type="text" placeholder="Napr. Linda K." className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl focus-visible:outline-none focus-visible:border-[#3772FF]" />
                         </label>
                         <label className="flex flex-col gap-[6px] text-[13px] font-semibold">Turnus
-                          <select className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl bg-white focus-visible:outline-none focus-visible:border-[#2457D6]">
+                          <select className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl bg-white focus-visible:outline-none focus-visible:border-[#3772FF]">
                             <option>Letný Fest 2026</option><option>Zimný Fest 2026</option><option>Starší turnus</option>
                           </select>
                         </label>
                       </div>
                       <label className="flex flex-col gap-[6px] text-[13px] font-semibold">Tvoja recenzia
-                        <textarea rows={4} placeholder="Čo si zažil? Čo by si povedal niekomu, kto váha?" className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl resize-y focus-visible:outline-none focus-visible:border-[#2457D6]" />
+                        <textarea rows={4} placeholder="Čo si zažil? Čo by si povedal niekomu, kto váha?" className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl resize-y focus-visible:outline-none focus-visible:border-[#3772FF]" />
                       </label>
                       <button type="button" onClick={() => setFormSent(true)}
-                        className={`self-start min-h-[48px] px-6 bg-[#080708] text-white rounded-full text-[15px] font-bold ${press}`}>Odoslať recenziu</button>
+                        className={`self-start min-h-[48px] px-6 bg-bombovo-red text-white rounded-full text-[15px] font-bold ${press}`}>Odoslať recenziu</button>
                     </>
                   )}
                 </div>
@@ -499,7 +502,7 @@ export default function FestMockupClient() {
               <div className="flex flex-wrap gap-2">
                 {filterNames.map((label, i) => (
                   <button key={label} type="button" aria-pressed={filter === i} onClick={() => { setFilter(i); setRevCount(5) }}
-                    className={`min-h-[40px] px-4 rounded-full text-[14px] font-semibold border-[1.5px] ${press} ${filter === i ? 'bg-[#080708] text-white border-[#080708]' : 'bg-white border-[#E6E8E6] hover:border-[#080708]'}`}>{label}</button>
+                    className={`min-h-[40px] px-4 rounded-full text-[14px] font-semibold border-[1.5px] ${press} ${filter === i ? 'bg-bombovo-blue text-white border-bombovo-blue' : 'bg-white border-[#E6E8E6] hover:border-bombovo-blue'}`}>{label}</button>
                 ))}
               </div>
 
@@ -519,24 +522,24 @@ export default function FestMockupClient() {
                 ))}
               </div>
               <button type="button" onClick={() => setRevCount(revCount + 5)}
-                className={`self-center min-h-[48px] px-6 border-2 border-[#080708] bg-white rounded-full text-[15px] font-bold hover:bg-[#FFF6DC] ${press}`}>Načítať ďalšie recenzie</button>
+                className={`self-center min-h-[48px] px-6 border-2 border-bombovo-blue text-bombovo-blue bg-white rounded-full text-[15px] font-bold hover:bg-[#EEF3FF] ${press}`}>Načítať ďalšie recenzie</button>
             </section>
 
             {/* CLOSING CTA */}
-            <section className="bg-[#FDCA40] rounded-[28px] p-7 md:p-12 flex flex-col gap-[14px] items-start">
+            <section className="bg-bombovo-blue text-white rounded-[28px] p-7 md:p-12 flex flex-col gap-[14px] items-start">
               <span className="text-[14px] font-semibold">Motto, ktoré fesťáci vedia naspamäť:</span>
               <p className="m-0 text-[22px] md:text-[30px] font-bold leading-[1.3]">„Rodinu si váž, rodinu si stráž, je to jediné, čo máš.“</p>
               <h2 className="mt-[6px] mb-0 text-[32px] md:text-[48px] font-extrabold tracking-[-0.03em]">Vidíme sa na Lomoch.</h2>
-              <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[52px] px-7 bg-[#080708] text-white rounded-full text-[17px] font-bold no-underline ${press}`}>Vybrať termín</a>
+              <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[52px] px-7 bg-[#FDCA40] text-[#080708] rounded-full text-[17px] font-bold no-underline ${press}`}>Vybrať termín</a>
             </section>
           </div>
 
           {/* STICKY BOOKING CARD */}
-          <aside id="rezervacia" aria-label="Rezervácia" className="flex-[1_1_320px] min-w-0 max-w-[400px] sticky top-6 border-2 border-[#080708] rounded-[20px] p-6 flex flex-col gap-4 bg-white shadow-[0_12px_32px_rgba(8,7,8,0.08)]">
-            <div className="flex flex-col gap-[2px]">
-              <span className="text-[14px] text-[#4B5563]">Cena za turnus</span>
+          <aside id="rezervacia" aria-label="Rezervácia" className="flex-[1_1_320px] min-w-0 max-w-[400px] sticky top-[130px] rounded-[20px] overflow-hidden p-6 flex flex-col gap-4 bg-white border border-[#E6E8E6] shadow-[0_16px_40px_-14px_rgba(55,114,255,0.35)]">
+            <div className="-mx-6 -mt-6 px-6 pt-6 pb-5 bg-bombovo-blue text-white flex flex-col gap-[2px]">
+              <span className="text-[14px] text-white/80">Cena za turnus</span>
               <span className="text-[34px] font-extrabold leading-[1.1]">{current.price} €</span>
-              <span className="text-[13px] text-[#4B5563]">Výlet a aktivity v cene, na tábore nič nedoplácate.</span>
+              <span className="text-[13px] text-white/80">Výlet a aktivity v cene, na tábore nič nedoplácate.</span>
             </div>
             <fieldset className="border-none m-0 p-0 flex flex-col gap-2">
               <legend className="text-[14px] font-semibold mb-2">Vyber termín</legend>
@@ -544,7 +547,7 @@ export default function FestMockupClient() {
                 const selected = picked === t.id
                 return (
                   <button key={t.id} type="button" aria-pressed={selected} onClick={() => setPicked(t.id)}
-                    className={`w-full flex justify-between items-center gap-3 min-h-[56px] px-[14px] py-[10px] rounded-[14px] text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2457D6]/40 ${selected ? 'border-2 border-[#080708] bg-[#FFF6DC]' : 'border border-[#E6E8E6] bg-white hover:border-[#080708]'} ${t.sold ? 'opacity-60' : ''}`}>
+                    className={`w-full flex justify-between items-center gap-3 min-h-[56px] px-[14px] py-[10px] rounded-[14px] text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 ${selected ? 'border-2 border-bombovo-blue bg-[#EEF3FF]' : 'border border-[#E6E8E6] bg-white hover:border-bombovo-blue'} ${t.sold ? 'opacity-60' : ''}`}>
                     <span className="flex flex-col items-start gap-[2px]">
                       <b className="text-[14px]">{t.label}</b>
                       <span className="text-[12px] text-[#4B5563]">{t.days} dní · {t.sold ? 'Vypredané' : 'Voľné miesta'}</span>
@@ -554,7 +557,7 @@ export default function FestMockupClient() {
                 )
               })}
             </fieldset>
-            <a href="#rezervacia" className={`flex items-center justify-center min-h-[52px] rounded-full text-[16px] font-bold no-underline ${press} ${current.sold ? 'bg-[#080708] text-white' : 'bg-[#FDCA40] text-[#080708]'}`}>
+            <a href="#rezervacia" className={`flex items-center justify-center min-h-[52px] rounded-full text-[16px] font-bold no-underline ${press} ${current.sold ? 'bg-[#FDCA40] text-[#080708]' : 'bg-bombovo-red text-white'}`}>
               {current.sold ? 'Pridať sa na čakaciu listinu' : 'Rezervovať miesto'}
             </a>
             <p className="m-0 text-[13px] font-semibold text-[#A3141F]">9-dňový Fest býva vypredaný už v marci.</p>
@@ -567,7 +570,7 @@ export default function FestMockupClient() {
               <div className="w-11 h-11 rounded-full bg-[#E8EFFF] shrink-0" />
               <div className="flex flex-col gap-[2px] text-[13px]">
                 <b className="text-[14px]">Máte otázku? [Meno]</b>
-                <span className="text-[#2457D6]">[+421 XXX XXX XXX]</span>
+                <span className="text-[#3772FF]">[+421 XXX XXX XXX]</span>
               </div>
             </div>
           </aside>
