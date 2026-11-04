@@ -36,11 +36,14 @@ const terms = [
   { id: 5, label: '15. 8. – 23. 8.', days: 9, price: 449, sold: false },
 ]
 
+// Hero info row (original Page 1 style: icon + text in one line)
+const ico = { fill: 'none', stroke: '#080708', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
 const heroInfo = [
-  { icon: '🧑‍🤝‍🧑', label: 'Vek', value: '13 až 17 rokov', bg: '#FDCA40' },
-  { icon: '📍', label: 'Miesto', value: 'Lomy pri Partizánskom', bg: '#E8EFFF' },
-  { icon: '⭐', label: 'Hodnotenie', value: '4,97 · 152 recenzií', bg: '#FFF6DC' },
-  { icon: '🔁', label: 'Komunita', value: 'už 15+ rokov', bg: '#FDE7E9' },
+  { key: 'vek', bold: true, text: '13 až 17 rokov', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><circle cx="9" cy="7" r="4" /><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0-3-3.85" /></svg> },
+  { key: 'dni', bold: false, text: '7 alebo 9 dní', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg> },
+  { key: 'miesto', bold: false, text: 'Horský hotel Lomy, Partizánske', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" /><circle cx="12" cy="9" r="2.5" /></svg> },
+  { key: 'hodnotenie', bold: false, text: '4,97 (152 recenzií)', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="#FDCA40" stroke="#080708" strokeWidth="1.5" strokeLinejoin="round"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z" /></svg> },
+  { key: 'komunita', bold: false, text: 'Komunita už 15+ rokov', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><path d="M20 12a8 8 0 1 1-3-6.2" /><path d="M20 4v5h-5" /></svg> },
 ]
 
 const pov = [
@@ -195,15 +198,12 @@ export default function FestMockupClient() {
           <span className="font-handwritten text-[28px] leading-none text-bombovo-blue">Tínedžerský tábor</span>
           <h1 className="m-0 text-[34px] md:text-[56px] leading-[1.05] font-extrabold tracking-[-0.03em]">Fest animátor fest</h1>
           <p className="m-0 text-[18px] md:text-[21px] font-medium text-[#212121] max-w-[820px] leading-[1.5]">Letný tábor na Lomoch pre 13 až 17 ročných. Týždeň originálnych táborových hier, tematických dní, paintballu a večerov pri ohni. S animátormi, ktorí boli kedysi sami fesťákmi.</p>
-          <div className="grid gap-[10px] max-w-[960px] grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[16px] md:text-[17px] text-[#212121]">
             {heroInfo.map((h) => (
-              <div key={h.label} className="flex gap-[14px] items-center border-[1.5px] border-[#E6E8E6] rounded-2xl px-4 py-[14px] bg-white">
-                <span aria-hidden className="flex-[0_0_48px] w-12 h-12 rounded-[14px] flex items-center justify-center text-[24px]" style={{ background: h.bg }}>{h.icon}</span>
-                <span className="flex flex-col gap-[2px] min-w-0">
-                  <span className="text-[13px] text-[#4B5563] font-medium">{h.label}</span>
-                  <b className="text-[18px] leading-[1.2]">{h.value}</b>
-                </span>
-              </div>
+              <span key={h.key} className="inline-flex items-center gap-2">
+                {h.icon}
+                {h.bold ? <b>{h.text}</b> : h.text}
+              </span>
             ))}
           </div>
         </div>
