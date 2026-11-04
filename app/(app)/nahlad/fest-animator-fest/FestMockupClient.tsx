@@ -214,7 +214,6 @@ export default function FestMockupClient() {
 
       <div className="bg-bombovo-gray">
       <div className="w-full max-w-[1240px] mx-auto px-4 md:px-6 pt-6 pb-10">
-        <p className="m-0 mb-5 text-[13px] text-[#4B5563]">Tábory › Tínedžerské tábory › Fest animátor fest</p>
 
         {/* S1. HERO */}
         <div className="flex flex-col gap-4 mb-6">
