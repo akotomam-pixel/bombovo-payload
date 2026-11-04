@@ -153,17 +153,6 @@ const faqs = [
 ]
 
 const dist: [number, number][] = [[5, 148], [4, 4], [3, 0], [2, 0], [1, 0]]
-const filterNames = ['Všetky', 'Prišiel som sám', 'Animátori', 'Rodina', 'Vraciam sa']
-const revRaw = [
-  { who: 'Linda K.', date: '15. septembra 2026', tags: [1, 3], text: 'Bol to môj 3. Fest, ale určite nie posledný. Ono povedať, že to je moja rodina, znie ako také klišé, čo počujete zakaždým, ale toto je niečo výnimočné. Bolo nás 64, ale všetci sme komunikovali, zabavili sa, pomáhali si a nikdy sme nenechali nikoho sedieť samého. Išla som prvýkrát sama a bolo to to najlepšie, čo som mohla spraviť. [skrátené]' },
-  { who: 'Dominika B.', date: '[dátum]', tags: [1, 4], text: 'Prvý deň som sa neskutočne bála, ale stretla som osoby, s ktorými chodím na Festy doteraz. Fest je pre mňa jednoznačne najlepší tábor, aký som kedy zažila. [skrátené]' },
-  { who: 'Daniel P.', date: '[dátum]', tags: [2], text: 'Tu vaše dieťa bude brať animátora ako staršieho brata, sestru, ku ktorému má kvôli tomuto prístupu rešpekt a počúva ho. [skrátené]' },
-  { who: 'Laura E.', date: '[dátum]', tags: [3], text: 'Fest je pre mňa ako druhá rodina, kde nemusím byť niekto, kto vôbec nie som, kde nemusím nosiť masku a tváriť sa stále šťastne. [skrátené]' },
-  { who: 'Alan K.', date: '[dátum]', tags: [4], text: 'Úžasný tábor, každý rok sa sem vraciam a vždy je to výnimočné a nezabudnuteľné.' },
-  { who: 'Tamara M.', date: '[dátum]', tags: [1], text: 'Úprimne som sa najprv bála sem ísť, keďže nie som veľký extrovert, no spoznala som úžasných ľudí. Tento týždeň ma naučil, aké krásne je spoznávať nových ľudí. [skrátené]' },
-  { who: 'Dominika B.', date: '[dátum]', tags: [2], text: 'Animátori nielen pripravujú aktivity, ale aj sa o nás starajú a dohliadajú na to, či nie sme smutní alebo či nás niečo netrápi.' },
-  { who: 'Ema P.', date: '[dátum]', tags: [3, 2], text: 'Je to najlepší tábor, na ktorom som bola, super programy aj animátori, Fest je ako moja druhá rodina.' },
-]
 
 // Shared interactive-state classes (hover, focus-visible, active).
 const press = 'transition-transform duration-150 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40'
@@ -194,18 +183,14 @@ export default function FestMockupClient() {
   const [formOpen, setFormOpen] = useState(false)
   const [formSent, setFormSent] = useState(false)
   const [stars, setStars] = useState(5)
-  const [filter, setFilter] = useState(0)
-  const [revCount, setRevCount] = useState(5)
 
   const current = terms.find((t) => t.id === picked) ?? terms[0]
   const cur = days[day]
   const vids = vidTab === 0 ? pov : interviews
   const wall = wallRaw.slice(0, Math.min(wallCount, wallRaw.length))
-  const filtered = revRaw.filter((r) => filter === 0 || r.tags.includes(filter))
-  const reviews = filtered.slice(0, revCount)
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#080708]">
+    <div className="min-h-screen flex flex-col bg-white text-[#080708] pb-[76px] lg:pb-0">
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <TopBar />
       <Header />
@@ -227,6 +212,10 @@ export default function FestMockupClient() {
               </span>
             ))}
           </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-1">
+            <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[52px] px-7 bg-bombovo-red text-white rounded-full text-[17px] font-bold no-underline shadow-[0_10px_24px_-10px_rgba(223,41,53,0.6)] ${press}`}>Vybrať termín</a>
+            <span className="text-[16px] text-[#212121]">od <b className="text-[20px]">369 €</b> za turnus</span>
+          </div>
         </div>
 
         {/* GALLERY */}
@@ -238,7 +227,7 @@ export default function FestMockupClient() {
           <div className="relative">
             <img src={gallery[4]} alt="Fest fotka 5" className="w-full h-full object-cover" />
             <button type="button" onClick={() => setPhotosOpen(true)}
-              className={`absolute right-3 bottom-3 bg-bombovo-blue text-white text-[15px] font-bold px-4 py-[10px] rounded-xl shadow-[0_10px_24px_-8px_rgba(55,114,255,0.7)] hover:bg-[#2A5FE0] ${press}`}>
+              className={`absolute right-3 bottom-3 bg-[#2F66F0] text-white text-[15px] font-bold px-4 py-[10px] rounded-xl shadow-[0_10px_24px_-8px_rgba(55,114,255,0.7)] hover:bg-[#2558D6] ${press}`}>
               Ďalšie fotky ({gallery.length - 5})
             </button>
           </div>
@@ -279,7 +268,7 @@ export default function FestMockupClient() {
                 <p className="m-0 text-[16px] leading-[1.6] text-[#212121]">Na poslednom Feste sme fesťákov poprosili, aby opísali tábor jedným slovom.</p>
                 <div className="flex flex-wrap gap-2">
                   {['domov', 'zábava', 'spomienky', 'sebapoznanie'].map((w) => (
-                    <span key={w} className="bg-white text-bombovo-blue font-semibold text-[14px] px-3 py-[6px] rounded-full shadow-[0_4px_12px_-6px_rgba(55,114,255,0.35)]">{w}</span>
+                    <span key={w} className="bg-white text-[#2F66F0] font-semibold text-[14px] px-3 py-[6px] rounded-full shadow-[0_4px_12px_-6px_rgba(55,114,255,0.35)]">{w}</span>
                   ))}
                 </div>
                 <p className="m-0 text-[16px] text-[#212121]">Najčastejšie slovo však bolo jedno:</p>
@@ -298,7 +287,7 @@ export default function FestMockupClient() {
                 <div role="tablist" className="inline-flex bg-[#F4F4F4] rounded-full p-1 gap-1">
                   {['POV videá', 'Rozhovory s fesťákmi'].map((label, i) => (
                     <button key={label} type="button" role="tab" aria-selected={vidTab === i} onClick={() => setVidTab(i)}
-                      className={`rounded-full px-4 min-h-[40px] text-[14px] font-bold ${press} ${vidTab === i ? 'bg-bombovo-blue text-white' : 'bg-transparent hover:bg-white'}`}>{label}</button>
+                      className={`rounded-full px-4 min-h-[40px] text-[14px] font-bold ${press} ${vidTab === i ? 'bg-white text-[#2F66F0] shadow-[0_2px_8px_-2px_rgba(8,7,8,0.2)]' : 'bg-transparent text-[#4B5563] hover:text-[#080708]'}`}>{label}</button>
                   ))}
                 </div>
               </div>
@@ -328,7 +317,7 @@ export default function FestMockupClient() {
               <div role="tablist" className="flex gap-2 overflow-x-auto pb-1">
                 {days.map((d, i) => (
                   <button key={d.n} type="button" role="tab" aria-selected={day === i} onClick={() => setDay(i)}
-                    className={`flex-none flex flex-col items-start gap-[2px] min-h-[56px] px-4 py-2 rounded-[14px] text-left border-2 ${press} ${day === i ? 'bg-bombovo-blue text-white border-bombovo-blue' : 'bg-white border-[#E6E8E6] hover:border-bombovo-blue'}`}>
+                    className={`flex-none flex flex-col items-start gap-[2px] min-h-[56px] px-4 py-2 rounded-[14px] text-left border-2 ${press} ${day === i ? 'bg-[#EEF3FF] text-[#2F66F0] border-[#2F66F0]' : 'bg-white border-[#E6E8E6] hover:border-[#2F66F0]'}`}>
                     <span className="text-[12px] font-semibold opacity-75">{d.n}</span>
                     <span className="text-[15px] font-bold">{d.short}</span>
                   </button>
@@ -337,7 +326,7 @@ export default function FestMockupClient() {
               <div className="bg-white rounded-[22px] overflow-hidden shadow-[0_12px_32px_-12px_rgba(55,114,255,0.3)] border border-[#E6E8E6] grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
                 <div className="min-h-[260px] flex items-center justify-center p-5 text-center text-[14px] font-semibold text-[#4B5563]" style={{ background: cur.bg }}>[FOTO alebo krátke video: {cur.title}]</div>
                 <div className="p-[26px] flex flex-col gap-[14px]">
-                  <span className="self-start text-[12px] font-bold bg-bombovo-red text-white px-[10px] py-1 rounded-full">{cur.n}</span>
+                  <span className="self-start text-[12px] font-bold bg-[#EEF3FF] text-[#2F66F0] px-[10px] py-1 rounded-full">{cur.n}</span>
                   <h3 className="m-0 text-[26px] font-extrabold leading-[1.15]">{cur.title}</h3>
                   <p className="m-0 text-[16px] leading-[1.6] text-[#212121]">{cur.text}</p>
                   <div className="flex flex-wrap gap-[6px]">
@@ -353,7 +342,7 @@ export default function FestMockupClient() {
               </div>
               <div className="flex flex-col gap-[10px]">
                 <button type="button" onClick={() => setScheduleOpen(!scheduleOpen)} aria-expanded={scheduleOpen}
-                  className="self-start py-[6px] text-[16px] font-bold text-[#3772FF] min-h-[44px] hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
+                  className="self-start py-[6px] text-[16px] font-bold text-[#2F66F0] min-h-[44px] hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
                   {scheduleOpen ? 'Skryť bežný deň ↑' : 'Ako vyzerá bežný deň na Feste ↓'}
                 </button>
                 {scheduleOpen && (
@@ -397,7 +386,7 @@ export default function FestMockupClient() {
               </div>
               {wallCount < wallRaw.length && (
                 <button type="button" onClick={() => setWallCount(wallCount + 15)}
-                  className={`self-center min-h-[48px] px-6 border-2 border-bombovo-blue text-bombovo-blue bg-white rounded-full text-[15px] font-bold hover:bg-[#EEF3FF] ${press}`}>
+                  className={`self-center min-h-[48px] px-6 border-2 border-[#2F66F0] text-[#2F66F0] bg-white rounded-full text-[15px] font-bold hover:bg-[#EEF3FF] ${press}`}>
                   Ukáž ďalšie ({wallRaw.length - wall.length})
                 </button>
               )}
@@ -409,7 +398,7 @@ export default function FestMockupClient() {
                 <div className="flex flex-col gap-[6px]">
                   <h2 className={h2}>Prečítaj si pravdivé príbehy, ktoré sa na Feste stali</h2>
                                   </div>
-                <a href="#" target="_blank" rel="noopener" className="text-[15px] font-bold text-[#3772FF] hover:underline">Všetky príbehy ↗</a>
+                <a href="#" target="_blank" rel="noopener" className="text-[15px] font-bold text-[#2F66F0] hover:underline">Všetky príbehy ↗</a>
               </div>
               <div className="grid gap-[14px] grid-cols-[repeat(auto-fit,minmax(230px,1fr))]">
                 {stories.map((s) => (
@@ -419,7 +408,7 @@ export default function FestMockupClient() {
                       <span className="text-[12px] font-bold text-[#4B5563]">Príbeh · {s.time}</span>
                       <b className="text-[18px] leading-[1.3]">{s.title}</b>
                       <span className="text-[14px] leading-[1.55] text-[#212121]">{s.text}</span>
-                      <span className="mt-auto pt-[6px] text-[14px] font-bold text-[#3772FF]">Čítať príbeh ↗</span>
+                      <span className="mt-auto pt-[6px] text-[14px] font-bold text-[#2F66F0]">Čítať príbeh ↗</span>
                     </div>
                   </a>
                 ))}
@@ -474,7 +463,7 @@ export default function FestMockupClient() {
                   return (
                     <div key={f.q} className="border-b border-[#E6E8E6]">
                       <button type="button" onClick={() => setOpenFaq(open ? -1 : i)} aria-expanded={open}
-                        className="w-full py-[18px] flex justify-between gap-4 items-center text-left text-[16px] font-semibold min-h-[44px] hover:text-[#3772FF] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
+                        className="w-full py-[18px] flex justify-between gap-4 items-center text-left text-[16px] font-semibold min-h-[44px] hover:text-[#2F66F0] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#3772FF]/40 rounded">
                         <span>{f.q}</span>
                         <span aria-hidden className="text-[22px] font-medium">{open ? '−' : '+'}</span>
                       </button>
@@ -488,15 +477,15 @@ export default function FestMockupClient() {
             {/* S10. ALL REVIEWS + WRITE */}
             <section id="recenzie" className="flex flex-col gap-[22px]">
               <div className="flex flex-wrap justify-between items-center gap-3">
-                <h2 className={h2}>Všetky recenzie Festu</h2>
+                <h2 className={h2}>Hodnotenie Festu</h2>
                 <button type="button" onClick={() => { setFormOpen(!formOpen); setFormSent(false) }}
-                  className={`min-h-[48px] px-[22px] bg-bombovo-blue text-white rounded-full text-[15px] font-bold ${press}`}>✍️ Napíš recenziu</button>
+                  className={`min-h-[48px] px-[22px] border-2 border-[#2F66F0] text-[#2F66F0] bg-white hover:bg-[#EEF3FF] rounded-full text-[15px] font-bold ${press}`}>✍️ Napíš recenziu</button>
               </div>
 
               <div className="grid gap-5 items-center bg-[#F4F4F4] rounded-[20px] p-[22px] grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
                 <div className="flex flex-col gap-1">
                   <span className="text-[52px] font-extrabold leading-none">4,97</span>
-                  <span className="text-[#E0A800] text-[20px] tracking-[2px]">★★★★★</span>
+                  <span aria-label="5 z 5 hviezd" className="text-[#E0A800] text-[20px] tracking-[2px]">★★★★★</span>
                   <span className="text-[14px] text-[#4B5563]">152 recenzií od fesťákov</span>
                 </div>
                 <div className="flex flex-col gap-[6px]">
@@ -537,50 +526,27 @@ export default function FestMockupClient() {
                         <textarea rows={4} placeholder="Čo si zažil? Čo by si povedal niekomu, kto váha?" className="text-[15px] font-normal px-[14px] py-3 border-[1.5px] border-[#E6E8E6] rounded-xl resize-y focus-visible:outline-none focus-visible:border-[#3772FF]" />
                       </label>
                       <button type="button" onClick={() => setFormSent(true)}
-                        className={`self-start min-h-[48px] px-6 bg-bombovo-red text-white rounded-full text-[15px] font-bold ${press}`}>Odoslať recenziu</button>
+                        className={`self-start min-h-[48px] px-6 bg-[#2F66F0] text-white rounded-full text-[15px] font-bold ${press}`}>Odoslať recenziu</button>
                     </>
                   )}
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2">
-                {filterNames.map((label, i) => (
-                  <button key={label} type="button" aria-pressed={filter === i} onClick={() => { setFilter(i); setRevCount(5) }}
-                    className={`min-h-[40px] px-4 rounded-full text-[14px] font-semibold border-[1.5px] ${press} ${filter === i ? 'bg-bombovo-blue text-white border-bombovo-blue' : 'bg-white border-[#E6E8E6] hover:border-bombovo-blue'}`}>{label}</button>
-                ))}
-              </div>
-
-              <div className="flex flex-col border-t border-[#E6E8E6]">
-                {reviews.map((r, i) => (
-                  <article key={r.who + i} className="border-b border-[#E6E8E6] py-5 grid grid-cols-[44px_minmax(0,1fr)] gap-[14px]">
-                    <span aria-hidden className="w-11 h-11 rounded-full flex items-center justify-center font-bold" style={{ background: avs[i % avs.length] }}>{r.who.charAt(0)}</span>
-                    <div className="flex flex-col gap-[6px]">
-                      <div className="flex flex-wrap gap-x-3 gap-y-[6px] items-baseline">
-                        <b className="text-[15px]">{r.who}</b>
-                        <span className="text-[#E0A800] text-[13px] tracking-[1px]">★★★★★</span>
-                        <span className="text-[13px] text-[#4B5563]">{r.date}</span>
-                      </div>
-                      <p className="m-0 text-[15px] leading-[1.65] text-[#212121]">{r.text}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              <button type="button" onClick={() => setRevCount(revCount + 5)}
-                className={`self-center min-h-[48px] px-6 border-2 border-bombovo-blue text-bombovo-blue bg-white rounded-full text-[15px] font-bold hover:bg-[#EEF3FF] ${press}`}>Načítať ďalšie recenzie</button>
+              <a href="/recenzie" className="self-start text-[15px] font-bold text-[#2F66F0] hover:underline">Prečítať všetkých 152 recenzií</a>
             </section>
 
             {/* CLOSING CTA */}
-            <section className="bg-bombovo-blue text-white rounded-[28px] p-7 md:p-12 flex flex-col gap-[14px] items-start">
+            <section className="bg-[#2F66F0] text-white rounded-[28px] p-7 md:p-12 flex flex-col gap-[14px] items-start">
               <span className="text-[14px] font-semibold">Motto, ktoré fesťáci vedia naspamäť:</span>
               <p className="m-0 text-[22px] md:text-[30px] font-bold leading-[1.3]">„Rodinu si váž, rodinu si stráž, je to jediné, čo máš.“</p>
               <h2 className="mt-[6px] mb-0 text-[32px] md:text-[48px] font-extrabold tracking-[-0.03em]">Vidíme sa na Lomoch.</h2>
-              <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[52px] px-7 bg-[#FDCA40] text-[#080708] rounded-full text-[17px] font-bold no-underline ${press}`}>Vybrať termín</a>
+              <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[52px] px-7 bg-bombovo-red text-white rounded-full text-[17px] font-bold no-underline ${press}`}>Vybrať termín</a>
             </section>
           </div>
 
           {/* STICKY BOOKING CARD */}
-          <aside id="rezervacia" aria-label="Rezervácia" className="flex-[1_1_320px] min-w-0 max-w-[400px] sticky top-[130px] rounded-[20px] overflow-hidden p-6 flex flex-col gap-4 bg-white border border-[#E6E8E6] shadow-[0_16px_40px_-14px_rgba(55,114,255,0.35)]">
-            <div className="-mx-6 -mt-6 px-6 pt-6 pb-5 bg-bombovo-blue text-white flex flex-col gap-[2px]">
+          <aside id="rezervacia" aria-label="Rezervácia" className="scroll-mt-[140px] flex-[1_1_320px] min-w-0 max-w-[400px] sticky top-[130px] rounded-[20px] overflow-hidden p-6 flex flex-col gap-4 bg-white border border-[#E6E8E6] shadow-[0_16px_40px_-14px_rgba(55,114,255,0.35)]">
+            <div className="-mx-6 -mt-6 px-6 pt-6 pb-5 bg-[#2F66F0] text-white flex flex-col gap-[2px]">
               <span className="text-[14px] text-white/80">Cena za turnus</span>
               <span className="text-[34px] font-extrabold leading-[1.1]">{current.price} €</span>
               <span className="text-[13px] text-white/80">Výlet a aktivity v cene, na tábore nič nedoplácate.</span>
@@ -614,7 +580,7 @@ export default function FestMockupClient() {
               <div className="w-11 h-11 rounded-full bg-[#E8EFFF] shrink-0" />
               <div className="flex flex-col gap-[2px] text-[13px]">
                 <b className="text-[14px]">Máte otázku? [Meno]</b>
-                <span className="text-[#3772FF]">[+421 XXX XXX XXX]</span>
+                <span className="text-[#2F66F0]">[+421 XXX XXX XXX]</span>
               </div>
             </div>
           </aside>
@@ -622,6 +588,15 @@ export default function FestMockupClient() {
       </main>
 
       <Footer />
+
+      {/* Mobile booking bar: the sidebar sits at the very bottom on small screens */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white border-t border-[#E6E8E6] shadow-[0_-8px_24px_-12px_rgba(8,7,8,0.25)] px-4 py-3 pb-[max(12px,env(safe-area-inset-bottom))] flex items-center justify-between gap-3">
+        <span className="flex flex-col leading-tight">
+          <span className="text-[12px] text-[#4B5563]">Cena za turnus</span>
+          <b className="text-[18px]">od 369 €</b>
+        </span>
+        <a href="#rezervacia" className={`inline-flex items-center justify-center min-h-[48px] px-6 bg-bombovo-red text-white rounded-full text-[16px] font-bold no-underline ${press}`}>Vybrať termín</a>
+      </div>
     </div>
   )
 }
