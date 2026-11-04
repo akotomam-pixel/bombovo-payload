@@ -185,9 +185,6 @@ export default function FestMockupClient() {
       <TopBar />
       <Header />
 
-      <div className="bg-[#080708] text-white text-center text-[13px] font-semibold py-2 px-4">
-        Náhľad novej stránky. Nie je zverejnená. Texty sú zatiaľ pracovné.
-      </div>
 
       <main className="w-full max-w-[1240px] mx-auto px-4 md:px-6 pt-6 pb-20">
         <p className="m-0 mb-5 text-[13px] text-[#4B5563]">Tábory › Tínedžerské tábory › Fest animátor fest</p>
