@@ -11,12 +11,34 @@ import Footer from '@/components/Footer'
 
 const UT = (key: string) => `https://utfs.io/f/${key}`
 
+// All FEST photos from the current live camp page
 const gallery = [
   'RRX2fWCU0K6iQ0yQxXJg0kLrU3VqzYvm9PIOsjHh1ZWTAdfM',
   'RRX2fWCU0K6iREyAK7CU0K6iwSfNPA5pgtaHYv7MGOD4qFkb',
   'RRX2fWCU0K6igQlMfUy14v2IiJQ7MySfXUkWq98mbtudsrCe',
+  'RRX2fWCU0K6igluZSCy14v2IiJQ7MySfXUkWq98mbtudsrCe',
   'RRX2fWCU0K6iIIgzA4qKxpszVUtLvjyYobHcrfmZCaiwEWTI',
   'RRX2fWCU0K6iCxx6P4Qv8WQ3Tu5fdMUOHZ9yabrqilX1Jz4t',
+  'RRX2fWCU0K6in8dxvbZHDjQ5z4bWv2wtBnGAIs9KMagNoX8J',
+  'RRX2fWCU0K6iznjkSHN7EYnGO3sKIbaUou7qMr0gJWNXxZeT',
+  'RRX2fWCU0K6iy4uxgQ0UFGMVIQXCtPJfrsSj9HoK6uZbE72v',
+  'RRX2fWCU0K6iDImDtBFKsYldxEA4jZ25OmaprGuv6tkJ3Qf7',
+  'RRX2fWCU0K6iHTj0G1IxtUHA1uNlYEXZres8xo4qVhWiSfyI',
+  'RRX2fWCU0K6iCcOLdQv8WQ3Tu5fdMUOHZ9yabrqilX1Jz4tS',
+  'RRX2fWCU0K6i0bfKBtUObFgQzK6CM9ldsxPHZmVLDaTto5e7',
+  'RRX2fWCU0K6iMkkFDYuSOqRaug4pPmMsEdVZlT3fDI68zWrn',
+  'RRX2fWCU0K6iHTjLaU4xtUHA1uNlYEXZres8xo4qVhWiSfyI',
+  'RRX2fWCU0K6iDdTVQFKsYldxEA4jZ25OmaprGuv6tkJ3Qf7n',
+  'RRX2fWCU0K6iV5UKvhz4fQLBot7kgFzOH81rPTyx6M2nhGwq',
+  'RRX2fWCU0K6ixA2s1Vj85Pk2vDY4EpumwGCQFe60Ad7JqOh9',
+  'RRX2fWCU0K6i51qweDtzh6WgxLdkEAGwYtbV1oURv5Bi9JDN',
+  'RRX2fWCU0K6iGMynbArNLVvS1lOipbWh0u7IwoGKs6Q5EBjF',
+  'RRX2fWCU0K6iSzPFHRb16BH3KPxD49VRUJarIW2EysXwqZGm',
+  'RRX2fWCU0K6ipHYDE6haDhu1BWEvlob5L0eA3HMgOJpSCfVi',
+  'RRX2fWCU0K6iHDp1NFxtUHA1uNlYEXZres8xo4qVhWiSfyIn',
+  'RRX2fWCU0K6iwEe56lVfJpXGd2xoH1a6Q4q9BiEvA3nz5reY',
+  'RRX2fWCU0K6igo8TUKy14v2IiJQ7MySfXUkWq98mbtudsrCe',
+  'RRX2fWCU0K6iWDFlLT15CAcJ693lFQNBynPsSgRwZtYXrG8e',
 ].map(UT)
 
 const lomyPhotos = [
@@ -164,6 +186,7 @@ function CheckIcon() {
 
 export default function FestMockupClient() {
   const [picked, setPicked] = useState(1)
+  const [photosOpen, setPhotosOpen] = useState(false)
   const [vidTab, setVidTab] = useState(0)
   const [day, setDay] = useState(2)
   const [scheduleOpen, setScheduleOpen] = useState(false)
@@ -211,10 +234,33 @@ export default function FestMockupClient() {
         {/* GALLERY */}
         <section aria-label="Fotogaléria" className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[200px] gap-[10px] rounded-[20px] overflow-hidden">
           <img src={gallery[0]} alt="Fest fotka 1" className="col-span-2 row-span-2 w-full h-full object-cover" />
-          {gallery.slice(1).map((src, i) => (
+          {gallery.slice(1, 4).map((src, i) => (
             <img key={src} src={src} alt={`Fest fotka ${i + 2}`} className="w-full h-full object-cover" />
           ))}
+          <div className="relative">
+            <img src={gallery[4]} alt="Fest fotka 5" className="w-full h-full object-cover" />
+            <button type="button" onClick={() => setPhotosOpen(true)}
+              className={`absolute right-3 bottom-3 bg-bombovo-blue text-white text-[15px] font-bold px-4 py-[10px] rounded-xl shadow-[0_10px_24px_-8px_rgba(55,114,255,0.7)] hover:bg-[#2A5FE0] ${press}`}>
+              Ďalšie fotky ({gallery.length - 5})
+            </button>
+          </div>
         </section>
+
+        {photosOpen && (
+          <div role="dialog" aria-modal="true" aria-label="Všetky fotky" className="fixed inset-0 z-[10000] bg-[#080708]/90 overflow-y-auto p-4 md:p-10" onClick={() => setPhotosOpen(false)}>
+            <div className="max-w-[1200px] mx-auto flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center">
+                <b className="text-white text-[18px]">Fotky z Festu ({gallery.length})</b>
+                <button type="button" onClick={() => setPhotosOpen(false)} className={`bg-white text-[#080708] font-bold text-[15px] px-4 py-2 rounded-xl ${press}`}>Zavrieť ✕</button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {gallery.map((src, i) => (
+                  <img key={src} src={src} alt={`Fest fotka ${i + 1}`} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-xl" />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       </div>
 
