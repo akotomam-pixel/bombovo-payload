@@ -62,7 +62,6 @@ const terms = [
 const ico = { fill: 'none', stroke: '#080708', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
 const heroInfo = [
   { key: 'vek', bold: true, text: '13 až 17 rokov', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><circle cx="9" cy="7" r="4" /><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0-3-3.85" /></svg> },
-  { key: 'dni', bold: false, text: '7 alebo 9 dní', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg> },
   { key: 'miesto', bold: false, text: 'Horský hotel Lomy, Partizánske', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" /><circle cx="12" cy="9" r="2.5" /></svg> },
   { key: 'hodnotenie', bold: false, text: '4,97 (152 recenzií)', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="#FDCA40" stroke="#080708" strokeWidth="1.5" strokeLinejoin="round"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z" /></svg> },
   { key: 'komunita', bold: false, text: 'Komunita už 15+ rokov', icon: <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" {...ico}><path d="M20 12a8 8 0 1 1-3-6.2" /><path d="M20 4v5h-5" /></svg> },
