@@ -30,8 +30,7 @@ const nextConfig = {
         ['/produkt/detske-tabory/chlapinec', '/letne-tabory/chlapinec'],
         ['/produkt/detske-tabory/expecto-patronum', '/letne-tabory/expecto'],
         ['/produkt/detske-tabory/fest-animatorfest', '/letne-tabory/fest-animator-fest'],
-        // TODO: repoint to the winter Fest page once it is published.
-        ['/produkt/detske-tabory/fest-animatorfest-zimny', '/letne-tabory/fest-animator-fest'],
+        ['/produkt/detske-tabory/fest-animatorfest-zimny', '/letne-tabory/zimny-fest-animator-fest'],
         ['/produkt/detske-tabory/stastna-plutva', '/letne-tabory/stastna-plutva'],
         ['/produkt/detske-tabory/tanecna-planeta', '/letne-tabory/tanecna-planeta'],
         ['/produkt/detske-tabory/v-dracej-nore', '/letne-tabory/v-dracej-nore'],
