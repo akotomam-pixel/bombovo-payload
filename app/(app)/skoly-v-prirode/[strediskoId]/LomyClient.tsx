@@ -12,7 +12,6 @@ import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import StrediskoViewTracking from '@/components/StrediskoViewTracking'
-import DiscountSeal from '@/components/DiscountSeal'
 import TerminyModal from './TerminyModal'
 import VynimocnySection from './VynimocnySection'
 import CenaSection from './CenaSection'
@@ -170,7 +169,7 @@ function Stars({ count, size = 12 }: { count: number; size?: number }) {
 
 export default function LomyClient({ content }: { content: LomyContent }) {
   const { hero } = content
-  const { photos, price, facts, proof, discount, ctas, rating, review } = hero
+  const { photos, price, facts, proof, ctas, rating, review } = hero
 
   const lgRef = useRef<any>(null)
   const [mobileIndex, setMobileIndex] = useState(0)
@@ -370,14 +369,6 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                       Zobraziť všetkých {photos.length} fotiek
                     </span>
                   </button>
-
-                  {/* Amphitheatre seal, placement 1 of 1: on the primary photo. */}
-                  <DiscountSeal
-                    amount={discount.amount}
-                    deadline={discount.deadline}
-                    size={118}
-                    className="pointer-events-none absolute -right-3 -top-4 -rotate-[9deg]"
-                  />
                 </figure>
 
                 <div className="mt-4 grid grid-cols-4 gap-3">
@@ -429,15 +420,6 @@ export default function LomyClient({ content }: { content: LomyContent }) {
                     className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
                   />
 
-                  {/* Seal rides the primary photo, matching desktop */}
-                  {mobileIndex === 0 && (
-                    <DiscountSeal
-                      amount={discount.amount}
-                      deadline={discount.deadline}
-                      size={86}
-                      className="pointer-events-none absolute right-2.5 top-2.5 -rotate-[9deg]"
-                    />
-                  )}
 
                   <span className="pointer-events-none absolute bottom-3 left-3 text-[12px] font-medium text-white/90">
                     {photos[mobileIndex].alt}

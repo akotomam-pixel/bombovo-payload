@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import posthog from 'posthog-js'
 import { REBUILT_STREDISKA } from '@/data/rebuiltStrediska'
-import DiscountSeal from '@/components/DiscountSeal'
 import UrgencyBadge from '@/components/UrgencyBadge'
 import { openTerminyCount, shouldShowUrgency, urgencyWords } from '@/lib/terminyStatus'
 
@@ -45,7 +44,7 @@ export default function StrediskoCard({
   ariaLabel?: string
 }) {
   const content = REBUILT_STREDISKA[slug]
-  const { price, discount, facts, rating } = content?.hero ?? {}
+  const { price, facts, rating } = content?.hero ?? {}
   const kapacita = facts?.find((f) => f.label === 'Kapacita')?.value
 
   const openCount = content ? openTerminyCount(content.terminy.items) : 0
@@ -96,14 +95,6 @@ export default function StrediskoCard({
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0" />
 
-          {!vypredane && discount ? (
-            <DiscountSeal
-              amount={discount.amount}
-              deadline={discount.deadline}
-              size={92}
-              className="pointer-events-none absolute left-3 top-3 -rotate-[9deg]"
-            />
-          ) : null}
 
           {/* Opposite corner from the discount seal — blue against its red,
               a pill against its scalloped circle, so the two read as two
