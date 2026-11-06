@@ -224,7 +224,7 @@ export const hotelOsrblieContent: LomyContent = {
     items: [
       // Added at the client's reduced early-season price (215 € before the
       // standing −30 € discount, vs. the usual 235 €).
-      { range: '05.04. – 09.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
+      { range: '05.04. – 09.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné', volnychMiest: 50 },
       { range: '12.04. – 16.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné', volnychMiest: 40 },
       { range: '19.04. – 23.04.2027', price: '215 €', discounted: '185 €', status: 'Rezervované' },
       { range: '26.04. – 30.04.2027', price: '215 €', discounted: '185 €', status: 'Voľné' },
