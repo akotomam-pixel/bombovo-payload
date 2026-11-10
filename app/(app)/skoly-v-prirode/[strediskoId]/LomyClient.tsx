@@ -196,7 +196,7 @@ export default function LomyClient({ content }: { content: LomyContent }) {
   const closePonuka = useCallback(() => setPonukaOpen(false), [])
 
   const galleryDynamicEl = useMemo(
-    () => photos.map((p) => ({ src: p.src, thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
+    () => photos.map((p) => ({ src: opt(p.src, 1920), thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
     [photos],
   )
 

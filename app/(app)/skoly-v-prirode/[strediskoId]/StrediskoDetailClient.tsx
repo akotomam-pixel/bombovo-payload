@@ -78,14 +78,6 @@ export default function StrediskoDetailClient({
 
   const { id: strediskoId, payloadId, name, basePrice, iconBullets, heroGallery, section2Photo, coordinates, section3, programText, detaily, dates } = data
 
-  // Pre-fetch all gallery images at full size for LightGallery
-  useEffect(() => {
-    heroGallery.forEach((img) => {
-      const el = new window.Image()
-      el.src = `/_next/image?url=${encodeURIComponent(img.src)}&w=1200&q=80`
-    })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
   // Pre-fetch adjacent photos at carousel size (w=828) so swipes are instant.
   // Runs every time the index changes — by the time the user swipes again, the
   // next and previous photos are already in the browser cache.
@@ -103,7 +95,7 @@ export default function StrediskoDetailClient({
   const totalPhotos = heroGallery.length
 
   const galleryDynamicEl = useMemo(
-    () => heroGallery.map((img, i) => ({ src: img.src, thumb: img.thumb, subHtml: `<h4>Foto ${i + 1}</h4>` })),
+    () => heroGallery.map((img, i) => ({ src: `/_next/image?url=${encodeURIComponent(img.src)}&w=1920&q=80`, thumb: img.thumb, subHtml: `<h4>Foto ${i + 1}</h4>` })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )

@@ -64,7 +64,7 @@ export default function ProgramSection({ content }: { content: LomyProgram }) {
   // index, so the visible thumbnails stay ordinary buttons.
   const lgRef = useRef<any>(null)
   const galleryDynamicEl = useMemo(
-    () => gallery.map((p) => ({ src: p.src, thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
+    () => gallery.map((p) => ({ src: opt(p.src, 1920), thumb: opt(p.src, 384), subHtml: `<h4>${p.alt}</h4>` })),
     [gallery],
   )
   const openGallery = (i: number) => lgRef.current?.openGallery(i)
