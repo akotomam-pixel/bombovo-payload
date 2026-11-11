@@ -690,7 +690,12 @@ export interface LetneTaboryReview {
   reviewerType: 'tabornik' | 'rodic';
   campName?: string | null;
   stars: number;
-  reviewText: string;
+  reviewText?: string | null;
+  source?: string | null;
+  reviewDate?: string | null;
+  secondCampName?: string | null;
+  midList?: boolean | null;
+  externalId?: string | null;
   photo?: (number | null) | Media;
   status: 'pending' | 'approved' | 'rejected';
   updatedAt: string;
@@ -1170,6 +1175,11 @@ export interface LetneTaboryReviewsSelect<T extends boolean = true> {
   campName?: T;
   stars?: T;
   reviewText?: T;
+  source?: T;
+  reviewDate?: T;
+  secondCampName?: T;
+  midList?: T;
+  externalId?: T;
   photo?: T;
   status?: T;
   updatedAt?: T;

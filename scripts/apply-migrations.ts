@@ -315,6 +315,17 @@ async function run() {
     `)
     console.log('✓ team_applications table created')
 
+    // Migration 20261111_000000 — Google / old-page reviews in letne_tabory_reviews
+    await client.query(`
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "source" varchar DEFAULT 'web';
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "review_date" timestamp(3) with time zone;
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "second_camp_name" varchar;
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "mid_list" boolean DEFAULT false;
+      ALTER TABLE "letne_tabory_reviews" ADD COLUMN IF NOT EXISTS "external_id" varchar;
+      ALTER TABLE "letne_tabory_reviews" ALTER COLUMN "review_text" DROP NOT NULL;
+    `)
+    console.log('✓ letne_tabory_reviews.source / review_date / second_camp_name / mid_list / external_id')
+
     console.log('All migrations applied.')
   } finally {
     client.release()

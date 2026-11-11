@@ -1,26 +1,14 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import TopBar from '@/components/TopBar'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
-export type CampReview = {
-  id: number
-  reviewer_name: string
-  reviewer_type: 'tabornik' | 'rodic'
-  camp_name: string | null
-  stars: number
-  review_text: string
-  created_at: string
-}
+import type { CampOption, CampReview, ReviewStats, ReviewsPage } from '@/lib/campReviews'
+import type { ReviewSort } from '@/lib/reviewOrder'
 
-// Totals computed across the whole database, not just the reviews rendered below.
-export type ReviewStats = {
-  total: number
-  average: number
-  starCounts: Record<1 | 2 | 3 | 4 | 5, number>
-}
+const PAGE_SIZE = 15
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -32,7 +20,7 @@ const STAR_HINTS: Record<number, string> = {
   5: 'Fantastické!',
 }
 
-function formatDate(iso: string) {
+function formatDate(iso: string | null) {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('sk-SK', { year: 'numeric', month: 'long', day: 'numeric' })
 }
@@ -102,23 +90,16 @@ function RatingBar({ label, count, total }: { label: string; count: number; tota
 }
 
 function AggregateStats({
-  reviews,
   stats,
   onWriteReview,
 }: {
-  reviews: CampReview[]
-  stats: ReviewStats | null
+  stats: ReviewStats
   onWriteReview: () => void
 }) {
-  // Prefer database-wide totals; fall back to the loaded page if the count query failed.
-  const total = stats ? stats.total : reviews.length
-  const avg = stats
-    ? stats.average
-    : total > 0
-      ? reviews.reduce((s, r) => s + r.stars, 0) / total
-      : 0
-  const countFor = (s: number) =>
-    stats ? (stats.starCounts[s as 1 | 2 | 3 | 4 | 5] ?? 0) : reviews.filter((r) => r.stars === s).length
+  // Totals cover every review in this view, not just the cards loaded so far.
+  const total = stats.total
+  const avg = stats.average
+  const countFor = (s: number) => stats.starCounts[s as 1 | 2 | 3 | 4 | 5] ?? 0
 
   return (
     <div className="flex flex-col md:flex-row gap-8 items-start border-b-2 border-gray-100 pb-8 mb-8">
@@ -158,22 +139,28 @@ function AggregateStats({
   )
 }
 
+const selectCls =
+  'border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-[#080708] bg-white focus:outline-none focus:border-[#3772FF] focus:ring-2 focus:ring-[#3772FF]/20 transition-colors duration-150'
+
 function CampFilter({
   options,
+  total,
   value,
   onChange,
 }: {
-  options: { name: string; count: number }[]
+  options: CampOption[]
+  total: number
   value: string
   onChange: (v: string) => void
 }) {
   return (
     <select
+      id="campFilter"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-[#080708] bg-white focus:outline-none focus:border-[#3772FF] focus:ring-2 focus:ring-[#3772FF]/20 transition-colors duration-150"
+      className={selectCls}
     >
-      <option value="">Všetky tábory ({options.reduce((s, o) => s + o.count, 0)})</option>
+      <option value="">Všetky tábory ({total})</option>
       {options.map((o) => (
         <option key={o.name} value={o.name}>
           {o.name} ({o.count})
@@ -183,7 +170,10 @@ function CampFilter({
   )
 }
 
-function ReviewCard({ review }: { review: CampReview }) {
+function ReviewCard({ review, selectedCamp }: { review: CampReview; selectedCamp: string }) {
+  // A review listed under its second camp shows that camp's name.
+  const campLabel =
+    selectedCamp && review.second_camp_name === selectedCamp ? selectedCamp : review.camp_name
   return (
     <div className="py-6 border-b border-gray-100 last:border-b-0">
       <div className="flex items-start gap-3 mb-3">
@@ -197,7 +187,7 @@ function ReviewCard({ review }: { review: CampReview }) {
               <circle cx="6" cy="6" r="5.5" fill="#16a34a" />
               <path d="M3.5 6l1.8 1.8 3.2-3.6" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Overená recenzia
+            {review.source === 'google' ? 'Recenzia z Google' : 'Overená recenzia'}
           </span>
         </div>
       </div>
@@ -214,16 +204,16 @@ function ReviewCard({ review }: { review: CampReview }) {
         >
           {review.reviewer_type === 'tabornik' ? 'Dieťa z tábora' : 'Rodič dieťaťa'}
         </span>
-        {review.camp_name && (
+        {campLabel && (
           <>
             <span className="text-gray-400 text-xs">·</span>
-            <span className="text-xs font-medium text-gray-500">{review.camp_name}</span>
+            <span className="text-xs font-medium text-gray-500">{campLabel}</span>
           </>
         )}
-        {review.created_at && (
+        {review.date && (
           <>
             <span className="text-gray-400 text-xs">·</span>
-            <span className="text-gray-400 text-xs">{formatDate(review.created_at)}</span>
+            <span className="text-gray-400 text-xs">{formatDate(review.date)}</span>
           </>
         )}
       </div>
@@ -418,33 +408,58 @@ function ReviewForm({
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RecenzieLetneTaboryClient({
-  reviews,
+  firstPage,
+  campOptions,
   camps,
-  stats,
 }: {
-  reviews: CampReview[]
+  firstPage: ReviewsPage
+  campOptions: CampOption[]
   camps: { id: string; name: string }[]
-  stats?: ReviewStats | null
 }) {
   const [formOpen, setFormOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [selectedCamp, setSelectedCamp] = useState('')
+  const [sort, setSort] = useState<ReviewSort>('recommended')
+  const [reviews, setReviews] = useState<CampReview[]>(firstPage.reviews)
+  const [totalCards, setTotalCards] = useState(firstPage.totalCards)
+  const [stats, setStats] = useState<ReviewStats>(firstPage.stats)
+  const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
+  // Ignores a slow answer that arrives after the visitor already changed the filter again.
+  const requestId = useRef(0)
 
-  const campOptions = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const r of reviews) {
-      if (r.camp_name) counts.set(r.camp_name, (counts.get(r.camp_name) ?? 0) + 1)
+  async function fetchPage(camp: string, sortBy: ReviewSort, offset: number) {
+    const id = ++requestId.current
+    setLoading(true)
+    setLoadError('')
+    try {
+      const params = new URLSearchParams({ sort: sortBy, offset: String(offset), limit: String(PAGE_SIZE) })
+      if (camp) params.set('camp', camp)
+      const res = await fetch(`/api/letne-tabory-review?${params}`)
+      const data = await res.json()
+      if (id !== requestId.current) return
+      if (!res.ok || data.error) throw new Error(data.error)
+      const page = data as ReviewsPage
+      setReviews((prev) => (offset === 0 ? page.reviews : [...prev, ...page.reviews]))
+      setTotalCards(page.totalCards)
+      setStats(page.stats)
+    } catch {
+      if (id === requestId.current) setLoadError('Recenzie sa nepodarilo načítať. Skúste to prosím znova.')
+    } finally {
+      if (id === requestId.current) setLoading(false)
     }
-    return Array.from(counts.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-  }, [reviews])
+  }
 
-  const filteredReviews = useMemo(
-    () => (selectedCamp ? reviews.filter((r) => r.camp_name === selectedCamp) : reviews),
-    [reviews, selectedCamp]
-  )
+  function changeCamp(camp: string) {
+    setSelectedCamp(camp)
+    fetchPage(camp, sort, 0)
+  }
+
+  function changeSort(sortBy: ReviewSort) {
+    setSort(sortBy)
+    fetchPage(selectedCamp, sortBy, 0)
+  }
 
   function openForm() {
     setFormOpen(true)
@@ -491,19 +506,36 @@ export default function RecenzieLetneTaboryClient({
 
       <div className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
         {campOptions.length > 0 && (
-          <div className="flex items-center gap-3 mb-6">
-            <label htmlFor="campFilter" className="text-sm font-semibold text-[#080708] shrink-0">
-              Filtrovať podľa tábora
-            </label>
-            <CampFilter options={campOptions} value={selectedCamp} onChange={setSelectedCamp} />
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6">
+            <div className="flex items-center gap-3">
+              <label htmlFor="campFilter" className="text-sm font-semibold text-[#080708] shrink-0">
+                Filtrovať podľa tábora
+              </label>
+              <CampFilter
+                options={campOptions}
+                total={firstPage.stats.total}
+                value={selectedCamp}
+                onChange={changeCamp}
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="reviewSort" className="text-sm font-semibold text-[#080708] shrink-0">
+                Zoradiť
+              </label>
+              <select
+                id="reviewSort"
+                value={sort}
+                onChange={(e) => changeSort(e.target.value as ReviewSort)}
+                className={selectCls}
+              >
+                <option value="recommended">Odporúčané</option>
+                <option value="newest">Najnovšie</option>
+              </select>
+            </div>
           </div>
         )}
 
-        <AggregateStats
-          reviews={filteredReviews}
-          stats={selectedCamp ? null : (stats ?? null)}
-          onWriteReview={openForm}
-        />
+        <AggregateStats stats={stats} onWriteReview={openForm} />
 
         <div ref={formRef}>
           {formOpen && (
@@ -511,7 +543,7 @@ export default function RecenzieLetneTaboryClient({
           )}
         </div>
 
-        {reviews.length === 0 ? (
+        {firstPage.stats.total === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-4">🏕️</p>
             <p className="text-gray-500 text-base">Buďte prvý, kto zanechá recenziu!</p>
@@ -522,7 +554,7 @@ export default function RecenzieLetneTaboryClient({
               Napísať recenziu
             </button>
           </div>
-        ) : filteredReviews.length === 0 ? (
+        ) : reviews.length === 0 && !loading ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-4">🔍</p>
             <p className="text-gray-500 text-base">Pre tento tábor zatiaľ nemáme žiadne recenzie.</p>
@@ -532,11 +564,27 @@ export default function RecenzieLetneTaboryClient({
             <h2 className="font-bold text-lg text-[#080708] mb-2">
               {selectedCamp ? `Recenzie: ${selectedCamp}` : 'Top recenzie od taborníkov'}
             </h2>
-            <div className="divide-y divide-gray-100">
-              {filteredReviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
+            <div className="divide-y divide-gray-100" aria-busy={loading}>
+              {reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} selectedCamp={selectedCamp} />
               ))}
             </div>
+            {loadError && (
+              <p role="alert" className="mt-6 text-center text-[#DF2935] text-sm font-medium">
+                {loadError}
+              </p>
+            )}
+            {reviews.length < totalCards && (
+              <div className="mt-8 text-center">
+                <button
+                  onClick={() => fetchPage(selectedCamp, sort, reviews.length)}
+                  disabled={loading}
+                  className="px-7 py-3 bg-white border-2 border-[#080708] text-[#080708] font-bold rounded-full text-sm hover:-translate-y-0.5 active:translate-y-0.5 transition-transform duration-150 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-[#3772FF]"
+                >
+                  {loading ? 'Načítava sa...' : 'Načítať ďalšie recenzie'}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

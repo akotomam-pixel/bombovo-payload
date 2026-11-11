@@ -1,79 +1,38 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadClient } from '@/lib/payload'
 import { camps as fallbackCamps } from '@/lib/campsData'
-import RecenzieLetneTaboryClient, {
-  type CampReview,
-  type ReviewStats,
-} from './RecenzieLetneTaboryClient'
+import { getCampOptions, getReviewsPage, type CampOption, type ReviewsPage } from '@/lib/campReviews'
+import RecenzieLetneTaboryClient from './RecenzieLetneTaboryClient'
 
 export const metadata: Metadata = {
   title: 'Recenzie | Bombovo Letné Tábory',
   description: 'Čo hovoria taborníci a rodičia o letných táboroch Bombovo.',
 }
 
-// How many review cards we fetch for the page. Must stay comfortably above the
-// real review count: the per-camp filter dropdown counts are computed client-side
-// from this exact slice, so anything beyond the limit silently disappears from
-// both the list and the counts (this previously cut off 64 approved reviews once
-// the total passed 200).
-const DISPLAY_LIMIT = 2000
+const emptyPage: ReviewsPage = {
+  reviews: [],
+  totalCards: 0,
+  stats: { total: 0, average: 0, starCounts: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
+}
 
 export default async function RecenziePage() {
-  let reviews: CampReview[] = []
+  // Only the first 15 cards are rendered here; the rest load on click, so the
+  // page stays fast however many reviews there are.
+  let firstPage = emptyPage
+  let campOptions: CampOption[] = []
   let camps: { id: string; name: string }[] = fallbackCamps.map((c) => ({ id: c.id, name: c.name }))
-  let stats: ReviewStats | null = null
 
   try {
-    const payload = await getPayload({ config })
-
-    const approved = { status: { equals: 'approved' } }
-
-    const [reviewsResult, campsResult, ...starResults] = await Promise.all([
-      payload.find({
-        collection: 'letne-tabory-reviews',
-        where: approved,
-        sort: '-createdAt',
-        limit: DISPLAY_LIMIT,
-      }),
-      payload.find({ collection: 'camps', limit: 100, sort: 'order' }),
-      // Count-only queries: limit 0 returns totalDocs without loading the docs.
-      ...[1, 2, 3, 4, 5].map((s) =>
-        payload.find({
-          collection: 'letne-tabory-reviews',
-          where: { and: [approved, { stars: { equals: s } }] },
-          limit: 0,
-          depth: 0,
-        })
-      ),
+    const payload = await getPayloadClient()
+    const [page, options, campsResult] = await Promise.all([
+      getReviewsPage({}),
+      getCampOptions(),
+      payload.find({ collection: 'camps', limit: 100, sort: 'order', depth: 0 }),
     ])
-
-    reviews = reviewsResult.docs.map((r: any) => ({
-      id: r.id,
-      reviewer_name: r.reviewerName,
-      reviewer_type: r.reviewerType,
-      camp_name: r.campName ?? null,
-      stars: r.stars,
-      review_text: r.reviewText,
-      created_at: r.createdAt,
-    }))
-
-    const starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as ReviewStats['starCounts']
-    starResults.forEach((res, i) => {
-      starCounts[(i + 1) as 1 | 2 | 3 | 4 | 5] = res.totalDocs
-    })
-
-    const total = reviewsResult.totalDocs
-    const starSum = [1, 2, 3, 4, 5].reduce((sum, s) => sum + s * starCounts[s as 1], 0)
-
-    stats = {
-      total,
-      average: total > 0 ? starSum / total : 0,
-      starCounts,
-    }
-
+    firstPage = page
+    campOptions = options
     if (campsResult.docs.length > 0) {
       camps = campsResult.docs.map((c: any) => ({ id: String(c.id), name: c.name }))
     }
@@ -81,5 +40,5 @@ export default async function RecenziePage() {
     console.error('RecenziePage: failed to fetch data', err)
   }
 
-  return <RecenzieLetneTaboryClient reviews={reviews} camps={camps} stats={stats} />
+  return <RecenzieLetneTaboryClient firstPage={firstPage} campOptions={campOptions} camps={camps} />
 }

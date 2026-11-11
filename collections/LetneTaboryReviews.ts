@@ -52,7 +52,39 @@ export const LetneTaboryReviews: CollectionConfig = {
       name: 'reviewText',
       type: 'textarea',
       label: 'Text recenzie',
-      required: true,
+      // Optional: a Google rating can be stars only. The public form still requires text.
+    },
+    {
+      name: 'source',
+      type: 'text',
+      label: 'Zdroj (web / google / stranka)',
+      defaultValue: 'web',
+      admin: { description: 'web = formulár na stránke, google = recenzia z Google, stranka = stará recenzia zo stránky tábora' },
+    },
+    {
+      name: 'reviewDate',
+      type: 'date',
+      label: 'Dátum recenzie',
+      admin: { description: 'Deň, keď bola recenzia napísaná. Ak je prázdny, použije sa dátum vytvorenia.' },
+    },
+    {
+      name: 'secondCampName',
+      type: 'text',
+      label: 'Druhý tábor (nepovinné)',
+      admin: { description: 'Recenzia sa ukáže aj pri tomto tábore, v strede zoznamu.' },
+    },
+    {
+      name: 'midList',
+      type: 'checkbox',
+      label: 'Ukázať v strede zoznamu',
+      defaultValue: false,
+      admin: { description: 'Recenzia sa nikdy neukáže medzi prvými.' },
+    },
+    {
+      name: 'externalId',
+      type: 'text',
+      label: 'ID pri importe',
+      admin: { readOnly: true },
     },
     {
       name: 'photo',

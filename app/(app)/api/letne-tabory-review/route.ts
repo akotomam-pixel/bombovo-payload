@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { getPayloadClient } from '@/lib/payload'
+import { getReviewsPage } from '@/lib/campReviews'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+
+export const dynamic = 'force-dynamic'
+
+// Next batch of review cards for /recenzie ("Načítať ďalšie recenzie", camp filter, sort).
+export async function GET(req: NextRequest) {
+  try {
+    const q = req.nextUrl.searchParams
+    const page = await getReviewsPage({
+      camp: q.get('camp') ?? undefined,
+      sort: q.get('sort') === 'newest' ? 'newest' : 'recommended',
+      offset: Number(q.get('offset')) || 0,
+      limit: Number(q.get('limit')) || undefined,
+    })
+    return NextResponse.json(page)
+  } catch (err) {
+    console.error('[letne-tabory-review] GET error:', err)
+    return NextResponse.json({ error: 'Recenzie sa nepodarilo načítať.' }, { status: 500 })
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
