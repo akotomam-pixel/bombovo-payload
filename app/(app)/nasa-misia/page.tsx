@@ -6,6 +6,10 @@ import Footer from '@/components/Footer'
 import WaveDivider from '@/components/WaveDivider'
 import Link from 'next/link'
 
+// Team section ("Spoznaj Náš skúsený Animačný tím") is temporarily hidden.
+// Set to true to show it again — the animators are still saved in the CMS.
+const SHOW_TEAM_SECTION = false
+
 const POINT_COLORS = [
   { bg: 'bg-bombovo-blue', text: 'text-white' },
   { bg: 'bg-bombovo-red', text: 'text-white' },
@@ -261,7 +265,8 @@ export default async function NasaMisiaPage() {
         </div>
       </section>
 
-      {/* Section 5: Team */}
+      {/* Section 5: Team (hidden via SHOW_TEAM_SECTION) */}
+      {SHOW_TEAM_SECTION && (
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1440px] mx-auto px-4">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-bombovo-dark text-center mb-12">
@@ -297,6 +302,7 @@ export default async function NasaMisiaPage() {
           </div>
         </div>
       </section>
+      )}
 
       <div className="bg-white">
         <Footer />
